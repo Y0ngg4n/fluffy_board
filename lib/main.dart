@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'account/Login.dart';
+import 'account/Register.dart';
 import 'whiteboard/InfiniteCanvas.dart';
 
 void main() {
@@ -24,7 +26,11 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: InfiniteCanvasPage(),
+      routes: {
+        '/register': (context) => Register(),
+        '/login': (context) => Login(),
+      },
+      initialRoute: '/login',
     );
   }
 }

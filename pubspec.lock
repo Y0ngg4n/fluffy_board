@@ -50,6 +50,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
+  email_validator:
+    dependency: "direct dev"
+    description:
+      name: email_validator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   fake_async:
     dependency: transitive
     description:
@@ -62,6 +69,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_pw_validator:
+    dependency: "direct dev"
+    description:
+      name: flutter_pw_validator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
