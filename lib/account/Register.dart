@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter_pw_validator/flutter_pw_validator.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:localstorage/localstorage.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -46,8 +51,19 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget build(BuildContext context) {
     TextStyle defaultStyle = TextStyle(color: Colors.grey);
     TextStyle linkStyle = TextStyle(color: Colors.blue);
+
+    final TextEditingController usernameController =
+        new TextEditingController();
+    final TextEditingController emailController = new TextEditingController();
     final TextEditingController passwordController =
         new TextEditingController();
+    final LocalStorage storage = new LocalStorage('account');
+
+    _showError() {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Error while registering your account! Please try an other Email."),
+          backgroundColor: Colors.red));
+    }
 
     return Form(
       key: _formKey,
@@ -56,6 +72,7 @@ class _RegisterFormState extends State<RegisterForm> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           TextFormField(
+            controller: usernameController,
             decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 icon: Icon(Icons.email_outlined),
@@ -69,6 +86,7 @@ class _RegisterFormState extends State<RegisterForm> {
             },
           ),
           TextFormField(
+            controller: emailController,
             decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 icon: Icon(Icons.email_outlined),
@@ -135,19 +153,55 @@ class _RegisterFormState extends State<RegisterForm> {
                 ),
               )),
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: ElevatedButton(
-                onPressed: () {
-                  // Validate returns true if the form is valid, or false otherwise.
-                  if (_formKey.currentState!.validate()) {
-                    // If the form is valid, display a snackbar. In the real world,
-                    // you'd often call a server or save the information in a database.
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Creating your Account ...')));
-                  }
-                },
-                child: Text("Register")),
-          ),
+              padding: const EdgeInsets.all(16),
+              child: FutureBuilder(
+                  future: storage.ready,
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (snapshot.data == null) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    return (ElevatedButton(
+                        onPressed: () async {
+                          // Validate returns true if the form is valid, or false otherwise.
+                          if (_formKey.currentState!.validate()) {
+                            // If the form is valid, display a snackbar. In the real world,
+                            // you'd often call a server or save the information in a database.
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text('Creating your Account ...')));
+                            try {
+                              http.Response response = await http.post(
+                                  Uri.parse(dotenv.env['REST_API_URL']! +
+                                      "/account/register"),
+                                  headers: {
+                                    "content-type": "application/json",
+                                    "accept": "application/json",
+                                  },
+                                  body: jsonEncode({
+                                    'name': usernameController.text,
+                                    'email': emailController.text,
+                                    'password': passwordController.text,
+                                  }));
+                              if (response.statusCode == 200) {
+                                Map<String, dynamic> body =
+                                    jsonDecode(response.body);
+                                await storage.setItem(
+                                    "auth_token", body['auth_token']);
+                                await storage.setItem("username", usernameController.text);
+                                Navigator.pushReplacementNamed(
+                                    context, '/dashboard');
+                              } else {
+                                _showError();
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content:
+                                          Text("Error creating account!")));
+                            }
+                          }
+                        },
+                        child: Text("Register")));
+                  })),
           Padding(
             padding: const EdgeInsets.all(16),
             child: RichText(

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'account/Login.dart';
 import 'account/Register.dart';
+import 'dashboard/Dashboard.dart';
 import 'whiteboard/InfiniteCanvas.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future main() async{
+  await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
 
@@ -29,8 +32,9 @@ class MyApp extends StatelessWidget {
       routes: {
         '/register': (context) => Register(),
         '/login': (context) => Login(),
+        '/dashboard': (context) => Dashboard(),
       },
-      initialRoute: '/login',
+      initialRoute: '/dashboard',
     );
   }
 }

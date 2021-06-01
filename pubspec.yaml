@@ -34,6 +34,9 @@ dev_dependencies:
     sdk: flutter
   email_validator: ^2.0.1
   flutter_pw_validator: ^1.2.1
+  http: ^0.13.3
+  flutter_dotenv: ^5.0.0
+  localstorage: ^4.0.0+1
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -49,6 +52,9 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
+
+  assets:
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
