@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -14,43 +15,55 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
 
+  final LocalStorage accountStorage = new LocalStorage('account');
+  bool storageReady = false;
+  bool checkedLogin = false;
+  bool loggedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    accountStorage.ready.then((value) async => {
+      _setStorageReady()
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final LocalStorage accountStorage = new LocalStorage('account');
-    bool storageReady = false;
-    bool loggedIn = false;
-
-    accountStorage.ready.then((value) async => {
-      setState(() {
-        storageReady = true;
-      })
-    });
-
-    String auth_token = accountStorage.getItem("auth_token");
-    String username = accountStorage.getItem("username");
-
-    if(!storageReady) return(_loading());
-    else {
-      _checkLoggedIn(auth_token).then((value) =>
-      {
-        setState(() {
-          loggedIn = true;
-        })
+    if(!checkedLogin && !storageReady) return (_loading());
+    if(!loggedIn) {
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        Navigator.pushReplacementNamed(context, '/login');
       });
-
-      print(storageReady);
-      print(loggedIn);
+      return (_loading());
     }
-    if(!loggedIn && !storageReady) return (_loading());
-    else return(Scaffold( appBar: AppBar(
+    return (Scaffold(appBar: AppBar(
       title: Text("Dashboard"),
-    ),body: Text("Dshboard"),));
+    ), body: Text("Dshboard"),));
+  }
+
+  Future<void> afterFirstLayout(BuildContext context) async {
+
   }
 
   Widget _loading(){
     return(Scaffold( appBar: AppBar(
       title: Text("Dashboard"),
-    ),body: CircularProgressIndicator(),));
+    ),body: Center(child: CircularProgressIndicator()),));
+  }
+
+  _setStorageReady(){
+    setState(() {
+      storageReady = true;
+    });
+    String auth_token = accountStorage.getItem("auth_token");
+    print(auth_token);
+    String username = accountStorage.getItem("username");
+    _checkLoggedIn(auth_token).then((value) => {
+      setState((){
+        loggedIn = value;
+      })
+    });
   }
 
   Future<bool> _checkLoggedIn(String auth_token) async  {
@@ -62,6 +75,9 @@ class _DashboardState extends State<Dashboard> {
           "accept": "application/json",
           'Authorization': 'Bearer ' + auth_token,
         });
+    setState(() {
+      checkedLogin = true;
+    });
     return response.statusCode == 200 ? true : false;
   }
 }
