@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:math';
 
 import 'package:fluffy_board/dashboard/AvatarIcon.dart';
+import 'package:fluffy_board/dashboard/filemanager/FileManager.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
@@ -21,6 +22,7 @@ class _DashboardState extends State<Dashboard> {
   bool storageReady = false;
   bool checkedLogin = false;
   bool loggedIn = false;
+  late String auth_token;
 
   @override
   void initState() {
@@ -32,17 +34,16 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     const name = "Dashboard";
 
-    if (!checkedLogin && !storageReady) return (_loading(name));
-    if (!loggedIn) {
-      Future.delayed(const Duration(milliseconds: 1000), () {
-        Navigator.pushReplacementNamed(context, '/login');
-      });
-      return (_loading(name));
-    }
+    if (!checkedLogin && !storageReady || (!checkedLogin && !storageReady && !loggedIn)) return (_loading(name));
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      if (!loggedIn) Navigator.pushReplacementNamed(context, '/login');
+    });
     return (Scaffold(
       appBar:
           AppBar(title: Text(name), actions: [ActionButtons(), AvatarIcon()]),
-      body: Container(),
+      body: Container(
+        child: FileManager(auth_token),
+      ),
     ));
   }
 
@@ -58,18 +59,15 @@ class _DashboardState extends State<Dashboard> {
   }
 
   _setStorageReady() {
+    auth_token = accountStorage.getItem("auth_token");
     setState(() {
       storageReady = true;
+      this.auth_token = auth_token;
     });
-    String auth_token = accountStorage.getItem("auth_token");
-    _checkLoggedIn(auth_token).then((value) => {
-          setState(() {
-            loggedIn = value;
-          })
-        });
+    _checkLoggedIn(auth_token);
   }
 
-  Future<bool> _checkLoggedIn(String auth_token) async {
+  Future _checkLoggedIn(String auth_token) async {
     http.Response response = await http.get(
         Uri.parse(dotenv.env['REST_API_URL']! + "/account/check"),
         headers: {
@@ -79,7 +77,7 @@ class _DashboardState extends State<Dashboard> {
         });
     setState(() {
       checkedLogin = true;
+      loggedIn = response.statusCode == 200 ? true : false;
     });
-    return response.statusCode == 200 ? true : false;
   }
 }
