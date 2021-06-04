@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 
 class Directory {
   late String id, owner, parent, filename;
@@ -38,9 +39,11 @@ class FileManager extends StatefulWidget {
 class _FileManagerState extends State<FileManager> {
   late Directories directories = new Directories([]);
   String currentDirectory = "";
-  List<String> currentDirectoryPath = [];
+  List<Directory> currentDirectoryPath = [];
   RefreshController _refreshController =
       RefreshController(initialRefresh: true);
+  double font_size = 25;
+  double file_icon_size = 50;
 
   @override
   void initState() {
@@ -53,24 +56,70 @@ class _FileManagerState extends State<FileManager> {
     for (Directory directory in directories.list) {
       directoryButtons.add(Column(
         children: [
-          IconButton(
-            icon: Icon(Icons.folder_open_outlined),
-            onPressed: () {},
+          InkWell(
+            child: Icon(Icons.folder_open_outlined, size: file_icon_size),
+            onTap: () {
+              setState(() {
+                currentDirectory = directory.id;
+                currentDirectoryPath.add(directory);
+              });
+              _refreshController.requestRefresh();
+            },
           ),
-          Text(directory.filename),
+          Text(
+            directory.filename,
+            // style: TextStyle(fontSize: file_font_size),
+          ),
         ],
       ));
     }
+
+    List<BreadCrumbItem> breadCrumbItems = [];
+    // Home Icon
+    breadCrumbItems.add(BreadCrumbItem(
+        content: Icon(
+          Icons.home,
+          size: font_size,
+        ),
+        onTap: () {
+          setState(() {
+            currentDirectory = "";
+            currentDirectoryPath.clear();
+          });
+          _refreshController.requestRefresh();
+        }));
+    for (int i = 0; i < currentDirectoryPath.length; i++) {
+      String filename = currentDirectoryPath[i].filename;
+      String uuid = currentDirectoryPath[i].id;
+      breadCrumbItems.add(BreadCrumbItem(
+          content: Text(filename, style: TextStyle(fontSize: font_size)),
+          onTap: () {
+            setState(() {
+              currentDirectory = uuid;
+            });
+            currentDirectoryPath.removeRange(
+                i, currentDirectoryPath.length - 1);
+            _refreshController.requestRefresh();
+          }));
+    }
+
     return Container(
-        child: SmartRefresher(
-            enablePullDown: true,
-            enablePullUp: false,
-            controller: _refreshController,
-            onRefresh: _getDirectoriesAndWhiteboards,
-            child: GridView.count(
-              crossAxisCount: 5,
-              children: directoryButtons,
-            )));
+        child: Column(children: [
+      BreadCrumb(
+        items: breadCrumbItems,
+        divider: Icon(Icons.chevron_right),
+      ),
+      Expanded(
+          child: SmartRefresher(
+              enablePullDown: true,
+              enablePullUp: false,
+              controller: _refreshController,
+              onRefresh: _getDirectoriesAndWhiteboards,
+              child: GridView.count(
+                crossAxisCount: 1,
+                children: directoryButtons,
+              )))
+    ]));
   }
 
   Future<void> _getDirectoriesAndWhiteboards() async {
