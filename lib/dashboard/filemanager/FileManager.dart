@@ -7,6 +7,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 
+import '../ActionButtons.dart';
+
 class Directory {
   late String id, owner, parent, filename;
   late int created;
@@ -105,10 +107,19 @@ class _FileManagerState extends State<FileManager> {
 
     return Container(
         child: Column(children: [
-      BreadCrumb(
-        items: breadCrumbItems,
-        divider: Icon(Icons.chevron_right),
-      ),
+      SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              BreadCrumb(
+                items: breadCrumbItems,
+                divider: Icon(Icons.chevron_right),
+              ),
+              ActionButtons(super.widget.auth_token, currentDirectory,
+                  _refreshController),
+            ],
+          )),
       Expanded(
           child: SmartRefresher(
               enablePullDown: true,
@@ -116,7 +127,7 @@ class _FileManagerState extends State<FileManager> {
               controller: _refreshController,
               onRefresh: _getDirectoriesAndWhiteboards,
               child: GridView.count(
-                crossAxisCount: 1,
+                crossAxisCount: 10,
                 children: directoryButtons,
               )))
     ]));
@@ -128,13 +139,15 @@ class _FileManagerState extends State<FileManager> {
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
+          "charset": "utf-8",
           'Authorization': 'Bearer ' + super.widget.auth_token,
         },
         body: jsonEncode({
           "parent": currentDirectory,
         }));
     print(response.body);
-    Directories directories = Directories.fromJson(jsonDecode(response.body));
+    Directories directories =
+        Directories.fromJson(jsonDecode(utf8.decode((response.bodyBytes))));
     setState(() {
       this.directories = directories;
     });

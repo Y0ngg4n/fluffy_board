@@ -40,7 +40,7 @@ class _DashboardState extends State<Dashboard> {
     });
     return (Scaffold(
       appBar:
-          AppBar(title: Text(name), actions: [ActionButtons(), AvatarIcon()]),
+          AppBar(title: Text(name), actions: [AvatarIcon()]),
       body: Container(
         child: FileManager(auth_token),
       ),

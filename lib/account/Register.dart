@@ -179,7 +179,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                   }));
                               if (response.statusCode == 200) {
                                 Map<String, dynamic> body =
-                                    jsonDecode(response.body);
+                                    jsonDecode(utf8.decode(response.bodyBytes));
                                 await storage.setItem(
                                     "auth_token", body['auth_token']);
                                 await storage.setItem(

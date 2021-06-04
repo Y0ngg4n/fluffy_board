@@ -1,9 +1,11 @@
+import 'package:fluffy_board/dashboard/filemanager/AddFolder.dart';
 import 'package:flutter/material.dart';
 
 import 'account/Login.dart';
 import 'account/Register.dart';
 import 'dashboard/Dashboard.dart';
 import 'dashboard/EditAccount.dart';
+import 'dashboard/filemanager/AddFolder.dart';
 import 'whiteboard/InfiniteCanvas.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
