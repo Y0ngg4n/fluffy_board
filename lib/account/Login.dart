@@ -3,18 +3,12 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter_pw_validator/flutter_pw_validator.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:localstorage/localstorage.dart';
 
-class Login extends StatefulWidget {
-  @override
-  _LoginState createState() => _LoginState();
-}
-
-class _LoginState extends State<Login> {
+class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
@@ -118,6 +112,9 @@ class _LoginFormState extends State<LoginForm> {
                                     jsonDecode(response.body);
                                 await storage.setItem(
                                     "auth_token", body['auth_token']);
+                                await storage.setItem(
+                                    "id", body['id']);
+                                await storage.setItem("email", body['email']);
                                 await storage.setItem("username", body['name']);
                                 Navigator.pushReplacementNamed(
                                     context, '/dashboard');

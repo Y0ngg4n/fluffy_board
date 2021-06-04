@@ -9,12 +9,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:localstorage/localstorage.dart';
 
-class Register extends StatefulWidget {
-  @override
-  _RegisterState createState() => _RegisterState();
-}
+class Register extends StatelessWidget {
 
-class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
@@ -75,7 +71,7 @@ class _RegisterFormState extends State<RegisterForm> {
             controller: usernameController,
             decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                icon: Icon(Icons.email_outlined),
+                icon: Icon(Icons.person_outlined),
                 hintText: "Enter your Username",
                 labelText: "Username"),
             validator: (value) {
@@ -186,7 +182,10 @@ class _RegisterFormState extends State<RegisterForm> {
                                     jsonDecode(response.body);
                                 await storage.setItem(
                                     "auth_token", body['auth_token']);
+                                await storage.setItem(
+                                    "id", body['id']);
                                 await storage.setItem("username", usernameController.text);
+                                await storage.setItem("email", emailController.text);
                                 Navigator.pushReplacementNamed(
                                     context, '/dashboard');
                               } else {

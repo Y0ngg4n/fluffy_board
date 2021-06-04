@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'account/Login.dart';
 import 'account/Register.dart';
 import 'dashboard/Dashboard.dart';
+import 'dashboard/EditAccount.dart';
 import 'whiteboard/InfiniteCanvas.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
         '/register': (context) => Register(),
         '/login': (context) => Login(),
         '/dashboard': (context) => Dashboard(),
+        '/edit-account': (context) => EditAccount(),
       },
       initialRoute: '/dashboard',
     );
