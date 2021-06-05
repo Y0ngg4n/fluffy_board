@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import 'filemanager/AddExtWhiteboard.dart';
 import 'filemanager/AddWhiteboard.dart';
 
 class ActionButtons extends StatefulWidget {
@@ -30,6 +31,9 @@ class _ActionButtonsState extends State<ActionButtons> {
             Padding(
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: ElevatedButton(onPressed: _createFolder, child: Text("Create Folder"))),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: ElevatedButton(onPressed: _importWhiteboard, child: Text("Import Whiteboard"))),
           ],
         );
   }
@@ -45,6 +49,13 @@ class _ActionButtonsState extends State<ActionButtons> {
     Navigator.push(context, MaterialPageRoute<void>(
       builder: (BuildContext context) => AddWhiteboard(widget.auth_token,
          widget.parent, widget._refreshController),
+    ),);
+  }
+
+  _importWhiteboard(){
+    Navigator.push(context, MaterialPageRoute<void>(
+      builder: (BuildContext context) => AddExtWhiteboard(widget.auth_token,
+          widget.parent, widget._refreshController),
     ),);
   }
 }

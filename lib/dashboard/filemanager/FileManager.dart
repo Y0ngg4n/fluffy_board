@@ -52,6 +52,26 @@ class Whiteboards {
   }
 }
 
+class ExtWhiteboard {
+  late String id, owner, parent, name;
+  late int created;
+
+  ExtWhiteboard(this.id, this.owner, this.parent, this.name, this.created);
+}
+
+class ExtWhiteboards {
+  List<ExtWhiteboard> list = [];
+
+  ExtWhiteboards(this.list);
+
+  ExtWhiteboards.fromJson(List<dynamic> json) {
+    for (Map<String, dynamic> row in json) {
+      list.add(new ExtWhiteboard(row['id'], row['owner'], row['directory'],
+          row['name'], row['created']));
+    }
+  }
+}
+
 class FileManager extends StatefulWidget {
   String auth_token;
 
@@ -64,6 +84,7 @@ class FileManager extends StatefulWidget {
 class _FileManagerState extends State<FileManager> {
   late Directories directories = new Directories([]);
   late Whiteboards whiteboards = new Whiteboards([]);
+  late ExtWhiteboards extWhiteboards = new ExtWhiteboards([]);
   String currentDirectory = "";
   List<Directory> currentDirectoryPath = [];
   RefreshController _refreshController =
@@ -79,10 +100,11 @@ class _FileManagerState extends State<FileManager> {
   @override
   Widget build(BuildContext context) {
     List<Widget> directoryAndWhiteboardButtons = [];
-    _mapDirectories(directoryAndWhiteboardButtons);
     List<BreadCrumbItem> breadCrumbItems = [];
+    _mapDirectories(directoryAndWhiteboardButtons);
     _mapBreadCrumbs(breadCrumbItems);
     _mapWhiteboards(directoryAndWhiteboardButtons);
+    _mapExtWhiteboards(directoryAndWhiteboardButtons);
 
     return Container(
         child: Column(children: [
@@ -142,14 +164,19 @@ class _FileManagerState extends State<FileManager> {
                 onSelected: (value) {
                   switch (value) {
                     case 0:
-                      Navigator.push(context, MaterialPageRoute<void>(
-                        builder: (BuildContext context) => RenameFolder(widget.auth_token,
-                            directory.id, currentDirectory,
-                            directory.filename, _refreshController),
-                      ));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (BuildContext context) => RenameFolder(
+                                widget.auth_token,
+                                directory.id,
+                                currentDirectory,
+                                directory.filename,
+                                _refreshController),
+                          ));
                       break;
                     case 1:
-                        _deleteFolderDialog(context, directory);
+                      _deleteFolderDialog(context, directory);
                       break;
                   }
                 },
@@ -202,7 +229,7 @@ class _FileManagerState extends State<FileManager> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               InkWell(
-                child: Icon(Icons.create_outlined, size: file_icon_size),
+                child: Icon(Icons.assignment, size: file_icon_size),
                 onTap: () {},
               ),
               PopupMenuButton(
@@ -213,11 +240,16 @@ class _FileManagerState extends State<FileManager> {
                 onSelected: (value) {
                   switch (value) {
                     case 0:
-                      Navigator.push(context, MaterialPageRoute<void>(
-                        builder: (BuildContext context) => RenameWhiteboard(widget.auth_token,
-                            whiteboard.id, currentDirectory,
-                            whiteboard.name, _refreshController),
-                      ));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (BuildContext context) => RenameWhiteboard(
+                                widget.auth_token,
+                                whiteboard.id,
+                                currentDirectory,
+                                whiteboard.name,
+                                _refreshController),
+                          ));
                       break;
                     case 1:
                       _deleteWhiteboardDialog(context, whiteboard);
@@ -236,7 +268,41 @@ class _FileManagerState extends State<FileManager> {
     }
   }
 
-  _deleteFolderDialog(BuildContext context, Directory directory){
+  _mapExtWhiteboards(whiteboardButtons) {
+    for (ExtWhiteboard whiteboard in extWhiteboards.list) {
+      whiteboardButtons.add(Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              InkWell(
+                child: Icon(Icons.assignment_ind, size: file_icon_size),
+                onTap: () {},
+              ),
+              PopupMenuButton(
+                itemBuilder: (context) => [
+                  PopupMenuItem(child: Text("Delete Whiteboard"), value: 0),
+                ],
+                onSelected: (value) {
+                  switch (value) {
+                    case 0:
+                      _deleteExtWhiteboardDialog(context, whiteboard);
+                      break;
+                  }
+                },
+              )
+            ],
+          ),
+          Text(
+            whiteboard.name,
+            // style: TextStyle(fontSize: file_font_size),
+          ),
+        ],
+      ));
+    }
+  }
+
+  _deleteFolderDialog(BuildContext context, Directory directory) {
     showDialog(
         context: context,
         builder: (BuildContext ctx) {
@@ -245,10 +311,11 @@ class _FileManagerState extends State<FileManager> {
             content: Text('Are you sure to delete the folder?'),
             actions: [
               TextButton(
-                  onPressed: () async{
+                  onPressed: () async {
                     Navigator.of(context).pop();
                     http.Response deleteResponse = await http.post(
-                        Uri.parse(dotenv.env['REST_API_URL']! + "/filemanager/directory/delete"),
+                        Uri.parse(dotenv.env['REST_API_URL']! +
+                            "/filemanager/directory/delete"),
                         headers: {
                           "content-type": "application/json",
                           "accept": "application/json",
@@ -259,9 +326,9 @@ class _FileManagerState extends State<FileManager> {
                           "id": directory.id,
                         }));
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("Trying to delete Folder"),
+                      content: Text("Trying to delete Folder"),
                     ));
-                    if(deleteResponse.statusCode != 200){
+                    if (deleteResponse.statusCode != 200) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text("Error while deleting Folder!"),
                           backgroundColor: Colors.red));
@@ -279,7 +346,7 @@ class _FileManagerState extends State<FileManager> {
         });
   }
 
-  _deleteWhiteboardDialog(BuildContext context, Whiteboard whiteboard){
+  _deleteWhiteboardDialog(BuildContext context, Whiteboard whiteboard) {
     showDialog(
         context: context,
         builder: (BuildContext ctx) {
@@ -288,10 +355,11 @@ class _FileManagerState extends State<FileManager> {
             content: Text('Are you sure to delete the Whiteboard?'),
             actions: [
               TextButton(
-                  onPressed: () async{
+                  onPressed: () async {
                     Navigator.of(context).pop();
                     http.Response deleteResponse = await http.post(
-                        Uri.parse(dotenv.env['REST_API_URL']! + "/filemanager/whiteboard/delete"),
+                        Uri.parse(dotenv.env['REST_API_URL']! +
+                            "/filemanager/whiteboard/delete"),
                         headers: {
                           "content-type": "application/json",
                           "accept": "application/json",
@@ -304,7 +372,51 @@ class _FileManagerState extends State<FileManager> {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text("Trying to delete Whiteboard ..."),
                     ));
-                    if(deleteResponse.statusCode != 200){
+                    if (deleteResponse.statusCode != 200) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Error while deleting Whiteboard!"),
+                          backgroundColor: Colors.red));
+                    }
+                    _refreshController.requestRefresh();
+                  },
+                  child: Text('Yes')),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('No'))
+            ],
+          );
+        });
+  }
+
+  _deleteExtWhiteboardDialog(BuildContext context, ExtWhiteboard whiteboard) {
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            title: Text('Please Confirm'),
+            content: Text('Are you sure to delete the Whiteboard?'),
+            actions: [
+              TextButton(
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    http.Response deleteResponse = await http.post(
+                        Uri.parse(dotenv.env['REST_API_URL']! +
+                            "/filemanager-ext/whiteboard/delete"),
+                        headers: {
+                          "content-type": "application/json",
+                          "accept": "application/json",
+                          "charset": "utf-8",
+                          'Authorization': 'Bearer ' + widget.auth_token,
+                        },
+                        body: jsonEncode({
+                          "id": whiteboard.id,
+                        }));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("Trying to delete Whiteboard ..."),
+                    ));
+                    if (deleteResponse.statusCode != 200) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text("Error while deleting Whiteboard!"),
                           backgroundColor: Colors.red));
@@ -345,13 +457,28 @@ class _FileManagerState extends State<FileManager> {
         body: jsonEncode({
           "directory": currentDirectory,
         }));
+    http.Response wbExtResponse = await http.post(
+        Uri.parse(
+            dotenv.env['REST_API_URL']! + "/filemanager-ext/whiteboard/get"),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json",
+          "charset": "utf-8",
+          'Authorization': 'Bearer ' + widget.auth_token,
+        },
+        body: jsonEncode({
+          "directory": currentDirectory,
+        }));
     Directories directories =
         Directories.fromJson(jsonDecode(utf8.decode((dirResponse.bodyBytes))));
     Whiteboards whiteboards =
         Whiteboards.fromJson(jsonDecode(utf8.decode((wbResponse.bodyBytes))));
+    ExtWhiteboards extWhiteboards = ExtWhiteboards.fromJson(
+        jsonDecode(utf8.decode((wbExtResponse.bodyBytes))));
     setState(() {
       this.directories = directories;
       this.whiteboards = whiteboards;
+      this.extWhiteboards = extWhiteboards;
     });
     if (dirResponse.statusCode == 200 && wbResponse.statusCode == 200)
       _refreshController.refreshCompleted();
