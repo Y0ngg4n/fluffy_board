@@ -31,9 +31,6 @@ class _AvatarIconState extends State<AvatarIcon> {
                 Navigator.pushReplacementNamed(context, route.toString());
                 break;
             }
-            print(route);
-            // Note You must create respective pages for navigation
-
           },
         )
     );

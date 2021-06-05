@@ -7,23 +7,23 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class AddFolder extends StatefulWidget {
+class AddWhiteboard extends StatefulWidget {
   String auth_token;
-  String parent;
+  String directory;
   RefreshController _refreshController;
 
-  AddFolder(this.auth_token, this.parent, this._refreshController);
+  AddWhiteboard(this.auth_token, this.directory, this._refreshController);
 
   @override
-  _AddFolderState createState() => _AddFolderState();
+  _AddWhiteboardState createState() => _AddWhiteboardState();
 }
 
-class _AddFolderState extends State<AddFolder> {
+class _AddWhiteboardState extends State<AddWhiteboard> {
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
         appBar: AppBar(
-          title: Text("Add Folder"),
+          title: Text("Add Whiteboard"),
         ),
         body: Center(
           child: Padding(
@@ -32,11 +32,11 @@ class _AddFolderState extends State<AddFolder> {
               builder: (BuildContext context, BoxConstraints constraints) {
                 if (constraints.maxWidth > 600) {
                   return (FractionallySizedBox(
-                      widthFactor: 0.5, child: AddFolderForm(widget.auth_token,
-                      widget.parent, widget._refreshController)));
+                      widthFactor: 0.5, child: AddWhiteboardForm(widget.auth_token,
+                      widget.directory, widget._refreshController)));
                 } else {
-                  return (AddFolderForm(widget.auth_token,
-                      widget.parent, widget._refreshController));
+                  return (AddWhiteboardForm(widget.auth_token,
+                  widget.directory,widget._refreshController));
                 }
               },
             ),
@@ -45,18 +45,18 @@ class _AddFolderState extends State<AddFolder> {
   }
 }
 
-class AddFolderForm extends StatefulWidget {
+class AddWhiteboardForm extends StatefulWidget {
   String auth_token;
-  String parent;
+  String directory;
   RefreshController _refreshController;
 
-  AddFolderForm(this.auth_token, this.parent, this._refreshController);
+  AddWhiteboardForm(this.auth_token, this.directory, this._refreshController);
 
   @override
-  _AddFolderFormState createState() => _AddFolderFormState();
+  _AddWhiteboardFormState createState() => _AddWhiteboardFormState();
 }
 
-class _AddFolderFormState extends State<AddFolderForm> {
+class _AddWhiteboardFormState extends State<AddWhiteboardForm> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController nameController =
@@ -64,7 +64,7 @@ class _AddFolderFormState extends State<AddFolderForm> {
 
   _showError() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Error while adding Folder! Please try an other Name."),
+        content: Text("Error while adding Whiteboard! Please try an other Name."),
         backgroundColor: Colors.red));
   }
 
@@ -81,7 +81,7 @@ class _AddFolderFormState extends State<AddFolderForm> {
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     icon: Icon(Icons.email_outlined),
-                    hintText: "Enter your Directory Name",
+                    hintText: "Enter your Whiteboard Name",
                     labelText: "Name"),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -101,19 +101,20 @@ class _AddFolderFormState extends State<AddFolderForm> {
                                 // If the form is valid, display a snackbar. In the real world,
                                 // you'd often call a server or save the information in a database.
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Trying to create folder ...')));
+                                    SnackBar(content: Text('Trying to create your Whiteboard ...')));
                                 try {
                                   http.Response response = await http.post(
                                       Uri.parse(dotenv.env['REST_API_URL']! +
-                                          "/filemanager/directory/create"),
+                                          "/filemanager/whiteboard/create"),
                                       headers: {
                                         "content-type": "application/json",
                                         "accept": "application/json",
                                         'Authorization': 'Bearer ' + widget.auth_token,
                                       },
                                       body: jsonEncode({
-                                        'filename': nameController.text,
-                                        'parent': widget.parent,
+                                        'name': nameController.text,
+                                        'directory': widget.directory,
+                                        'password': "",
                                       }));
                                   if (response.statusCode == 200) {
                                     Navigator.pop(context);
@@ -127,7 +128,7 @@ class _AddFolderFormState extends State<AddFolderForm> {
                                 }
                               }
                             },
-                            child: Text("Create Folder")))
+                            child: Text("Create Whiteboard")))
                       ])),
     );
   }

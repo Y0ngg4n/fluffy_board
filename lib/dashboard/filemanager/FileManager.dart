@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'package:fluffy_board/dashboard/filemanager/RenameFolder.dart';
+import 'package:fluffy_board/dashboard/filemanager/RenameWhiteboard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -29,6 +32,26 @@ class Directories {
   }
 }
 
+class Whiteboard {
+  late String id, owner, parent, name;
+  late int created;
+
+  Whiteboard(this.id, this.owner, this.parent, this.name, this.created);
+}
+
+class Whiteboards {
+  List<Whiteboard> list = [];
+
+  Whiteboards(this.list);
+
+  Whiteboards.fromJson(List<dynamic> json) {
+    for (Map<String, dynamic> row in json) {
+      list.add(new Whiteboard(row['id'], row['owner'], row['directory'],
+          row['name'], row['created']));
+    }
+  }
+}
+
 class FileManager extends StatefulWidget {
   String auth_token;
 
@@ -40,6 +63,7 @@ class FileManager extends StatefulWidget {
 
 class _FileManagerState extends State<FileManager> {
   late Directories directories = new Directories([]);
+  late Whiteboards whiteboards = new Whiteboards([]);
   String currentDirectory = "";
   List<Directory> currentDirectoryPath = [];
   RefreshController _refreshController =
@@ -54,30 +78,94 @@ class _FileManagerState extends State<FileManager> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> directoryButtons = [];
+    List<Widget> directoryAndWhiteboardButtons = [];
+    _mapDirectories(directoryAndWhiteboardButtons);
+    List<BreadCrumbItem> breadCrumbItems = [];
+    _mapBreadCrumbs(breadCrumbItems);
+    _mapWhiteboards(directoryAndWhiteboardButtons);
+
+    return Container(
+        child: Column(children: [
+      Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          children: [
+            BreadCrumb(
+              items: breadCrumbItems,
+              divider: Icon(Icons.chevron_right),
+              overflow: WrapOverflow(
+                keepLastDivider: false,
+                direction: Axis.horizontal,
+              ),
+            ),
+            ActionButtons(
+                widget.auth_token, currentDirectory, _refreshController),
+          ],
+        ),
+      ),
+      Expanded(
+          child: SmartRefresher(
+              enablePullDown: true,
+              enablePullUp: false,
+              controller: _refreshController,
+              onRefresh: _getDirectoriesAndWhiteboards,
+              child: GridView.count(
+                crossAxisCount: 10,
+                children: directoryAndWhiteboardButtons,
+              )))
+    ]));
+  }
+
+  _mapDirectories(directoryButtons) {
     for (Directory directory in directories.list) {
       directoryButtons.add(Column(
         children: [
-          InkWell(
-            child: Icon(Icons.folder_open_outlined, size: file_icon_size),
-            onTap: () {
-              setState(() {
-                currentDirectory = directory.id;
-                currentDirectoryPath.add(directory);
-              });
-              _refreshController.requestRefresh();
-            },
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              InkWell(
+                child: Icon(Icons.folder_open_outlined, size: file_icon_size),
+                onTap: () {
+                  setState(() {
+                    currentDirectory = directory.id;
+                    currentDirectoryPath.add(directory);
+                  });
+                  _refreshController.requestRefresh();
+                },
+              ),
+              PopupMenuButton(
+                itemBuilder: (context) => [
+                  PopupMenuItem(child: Text("Rename Folder"), value: 0),
+                  PopupMenuItem(child: Text("Delete Folder"), value: 1),
+                ],
+                onSelected: (value) {
+                  switch (value) {
+                    case 0:
+                      Navigator.push(context, MaterialPageRoute<void>(
+                        builder: (BuildContext context) => RenameFolder(widget.auth_token,
+                            directory.id, currentDirectory,
+                            directory.filename, _refreshController),
+                      ));
+                      break;
+                    case 1:
+                        _deleteFolderDialog(context, directory);
+                      break;
+                  }
+                },
+              )
+            ],
           ),
           Text(
             directory.filename,
             // style: TextStyle(fontSize: file_font_size),
-          ),
+          )
         ],
       ));
     }
+  }
 
-    List<BreadCrumbItem> breadCrumbItems = [];
-    // Home Icon
+  _mapBreadCrumbs(breadCrumbItems) {
     breadCrumbItems.add(BreadCrumbItem(
         content: Icon(
           Icons.home,
@@ -100,58 +188,172 @@ class _FileManagerState extends State<FileManager> {
               currentDirectory = uuid;
             });
             currentDirectoryPath.removeRange(
-                i, currentDirectoryPath.length - 1);
+                i + 1, currentDirectoryPath.length);
             _refreshController.requestRefresh();
           }));
     }
+  }
 
-    return Container(
-        child: Column(children: [
-      SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  _mapWhiteboards(whiteboardButtons) {
+    for (Whiteboard whiteboard in whiteboards.list) {
+      whiteboardButtons.add(Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              BreadCrumb(
-                items: breadCrumbItems,
-                divider: Icon(Icons.chevron_right),
+              InkWell(
+                child: Icon(Icons.create_outlined, size: file_icon_size),
+                onTap: () {},
               ),
-              ActionButtons(super.widget.auth_token, currentDirectory,
-                  _refreshController),
+              PopupMenuButton(
+                itemBuilder: (context) => [
+                  PopupMenuItem(child: Text("Rename Whiteboard"), value: 0),
+                  PopupMenuItem(child: Text("Delete Whiteboard"), value: 1),
+                ],
+                onSelected: (value) {
+                  switch (value) {
+                    case 0:
+                      Navigator.push(context, MaterialPageRoute<void>(
+                        builder: (BuildContext context) => RenameWhiteboard(widget.auth_token,
+                            whiteboard.id, currentDirectory,
+                            whiteboard.name, _refreshController),
+                      ));
+                      break;
+                    case 1:
+                      _deleteWhiteboardDialog(context, whiteboard);
+                      break;
+                  }
+                },
+              )
             ],
-          )),
-      Expanded(
-          child: SmartRefresher(
-              enablePullDown: true,
-              enablePullUp: false,
-              controller: _refreshController,
-              onRefresh: _getDirectoriesAndWhiteboards,
-              child: GridView.count(
-                crossAxisCount: 10,
-                children: directoryButtons,
-              )))
-    ]));
+          ),
+          Text(
+            whiteboard.name,
+            // style: TextStyle(fontSize: file_font_size),
+          ),
+        ],
+      ));
+    }
+  }
+
+  _deleteFolderDialog(BuildContext context, Directory directory){
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            title: Text('Please Confirm'),
+            content: Text('Are you sure to delete the folder?'),
+            actions: [
+              TextButton(
+                  onPressed: () async{
+                    Navigator.of(context).pop();
+                    http.Response deleteResponse = await http.post(
+                        Uri.parse(dotenv.env['REST_API_URL']! + "/filemanager/directory/delete"),
+                        headers: {
+                          "content-type": "application/json",
+                          "accept": "application/json",
+                          "charset": "utf-8",
+                          'Authorization': 'Bearer ' + widget.auth_token,
+                        },
+                        body: jsonEncode({
+                          "id": directory.id,
+                        }));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("Trying to delete Folder"),
+                    ));
+                    if(deleteResponse.statusCode != 200){
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Error while deleting Folder!"),
+                          backgroundColor: Colors.red));
+                    }
+                    _refreshController.requestRefresh();
+                  },
+                  child: Text('Yes')),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('No'))
+            ],
+          );
+        });
+  }
+
+  _deleteWhiteboardDialog(BuildContext context, Whiteboard whiteboard){
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            title: Text('Please Confirm'),
+            content: Text('Are you sure to delete the Whiteboard?'),
+            actions: [
+              TextButton(
+                  onPressed: () async{
+                    Navigator.of(context).pop();
+                    http.Response deleteResponse = await http.post(
+                        Uri.parse(dotenv.env['REST_API_URL']! + "/filemanager/whiteboard/delete"),
+                        headers: {
+                          "content-type": "application/json",
+                          "accept": "application/json",
+                          "charset": "utf-8",
+                          'Authorization': 'Bearer ' + widget.auth_token,
+                        },
+                        body: jsonEncode({
+                          "id": whiteboard.id,
+                        }));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("Trying to delete Whiteboard ..."),
+                    ));
+                    if(deleteResponse.statusCode != 200){
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Error while deleting Whiteboard!"),
+                          backgroundColor: Colors.red));
+                    }
+                    _refreshController.requestRefresh();
+                  },
+                  child: Text('Yes')),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('No'))
+            ],
+          );
+        });
   }
 
   Future<void> _getDirectoriesAndWhiteboards() async {
-    http.Response response = await http.post(
+    http.Response dirResponse = await http.post(
         Uri.parse(dotenv.env['REST_API_URL']! + "/filemanager/directory/get"),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
           "charset": "utf-8",
-          'Authorization': 'Bearer ' + super.widget.auth_token,
+          'Authorization': 'Bearer ' + widget.auth_token,
         },
         body: jsonEncode({
           "parent": currentDirectory,
         }));
-    print(response.body);
+    http.Response wbResponse = await http.post(
+        Uri.parse(dotenv.env['REST_API_URL']! + "/filemanager/whiteboard/get"),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json",
+          "charset": "utf-8",
+          'Authorization': 'Bearer ' + widget.auth_token,
+        },
+        body: jsonEncode({
+          "directory": currentDirectory,
+        }));
     Directories directories =
-        Directories.fromJson(jsonDecode(utf8.decode((response.bodyBytes))));
+        Directories.fromJson(jsonDecode(utf8.decode((dirResponse.bodyBytes))));
+    Whiteboards whiteboards =
+        Whiteboards.fromJson(jsonDecode(utf8.decode((wbResponse.bodyBytes))));
     setState(() {
       this.directories = directories;
+      this.whiteboards = whiteboards;
     });
-    if (response.statusCode == 200)
+    if (dirResponse.statusCode == 200 && wbResponse.statusCode == 200)
       _refreshController.refreshCompleted();
     else
       _refreshController.refreshFailed();

@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import 'filemanager/AddWhiteboard.dart';
+
 class ActionButtons extends StatefulWidget {
   String auth_token, parent;
   RefreshController _refreshController;
@@ -20,20 +22,29 @@ class _ActionButtonsState extends State<ActionButtons> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
+    return Wrap(
           children: [
-            ElevatedButton(onPressed: () {}, child: Text("Create Whiteboard")),
-            ElevatedButton(onPressed: _createFolder, child: Text("Create Folder")),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: ElevatedButton(onPressed: _createWhiteboard, child: Text("Create Whiteboard"))),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: ElevatedButton(onPressed: _createFolder, child: Text("Create Folder"))),
           ],
-        ));
+        );
   }
 
   _createFolder(){
     Navigator.push(context, MaterialPageRoute<void>(
-      builder: (BuildContext context) => AddFolder(super.widget.auth_token,
-          super.widget.parent, super.widget._refreshController),
+      builder: (BuildContext context) => AddFolder(widget.auth_token,
+          widget.parent, widget._refreshController),
+    ),);
+  }
+
+  _createWhiteboard(){
+    Navigator.push(context, MaterialPageRoute<void>(
+      builder: (BuildContext context) => AddWhiteboard(widget.auth_token,
+         widget.parent, widget._refreshController),
     ),);
   }
 }
