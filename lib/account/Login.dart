@@ -63,21 +63,28 @@ class _LoginFormState extends State<LoginForm> {
           child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          TextFormField(
-            controller: emailController,
-            decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                icon: Icon(Icons.email_outlined),
-                hintText: "Enter your Email",
-                labelText: "Email"),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              controller: emailController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  icon: Icon(Icons.email_outlined),
+                  hintText: "Enter your Email",
+                  labelText: "Email"),
+            ),
           ),
-          TextFormField(
-            controller: passwordController,
-            decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                icon: Icon(Icons.password_outlined),
-                hintText: "Enter your Password",
-                labelText: "Password"),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  icon: Icon(Icons.password_outlined),
+                  hintText: "Enter your Password",
+                  labelText: "Password"),
+            ),
           ),
           Padding(
               padding: const EdgeInsets.all(16),

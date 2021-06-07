@@ -39,6 +39,9 @@ dev_dependencies:
   localstorage: ^4.0.0+1
   pull_to_refresh: ^2.0.0
   flutter_breadcrumb: ^1.0.1
+  mailto: ^2.0.0
+  url_launcher: ^6.0.6
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -83,3 +86,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+  fonts:
+    - family: OwnIcons
+      fonts:
+        - asset: fonts/OwnIcons.ttf

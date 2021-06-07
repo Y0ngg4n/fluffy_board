@@ -23,6 +23,7 @@ class _DashboardState extends State<Dashboard> {
   bool checkedLogin = false;
   bool loggedIn = false;
   late String auth_token;
+  late String username;
 
   @override
   void initState() {
@@ -42,7 +43,7 @@ class _DashboardState extends State<Dashboard> {
       appBar:
           AppBar(title: Text(name), actions: [AvatarIcon()]),
       body: Container(
-        child: FileManager(auth_token),
+        child: FileManager(auth_token, username),
       ),
     ));
   }
@@ -60,9 +61,11 @@ class _DashboardState extends State<Dashboard> {
 
   _setStorageReady() {
     auth_token = accountStorage.getItem("auth_token");
+    username = accountStorage.getItem("username");
     setState(() {
       storageReady = true;
       this.auth_token = auth_token;
+      this.username = username;
     });
     _checkLoggedIn(auth_token);
   }

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:fluffy_board/dashboard/filemanager/RenameFolder.dart';
 import 'package:fluffy_board/dashboard/filemanager/RenameWhiteboard.dart';
+import 'package:fluffy_board/dashboard/filemanager/ShareWhiteboard.dart';
+import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:ui';
@@ -33,10 +35,11 @@ class Directories {
 }
 
 class Whiteboard {
-  late String id, owner, parent, name;
+  late String id, owner, parent, name, view_id, edit_id;
   late int created;
 
-  Whiteboard(this.id, this.owner, this.parent, this.name, this.created);
+  Whiteboard(this.id, this.owner, this.parent, this.name, this.created,
+      this.view_id, this.edit_id);
 }
 
 class Whiteboards {
@@ -47,7 +50,7 @@ class Whiteboards {
   Whiteboards.fromJson(List<dynamic> json) {
     for (Map<String, dynamic> row in json) {
       list.add(new Whiteboard(row['id'], row['owner'], row['directory'],
-          row['name'], row['created']));
+          row['name'], row['created'], row['view_id'], row['edit_id']));
     }
   }
 }
@@ -74,8 +77,9 @@ class ExtWhiteboards {
 
 class FileManager extends StatefulWidget {
   String auth_token;
+  String username;
 
-  FileManager(this.auth_token);
+  FileManager(this.auth_token, this.username);
 
   @override
   _FileManagerState createState() => _FileManagerState();
@@ -230,12 +234,19 @@ class _FileManagerState extends State<FileManager> {
             children: [
               InkWell(
                 child: Icon(Icons.assignment, size: file_icon_size),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                          builder: (BuildContext context) =>
+                              WhiteboardView(whiteboard)));
+                },
               ),
               PopupMenuButton(
                 itemBuilder: (context) => [
                   PopupMenuItem(child: Text("Rename Whiteboard"), value: 0),
                   PopupMenuItem(child: Text("Delete Whiteboard"), value: 1),
+                  PopupMenuItem(child: Text("Share Whiteboard"), value: 2),
                 ],
                 onSelected: (value) {
                   switch (value) {
@@ -253,6 +264,21 @@ class _FileManagerState extends State<FileManager> {
                       break;
                     case 1:
                       _deleteWhiteboardDialog(context, whiteboard);
+                      break;
+                    case 2:
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (BuildContext context) => ShareWhiteboard(
+                                widget.auth_token,
+                                widget.username,
+                                whiteboard.id,
+                                whiteboard.name,
+                                currentDirectory,
+                                whiteboard.view_id,
+                                whiteboard.edit_id,
+                                _refreshController),
+                          ));
                       break;
                   }
                 },

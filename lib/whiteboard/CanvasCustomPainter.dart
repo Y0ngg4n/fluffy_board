@@ -2,12 +2,13 @@ import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-
 class CanvasCustomPainter extends CustomPainter {
   List<DrawPoint> points;
   Offset offset;
+  double scale;
 
-  CanvasCustomPainter({required this.points, required this.offset});
+  CanvasCustomPainter(
+      {required this.points, required this.offset, required this.scale});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -19,14 +20,14 @@ class CanvasCustomPainter extends CustomPainter {
 
     canvas.drawRect(rect, background);
     canvas.clipRect(rect);
+    canvas.scale(scale);
 
     //define the paint properties to be used for drawing
     Paint drawingPaint = Paint()
       ..strokeCap = StrokeCap.round
       ..isAntiAlias = true
       ..color = Colors.black
-      ..strokeWidth = 1.5;
-
+      ..strokeWidth = 10.5;
     //a single line is defined as a series of points followed by a null at the end
     for (int x = 0; x < points.length - 1; x++) {
       //drawing line between the points to form a continuous line

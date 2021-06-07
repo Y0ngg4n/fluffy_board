@@ -67,52 +67,62 @@ class _RegisterFormState extends State<RegisterForm> {
           child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          TextFormField(
-            controller: usernameController,
-            decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                icon: Icon(Icons.person_outlined),
-                hintText: "Enter your Username",
-                labelText: "Username"),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a Username';
-              }
-              return null;
-            },
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              controller: usernameController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  icon: Icon(Icons.person_outlined),
+                  hintText: "Enter your Username",
+                  labelText: "Username"),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a Username';
+                }
+                return null;
+              },
+            ),
           ),
-          TextFormField(
-            controller: emailController,
-            decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                icon: Icon(Icons.email_outlined),
-                hintText: "Enter your Email",
-                labelText: "Email"),
-            validator: (value) {
-              if (value == null ||
-                  value.isEmpty ||
-                  !EmailValidator.validate(value)) {
-                return 'Please enter a correct Email';
-              }
-              return null;
-            },
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              controller: emailController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  icon: Icon(Icons.email_outlined),
+                  hintText: "Enter your Email",
+                  labelText: "Email"),
+              validator: (value) {
+                if (value == null ||
+                    value.isEmpty ||
+                    !EmailValidator.validate(value)) {
+                  return 'Please enter a correct Email';
+                }
+                return null;
+              },
+            ),
           ),
-          TextFormField(
-            controller: passwordController,
-            decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                icon: Icon(Icons.password_outlined),
-                hintText: "Enter your Password",
-                labelText: "Password"),
-            validator: (value) {
-              if (value == null ||
-                  value.isEmpty ||
-                  !RegExp(r"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$")
-                      .hasMatch(value)) {
-                return 'Please make shure you password is at least 8 Characters long and contains lowercase and uppercase letters';
-              }
-              return null;
-            },
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  icon: Icon(Icons.password_outlined),
+                  hintText: "Enter your Password",
+                  labelText: "Password"),
+              validator: (value) {
+                if (value == null ||
+                    value.isEmpty ||
+                    !RegExp(r"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$")
+                        .hasMatch(value)) {
+                  return 'Please make shure you password is at least 8 Characters long and contains lowercase and uppercase letters';
+                }
+                return null;
+              },
+            ),
           ),
           // FlutterPwValidator(
           //   controller: passwordController,

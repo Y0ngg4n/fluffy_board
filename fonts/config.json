@@ -1,0 +1,64 @@
+{
+  "name": "OwnIcons",
+  "css_prefix_text": "",
+  "css_use_suffix": false,
+  "hinting": true,
+  "units_per_em": 1000,
+  "ascent": 850,
+  "glyphs": [
+    {
+      "uid": "5a4e74ccb00375421a31e635d116158c",
+      "css": "pencil_alt",
+      "code": 62211,
+      "src": "fontawesome5"
+    },
+    {
+      "uid": "762afb3dcaa327adf9fafba4db90b155",
+      "css": "highlight",
+      "code": 59543,
+      "src": "linearicons"
+    },
+    {
+      "uid": "6cea40aa6cc50057083e4f0a5b92410c",
+      "css": "flow-line",
+      "code": 59392,
+      "src": "entypo"
+    },
+    {
+      "uid": "ca4cd8c35be13cdc09ad051455c61358",
+      "css": "text_fields",
+      "code": 59393,
+      "src": "material"
+    },
+    {
+      "uid": "a22136c0006d1691f1f0a9112622aa91",
+      "css": "text_height",
+      "code": 61492,
+      "src": "fontawesome5"
+    },
+    {
+      "uid": "018f68326d31d9e824282f953a16e5e3",
+      "css": "color_lens",
+      "code": 59394,
+      "src": "material"
+    },
+    {
+      "uid": "6164fcf5dc99b18258aff91510fd636b",
+      "css": "eraser",
+      "code": 61741,
+      "src": "fontawesome5"
+    },
+    {
+      "uid": "abdfbd9e4770a20fa1e23999e6300867",
+      "css": "photo_size_select_small",
+      "code": 59395,
+      "src": "material"
+    },
+    {
+      "uid": "6605ee6441bf499ffa3c63d3c7409471",
+      "css": "move",
+      "code": 61511,
+      "src": "fontawesome"
+    }
+  ]
+}

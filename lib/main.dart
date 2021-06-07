@@ -1,4 +1,5 @@
 import 'package:fluffy_board/dashboard/filemanager/AddFolder.dart';
+import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
 import 'package:flutter/material.dart';
 
 import 'account/Login.dart';
