@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 
 class CanvasCustomPainter extends CustomPainter {
-  List<DrawPoint> points;
+  List<Scribble> scribbles;
   Offset offset;
   double scale;
 
   CanvasCustomPainter(
-      {required this.points, required this.offset, required this.scale});
+      {required this.scribbles, required this.offset, required this.scale});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -27,17 +27,20 @@ class CanvasCustomPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..isAntiAlias = true
       ..color = Colors.black
-      ..strokeWidth = 10.5;
+      ..strokeWidth = 1.5;
     //a single line is defined as a series of points followed by a null at the end
-    for (int x = 0; x < points.length - 1; x++) {
-      //drawing line between the points to form a continuous line
-      if (!points[x].empty && !points[x + 1].empty) {
-        canvas.drawLine(
-            points[x] + offset, points[x + 1] + offset, drawingPaint);
-      }
-      //if next point is null, means the line ends here
-      else if (!points[x].empty && points[x + 1].empty) {
-        canvas.drawPoints(PointMode.points, [points[x] + offset], drawingPaint);
+    for (Scribble scribble in scribbles) {
+      for (int x = 0; x < scribble.points.length - 1; x++) {
+        //drawing line between the points to form a continuous line
+        if (!scribble.points[x].empty && !scribble.points[x + 1].empty) {
+          canvas.drawLine(
+              scribble.points[x] + offset, scribble.points[x + 1] + offset, drawingPaint);
+        }
+        //if next point is null, means the line ends here
+        // else if (!scribble.points[x].empty && scribble.points[x + 1].empty) {
+        //   canvas.drawPoints(
+        //       PointMode.points, [scribble.points[x] + offset], drawingPaint);
+        // }
       }
     }
   }

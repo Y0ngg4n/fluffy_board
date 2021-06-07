@@ -1,14 +1,17 @@
-
 import 'dart:ui';
 
-class DrawPoint extends Offset{
+class Scribble {
+  List<DrawPoint> points;
 
+  Scribble(this.points);
+}
+
+class DrawPoint extends Offset {
   bool empty = false;
 
   DrawPoint(double dx, double dy) : super(dx, dy);
 
-  DrawPoint.empty(): super(0,0){
+  DrawPoint.empty() : super(0, 0) {
     this.empty = true;
   }
-
 }
