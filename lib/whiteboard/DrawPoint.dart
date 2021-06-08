@@ -14,4 +14,6 @@ class DrawPoint extends Offset {
   DrawPoint.empty() : super(0, 0) {
     this.empty = true;
   }
+
+  DrawPoint.of(Offset offset): super(offset.dx, offset.dy);
 }

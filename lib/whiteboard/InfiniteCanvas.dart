@@ -38,15 +38,14 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         onScaleStart: (details) {
           this.setState(() {
             _initialScale = scale;
-            switch (widget.selectedTool) {
-              case SelectedTool.pencil:
-                Offset newOffset = (details.localFocalPoint - offset) / scale;
-                scribbles.add(new Scribble(new List.filled(
-                    1, new DrawPoint(newOffset.dx, newOffset.dy),
-                    growable: true)));
-                break;
-              default:
-                _initialFocalPoint = details.focalPoint;
+            if (widget.selectedTool == SelectedTool.pencil ||
+                widget.selectedTool == SelectedTool.straightLine) {
+              Offset newOffset = (details.localFocalPoint - offset) / scale;
+              scribbles.add(new Scribble(new List.filled(
+                  1, new DrawPoint.of(newOffset),
+                  growable: true)));
+            } else {
+              _initialFocalPoint = details.focalPoint;
             }
           });
         },
@@ -62,8 +61,10 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
               case SelectedTool.eraser:
                 int removeIndex = -1;
                 for (int i = 0; i < scribbles.length; i++) {
-                  List<Point> listOfPoints =
-                  scribbles[i].points.map((e) => Point(e.dx, e.dy)).toList();
+                  List<Point> listOfPoints = scribbles[i]
+                      .points
+                      .map((e) => Point(e.dx, e.dy))
+                      .toList();
                   listOfPoints = listOfPoints.smooth(listOfPoints.length * 5);
                   for (int p = 0; p < listOfPoints.length; p++) {
                     Point newDrawPoint = listOfPoints[p];
@@ -83,10 +84,14 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   }
                 }
                 break;
+              case SelectedTool.straightLine:
+                DrawPoint newDrawPoint =  new DrawPoint.of(newOffset);
+                if(scribbles.last.points.length <= 1) scribbles.last.points.add(newDrawPoint);
+                else scribbles.last.points.last = newDrawPoint;
+                break;
               default:
                 Scribble newScribble = scribbles.last;
-                DrawPoint newDrawPoint =
-                new DrawPoint(newOffset.dx, newOffset.dy);
+                DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
                 newScribble.points.add(newDrawPoint);
             }
           });

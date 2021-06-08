@@ -34,7 +34,7 @@ class CanvasCustomPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..isAntiAlias = true
       ..color = Colors.black
-      ..strokeWidth = 2;
+      ..strokeWidth = 10;
     //a single line is defined as a series of points followed by a null at the end
     for (Scribble scribble in scribbles) {
       // DEBUG: Draw Points
