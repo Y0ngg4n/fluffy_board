@@ -65,8 +65,6 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   List<Point> listOfPoints =
                   scribbles[i].points.map((e) => Point(e.dx, e.dy)).toList();
                   listOfPoints = listOfPoints.smooth(listOfPoints.length * 5);
-                  // print(scribbles[i].points);
-                  // print(listOfPoints);
                   for (int p = 0; p < listOfPoints.length; p++) {
                     Point newDrawPoint = listOfPoints[p];
                     if (ScreenUtils.inCircle(
