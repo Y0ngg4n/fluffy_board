@@ -26,12 +26,20 @@ class _WhiteboardViewState extends State<WhiteboardView> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-        children: [
-      InfiniteCanvasPage(selectedTool,),
-      Toolbar(onSelectedTool: (selectedTool) => {setState(() {
-        this.selectedTool = selectedTool;
-      })}),
-    ]);
+    return Scaffold(
+        appBar: (AppBar(
+          title: Text("Whiteboard"),
+        )),
+        body: Stack(children: [
+          InfiniteCanvasPage(
+            selectedTool,
+          ),
+          Toolbar(
+              onSelectedTool: (selectedTool) => {
+                    setState(() {
+                      this.selectedTool = selectedTool;
+                    })
+                  }),
+        ]));
   }
 }

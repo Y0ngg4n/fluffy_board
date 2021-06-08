@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.6.1"
+  bezier:
+    dependency: transitive
+    description:
+      name: bezier
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -135,6 +142,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.3"
+  linalg:
+    dependency: transitive
+    description:
+      name: linalg
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.2"
   localstorage:
     dependency: "direct dev"
     description:
@@ -245,6 +259,20 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  smoothie:
+    dependency: "direct dev"
+    description:
+      name: smoothie
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0+1"
+  smoothing:
+    dependency: "direct dev"
+    description:
+      name: smoothing
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   source_span:
     dependency: transitive
     description:
