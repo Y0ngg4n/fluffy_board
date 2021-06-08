@@ -78,17 +78,6 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                       removeIndex = i;
                       break;
                     }
-                    // Old calculation (Thank you Max :) )
-                    // if ((newOffset.dx - drawPoint.dx).abs() < volatility &&
-                    //     (newOffset.dy - drawPoint.dy).abs() < volatility) {
-                    //   removeIndex = i;
-                    //   break;
-                    // }
-                    // if ((newOffset.dx - drawPoint.dx).abs() < volatility &&
-                    //     (newOffset.dy - drawPoint.dy).abs() < volatility) {
-                    //   removeIndex = i;
-                    //   break;
-                    // }
                   }
                   if (removeIndex != -1) {
                     scribbles.removeAt(removeIndex);
