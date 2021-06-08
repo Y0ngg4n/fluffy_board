@@ -9,6 +9,7 @@ enum SelectedTool {
   pencil,
   eraser,
   highlighter,
+  straightLine,
 }
 
 typedef OnSelectedTool<T> = Function(SelectedTool);
@@ -47,7 +48,7 @@ class _ToolbarState extends State<Toolbar> {
                   Icon(OwnIcons.pencil_alt),
                   Icon(OwnIcons.eraser),
                   Icon(OwnIcons.highlight),
-                  Icon(Icons.call),
+                  Icon(OwnIcons.flow_line),
                   Icon(Icons.cake),
                   Icon(Icons.cake),
                   Icon(Icons.cake),
