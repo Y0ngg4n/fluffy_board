@@ -1,9 +1,12 @@
 import 'dart:ui';
 
 class Scribble {
+  double strokeWidth;
+  StrokeCap strokeCap;
+  Color color;
   List<DrawPoint> points;
 
-  Scribble(this.points);
+  Scribble(this.strokeWidth, this.strokeCap, this.color, this.points);
 }
 
 class DrawPoint extends Offset {

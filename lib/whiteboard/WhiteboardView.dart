@@ -1,9 +1,10 @@
 import 'package:fluffy_board/dashboard/filemanager/FileManager.dart';
 import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/PencilToolbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-import 'overlays/Toolbar.dart';
+import 'overlays/Toolbar.dart' as Toolbar;
 
 class WhiteboardView extends StatefulWidget {
   Whiteboard whiteboard;
@@ -15,7 +16,11 @@ class WhiteboardView extends StatefulWidget {
 }
 
 class _WhiteboardViewState extends State<WhiteboardView> {
-  SelectedTool selectedTool = SelectedTool.move;
+  Toolbar.ToolbarOptions toolbarOptions = new Toolbar.ToolbarOptions(
+    Toolbar.SelectedTool.move,
+    new PencilOptions(SelectedPencilColorToolbar.ColorPreset1),
+    false
+  );
 
   @override
   void initState() {
@@ -28,18 +33,20 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: (AppBar(
-          title: Text("Whiteboard"),
+          title: Text(widget.whiteboard.name),
         )),
         body: Stack(children: [
           InfiniteCanvasPage(
-            selectedTool,
+            toolbarOptions: toolbarOptions,
           ),
-          Toolbar(
-              onSelectedTool: (selectedTool) => {
-                    setState(() {
-                      this.selectedTool = selectedTool;
-                    })
-                  }),
+          Toolbar.Toolbar(
+            toolbarOptions: toolbarOptions,
+            onChangedToolbarOptions: (toolBarOptions) {
+              setState(() {
+                this.toolbarOptions = toolBarOptions;
+              });
+            },
+          )
         ]));
   }
 }

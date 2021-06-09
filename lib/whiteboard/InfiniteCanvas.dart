@@ -11,11 +11,12 @@ import 'package:smoothing/smoothing.dart';
 import 'package:smoothie/smoothie.dart';
 
 import 'CanvasCustomPainter.dart';
+import 'overlays/Toolbar.dart' as Toolbar;
 
 class InfiniteCanvasPage extends StatefulWidget {
-  SelectedTool selectedTool;
+  Toolbar.ToolbarOptions toolbarOptions;
 
-  InfiniteCanvasPage(this.selectedTool);
+  InfiniteCanvasPage({required this.toolbarOptions});
 
   @override
   _InfiniteCanvasPageState createState() => _InfiniteCanvasPageState();
@@ -39,12 +40,11 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         onScaleStart: (details) {
           this.setState(() {
             _initialScale = scale;
-            if (widget.selectedTool == SelectedTool.pencil ||
-                widget.selectedTool == SelectedTool.straightLine) {
+            if (widget.toolbarOptions.selectedTool == SelectedTool.pencil ||
+                widget.toolbarOptions.selectedTool ==
+                    SelectedTool.straightLine) {
               Offset newOffset = (details.localFocalPoint - offset) / scale;
-              scribbles.add(new Scribble(new List.filled(
-                  1, new DrawPoint.of(newOffset),
-                  growable: true)));
+              scribbles.add(_getScribble(newOffset));
             } else {
               _initialFocalPoint = details.focalPoint;
             }
@@ -55,7 +55,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
           this.setState(() {
             cursorPosition = details.localFocalPoint / scale;
             scale = details.scale * _initialScale;
-            switch (widget.selectedTool) {
+            switch (widget.toolbarOptions.selectedTool) {
               case SelectedTool.move:
                 _sessionOffset = details.focalPoint - _initialFocalPoint;
                 break;
@@ -86,9 +86,11 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 }
                 break;
               case SelectedTool.straightLine:
-                DrawPoint newDrawPoint =  new DrawPoint.of(newOffset);
-                if(scribbles.last.points.length <= 1) scribbles.last.points.add(newDrawPoint);
-                else scribbles.last.points.last = newDrawPoint;
+                DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
+                if (scribbles.last.points.length <= 1)
+                  scribbles.last.points.add(newDrawPoint);
+                else
+                  scribbles.last.points.last = newDrawPoint;
                 break;
               default:
                 Scribble newScribble = scribbles.last;
@@ -101,7 +103,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
           this.setState(() {
             offset += _sessionOffset;
             _sessionOffset = Offset.zero;
-            if (widget.selectedTool == SelectedTool.pencil) {}
+            if (widget.toolbarOptions.selectedTool == SelectedTool.pencil) {}
           });
         },
         child: SizedBox.expand(
@@ -129,12 +131,33 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   scale: scale,
                   cursorRadius: cursorRadius,
                   cursorPosition: cursorPosition,
+                  toolbarOptions: widget.toolbarOptions,
                 ),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  _getScribble(Offset newOffset){
+    List<DrawPoint> drawPoints =  new List.filled(1, new DrawPoint.of(newOffset), growable: true);
+    Color color = Colors.black;
+    StrokeCap strokeCap = StrokeCap.round;
+    double strokeWidth = 1;
+    if(widget.toolbarOptions.selectedTool == SelectedTool.pencil){
+      color = widget.toolbarOptions.pencilOptions.colorPresets[widget.toolbarOptions.pencilOptions.currentColor];
+      strokeWidth = widget.toolbarOptions.pencilOptions.strokeWidth;
+      strokeCap = StrokeCap.round;
+    }else if(widget.toolbarOptions.selectedTool == SelectedTool.pencil){
+      strokeCap = StrokeCap.square;
+    }
+    return new Scribble(
+      strokeWidth,
+       strokeCap,
+       color,
+       drawPoints
     );
   }
 }

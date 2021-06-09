@@ -3,7 +3,19 @@ import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
+import '../Toolbar.dart' as Toolbar;
+
+typedef OnChangedColor<T> = Function(List<Color>);
+
 class ColorPickerView extends StatefulWidget {
+  Toolbar.ToolbarOptions toolbarOptions;
+  Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
+
+  ColorPickerView(
+      {required this.toolbarOptions,
+      required this.onChangedToolbarOptions}
+  );
+
   @override
   _ColorPickerViewState createState() => _ColorPickerViewState();
 }
@@ -31,7 +43,8 @@ class _ColorPickerViewState extends State<ColorPickerView> {
               scrollDirection: Axis.vertical,
               child: ColorPicker(
                 // Use the screenPickerColor as start color.
-                color: Colors.green,
+                color: widget.toolbarOptions.pencilOptions.colorPresets[widget
+                    .toolbarOptions.pencilOptions.currentColor],
                 // Update the screenPickerColor using the callback.
                 width: ScreenUtils.getScreenWidth(context) < 700 ||
                         ScreenUtils.getScreenHeight(context) < 500
@@ -41,7 +54,13 @@ class _ColorPickerViewState extends State<ColorPickerView> {
                         ScreenUtils.getScreenHeight(context) < 500
                     ? 15
                     : 40,
-                onColorChanged: (Color color) => {},
+                onColorChanged: (Color color) => {
+                  setState(() {
+                    widget.toolbarOptions.pencilOptions.colorPresets[widget
+                        .toolbarOptions.pencilOptions.currentColor] = color;
+                    widget.onChangedToolbarOptions(widget.toolbarOptions);
+                  })
+                },
                 borderRadius: 22,
                 pickersEnabled: const <ColorPickerType, bool>{
                   ColorPickerType.both: false,

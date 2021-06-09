@@ -17,6 +17,6 @@ class ExtWhiteboardView extends StatefulWidget {
 class _ExtWhiteboardViewState extends State<ExtWhiteboardView> {
   @override
   Widget build(BuildContext context) {
-    return InfiniteCanvasPage(SelectedTool.move);
+    return Container();
   }
 }

@@ -14,12 +14,22 @@ enum SelectedTool {
   straightLine,
 }
 
-typedef OnSelectedTool<T> = Function(SelectedTool);
+typedef OnChangedToolbarOptions<T> = Function(ToolbarOptions);
+
+class ToolbarOptions {
+  late SelectedTool selectedTool;
+  late PencilOptions pencilOptions;
+  late bool colorPickerOpen;
+
+  ToolbarOptions(this.selectedTool, this.pencilOptions, this.colorPickerOpen);
+}
 
 class Toolbar extends StatefulWidget {
-  OnSelectedTool onSelectedTool;
+  ToolbarOptions toolbarOptions;
+  OnChangedToolbarOptions onChangedToolbarOptions;
 
-  Toolbar({required this.onSelectedTool});
+  Toolbar(
+      {required this.toolbarOptions, required this.onChangedToolbarOptions});
 
   @override
   _ToolbarState createState() => _ToolbarState();
@@ -27,8 +37,6 @@ class Toolbar extends StatefulWidget {
 
 class _ToolbarState extends State<Toolbar> {
   List<bool> selectedToolList = List.generate(10, (i) => i == 0 ? true : false);
-  SelectedTool selectedTool = SelectedTool.move;
-  bool colorPickerOpen = false;
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +76,10 @@ class _ToolbarState extends State<Toolbar> {
                     } else {
                       selectedToolList[buttonIndex] = false;
                     }
+                    widget.toolbarOptions.selectedTool =
+                    SelectedTool.values[index];
+                    widget.toolbarOptions.colorPickerOpen = false;
                   }
-                  widget.onSelectedTool(SelectedTool.values[index]);
-                  selectedTool = SelectedTool.values[index];
                 });
               },
               isSelected: selectedToolList,
@@ -84,15 +93,17 @@ class _ToolbarState extends State<Toolbar> {
   }
 
   Widget _openSpecialToolbar() {
-    switch (selectedTool) {
+    switch (widget.toolbarOptions.selectedTool) {
       case SelectedTool.move:
         return Container();
       case SelectedTool.pencil:
         return PencilToolbar(
-          onColorPickerOpen: () {
-            setState(() {
-              colorPickerOpen = !colorPickerOpen;
-            });
+          toolbarOptions: widget.toolbarOptions,
+          onChangedToolbarOptions: (toolbarOptions) => {
+            setState((){
+              widget.toolbarOptions = toolbarOptions;
+              widget.onChangedToolbarOptions(toolbarOptions);
+            })
           },
         );
       default:
@@ -101,8 +112,13 @@ class _ToolbarState extends State<Toolbar> {
   }
 
   Widget _openColorPicker() {
-    if (colorPickerOpen)
-      return ColorPickerView();
+    if (widget.toolbarOptions.colorPickerOpen)
+      return ColorPickerView(
+        toolbarOptions: widget.toolbarOptions,
+        onChangedToolbarOptions: (toolBarOptions) {
+          widget.onChangedToolbarOptions(toolBarOptions);
+        },
+      );
     else {
       return Container();
     }

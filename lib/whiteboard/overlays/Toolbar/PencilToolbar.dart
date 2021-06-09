@@ -3,22 +3,40 @@ import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-class PencilToolbar extends StatefulWidget {
-  OnColorPickerOpen onColorPickerOpen;
+import '../Toolbar.dart' as Toolbar;
 
-  PencilToolbar({required this.onColorPickerOpen});
+import 'DrawOptions.dart';
+
+enum SelectedPencilColorToolbar {
+  ColorPreset1,
+  ColorPreset2,
+  ColorPreset3,
+}
+
+class PencilOptions extends DrawOptions {
+  SelectedPencilColorToolbar selectedPencilColorToolbar =
+      SelectedPencilColorToolbar.ColorPreset1;
+
+  PencilOptions(this.selectedPencilColorToolbar);
+}
+
+class PencilToolbar extends StatefulWidget {
+  Toolbar.ToolbarOptions toolbarOptions;
+  Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
+
+  PencilToolbar(
+      {required this.toolbarOptions, required this.onChangedToolbarOptions});
 
   @override
   _PencilToolbarState createState() => _PencilToolbarState();
 }
 
-typedef OnColorPickerOpen<T> = Function();
-
 class _PencilToolbarState extends State<PencilToolbar> {
+  int beforeIndex = -1;
+  List<bool> selectedColorList = List.generate(3, (i) => i == 0 ? true : false);
+
   @override
   Widget build(BuildContext context) {
-    List<bool> selectedColorList =
-        List.generate(3, (i) => i == 0 ? true : false);
     const _borderRadius = 50.0;
 
     return Padding(
@@ -29,18 +47,71 @@ class _PencilToolbarState extends State<PencilToolbar> {
           borderRadius: BorderRadius.circular(_borderRadius),
         ),
         child: SingleChildScrollView(
-          child: ToggleButtons(
-              onPressed: (index) {
-                widget.onColorPickerOpen();
-              },
-              direction: Axis.vertical,
-              borderRadius: BorderRadius.circular(_borderRadius),
-              isSelected: selectedColorList,
-              children: <Widget>[
-                Icon(OwnIcons.color_lens),
-                Icon(OwnIcons.color_lens),
-                Icon(OwnIcons.color_lens),
-              ]),
+          child: Column(
+            children: [
+              RotatedBox(
+                quarterTurns: -1,
+                child: Slider.adaptive(
+                  value: widget.toolbarOptions.pencilOptions.strokeWidth,
+                  onChanged: (value) {
+                    setState(() {
+                      widget.toolbarOptions.pencilOptions.strokeWidth = value;
+                      widget.onChangedToolbarOptions(widget.toolbarOptions);
+                    });
+                  },
+                  min: 1,
+                  max: 50,
+                ),
+              ),
+              ToggleButtons(
+                  onPressed: (index) {
+                    setState(() {
+                      widget.toolbarOptions.pencilOptions.currentColor = index;
+                      widget.toolbarOptions.colorPickerOpen =
+                          !widget.toolbarOptions.colorPickerOpen;
+
+                      for (int buttonIndex = 0;
+                          buttonIndex < selectedColorList.length;
+                          buttonIndex++) {
+                        if (buttonIndex == index) {
+                          selectedColorList[buttonIndex] = true;
+                        } else {
+                          selectedColorList[buttonIndex] = false;
+                        }
+                        widget.toolbarOptions.pencilOptions
+                                .selectedPencilColorToolbar =
+                            SelectedPencilColorToolbar.values[index];
+                      }
+                      if (beforeIndex == index) {
+                        widget.toolbarOptions.colorPickerOpen = false;
+                        beforeIndex = -1;
+                      } else {
+                        widget.toolbarOptions.colorPickerOpen = true;
+                        beforeIndex = index;
+                      }
+
+                      widget.toolbarOptions.pencilOptions
+                              .selectedPencilColorToolbar =
+                          SelectedPencilColorToolbar.values[index];
+                      widget.onChangedToolbarOptions(widget.toolbarOptions);
+                    });
+                  },
+                  direction: Axis.vertical,
+                  borderRadius: BorderRadius.circular(_borderRadius),
+                  isSelected: selectedColorList,
+                  children: <Widget>[
+                    Icon(OwnIcons.color_lens,
+                        color: widget
+                            .toolbarOptions.pencilOptions.colorPresets[0]),
+                    Icon(OwnIcons.color_lens,
+                        color: widget
+                            .toolbarOptions.pencilOptions.colorPresets[1]),
+                    Icon(OwnIcons.color_lens,
+                        color: widget
+                            .toolbarOptions.pencilOptions.colorPresets[2]),
+                  ]),
+            ],
+          ),
         ),
       ),
     );

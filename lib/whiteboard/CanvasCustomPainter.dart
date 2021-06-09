@@ -2,7 +2,11 @@ import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
+import 'overlays/Toolbar.dart' as Toolbar;
+import 'overlays/Toolbar.dart';
+
 class CanvasCustomPainter extends CustomPainter {
+  Toolbar.ToolbarOptions toolbarOptions;
   List<Scribble> scribbles;
   Offset offset;
   double scale;
@@ -15,6 +19,7 @@ class CanvasCustomPainter extends CustomPainter {
     required this.scale,
     required this.cursorRadius,
     required this.cursorPosition,
+    required this.toolbarOptions,
   });
 
   @override
@@ -30,15 +35,22 @@ class CanvasCustomPainter extends CustomPainter {
     canvas.scale(scale);
 
     //define the paint properties to be used for drawing
-    Paint drawingPaint = Paint()
-      ..strokeCap = StrokeCap.round
-      ..isAntiAlias = true
-      ..color = Colors.black
-      ..strokeWidth = 10;
+
+
+
+
+
     //a single line is defined as a series of points followed by a null at the end
     for (Scribble scribble in scribbles) {
+      Paint drawingPaint = Paint()
+        ..strokeCap = scribble.strokeCap
+        ..isAntiAlias = true
+        ..color = scribble.color
+        ..strokeWidth = scribble.strokeWidth;
+
       // DEBUG: Draw Points
       // canvas.drawPoints(PointMode.points, scribble.points, drawingPaint);
+
       for (int x = 0; x < scribble.points.length - 1; x++) {
         //drawing line between the points to form a continuous line
         if (!scribble.points[x].empty && !scribble.points[x + 1].empty) {
