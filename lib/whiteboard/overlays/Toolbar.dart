@@ -17,9 +17,9 @@ enum SelectedTool {
 typedef OnChangedToolbarOptions<T> = Function(ToolbarOptions);
 
 class ToolbarOptions {
-  late SelectedTool selectedTool;
-  late PencilOptions pencilOptions;
-  late bool colorPickerOpen;
+  SelectedTool selectedTool;
+  PencilOptions pencilOptions;
+  bool colorPickerOpen;
 
   ToolbarOptions(this.selectedTool, this.pencilOptions, this.colorPickerOpen);
 }

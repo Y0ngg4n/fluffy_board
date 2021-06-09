@@ -5,6 +5,10 @@ class Scribble {
   StrokeCap strokeCap;
   Color color;
   List<DrawPoint> points;
+  double leftExtremity = 0,
+      topExtremity = 0,
+      rightExtremity = 0,
+      bottomExtremity = 0;
 
   Scribble(this.strokeWidth, this.strokeCap, this.color, this.points);
 }
@@ -18,5 +22,5 @@ class DrawPoint extends Offset {
     this.empty = true;
   }
 
-  DrawPoint.of(Offset offset): super(offset.dx, offset.dy);
+  DrawPoint.of(Offset offset) : super(offset.dx, offset.dy);
 }

@@ -1,3 +1,4 @@
+import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
@@ -22,5 +23,38 @@ class ScreenUtils {
       return true;
     else
       return false;
+  }
+
+  static bool checkIfNotInScreen(
+      Scribble currentScribble,
+      Offset calculatedOffset,
+      double screenWidth,
+      double screenHeight,
+      double scale) {
+    if ((currentScribble.leftExtremity == 0 ||
+            currentScribble.rightExtremity == 0 ||
+            currentScribble.topExtremity == 0 ||
+            currentScribble.bottomExtremity == 0)) return false;
+
+    return (currentScribble.leftExtremity + calculatedOffset.dx < 0 &&
+                currentScribble.rightExtremity + calculatedOffset.dx < 0)
+            // Check Right
+            ||
+            (currentScribble.rightExtremity + calculatedOffset.dx >
+                    (screenWidth / scale) &&
+                currentScribble.leftExtremity + calculatedOffset.dx >
+                    (screenWidth / scale))
+            // Check Top
+            ||
+            (currentScribble.topExtremity + calculatedOffset.dy < 0 &&
+                currentScribble.bottomExtremity + calculatedOffset.dy < 0)
+            //    Check Bottom
+            ||
+            (currentScribble.bottomExtremity + calculatedOffset.dy >
+                    (screenHeight) / scale &&
+                currentScribble.topExtremity + calculatedOffset.dy >
+                    (screenHeight) / scale)
+        ? true
+        : false;
   }
 }

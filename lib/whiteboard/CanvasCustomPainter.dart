@@ -1,3 +1,4 @@
+import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -12,6 +13,7 @@ class CanvasCustomPainter extends CustomPainter {
   double scale;
   double cursorRadius;
   Offset cursorPosition;
+  Offset screenSize;
 
   CanvasCustomPainter({
     required this.scribbles,
@@ -20,6 +22,7 @@ class CanvasCustomPainter extends CustomPainter {
     required this.cursorRadius,
     required this.cursorPosition,
     required this.toolbarOptions,
+    required this.screenSize,
   });
 
   @override
@@ -34,14 +37,13 @@ class CanvasCustomPainter extends CustomPainter {
     canvas.clipRect(rect);
     canvas.scale(scale);
 
-    //define the paint properties to be used for drawing
-
-
-
-
-
     //a single line is defined as a series of points followed by a null at the end
     for (Scribble scribble in scribbles) {
+      if (ScreenUtils.checkIfNotInScreen(
+          scribble, offset, screenSize.dx, screenSize.dy, scale)) {
+        continue;
+      }
+
       Paint drawingPaint = Paint()
         ..strokeCap = scribble.strokeCap
         ..isAntiAlias = true
