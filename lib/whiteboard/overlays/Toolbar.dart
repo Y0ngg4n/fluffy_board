@@ -4,6 +4,8 @@ import 'package:fluffy_board/whiteboard/overlays/Toolbar/PencilToolbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
+import 'Toolbar/ColorPickerView.dart';
+
 enum SelectedTool {
   move,
   pencil,
@@ -26,6 +28,7 @@ class Toolbar extends StatefulWidget {
 class _ToolbarState extends State<Toolbar> {
   List<bool> selectedToolList = List.generate(10, (i) => i == 0 ? true : false);
   SelectedTool selectedTool = SelectedTool.move;
+  bool colorPickerOpen = false;
 
   @override
   Widget build(BuildContext context) {
@@ -38,44 +41,44 @@ class _ToolbarState extends State<Toolbar> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(_borderRadius),
           ),
-          child: Column(
-            children: [
-              (ToggleButtons(
-                direction: Axis.vertical,
-                borderRadius: BorderRadius.circular(_borderRadius),
-                children: <Widget>[
-                  Icon(OwnIcons.move),
-                  Icon(OwnIcons.pencil_alt),
-                  Icon(OwnIcons.eraser),
-                  Icon(OwnIcons.highlight),
-                  Icon(OwnIcons.flow_line),
-                  Icon(Icons.cake),
-                  Icon(Icons.cake),
-                  Icon(Icons.cake),
-                  Icon(Icons.cake),
-                  Icon(Icons.cake),
-                ],
-                onPressed: (int index) {
-                  setState(() {
-                    for (int buttonIndex = 0;
-                        buttonIndex < selectedToolList.length;
-                        buttonIndex++) {
-                      if (buttonIndex == index) {
-                        selectedToolList[buttonIndex] = true;
-                      } else {
-                        selectedToolList[buttonIndex] = false;
-                      }
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: (ToggleButtons(
+              direction: Axis.vertical,
+              borderRadius: BorderRadius.circular(_borderRadius),
+              children: <Widget>[
+                Icon(OwnIcons.move),
+                Icon(OwnIcons.pencil_alt),
+                Icon(OwnIcons.eraser),
+                Icon(OwnIcons.highlight),
+                Icon(OwnIcons.flow_line),
+                Icon(Icons.cake),
+                Icon(Icons.cake),
+                Icon(Icons.cake),
+                Icon(Icons.cake),
+                Icon(Icons.cake),
+              ],
+              onPressed: (int index) {
+                setState(() {
+                  for (int buttonIndex = 0;
+                      buttonIndex < selectedToolList.length;
+                      buttonIndex++) {
+                    if (buttonIndex == index) {
+                      selectedToolList[buttonIndex] = true;
+                    } else {
+                      selectedToolList[buttonIndex] = false;
                     }
-                    widget.onSelectedTool(SelectedTool.values[index]);
-                    selectedTool = SelectedTool.values[index];
-                  });
-                },
-                isSelected: selectedToolList,
-              )),
-            ],
+                  }
+                  widget.onSelectedTool(SelectedTool.values[index]);
+                  selectedTool = SelectedTool.values[index];
+                });
+              },
+              isSelected: selectedToolList,
+            )),
           ),
         ),
         _openSpecialToolbar(),
+        _openColorPicker(),
       ],
     );
   }
@@ -85,9 +88,23 @@ class _ToolbarState extends State<Toolbar> {
       case SelectedTool.move:
         return Container();
       case SelectedTool.pencil:
-        return PencilToolbar();
+        return PencilToolbar(
+          onColorPickerOpen: () {
+            setState(() {
+              colorPickerOpen = !colorPickerOpen;
+            });
+          },
+        );
       default:
         return Container();
+    }
+  }
+
+  Widget _openColorPicker() {
+    if (colorPickerOpen)
+      return ColorPickerView();
+    else {
+      return Container();
     }
   }
 }

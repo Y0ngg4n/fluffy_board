@@ -37,14 +37,18 @@ dev_dependencies:
   http: ^0.13.3
   flutter_dotenv: ^5.0.0
   localstorage: ^4.0.0+1
+  # Dashboard
   pull_to_refresh: ^2.0.0
   flutter_breadcrumb: ^1.0.1
+  # Share
   mailto: ^2.0.0
   url_launcher: ^6.0.6
   # Math
   smoothie: ^0.3.0+1
   smoothing: ^0.0.1
   #calculess: ^1.0.2
+  # Toolbar
+  flex_color_picker: ^2.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

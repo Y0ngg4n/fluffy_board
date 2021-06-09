@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fluffy_board/dashboard/filemanager/RenameFolder.dart';
 import 'package:fluffy_board/dashboard/filemanager/RenameWhiteboard.dart';
 import 'package:fluffy_board/dashboard/filemanager/ShareWhiteboard.dart';
+import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -136,8 +137,8 @@ class _FileManagerState extends State<FileManager> {
               enablePullUp: false,
               controller: _refreshController,
               onRefresh: _getDirectoriesAndWhiteboards,
-              child: GridView.count(
-                crossAxisCount: 10,
+              child: GridView.extent(
+                maxCrossAxisExtent: 100,
                 children: directoryAndWhiteboardButtons,
               )))
     ]));
@@ -150,15 +151,23 @@ class _FileManagerState extends State<FileManager> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              InkWell(
-                child: Icon(Icons.folder_open_outlined, size: file_icon_size),
-                onTap: () {
-                  setState(() {
-                    currentDirectory = directory.id;
-                    currentDirectoryPath.add(directory);
-                  });
-                  _refreshController.requestRefresh();
-                },
+              Column(
+                children: [
+                  InkWell(
+                    child: Icon(Icons.folder_open_outlined, size: file_icon_size),
+                    onTap: () {
+                      setState(() {
+                        currentDirectory = directory.id;
+                        currentDirectoryPath.add(directory);
+                      });
+                      _refreshController.requestRefresh();
+                    },
+                  ),
+                  Text(
+                    directory.filename,
+                    // style: TextStyle(fontSize: file_font_size),
+                  )
+                ],
               ),
               PopupMenuButton(
                 itemBuilder: (context) => [
@@ -187,10 +196,6 @@ class _FileManagerState extends State<FileManager> {
               )
             ],
           ),
-          Text(
-            directory.filename,
-            // style: TextStyle(fontSize: file_font_size),
-          )
         ],
       ));
     }
@@ -232,15 +237,22 @@ class _FileManagerState extends State<FileManager> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              InkWell(
-                child: Icon(Icons.assignment, size: file_icon_size),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                          builder: (BuildContext context) =>
-                              WhiteboardView(whiteboard)));
-                },
+              Column(
+                children: [
+                  InkWell(
+                    child: Icon(Icons.assignment, size: file_icon_size),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                              builder: (BuildContext context) =>
+                                  WhiteboardView(whiteboard)));
+                    },
+                  ),
+                  Text(
+                    whiteboard.name,
+                  )
+                ],
               ),
               PopupMenuButton(
                 itemBuilder: (context) => [
@@ -285,10 +297,6 @@ class _FileManagerState extends State<FileManager> {
               )
             ],
           ),
-          Text(
-            whiteboard.name,
-            // style: TextStyle(fontSize: file_font_size),
-          ),
         ],
       ));
     }
@@ -301,9 +309,17 @@ class _FileManagerState extends State<FileManager> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              InkWell(
-                child: Icon(Icons.assignment_ind, size: file_icon_size),
-                onTap: () {},
+              Column(
+                children: [
+                  InkWell(
+                    child: Icon(Icons.assignment_ind, size: file_icon_size),
+                    onTap: () {},
+                  ),
+                  Text(
+                    whiteboard.name,
+                    // style: TextStyle(fontSize: file_font_size),
+                  ),
+                ],
               ),
               PopupMenuButton(
                 itemBuilder: (context) => [
@@ -318,10 +334,6 @@ class _FileManagerState extends State<FileManager> {
                 },
               )
             ],
-          ),
-          Text(
-            whiteboard.name,
-            // style: TextStyle(fontSize: file_font_size),
           ),
         ],
       ));

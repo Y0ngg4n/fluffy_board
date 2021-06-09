@@ -29,6 +29,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
   Offset _initialFocalPoint = Offset.zero;
   Offset _sessionOffset = Offset.zero;
   double cursorRadius = 50;
+  double _initcursorRadius = 50;
   Offset cursorPosition = Offset.zero;
 
   @override
@@ -105,10 +106,20 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         },
         child: SizedBox.expand(
           child: MouseRegion(
+            onEnter: (event) {
+              this.setState(() {
+                cursorRadius = _initcursorRadius;
+              });
+            },
             onHover: (event) => {
               this.setState(() {
                 cursorPosition = event.localPosition / scale;
               })
+            },
+            onExit: (event) {
+              this.setState(() {
+                cursorRadius = -1;
+              });
             },
             child: ClipRRect(
               child: CustomPaint(
