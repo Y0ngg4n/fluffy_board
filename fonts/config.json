@@ -59,6 +59,30 @@
       "css": "move",
       "code": 61511,
       "src": "fontawesome"
+    },
+    {
+      "uid": "874c7c938126de283ef1d2176e2f99c8",
+      "css": "change_history",
+      "code": 59396,
+      "src": "material"
+    },
+    {
+      "uid": "422e07e5afb80258a9c4ed1706498f8a",
+      "css": "circle-empty",
+      "code": 61708,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "4fddedbeb89b99e001b768f6cc01d1b6",
+      "css": "check_box_outline_blank",
+      "code": 59397,
+      "src": "material"
+    },
+    {
+      "uid": "de91f1621208490cd94d988a8ef5d7c7",
+      "css": "circle_notch",
+      "code": 61902,
+      "src": "fontawesome5"
     }
   ]
 }

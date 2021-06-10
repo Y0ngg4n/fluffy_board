@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -138,6 +139,11 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                       widget.toolbarOptions.straightLineOptions.strokeWidth +
                           10);
                 break;
+              case SelectedTool.figure:
+                Scribble lastScribble = scribbles.last;
+                DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
+                lastScribble.points.last = newDrawPoint;
+                break;
               default:
                 Scribble newScribble = scribbles.last;
                 DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
@@ -227,6 +233,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
     Color color = Colors.black;
     StrokeCap strokeCap = StrokeCap.round;
     double strokeWidth = 1;
+    SelectedFigureTypeToolbar selectedFigureTypeToolbar = SelectedFigureTypeToolbar.none;
     if (widget.toolbarOptions.selectedTool == SelectedTool.pencil) {
       color = widget.toolbarOptions.pencilOptions
           .colorPresets[widget.toolbarOptions.pencilOptions.currentColor];
@@ -245,8 +252,13 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
       strokeCap = widget.toolbarOptions.straightLineOptions.strokeCap;
     } else if (widget.toolbarOptions.selectedTool == SelectedTool.eraser) {
       strokeWidth = widget.toolbarOptions.eraserOptions.strokeWidth;
+    }else if(widget.toolbarOptions.selectedTool == SelectedTool.figure){
+      strokeWidth = widget.toolbarOptions.figureOptions.strokeWidth;
+      selectedFigureTypeToolbar = widget.toolbarOptions.figureOptions.selectedFigureTypeToolbar;
     }
-    return new Scribble(strokeWidth, strokeCap, color, drawPoints);
+
+    return new Scribble(strokeWidth, strokeCap, color, drawPoints,
+        selectedFigureTypeToolbar);
   }
 
   double _getCursorRadius() {

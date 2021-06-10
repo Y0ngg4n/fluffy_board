@@ -1,5 +1,6 @@
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
@@ -49,20 +50,25 @@ class CanvasCustomPainter extends CustomPainter {
         ..color = scribble.color
         ..strokeWidth = scribble.strokeWidth;
 
-      // DEBUG: Draw Points
-      // canvas.drawPoints(PointMode.points, scribble.points, drawingPaint);
-
-      for (int x = 0; x < scribble.points.length - 1; x++) {
-        //drawing line between the points to form a continuous line
-        if (!scribble.points[x].empty && !scribble.points[x + 1].empty) {
-          canvas.drawLine(scribble.points[x] + offset,
-              scribble.points[x + 1] + offset, drawingPaint);
+      if (scribble.selectedFigureTypeToolbar ==
+          SelectedFigureTypeToolbar.rect) {
+        canvas.drawRect(Rect.fromLTRB(scribble.points[0].dx, scribble.points[0].dx, scribble[], bottom), paint)
+      } else if (scribble.selectedFigureTypeToolbar ==
+          SelectedFigureTypeToolbar.none) {
+        // DEBUG: Draw Points
+        // canvas.drawPoints(PointMode.points, scribble.points, drawingPaint);
+        for (int x = 0; x < scribble.points.length - 1; x++) {
+          //drawing line between the points to form a continuous line
+          if (!scribble.points[x].empty && !scribble.points[x + 1].empty) {
+            canvas.drawLine(scribble.points[x] + offset,
+                scribble.points[x + 1] + offset, drawingPaint);
+          }
+          //if next point is null, means the line ends here
+          // else if (!scribble.points[x].empty && scribble.points[x + 1].empty) {
+          //   canvas.drawPoints(
+          //       PointMode.points, [scribble.points[x] + offset], drawingPaint);
+          // }
         }
-        //if next point is null, means the line ends here
-        // else if (!scribble.points[x].empty && scribble.points[x + 1].empty) {
-        //   canvas.drawPoints(
-        //       PointMode.points, [scribble.points[x] + offset], drawingPaint);
-        // }
       }
     }
     Paint cursorPaint = Paint()

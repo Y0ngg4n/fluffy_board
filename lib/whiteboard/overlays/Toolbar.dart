@@ -1,5 +1,6 @@
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/utils/ScreenUtils.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/PencilToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ enum SelectedTool {
   eraser,
   highlighter,
   straightLine,
+  figure,
 }
 
 typedef OnChangedToolbarOptions<T> = Function(ToolbarOptions);
@@ -26,11 +28,13 @@ class ToolbarOptions {
   HighlighterOptions highlighterOptions;
   StraightLineOptions straightLineOptions;
   EraserOptions eraserOptions;
+  FigureOptions figureOptions;
   bool colorPickerOpen;
 
   ToolbarOptions(this.selectedTool, this.pencilOptions, this.highlighterOptions,
       this.straightLineOptions,
       this.eraserOptions,
+      this.figureOptions,
       this.colorPickerOpen);
 }
 
@@ -70,7 +74,7 @@ class _ToolbarState extends State<Toolbar> {
                 Icon(OwnIcons.eraser),
                 Icon(OwnIcons.highlight),
                 Icon(OwnIcons.flow_line),
-                Icon(Icons.cake),
+                Icon(OwnIcons.change_history),
                 Icon(Icons.cake),
                 Icon(Icons.cake),
                 Icon(Icons.cake),

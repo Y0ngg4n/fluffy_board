@@ -1,6 +1,9 @@
 import 'dart:ui';
 
+import 'overlays/Toolbar/FigureToolbar.dart';
+
 class Scribble {
+  SelectedFigureTypeToolbar selectedFigureTypeToolbar;
   double strokeWidth;
   StrokeCap strokeCap;
   Color color;
@@ -10,7 +13,7 @@ class Scribble {
       rightExtremity = 0,
       bottomExtremity = 0;
 
-  Scribble(this.strokeWidth, this.strokeCap, this.color, this.points);
+  Scribble(this.strokeWidth, this.strokeCap, this.color, this.points, this.selectedFigureTypeToolbar);
 }
 
 class DrawPoint extends Offset {
