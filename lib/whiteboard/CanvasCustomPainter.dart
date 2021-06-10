@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 
 import 'overlays/Toolbar.dart' as Toolbar;
-import 'overlays/Toolbar.dart';
 
 class CanvasCustomPainter extends CustomPainter {
   Toolbar.ToolbarOptions toolbarOptions;

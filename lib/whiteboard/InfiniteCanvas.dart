@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -54,6 +55,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
           this.setState(() {
             _initialScale = widget.zoomOptions.scale;
             if (widget.toolbarOptions.selectedTool == SelectedTool.pencil ||
+                widget.toolbarOptions.selectedTool ==
+                    SelectedTool.highlighter ||
                 widget.toolbarOptions.selectedTool ==
                     SelectedTool.straightLine) {
               Offset newOffset =
@@ -115,11 +118,25 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 }
                 break;
               case SelectedTool.straightLine:
+                Scribble lastScribble = scribbles.last;
                 DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
-                if (scribbles.last.points.length <= 1)
-                  scribbles.last.points.add(newDrawPoint);
+                if (lastScribble.points.length <= 1)
+                  lastScribble.points.add(newDrawPoint);
                 else
-                  scribbles.last.points.last = newDrawPoint;
+                  lastScribble.points
+                      .removeRange(2, lastScribble.points.length);
+                lastScribble.points.last = newDrawPoint;
+                if (widget.toolbarOptions.straightLineOptions
+                        .selectedStraightLineCapToolbar ==
+                    SelectedStraightLineCapToolbar.Arrow)
+                  fillArrow(
+                      lastScribble.points.first.dx,
+                      lastScribble.points.first.dy,
+                      lastScribble.points[1].dx,
+                      lastScribble.points[1].dy,
+                      lastScribble.points,
+                      widget.toolbarOptions.straightLineOptions.strokeWidth + 10
+                  );
                 break;
               default:
                 Scribble newScribble = scribbles.last;
@@ -132,8 +149,13 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
           this.setState(() {
             offset += _sessionOffset;
             _sessionOffset = Offset.zero;
-            if (widget.toolbarOptions.selectedTool == SelectedTool.pencil) {
-              Scribble newScribble = scribbles.last;
+            Scribble newScribble = scribbles.last;
+
+            if (widget.toolbarOptions.selectedTool == SelectedTool.pencil ||
+                widget.toolbarOptions.selectedTool ==
+                    SelectedTool.highlighter ||
+                widget.toolbarOptions.selectedTool ==
+                    SelectedTool.straightLine) {
               for (int i = 0; i < newScribble.points.length; i++) {
                 DrawPoint drawPoint = newScribble.points[i];
                 if (i == 0) {
@@ -209,9 +231,18 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
       color = widget.toolbarOptions.pencilOptions
           .colorPresets[widget.toolbarOptions.pencilOptions.currentColor];
       strokeWidth = widget.toolbarOptions.pencilOptions.strokeWidth;
-      strokeCap = StrokeCap.round;
-    } else if (widget.toolbarOptions.selectedTool == SelectedTool.pencil) {
-      strokeCap = StrokeCap.square;
+      strokeCap = widget.toolbarOptions.pencilOptions.strokeCap;
+    } else if (widget.toolbarOptions.selectedTool == SelectedTool.highlighter) {
+      color = widget.toolbarOptions.highlighterOptions
+          .colorPresets[widget.toolbarOptions.highlighterOptions.currentColor];
+      strokeWidth = widget.toolbarOptions.highlighterOptions.strokeWidth;
+      strokeCap = widget.toolbarOptions.highlighterOptions.strokeCap;
+    } else if (widget.toolbarOptions.selectedTool ==
+        SelectedTool.straightLine) {
+      color = widget.toolbarOptions.straightLineOptions
+          .colorPresets[widget.toolbarOptions.straightLineOptions.currentColor];
+      strokeWidth = widget.toolbarOptions.straightLineOptions.strokeWidth;
+      strokeCap = widget.toolbarOptions.straightLineOptions.strokeCap;
     }
     return new Scribble(strokeWidth, strokeCap, color, drawPoints);
   }
@@ -222,10 +253,38 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
       case SelectedTool.pencil:
         cursorRadius = widget.toolbarOptions.pencilOptions.strokeWidth;
         break;
+      case SelectedTool.highlighter:
+        cursorRadius = widget.toolbarOptions.highlighterOptions.strokeWidth;
+        break;
+      case SelectedTool.straightLine:
+        cursorRadius = widget.toolbarOptions.straightLineOptions.strokeWidth;
+        break;
       default:
         cursorRadius = widget.toolbarOptions.pencilOptions.strokeWidth;
         break;
     }
     return cursorRadius;
+  }
+
+  fillArrow(double x0, double y0, double x1, double y1, List<DrawPoint> list, length) {
+    double deltaX = x1 - x0;
+    double deltaY = y1 - y0;
+    double distance = sqrt((deltaX * deltaX) + (deltaY * deltaY));
+    double frac = (1 / (distance / length));
+
+    double point_x_1 = x0 + ((1 - frac) * deltaX + frac * deltaY);
+    double point_y_1 = y0 + ((1 - frac) * deltaY - frac * deltaX);
+
+    double point_x_3 = x0 + ((1 - frac) * deltaX - frac * deltaY);
+    double point_y_3 = y0 + ((1 - frac) * deltaY + frac * deltaX);
+
+    list.add(new DrawPoint(x1, y1));
+    list.add(new DrawPoint(point_x_1, point_y_1));
+    list.add(new DrawPoint(x1, y1));
+    list.add(new DrawPoint(point_x_3, point_y_3));
+    list.add(new DrawPoint(x1, y1));
+    // path.lineTo(point_x_3, point_y_3);
+    // path.lineTo(point_x_1, point_y_1);
+    // path.lineTo(point_x_1, point_y_1);
   }
 }

@@ -7,36 +7,43 @@ import '../Toolbar.dart' as Toolbar;
 
 import 'DrawOptions.dart';
 
-enum SelectedPencilColorToolbar {
+enum SelectedStraightLineColorToolbar {
   ColorPreset1,
   ColorPreset2,
   ColorPreset3,
 }
 
-class PencilOptions extends DrawOptions {
-  SelectedPencilColorToolbar selectedPencilColorToolbar =
-      SelectedPencilColorToolbar.ColorPreset1;
+enum SelectedStraightLineCapToolbar { Normal, Arrow }
 
-  PencilOptions(this.selectedPencilColorToolbar)
-      : super(List.from({Colors.black, Colors.red, Colors.blue}),
-      1, StrokeCap.round, 0);
+class StraightLineOptions extends DrawOptions {
+  SelectedStraightLineColorToolbar selectedStraightLineColorToolbar =
+      SelectedStraightLineColorToolbar.ColorPreset1;
+
+  SelectedStraightLineCapToolbar selectedStraightLineCapToolbar =
+      SelectedStraightLineCapToolbar.Normal;
+
+  StraightLineOptions(this.selectedStraightLineColorToolbar,
+      this.selectedStraightLineCapToolbar)
+      : super(List.from({Colors.black, Colors.red, Colors.blue}), 1,
+            StrokeCap.round, 0);
 }
 
-class PencilToolbar extends StatefulWidget {
+class StraightLineToolbar extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
 
-  PencilToolbar(
+  StraightLineToolbar(
       {required this.toolbarOptions, required this.onChangedToolbarOptions});
 
   @override
-  _PencilToolbarState createState() => _PencilToolbarState();
+  _StraightLineToolbarState createState() => _StraightLineToolbarState();
 }
 
-class _PencilToolbarState extends State<PencilToolbar> {
+class _StraightLineToolbarState extends State<StraightLineToolbar> {
   int beforeIndex = -1;
   int realBeforeIndex = 0;
   List<bool> selectedColorList = List.generate(3, (i) => i == 0 ? true : false);
+  List<bool> selectedCapList = List.generate(2, (i) => i == 0 ? true : false);
 
   @override
   Widget build(BuildContext context) {
@@ -55,10 +62,11 @@ class _PencilToolbarState extends State<PencilToolbar> {
               RotatedBox(
                 quarterTurns: -1,
                 child: Slider.adaptive(
-                  value: widget.toolbarOptions.pencilOptions.strokeWidth,
+                  value: widget.toolbarOptions.straightLineOptions.strokeWidth,
                   onChanged: (value) {
                     setState(() {
-                      widget.toolbarOptions.pencilOptions.strokeWidth = value;
+                      widget.toolbarOptions.straightLineOptions.strokeWidth =
+                          value;
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
                     });
                   },
@@ -67,9 +75,33 @@ class _PencilToolbarState extends State<PencilToolbar> {
                 ),
               ),
               ToggleButtons(
+                isSelected: selectedCapList,
+                direction: Axis.vertical,
+                children: <Widget>[
+                  Icon(Icons.remove),
+                  Icon(Icons.arrow_forward),
+                ],
+                onPressed: (index) {
+                  for (int buttonIndex = 0;
+                      buttonIndex < selectedCapList.length;
+                      buttonIndex++) {
+                    if (buttonIndex == index) {
+                      selectedCapList[buttonIndex] = true;
+                    } else {
+                      selectedCapList[buttonIndex] = false;
+                    }
+                    widget.toolbarOptions.straightLineOptions
+                            .selectedStraightLineCapToolbar =
+                        SelectedStraightLineCapToolbar.values[index];
+                    widget.onChangedToolbarOptions(widget.toolbarOptions);
+                  }
+                },
+              ),
+              ToggleButtons(
                   onPressed: (index) {
                     setState(() {
-                      widget.toolbarOptions.pencilOptions.currentColor = index;
+                      widget.toolbarOptions.straightLineOptions.currentColor =
+                          index;
                       widget.toolbarOptions.colorPickerOpen =
                           !widget.toolbarOptions.colorPickerOpen;
 
@@ -96,9 +128,9 @@ class _PencilToolbarState extends State<PencilToolbar> {
                       }
                       realBeforeIndex = index;
 
-                      widget.toolbarOptions.pencilOptions
-                              .selectedPencilColorToolbar =
-                          SelectedPencilColorToolbar.values[index];
+                      widget.toolbarOptions
+                        ..straightLineOptions.selectedStraightLineColorToolbar =
+                            SelectedStraightLineColorToolbar.values[index];
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
                     });
                   },
@@ -107,14 +139,14 @@ class _PencilToolbarState extends State<PencilToolbar> {
                   isSelected: selectedColorList,
                   children: <Widget>[
                     Icon(OwnIcons.color_lens,
-                        color: widget
-                            .toolbarOptions.pencilOptions.colorPresets[0]),
+                        color: widget.toolbarOptions.straightLineOptions
+                            .colorPresets[0]),
                     Icon(OwnIcons.color_lens,
-                        color: widget
-                            .toolbarOptions.pencilOptions.colorPresets[1]),
+                        color: widget.toolbarOptions.straightLineOptions
+                            .colorPresets[1]),
                     Icon(OwnIcons.color_lens,
-                        color: widget
-                            .toolbarOptions.pencilOptions.colorPresets[2]),
+                        color: widget.toolbarOptions.straightLineOptions
+                            .colorPresets[2]),
                   ]),
             ],
           ),

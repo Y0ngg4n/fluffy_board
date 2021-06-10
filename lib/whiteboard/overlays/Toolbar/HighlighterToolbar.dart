@@ -7,33 +7,36 @@ import '../Toolbar.dart' as Toolbar;
 
 import 'DrawOptions.dart';
 
-enum SelectedPencilColorToolbar {
+enum SelectedHighlighterColorToolbar {
   ColorPreset1,
   ColorPreset2,
   ColorPreset3,
 }
 
-class PencilOptions extends DrawOptions {
-  SelectedPencilColorToolbar selectedPencilColorToolbar =
-      SelectedPencilColorToolbar.ColorPreset1;
+class HighlighterOptions extends DrawOptions {
+  SelectedHighlighterColorToolbar selectedHighlighterColorToolbar =
+      SelectedHighlighterColorToolbar.ColorPreset1;
 
-  PencilOptions(this.selectedPencilColorToolbar)
-      : super(List.from({Colors.black, Colors.red, Colors.blue}),
-      1, StrokeCap.round, 0);
+  HighlighterOptions(this.selectedHighlighterColorToolbar)
+      : super(
+            List.from({Colors.limeAccent, Colors.lightGreen, Colors.lightBlue}),
+            5,
+            StrokeCap.square,
+            0);
 }
 
-class PencilToolbar extends StatefulWidget {
+class HighlighterToolbar extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
 
-  PencilToolbar(
+  HighlighterToolbar(
       {required this.toolbarOptions, required this.onChangedToolbarOptions});
 
   @override
-  _PencilToolbarState createState() => _PencilToolbarState();
+  _HighlighterToolbarState createState() => _HighlighterToolbarState();
 }
 
-class _PencilToolbarState extends State<PencilToolbar> {
+class _HighlighterToolbarState extends State<HighlighterToolbar> {
   int beforeIndex = -1;
   int realBeforeIndex = 0;
   List<bool> selectedColorList = List.generate(3, (i) => i == 0 ? true : false);
@@ -55,21 +58,22 @@ class _PencilToolbarState extends State<PencilToolbar> {
               RotatedBox(
                 quarterTurns: -1,
                 child: Slider.adaptive(
-                  value: widget.toolbarOptions.pencilOptions.strokeWidth,
+                  value: widget.toolbarOptions.highlighterOptions.strokeWidth,
                   onChanged: (value) {
                     setState(() {
-                      widget.toolbarOptions.pencilOptions.strokeWidth = value;
+                      widget.toolbarOptions.highlighterOptions.strokeWidth = value;
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
                     });
                   },
-                  min: 1,
+                  min: 5,
                   max: 50,
                 ),
               ),
               ToggleButtons(
                   onPressed: (index) {
                     setState(() {
-                      widget.toolbarOptions.pencilOptions.currentColor = index;
+                      widget.toolbarOptions.highlighterOptions.currentColor =
+                          index;
                       widget.toolbarOptions.colorPickerOpen =
                           !widget.toolbarOptions.colorPickerOpen;
 
@@ -96,9 +100,9 @@ class _PencilToolbarState extends State<PencilToolbar> {
                       }
                       realBeforeIndex = index;
 
-                      widget.toolbarOptions.pencilOptions
-                              .selectedPencilColorToolbar =
-                          SelectedPencilColorToolbar.values[index];
+                      widget.toolbarOptions.highlighterOptions
+                              .selectedHighlighterColorToolbar =
+                          SelectedHighlighterColorToolbar.values[index];
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
                     });
                   },
@@ -108,13 +112,13 @@ class _PencilToolbarState extends State<PencilToolbar> {
                   children: <Widget>[
                     Icon(OwnIcons.color_lens,
                         color: widget
-                            .toolbarOptions.pencilOptions.colorPresets[0]),
+                            .toolbarOptions.highlighterOptions.colorPresets[0]),
                     Icon(OwnIcons.color_lens,
                         color: widget
-                            .toolbarOptions.pencilOptions.colorPresets[1]),
+                            .toolbarOptions.highlighterOptions.colorPresets[1]),
                     Icon(OwnIcons.color_lens,
                         color: widget
-                            .toolbarOptions.pencilOptions.colorPresets[2]),
+                            .toolbarOptions.highlighterOptions.colorPresets[2]),
                   ]),
             ],
           ),

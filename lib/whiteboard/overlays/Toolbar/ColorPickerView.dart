@@ -1,5 +1,6 @@
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:fluffy_board/utils/ScreenUtils.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/DrawOptions.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
@@ -24,7 +25,7 @@ class _ColorPickerViewState extends State<ColorPickerView> {
   @override
   Widget build(BuildContext context) {
     const _borderRadius = 50.0;
-
+    DrawOptions drawOptions = _getDrawOptions();
     return (Padding(
         padding: const EdgeInsets.fromLTRB(0, 24, 0, 24),
         child: SizedBox(
@@ -43,8 +44,7 @@ class _ColorPickerViewState extends State<ColorPickerView> {
               scrollDirection: Axis.vertical,
               child: ColorPicker(
                 // Use the screenPickerColor as start color.
-                color: widget.toolbarOptions.pencilOptions.colorPresets[widget
-                    .toolbarOptions.pencilOptions.currentColor],
+                color: drawOptions.colorPresets[drawOptions.currentColor],
                 // Update the screenPickerColor using the callback.
                 width: ScreenUtils.getScreenWidth(context) < 700 ||
                         ScreenUtils.getScreenHeight(context) < 500
@@ -56,8 +56,7 @@ class _ColorPickerViewState extends State<ColorPickerView> {
                     : 40,
                 onColorChanged: (Color color) => {
                   setState(() {
-                    widget.toolbarOptions.pencilOptions.colorPresets[widget
-                        .toolbarOptions.pencilOptions.currentColor] = color;
+                    drawOptions.colorPresets[drawOptions.currentColor] = color;
                     widget.onChangedToolbarOptions(widget.toolbarOptions);
                   })
                 },
@@ -91,5 +90,18 @@ class _ColorPickerViewState extends State<ColorPickerView> {
             ),
           ),
         )));
+  }
+
+  DrawOptions _getDrawOptions(){
+    switch (widget.toolbarOptions.selectedTool){
+      case Toolbar.SelectedTool.pencil:
+        return widget.toolbarOptions.pencilOptions;
+      case Toolbar.SelectedTool.highlighter:
+        return widget.toolbarOptions.highlighterOptions;
+      case Toolbar.SelectedTool.straightLine:
+        return widget.toolbarOptions.straightLineOptions;
+      default:
+        return widget.toolbarOptions.pencilOptions;
+    }
   }
 }

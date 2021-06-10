@@ -1,10 +1,13 @@
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/PencilToolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
 import 'Toolbar/ColorPickerView.dart';
+import 'Toolbar/PencilToolbar.dart';
+import 'Toolbar/HighlighterToolbar.dart';
 
 enum SelectedTool {
   move,
@@ -19,9 +22,12 @@ typedef OnChangedToolbarOptions<T> = Function(ToolbarOptions);
 class ToolbarOptions {
   SelectedTool selectedTool;
   PencilOptions pencilOptions;
+  HighlighterOptions highlighterOptions;
+  StraightLineOptions straightLineOptions;
   bool colorPickerOpen;
 
-  ToolbarOptions(this.selectedTool, this.pencilOptions, this.colorPickerOpen);
+  ToolbarOptions(this.selectedTool, this.pencilOptions, this.highlighterOptions,
+      this.straightLineOptions, this.colorPickerOpen);
 }
 
 class Toolbar extends StatefulWidget {
@@ -77,7 +83,7 @@ class _ToolbarState extends State<Toolbar> {
                       selectedToolList[buttonIndex] = false;
                     }
                     widget.toolbarOptions.selectedTool =
-                    SelectedTool.values[index];
+                        SelectedTool.values[index];
                     widget.toolbarOptions.colorPickerOpen = false;
                   }
                 });
@@ -100,7 +106,27 @@ class _ToolbarState extends State<Toolbar> {
         return PencilToolbar(
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
-            setState((){
+            setState(() {
+              widget.toolbarOptions = toolbarOptions;
+              widget.onChangedToolbarOptions(toolbarOptions);
+            })
+          },
+        );
+      case SelectedTool.highlighter:
+        return HighlighterToolbar(
+          toolbarOptions: widget.toolbarOptions,
+          onChangedToolbarOptions: (toolbarOptions) => {
+            setState(() {
+              widget.toolbarOptions = toolbarOptions;
+              widget.onChangedToolbarOptions(toolbarOptions);
+            })
+          },
+        );
+      case SelectedTool.straightLine:
+        return StraightLineToolbar(
+          toolbarOptions: widget.toolbarOptions,
+          onChangedToolbarOptions: (toolbarOptions) => {
+            setState(() {
               widget.toolbarOptions = toolbarOptions;
               widget.onChangedToolbarOptions(toolbarOptions);
             })
