@@ -135,8 +135,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                       lastScribble.points[1].dx,
                       lastScribble.points[1].dy,
                       lastScribble.points,
-                      widget.toolbarOptions.straightLineOptions.strokeWidth + 10
-                  );
+                      widget.toolbarOptions.straightLineOptions.strokeWidth +
+                          10);
                 break;
               default:
                 Scribble newScribble = scribbles.last;
@@ -149,13 +149,13 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
           this.setState(() {
             offset += _sessionOffset;
             _sessionOffset = Offset.zero;
-            Scribble newScribble = scribbles.last;
 
             if (widget.toolbarOptions.selectedTool == SelectedTool.pencil ||
                 widget.toolbarOptions.selectedTool ==
                     SelectedTool.highlighter ||
                 widget.toolbarOptions.selectedTool ==
                     SelectedTool.straightLine) {
+              Scribble newScribble = scribbles.last;
               for (int i = 0; i < newScribble.points.length; i++) {
                 DrawPoint drawPoint = newScribble.points[i];
                 if (i == 0) {
@@ -243,6 +243,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
           .colorPresets[widget.toolbarOptions.straightLineOptions.currentColor];
       strokeWidth = widget.toolbarOptions.straightLineOptions.strokeWidth;
       strokeCap = widget.toolbarOptions.straightLineOptions.strokeCap;
+    } else if (widget.toolbarOptions.selectedTool == SelectedTool.eraser) {
+      strokeWidth = widget.toolbarOptions.eraserOptions.strokeWidth;
     }
     return new Scribble(strokeWidth, strokeCap, color, drawPoints);
   }
@@ -259,6 +261,9 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
       case SelectedTool.straightLine:
         cursorRadius = widget.toolbarOptions.straightLineOptions.strokeWidth;
         break;
+      case SelectedTool.eraser:
+        cursorRadius = widget.toolbarOptions.eraserOptions.strokeWidth;
+        break;
       default:
         cursorRadius = widget.toolbarOptions.pencilOptions.strokeWidth;
         break;
@@ -266,7 +271,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
     return cursorRadius;
   }
 
-  fillArrow(double x0, double y0, double x1, double y1, List<DrawPoint> list, length) {
+  fillArrow(double x0, double y0, double x1, double y1, List<DrawPoint> list,
+      length) {
     double deltaX = x1 - x0;
     double deltaY = y1 - y0;
     double distance = sqrt((deltaX * deltaX) + (deltaY * deltaY));

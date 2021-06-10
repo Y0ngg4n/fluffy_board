@@ -1,5 +1,6 @@
 import 'package:fluffy_board/dashboard/filemanager/FileManager.dart';
 import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/EraserToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/HighlighterToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/PencilToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dart';
@@ -24,6 +25,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
       new PencilOptions(SelectedPencilColorToolbar.ColorPreset1),
       new HighlighterOptions(SelectedHighlighterColorToolbar.ColorPreset1),
       new StraightLineOptions(SelectedStraightLineColorToolbar.ColorPreset1, SelectedStraightLineCapToolbar.Normal),
+      new EraserOptions(),
       false);
   ZoomOptions zoomOptions = new ZoomOptions(1);
 

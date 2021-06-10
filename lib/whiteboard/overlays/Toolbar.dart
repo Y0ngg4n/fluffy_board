@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 
 import 'Toolbar/ColorPickerView.dart';
+import 'Toolbar/EraserToolbar.dart';
 import 'Toolbar/PencilToolbar.dart';
 import 'Toolbar/HighlighterToolbar.dart';
 
@@ -24,10 +25,13 @@ class ToolbarOptions {
   PencilOptions pencilOptions;
   HighlighterOptions highlighterOptions;
   StraightLineOptions straightLineOptions;
+  EraserOptions eraserOptions;
   bool colorPickerOpen;
 
   ToolbarOptions(this.selectedTool, this.pencilOptions, this.highlighterOptions,
-      this.straightLineOptions, this.colorPickerOpen);
+      this.straightLineOptions,
+      this.eraserOptions,
+      this.colorPickerOpen);
 }
 
 class Toolbar extends StatefulWidget {
@@ -124,6 +128,16 @@ class _ToolbarState extends State<Toolbar> {
         );
       case SelectedTool.straightLine:
         return StraightLineToolbar(
+          toolbarOptions: widget.toolbarOptions,
+          onChangedToolbarOptions: (toolbarOptions) => {
+            setState(() {
+              widget.toolbarOptions = toolbarOptions;
+              widget.onChangedToolbarOptions(toolbarOptions);
+            })
+          },
+        );
+      case SelectedTool.eraser:
+        return EraserToolbar(
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {
