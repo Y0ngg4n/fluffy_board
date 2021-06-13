@@ -3,6 +3,7 @@ import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/PencilToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/UploadToolbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
@@ -18,6 +19,7 @@ enum SelectedTool {
   highlighter,
   straightLine,
   figure,
+  upload,
 }
 
 typedef OnChangedToolbarOptions<T> = Function(ToolbarOptions);
@@ -29,12 +31,14 @@ class ToolbarOptions {
   StraightLineOptions straightLineOptions;
   EraserOptions eraserOptions;
   FigureOptions figureOptions;
+  UploadOptions uploadOptions;
   bool colorPickerOpen;
 
   ToolbarOptions(this.selectedTool, this.pencilOptions, this.highlighterOptions,
       this.straightLineOptions,
       this.eraserOptions,
       this.figureOptions,
+      this.uploadOptions,
       this.colorPickerOpen);
 }
 
@@ -75,7 +79,7 @@ class _ToolbarState extends State<Toolbar> {
                 Icon(OwnIcons.highlight),
                 Icon(OwnIcons.flow_line),
                 Icon(OwnIcons.change_history),
-                Icon(Icons.cake),
+                Icon(Icons.file_upload_outlined),
                 Icon(Icons.cake),
                 Icon(Icons.cake),
                 Icon(Icons.cake),
@@ -152,6 +156,16 @@ class _ToolbarState extends State<Toolbar> {
         );
       case SelectedTool.figure:
         return FigureToolbar(
+          toolbarOptions: widget.toolbarOptions,
+          onChangedToolbarOptions: (toolbarOptions) => {
+            setState(() {
+              widget.toolbarOptions = toolbarOptions;
+              widget.onChangedToolbarOptions(toolbarOptions);
+            })
+          },
+        );
+      case SelectedTool.upload:
+        return UploadToolbar(
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {

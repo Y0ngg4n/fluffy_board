@@ -49,10 +49,11 @@ dev_dependencies:
   #calculess: ^1.0.2
   # Toolbar
   flex_color_picker: ^2.0.1
-  #Canvas
+  # Canvas
   vector_math: ^2.1.0
   path_icon: ^0.7.0
-
+  # Upload
+  file_picker: ^3.0.2+2
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

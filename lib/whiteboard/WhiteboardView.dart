@@ -5,6 +5,7 @@ import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/HighlighterToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/PencilToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/UploadToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Zoom.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -28,6 +29,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
       new StraightLineOptions(SelectedStraightLineColorToolbar.ColorPreset1, SelectedStraightLineCapToolbar.Normal),
       new EraserOptions(),
       new FigureOptions(SelectedFigureColorToolbar.ColorPreset1, SelectedFigureTypeToolbar.rect, PaintingStyle.stroke),
+      new UploadOptions(SelectedUpload.Image),
       false);
   ZoomOptions zoomOptions = new ZoomOptions(1);
 
