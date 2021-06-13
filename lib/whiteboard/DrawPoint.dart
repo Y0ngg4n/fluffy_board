@@ -8,12 +8,13 @@ class Scribble {
   StrokeCap strokeCap;
   Color color;
   List<DrawPoint> points;
+  PaintingStyle paintingStyle;
   double leftExtremity = 0,
       topExtremity = 0,
       rightExtremity = 0,
       bottomExtremity = 0;
 
-  Scribble(this.strokeWidth, this.strokeCap, this.color, this.points, this.selectedFigureTypeToolbar);
+  Scribble(this.strokeWidth, this.strokeCap, this.color, this.points, this.selectedFigureTypeToolbar, this.paintingStyle);
 }
 
 class DrawPoint extends Offset {

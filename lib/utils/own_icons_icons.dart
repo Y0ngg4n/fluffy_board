@@ -47,6 +47,7 @@ class OwnIcons {
   static const IconData photo_size_select_small = IconData(0xe803, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData change_history = IconData(0xe804, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData check_box_outline_blank = IconData(0xe805, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData timeline = IconData(0xe806, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData highlight = IconData(0xe897, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData text_height = IconData(0xf034, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData move = IconData(0xf047, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -54,4 +55,5 @@ class OwnIcons {
   static const IconData eraser = IconData(0xf12d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData circle_notch = IconData(0xf1ce, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData pencil_alt = IconData(0xf303, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData fill_drip = IconData(0xf576, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

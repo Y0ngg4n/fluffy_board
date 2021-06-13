@@ -83,6 +83,18 @@
       "css": "circle_notch",
       "code": 61902,
       "src": "fontawesome5"
+    },
+    {
+      "uid": "08155495a2730cca732becac67f009af",
+      "css": "timeline",
+      "code": 59398,
+      "src": "material"
+    },
+    {
+      "uid": "3e5ae473722e0c36b0c20e4ddaeeb9b0",
+      "css": "fill_drip",
+      "code": 62838,
+      "src": "fontawesome5"
     }
   ]
 }

@@ -59,7 +59,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 widget.toolbarOptions.selectedTool ==
                     SelectedTool.highlighter ||
                 widget.toolbarOptions.selectedTool ==
-                    SelectedTool.straightLine) {
+                    SelectedTool.straightLine ||
+                widget.toolbarOptions.selectedTool == SelectedTool.figure) {
               Offset newOffset =
                   (details.localFocalPoint - offset) / widget.zoomOptions.scale;
               scribbles.add(_getScribble(newOffset));
@@ -142,7 +143,10 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
               case SelectedTool.figure:
                 Scribble lastScribble = scribbles.last;
                 DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
-                lastScribble.points.last = newDrawPoint;
+                if (lastScribble.points.length <= 1)
+                  lastScribble.points.add(newDrawPoint);
+                else
+                  lastScribble.points.last = newDrawPoint;
                 break;
               default:
                 Scribble newScribble = scribbles.last;
@@ -233,7 +237,9 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
     Color color = Colors.black;
     StrokeCap strokeCap = StrokeCap.round;
     double strokeWidth = 1;
-    SelectedFigureTypeToolbar selectedFigureTypeToolbar = SelectedFigureTypeToolbar.none;
+    SelectedFigureTypeToolbar selectedFigureTypeToolbar =
+        SelectedFigureTypeToolbar.none;
+    PaintingStyle paintingStyle = PaintingStyle.stroke;
     if (widget.toolbarOptions.selectedTool == SelectedTool.pencil) {
       color = widget.toolbarOptions.pencilOptions
           .colorPresets[widget.toolbarOptions.pencilOptions.currentColor];
@@ -252,13 +258,17 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
       strokeCap = widget.toolbarOptions.straightLineOptions.strokeCap;
     } else if (widget.toolbarOptions.selectedTool == SelectedTool.eraser) {
       strokeWidth = widget.toolbarOptions.eraserOptions.strokeWidth;
-    }else if(widget.toolbarOptions.selectedTool == SelectedTool.figure){
+    } else if (widget.toolbarOptions.selectedTool == SelectedTool.figure) {
       strokeWidth = widget.toolbarOptions.figureOptions.strokeWidth;
-      selectedFigureTypeToolbar = widget.toolbarOptions.figureOptions.selectedFigureTypeToolbar;
+      color = widget.toolbarOptions.figureOptions
+          .colorPresets[widget.toolbarOptions.figureOptions.currentColor];
+      selectedFigureTypeToolbar =
+          widget.toolbarOptions.figureOptions.selectedFigureTypeToolbar;
+      paintingStyle = widget.toolbarOptions.figureOptions.paintingStyle;
     }
 
     return new Scribble(strokeWidth, strokeCap, color, drawPoints,
-        selectedFigureTypeToolbar);
+        selectedFigureTypeToolbar, paintingStyle);
   }
 
   double _getCursorRadius() {

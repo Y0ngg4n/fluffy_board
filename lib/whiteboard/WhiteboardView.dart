@@ -27,7 +27,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
       new HighlighterOptions(SelectedHighlighterColorToolbar.ColorPreset1),
       new StraightLineOptions(SelectedStraightLineColorToolbar.ColorPreset1, SelectedStraightLineCapToolbar.Normal),
       new EraserOptions(),
-      new FigureOptions(SelectedFigureColorToolbar.ColorPreset1, SelectedFigureTypeToolbar.rect),
+      new FigureOptions(SelectedFigureColorToolbar.ColorPreset1, SelectedFigureTypeToolbar.rect, PaintingStyle.stroke),
       false);
   ZoomOptions zoomOptions = new ZoomOptions(1);
 

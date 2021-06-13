@@ -150,6 +150,16 @@ class _ToolbarState extends State<Toolbar> {
             })
           },
         );
+      case SelectedTool.figure:
+        return FigureToolbar(
+          toolbarOptions: widget.toolbarOptions,
+          onChangedToolbarOptions: (toolbarOptions) => {
+            setState(() {
+              widget.toolbarOptions = toolbarOptions;
+              widget.onChangedToolbarOptions(toolbarOptions);
+            })
+          },
+        );
       default:
         return Container();
     }

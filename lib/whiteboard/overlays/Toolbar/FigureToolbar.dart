@@ -18,7 +18,6 @@ enum SelectedFigureTypeToolbar {
   rect,
   triangle,
   circle,
-  oval,
 }
 
 class FigureOptions extends DrawOptions {
@@ -28,7 +27,9 @@ class FigureOptions extends DrawOptions {
   SelectedFigureTypeToolbar selectedFigureTypeToolbar =
       SelectedFigureTypeToolbar.rect;
 
-  FigureOptions(this.selectedFigureColorToolbar, this.selectedFigureTypeToolbar)
+  PaintingStyle paintingStyle = PaintingStyle.stroke;
+
+  FigureOptions(this.selectedFigureColorToolbar, this.selectedFigureTypeToolbar, this.paintingStyle)
       : super(List.from({Colors.black, Colors.red, Colors.blue}), 1,
             StrokeCap.round, 0);
 }
@@ -48,7 +49,8 @@ class _FigureToolbarState extends State<FigureToolbar> {
   int beforeIndex = -1;
   int realBeforeIndex = 0;
   List<bool> selectedColorList = List.generate(3, (i) => i == 0 ? true : false);
-  List<bool> selectedTypeList = List.generate(4, (i) => i == 0 ? true : false);
+  List<bool> selectedTypeList = List.generate(3, (i) => i == 0 ? true : false);
+  List<bool> selectedPaintingStyle = List.generate(2, (i) => i == 1 ? true : false);
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +83,7 @@ class _FigureToolbarState extends State<FigureToolbar> {
               ToggleButtons(
                   onPressed: (index) {
                     setState(() {
-                      widget.toolbarOptions.pencilOptions.currentColor = index;
+                      widget.toolbarOptions.figureOptions.currentColor = index;
                       widget.toolbarOptions.colorPickerOpen =
                           !widget.toolbarOptions.colorPickerOpen;
 
@@ -115,7 +117,6 @@ class _FigureToolbarState extends State<FigureToolbar> {
                     });
                   },
                   direction: Axis.vertical,
-                  borderRadius: BorderRadius.circular(_borderRadius),
                   isSelected: selectedColorList,
                   children: <Widget>[
                     Icon(OwnIcons.color_lens,
@@ -130,17 +131,51 @@ class _FigureToolbarState extends State<FigureToolbar> {
                   ]),
               ToggleButtons(
                 isSelected: selectedTypeList,
+                direction: Axis.vertical,
                 children: [
                   Icon(OwnIcons.check_box_outline_blank),
                   Icon(OwnIcons.change_history),
                   Icon(OwnIcons.circle_empty),
-                  Icon(OwnIcons.circle_notch),
                 ],
                 onPressed: (index) {
                   setState(() {
+                    for (int buttonIndex = 0;
+                    buttonIndex < selectedTypeList.length;
+                    buttonIndex++) {
+                      if (buttonIndex == index) {
+                        selectedTypeList[buttonIndex] = true;
+                      } else {
+                        selectedTypeList[buttonIndex] = false;
+                      }
+                    }
                     widget.toolbarOptions.figureOptions
                             .selectedFigureTypeToolbar =
                         SelectedFigureTypeToolbar.values[index + 1];
+                    widget.onChangedToolbarOptions(widget.toolbarOptions);
+                  });
+                },
+              ),
+              ToggleButtons(
+                isSelected: selectedPaintingStyle,
+                direction: Axis.vertical,
+                children: [
+                  Icon(OwnIcons.fill_drip),
+                  Icon(OwnIcons.timeline),
+                ],
+                onPressed: (index) {
+                  setState(() {
+                    for (int buttonIndex = 0;
+                    buttonIndex < selectedPaintingStyle.length;
+                    buttonIndex++) {
+                      if (buttonIndex == index) {
+                        selectedPaintingStyle[buttonIndex] = true;
+                      } else {
+                        selectedPaintingStyle[buttonIndex] = false;
+                      }
+                    }
+                    widget.toolbarOptions.figureOptions
+                        .paintingStyle =
+                    PaintingStyle.values[index];
                     widget.onChangedToolbarOptions(widget.toolbarOptions);
                   });
                 },

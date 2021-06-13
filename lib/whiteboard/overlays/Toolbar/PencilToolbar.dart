@@ -103,7 +103,6 @@ class _PencilToolbarState extends State<PencilToolbar> {
                     });
                   },
                   direction: Axis.vertical,
-                  borderRadius: BorderRadius.circular(_borderRadius),
                   isSelected: selectedColorList,
                   children: <Widget>[
                     Icon(OwnIcons.color_lens,

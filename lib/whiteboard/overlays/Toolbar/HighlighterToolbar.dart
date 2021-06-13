@@ -107,7 +107,6 @@ class _HighlighterToolbarState extends State<HighlighterToolbar> {
                     });
                   },
                   direction: Axis.vertical,
-                  borderRadius: BorderRadius.circular(_borderRadius),
                   isSelected: selectedColorList,
                   children: <Widget>[
                     Icon(OwnIcons.color_lens,

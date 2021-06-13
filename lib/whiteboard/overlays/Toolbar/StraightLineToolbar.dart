@@ -135,7 +135,6 @@ class _StraightLineToolbarState extends State<StraightLineToolbar> {
                     });
                   },
                   direction: Axis.vertical,
-                  borderRadius: BorderRadius.circular(_borderRadius),
                   isSelected: selectedColorList,
                   children: <Widget>[
                     Icon(OwnIcons.color_lens,
