@@ -130,7 +130,6 @@ class _RenameWhiteboardFormState extends State<RenameWhiteboardForm> {
                               body: jsonEncode({
                                 'id': widget.id,
                                 'name': nameController.text,
-                                'directory': widget.directory,
                               }));
                           if (response.statusCode == 200) {
                             Navigator.pop(context);

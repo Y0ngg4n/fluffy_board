@@ -52,7 +52,7 @@ class CanvasCustomPainter extends CustomPainter {
 
       if (scribble.selectedFigureTypeToolbar ==
           SelectedFigureTypeToolbar.rect) {
-        canvas.drawRect(Rect.fromLTRB(scribble.points[0].dx, scribble.points[0].dx, scribble[], bottom), paint)
+        // canvas.drawRect(Rect.fromLTRB(scribble.points[0].dx, scribble.points[0].dx, scribble[], bottom), paint)
       } else if (scribble.selectedFigureTypeToolbar ==
           SelectedFigureTypeToolbar.none) {
         // DEBUG: Draw Points
@@ -66,7 +66,7 @@ class CanvasCustomPainter extends CustomPainter {
           //if next point is null, means the line ends here
           // else if (!scribble.points[x].empty && scribble.points[x + 1].empty) {
           //   canvas.drawPoints(
-          //       PointMode.points, [scribble.points[x] + offset], drawingPaint);
+          //       PointMode.points, [scribble.poinpts[x] + offset], drawingPaint);
           // }
         }
       }

@@ -130,7 +130,6 @@ class _RenameFolderFormState extends State<RenameFolderForm> {
                               body: jsonEncode({
                                 'id': widget.id,
                                 'filename': nameController.text,
-                                'parent': widget.parent,
                               }));
                           if (response.statusCode == 200) {
                             Navigator.pop(context);

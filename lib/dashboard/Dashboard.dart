@@ -39,6 +39,7 @@ class _DashboardState extends State<Dashboard> {
     Future.delayed(const Duration(milliseconds: 1000), () {
       if (!loggedIn) Navigator.pushReplacementNamed(context, '/login');
     });
+    if(!loggedIn) return (_loading(name));
     return (Scaffold(
       appBar:
           AppBar(title: Text(name), actions: [AvatarIcon()]),
@@ -63,7 +64,7 @@ class _DashboardState extends State<Dashboard> {
     auth_token = accountStorage.getItem("auth_token");
     username = accountStorage.getItem("username");
     setState(() {
-      storageReady = true;
+      this.storageReady = true;
       this.auth_token = auth_token;
       this.username = username;
     });
@@ -71,16 +72,24 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future _checkLoggedIn(String auth_token) async {
-    http.Response response = await http.get(
-        Uri.parse(dotenv.env['REST_API_URL']! + "/account/check"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + auth_token,
-        });
-    setState(() {
-      checkedLogin = true;
-      loggedIn = response.statusCode == 200 ? true : false;
-    });
+    print("Checking if logged in...");
+    if(auth_token == null){
+      setState(() {
+        checkedLogin = true;
+        loggedIn = false;
+      });
+    }else {
+      http.Response response = await http.get(
+          Uri.parse(dotenv.env['REST_API_URL']! + "/account/check"),
+          headers: {
+            "content-type": "application/json",
+            "accept": "application/json",
+            'Authorization': 'Bearer ' + auth_token,
+          });
+      setState(() {
+        checkedLogin = true;
+        loggedIn = response.statusCode == 200 ? true : false;
+      });
+    }
   }
 }
