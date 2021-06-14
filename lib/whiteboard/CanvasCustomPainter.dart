@@ -16,6 +16,7 @@ class CanvasCustomPainter extends CustomPainter {
   double cursorRadius;
   Offset cursorPosition;
   Offset screenSize;
+  List<Upload> uploads;
 
   CanvasCustomPainter({
     required this.scribbles,
@@ -25,6 +26,7 @@ class CanvasCustomPainter extends CustomPainter {
     required this.cursorPosition,
     required this.toolbarOptions,
     required this.screenSize,
+    required this.uploads
   });
 
   @override
@@ -105,6 +107,11 @@ class CanvasCustomPainter extends CustomPainter {
           }
           break;
       }
+    }
+
+    Paint imagePaint = new Paint();
+    for (Upload upload in uploads){
+      canvas.drawImage(upload.image!, upload.offset, imagePaint);
     }
 
     Paint cursorPaint = Paint()

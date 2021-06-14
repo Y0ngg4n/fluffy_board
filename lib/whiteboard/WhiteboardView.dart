@@ -10,6 +10,7 @@ import 'package:fluffy_board/whiteboard/overlays/Zoom.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
+import 'DrawPoint.dart';
 import 'overlays/Toolbar.dart' as Toolbar;
 
 class WhiteboardView extends StatefulWidget {
@@ -32,6 +33,9 @@ class _WhiteboardViewState extends State<WhiteboardView> {
       new UploadOptions(SelectedUpload.Image),
       false);
   ZoomOptions zoomOptions = new ZoomOptions(1);
+  List<Upload> uploads = [];
+  Offset offset = Offset.zero;
+  Offset _sessionOffset = Offset.zero;
 
   @override
   void initState() {
@@ -56,10 +60,21 @@ class _WhiteboardViewState extends State<WhiteboardView> {
               setState(() {
                 this.zoomOptions = zoomOptions;
               });
-            },
+            }, offset: offset,
+            sessionOffset: _sessionOffset,
+            onOffsetChange: (offset, sessionOffset) => {
+              setState((){
+                this.offset = offset;
+                this._sessionOffset = sessionOffset;
+              })
+            }, uploads: uploads,
           ),
           Toolbar.Toolbar(
             toolbarOptions: toolbarOptions,
+            zoomOptions: zoomOptions,
+            offset: offset,
+            sessionOffset: _sessionOffset,
+            uploads: uploads,
             onChangedToolbarOptions: (toolBarOptions) {
               setState(() {
                 this.toolbarOptions = toolBarOptions;

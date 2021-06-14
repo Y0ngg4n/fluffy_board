@@ -4,9 +4,11 @@ import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/PencilToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/UploadToolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/Zoom.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
+import '../DrawPoint.dart';
 import 'Toolbar/ColorPickerView.dart';
 import 'Toolbar/EraserToolbar.dart';
 import 'Toolbar/PencilToolbar.dart';
@@ -34,7 +36,10 @@ class ToolbarOptions {
   UploadOptions uploadOptions;
   bool colorPickerOpen;
 
-  ToolbarOptions(this.selectedTool, this.pencilOptions, this.highlighterOptions,
+  ToolbarOptions(
+      this.selectedTool,
+      this.pencilOptions,
+      this.highlighterOptions,
       this.straightLineOptions,
       this.eraserOptions,
       this.figureOptions,
@@ -45,9 +50,18 @@ class ToolbarOptions {
 class Toolbar extends StatefulWidget {
   ToolbarOptions toolbarOptions;
   OnChangedToolbarOptions onChangedToolbarOptions;
+  List<Upload> uploads;
+  Offset offset;
+  Offset sessionOffset;
+  ZoomOptions zoomOptions;
 
   Toolbar(
-      {required this.toolbarOptions, required this.onChangedToolbarOptions});
+      {required this.toolbarOptions,
+      required this.onChangedToolbarOptions,
+      required this.uploads,
+      required this.offset,
+      required this.sessionOffset,
+      required this.zoomOptions});
 
   @override
   _ToolbarState createState() => _ToolbarState();
@@ -166,13 +180,16 @@ class _ToolbarState extends State<Toolbar> {
         );
       case SelectedTool.upload:
         return UploadToolbar(
+          uploads: widget.uploads,
+          zoomOptions: widget.zoomOptions,
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {
               widget.toolbarOptions = toolbarOptions;
               widget.onChangedToolbarOptions(toolbarOptions);
             })
-          },
+          }, offset: widget.offset,
+          sessionOffset: widget.offset,
         );
       default:
         return Container();

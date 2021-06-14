@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'overlays/Toolbar/FigureToolbar.dart';
@@ -27,4 +28,19 @@ class DrawPoint extends Offset {
   }
 
   DrawPoint.of(Offset offset) : super(offset.dx, offset.dy);
+}
+
+enum UploadType {
+  Image,
+  PDF,
+}
+
+class Upload{
+  UploadType uploadType;
+  Offset offset;
+
+  Uint8List uint8List;
+  Image? image;
+
+  Upload(this.uploadType, this.uint8List, this.offset, this.image);
 }

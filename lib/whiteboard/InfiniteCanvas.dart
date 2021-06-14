@@ -16,18 +16,27 @@ import 'CanvasCustomPainter.dart';
 import 'overlays/Toolbar.dart' as Toolbar;
 import 'overlays/Zoom.dart' as Zoom;
 
+typedef OnOffsetChange = Function(Offset offset, Offset sessionOffset);
+
 class InfiniteCanvasPage extends StatefulWidget {
   Zoom.OnChangedZoomOptions onChangedZoomOptions;
   Toolbar.ToolbarOptions toolbarOptions;
   Zoom.ZoomOptions zoomOptions;
   double appBarHeight;
+  List<Upload> uploads;
+  Offset offset;
+  Offset sessionOffset;
+  OnOffsetChange onOffsetChange;
 
-  InfiniteCanvasPage({
-    required this.toolbarOptions,
-    required this.zoomOptions,
-    required this.onChangedZoomOptions,
-    required this.appBarHeight,
-  });
+  InfiniteCanvasPage(
+      {required this.toolbarOptions,
+      required this.zoomOptions,
+      required this.onChangedZoomOptions,
+      required this.appBarHeight,
+      required this.uploads,
+      required this.offset,
+      required this.sessionOffset,
+      required this.onOffsetChange});
 
   @override
   _InfiniteCanvasPageState createState() => _InfiniteCanvasPageState();
@@ -36,9 +45,8 @@ class InfiniteCanvasPage extends StatefulWidget {
 class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
   List<Scribble> scribbles = [];
   double _initialScale = 0.5;
-  Offset offset = Offset.zero;
   Offset _initialFocalPoint = Offset.zero;
-  Offset _sessionOffset = Offset.zero;
+
   Offset cursorPosition = Offset.zero;
   late double cursorRadius;
   late double _initcursorRadius;
@@ -62,7 +70,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                     SelectedTool.straightLine ||
                 widget.toolbarOptions.selectedTool == SelectedTool.figure) {
               Offset newOffset =
-                  (details.localFocalPoint - offset) / widget.zoomOptions.scale;
+                  (details.localFocalPoint - widget.offset) / widget.zoomOptions.scale;
               scribbles.add(_getScribble(newOffset));
             } else {
               _initialFocalPoint = details.focalPoint;
@@ -71,20 +79,20 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         },
         onScaleUpdate: (details) {
           Offset newOffset =
-              (details.localFocalPoint - offset) / widget.zoomOptions.scale;
+              (details.localFocalPoint - widget.offset) / widget.zoomOptions.scale;
           this.setState(() {
             cursorPosition = details.localFocalPoint / widget.zoomOptions.scale;
             widget.zoomOptions.scale = details.scale * _initialScale;
             widget.onChangedZoomOptions(widget.zoomOptions);
             switch (widget.toolbarOptions.selectedTool) {
               case SelectedTool.move:
-                _sessionOffset = details.focalPoint - _initialFocalPoint;
+                widget.sessionOffset = details.focalPoint - _initialFocalPoint;
                 // print(_calculateOffset(offset, _sessionOffset, scale));
                 break;
               case SelectedTool.eraser:
                 int removeIndex = -1;
                 Offset calculatedOffset = _calculateOffset(
-                    offset, _sessionOffset, widget.zoomOptions.scale);
+                    widget.offset, widget.sessionOffset, widget.zoomOptions.scale);
                 for (int i = 0; i < scribbles.length; i++) {
                   // Check in viewport
                   Scribble currentScribble = scribbles[i];
@@ -157,8 +165,9 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         },
         onScaleEnd: (details) {
           this.setState(() {
-            offset += _sessionOffset;
-            _sessionOffset = Offset.zero;
+            widget.offset += widget.sessionOffset;
+            widget.sessionOffset = Offset.zero;
+            widget.onOffsetChange(widget.offset, widget.sessionOffset);
 
             if (widget.toolbarOptions.selectedTool == SelectedTool.pencil ||
                 widget.toolbarOptions.selectedTool ==
@@ -211,9 +220,10 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
             child: ClipRRect(
               child: CustomPaint(
                 painter: CanvasCustomPainter(
+                    uploads: widget.uploads,
                     scribbles: scribbles,
                     offset: _calculateOffset(
-                        offset, _sessionOffset, widget.zoomOptions.scale),
+                        widget.offset, widget.sessionOffset, widget.zoomOptions.scale),
                     scale: widget.zoomOptions.scale,
                     cursorRadius: cursorRadius,
                     cursorPosition: cursorPosition,
