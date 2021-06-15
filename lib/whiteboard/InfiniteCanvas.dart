@@ -111,7 +111,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 for (int i = 0; i < scribbles.length; i++) {
                   // Check in viewport
                   Scribble currentScribble = scribbles[i];
-                  if (ScreenUtils.checkIfNotInScreen(
+                  if (ScreenUtils.checkScribbleIfNotInScreen(
                       currentScribble,
                       calculatedOffset,
                       screenWidth,

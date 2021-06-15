@@ -11,7 +11,10 @@ class TextsCanvas extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
 
   TextsCanvas(
-      {required this.texts, required this.offset, required this.sessionOffset, required this.toolbarOptions});
+      {required this.texts,
+      required this.offset,
+      required this.sessionOffset,
+      required this.toolbarOptions});
 
   @override
   _TextsCanvasState createState() => _TextsCanvasState();
@@ -23,20 +26,22 @@ class _TextsCanvasState extends State<TextsCanvas> {
     // TODO: Fix moving
     List<Widget> texts = [];
     for (TextItem textItem in widget.texts) {
-      if(!textItem.editing) continue;
+      if (!textItem.editing) continue;
       TextEditingController textEditingController = new TextEditingController();
       textEditingController.text = textItem.text;
-      textItem.strokeWidth =  widget.toolbarOptions.textOptions.strokeWidth;
-      textItem.color = widget.toolbarOptions.textOptions.colorPresets[widget.toolbarOptions.textOptions.currentColor];
+      textItem.strokeWidth = widget.toolbarOptions.textOptions.strokeWidth;
+      textItem.color = widget.toolbarOptions.textOptions
+          .colorPresets[widget.toolbarOptions.textOptions.currentColor];
       texts.add(Positioned(
         child: TextField(
           controller: textEditingController,
           style: TextStyle(
-            fontSize: widget.toolbarOptions.textOptions.strokeWidth,
-            color: widget.toolbarOptions.textOptions.colorPresets[widget.toolbarOptions.textOptions.currentColor]
-          ),
+              fontSize: widget.toolbarOptions.textOptions.strokeWidth,
+              color: widget.toolbarOptions.textOptions.colorPresets[
+                  widget.toolbarOptions.textOptions.currentColor]),
           decoration: const InputDecoration(
               border: OutlineInputBorder(), hintText: "Text"),
+          minLines: 3,
           onChanged: (value) {
             textItem.text = value;
           },

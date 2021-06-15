@@ -44,7 +44,7 @@ class CanvasCustomPainter extends CustomPainter {
 
     //a single line is defined as a series of points followed by a null at the end
     for (Scribble scribble in scribbles) {
-      if (ScreenUtils.checkIfNotInScreen(
+      if (ScreenUtils.checkScribbleIfNotInScreen(
           scribble, offset, screenSize.dx, screenSize.dy, scale)) {
         continue;
       }
@@ -106,14 +106,17 @@ class CanvasCustomPainter extends CustomPainter {
           break;
       }
     }
-   // Images
+    // Images
     Paint imagePaint = new Paint();
     for (Upload upload in uploads) {
-      canvas.drawImage(upload.image!, upload.offset, imagePaint);
+      if (ScreenUtils.checkUploadIfNotInScreen(
+          upload, offset, screenSize.dx, screenSize.dy, scale)) continue;
+
+      canvas.drawImage(upload.image!, upload.offset + offset, imagePaint);
     }
 
-    for (TextItem textItem in texts){
-      if(textItem.editing) continue;
+    for (TextItem textItem in texts) {
+      if (textItem.editing) continue;
 
       final textStyle = TextStyle(
         color: textItem.color,
@@ -134,6 +137,14 @@ class CanvasCustomPainter extends CustomPainter {
         minWidth: 0,
         maxWidth: size.width,
       );
+
+      if (ScreenUtils.checkTextPainterIfNotInScreen(
+          textPainter,
+          textItem.offset,
+          offset,
+          screenSize.dx,
+          screenSize.dy,
+          scale)) continue;
 
       Offset newOffset = textItem.offset + offset;
       textPainter.paint(canvas, newOffset);

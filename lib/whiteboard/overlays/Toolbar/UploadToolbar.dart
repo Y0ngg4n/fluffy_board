@@ -60,8 +60,15 @@ class _UploadToolbarState extends State<UploadToolbar> {
           child: Column(
             children: [
               ToggleButtons(
-                  onPressed: (index) {
-                    setState(() async {
+                  onPressed: (index) async {
+                    widget.toolbarOptions.uploadOptions.selectedUpload =
+                        SelectedUpload.values[index];
+                    widget.onChangedToolbarOptions(widget.toolbarOptions);
+                    FilePickerCross result =
+                        await FilePickerCross.importFromStorage(
+                      type: FileTypeCross.image,
+                    );
+                    setState(() {
                       for (int buttonIndex = 0;
                           buttonIndex < selectedUploadList.length;
                           buttonIndex++) {
@@ -71,15 +78,6 @@ class _UploadToolbarState extends State<UploadToolbar> {
                           selectedUploadList[buttonIndex] = false;
                         }
                       }
-
-                      widget.toolbarOptions.uploadOptions.selectedUpload =
-                          SelectedUpload.values[index];
-                      widget.onChangedToolbarOptions(widget.toolbarOptions);
-                      FilePickerCross result =
-                          await FilePickerCross.importFromStorage(
-                        type: FileTypeCross.image,
-                      );
-
                       ui.decodeImageFromList(result.toUint8List(), (image) {
                         widget.uploads.add(new Upload(
                             UploadType.Image,
