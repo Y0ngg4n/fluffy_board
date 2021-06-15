@@ -1,7 +1,9 @@
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/utils/ScreenUtils.dart';
+import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/PencilToolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/SettingsToolbar/ScribbleSettings.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/TextToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/UploadToolbar.dart';
@@ -15,8 +17,11 @@ import 'Toolbar/EraserToolbar.dart';
 import 'Toolbar/PencilToolbar.dart';
 import 'Toolbar/HighlighterToolbar.dart';
 
+enum SettingsSelected { none, scribble, image, text }
+
 enum SelectedTool {
   move,
+  settings,
   pencil,
   eraser,
   highlighter,
@@ -38,18 +43,20 @@ class ToolbarOptions {
   UploadOptions uploadOptions;
   TextOptions textOptions;
   bool colorPickerOpen;
+  SettingsSelected settingsSelected;
+  Scribble? settingsSelectedScribble;
 
   ToolbarOptions(
-    this.selectedTool,
-    this.pencilOptions,
-    this.highlighterOptions,
-    this.straightLineOptions,
-    this.eraserOptions,
-    this.figureOptions,
-    this.uploadOptions,
-    this.textOptions,
-    this.colorPickerOpen,
-  );
+      this.selectedTool,
+      this.pencilOptions,
+      this.highlighterOptions,
+      this.straightLineOptions,
+      this.eraserOptions,
+      this.figureOptions,
+      this.uploadOptions,
+      this.textOptions,
+      this.colorPickerOpen,
+      this.settingsSelected);
 }
 
 class Toolbar extends StatefulWidget {
@@ -59,6 +66,8 @@ class Toolbar extends StatefulWidget {
   Offset offset;
   Offset sessionOffset;
   ZoomOptions zoomOptions;
+  List<Scribble> scribbles;
+  OnScribblesChange onScribblesChange;
 
   Toolbar(
       {required this.toolbarOptions,
@@ -66,7 +75,9 @@ class Toolbar extends StatefulWidget {
       required this.uploads,
       required this.offset,
       required this.sessionOffset,
-      required this.zoomOptions});
+      required this.zoomOptions,
+      required this.scribbles,
+      required this.onScribblesChange});
 
   @override
   _ToolbarState createState() => _ToolbarState();
@@ -93,6 +104,7 @@ class _ToolbarState extends State<Toolbar> {
               borderRadius: BorderRadius.circular(_borderRadius),
               children: <Widget>[
                 Icon(OwnIcons.move),
+                Icon(Icons.settings),
                 Icon(OwnIcons.pencil_alt),
                 Icon(OwnIcons.eraser),
                 Icon(OwnIcons.highlight),
@@ -100,7 +112,6 @@ class _ToolbarState extends State<Toolbar> {
                 Icon(OwnIcons.text_fields),
                 Icon(OwnIcons.change_history),
                 Icon(Icons.file_upload_outlined),
-                Icon(Icons.cake),
                 Icon(Icons.cake),
               ],
               onPressed: (int index) {
@@ -116,6 +127,10 @@ class _ToolbarState extends State<Toolbar> {
                     widget.toolbarOptions.selectedTool =
                         SelectedTool.values[index];
                     widget.toolbarOptions.colorPickerOpen = false;
+                    widget.toolbarOptions.settingsSelected =
+                        SettingsSelected.none;
+                    widget.toolbarOptions.settingsSelectedScribble = null;
+                    widget.onChangedToolbarOptions(widget.toolbarOptions);
                   }
                 });
               },
@@ -124,6 +139,7 @@ class _ToolbarState extends State<Toolbar> {
           ),
         ),
         _openSpecialToolbar(),
+        _openSettingsToolbar(),
         _openColorPicker(),
       ],
     );
@@ -207,14 +223,47 @@ class _ToolbarState extends State<Toolbar> {
             })
           },
         );
-      default:
+      case SelectedTool.settings:
         return Container();
+    }
+  }
+
+  Widget _openSettingsToolbar() {
+    switch (widget.toolbarOptions.settingsSelected) {
+      case SettingsSelected.none:
+        return Container();
+        break;
+      case SettingsSelected.scribble:
+        return ScribbleSettings(
+            toolbarOptions: widget.toolbarOptions,
+            selectedScribble: widget.toolbarOptions.settingsSelectedScribble,
+            onChangedToolbarOptions: (toolbarOptions) {
+              setState(() {
+                widget.toolbarOptions = toolbarOptions;
+                widget.onChangedToolbarOptions(toolbarOptions);
+              });
+            },
+            onScribblesChange: (scribbles) {
+              setState(() {
+                widget.scribbles = scribbles;
+                widget.onScribblesChange(scribbles);
+              });
+            }, scribbles: widget.scribbles,);
+        break;
+      case SettingsSelected.image:
+        return Container();
+        break;
+      case SettingsSelected.text:
+        return Container();
+        break;
     }
   }
 
   Widget _openColorPicker() {
     if (widget.toolbarOptions.colorPickerOpen)
       return ColorPickerView(
+        selectedSettingsScribble:
+            widget.toolbarOptions.settingsSelectedScribble,
         toolbarOptions: widget.toolbarOptions,
         onChangedToolbarOptions: (toolBarOptions) {
           widget.onChangedToolbarOptions(toolBarOptions);

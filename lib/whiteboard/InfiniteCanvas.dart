@@ -9,7 +9,6 @@ import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dar
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:smoothing/smoothing.dart';
 import 'package:smoothie/smoothie.dart';
 
 import 'CanvasCustomPainter.dart';
@@ -17,6 +16,8 @@ import 'overlays/Toolbar.dart' as Toolbar;
 import 'overlays/Zoom.dart' as Zoom;
 
 typedef OnOffsetChange = Function(Offset offset, Offset sessionOffset);
+typedef OnScribblesChange = Function(List<Scribble>);
+typedef OnChangedToolbarOptions<T> = Function(Toolbar.ToolbarOptions);
 
 class InfiniteCanvasPage extends StatefulWidget {
   Zoom.OnChangedZoomOptions onChangedZoomOptions;
@@ -25,9 +26,12 @@ class InfiniteCanvasPage extends StatefulWidget {
   double appBarHeight;
   List<Upload> uploads;
   List<TextItem> texts;
+  List<Scribble> scribbles;
   Offset offset;
   Offset sessionOffset;
   OnOffsetChange onOffsetChange;
+  OnChangedToolbarOptions onChangedToolbarOptions;
+  OnScribblesChange onScribblesChange;
 
   InfiniteCanvasPage(
       {required this.toolbarOptions,
@@ -38,17 +42,18 @@ class InfiniteCanvasPage extends StatefulWidget {
       required this.offset,
       required this.sessionOffset,
       required this.onOffsetChange,
-      required this.texts});
+      required this.onChangedToolbarOptions,
+      required this.texts,
+      required this.scribbles,
+      required this.onScribblesChange});
 
   @override
   _InfiniteCanvasPageState createState() => _InfiniteCanvasPageState();
 }
 
 class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
-  List<Scribble> scribbles = [];
   double _initialScale = 0.5;
   Offset _initialFocalPoint = Offset.zero;
-
   Offset cursorPosition = Offset.zero;
   late double cursorRadius;
   late double _initcursorRadius;
@@ -73,7 +78,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 widget.toolbarOptions.selectedTool ==
                     SelectedTool.straightLine ||
                 widget.toolbarOptions.selectedTool == SelectedTool.figure) {
-              scribbles.add(_getScribble(newOffset));
+              widget.scribbles.add(_getScribble(newOffset));
+              widget.onScribblesChange(widget.scribbles);
             } else if (widget.toolbarOptions.selectedTool ==
                 SelectedTool.text) {
               widget.texts.add(new TextItem(
@@ -83,6 +89,41 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                       widget.toolbarOptions.textOptions.currentColor],
                   "",
                   newOffset));
+            } else if (widget.toolbarOptions.selectedTool ==
+                SelectedTool.settings) {
+              Offset calculatedOffset = _calculateOffset(widget.offset,
+                  widget.sessionOffset, widget.zoomOptions.scale);
+              for (int i = 0; i < widget.scribbles.length; i++) {
+                // Check in viewport
+                Scribble currentScribble = widget.scribbles[i];
+                if (ScreenUtils.checkScribbleIfNotInScreen(
+                    currentScribble,
+                    calculatedOffset,
+                    screenWidth,
+                    screenHeight,
+                    widget.zoomOptions.scale)) {
+                  continue;
+                }
+                List<Point> listOfPoints =
+                    widget.scribbles[i].points.map((e) => Point(e.dx, e.dy)).toList();
+                listOfPoints = listOfPoints.smooth(listOfPoints.length * 5);
+                for (int p = 0; p < listOfPoints.length; p++) {
+                  Point newDrawPoint = listOfPoints[p];
+                  if (ScreenUtils.inCircle(
+                      newDrawPoint.x.toInt(),
+                      newOffset.dx.toInt(),
+                      newDrawPoint.y.toInt(),
+                      newOffset.dy.toInt(),
+                      5)) {
+                    widget.toolbarOptions.settingsSelectedScribble =
+                        currentScribble;
+                    widget.toolbarOptions.settingsSelected =
+                        SettingsSelected.scribble;
+                    widget.onChangedToolbarOptions(widget.toolbarOptions);
+                    break;
+                  }
+                }
+              }
             } else {
               _initialFocalPoint = details.focalPoint;
               for (TextItem textItem in widget.texts) {
@@ -108,9 +149,9 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 int removeIndex = -1;
                 Offset calculatedOffset = _calculateOffset(widget.offset,
                     widget.sessionOffset, widget.zoomOptions.scale);
-                for (int i = 0; i < scribbles.length; i++) {
+                for (int i = 0; i < widget.scribbles.length; i++) {
                   // Check in viewport
-                  Scribble currentScribble = scribbles[i];
+                  Scribble currentScribble = widget.scribbles[i];
                   if (ScreenUtils.checkScribbleIfNotInScreen(
                       currentScribble,
                       calculatedOffset,
@@ -119,7 +160,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                       widget.zoomOptions.scale)) {
                     continue;
                   }
-                  List<Point> listOfPoints = scribbles[i]
+                  List<Point> listOfPoints = widget.scribbles[i]
                       .points
                       .map((e) => Point(e.dx, e.dy))
                       .toList();
@@ -137,13 +178,13 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                     }
                   }
                   if (removeIndex != -1) {
-                    scribbles.removeAt(removeIndex);
+                    widget.scribbles.removeAt(removeIndex);
                     break;
                   }
                 }
                 break;
               case SelectedTool.straightLine:
-                Scribble lastScribble = scribbles.last;
+                Scribble lastScribble = widget.scribbles.last;
                 DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
                 if (lastScribble.points.length <= 1)
                   lastScribble.points.add(newDrawPoint);
@@ -164,7 +205,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                           10);
                 break;
               case SelectedTool.figure:
-                Scribble lastScribble = scribbles.last;
+                Scribble lastScribble = widget.scribbles.last;
                 DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
                 if (lastScribble.points.length <= 1)
                   lastScribble.points.add(newDrawPoint);
@@ -172,7 +213,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   lastScribble.points.last = newDrawPoint;
                 break;
               default:
-                Scribble newScribble = scribbles.last;
+                Scribble newScribble = widget.scribbles.last;
                 DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
                 newScribble.points.add(newDrawPoint);
             }
@@ -189,7 +230,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                     SelectedTool.highlighter ||
                 widget.toolbarOptions.selectedTool ==
                     SelectedTool.straightLine) {
-              Scribble newScribble = scribbles.last;
+              Scribble newScribble = widget.scribbles.last;
               for (int i = 0; i < newScribble.points.length; i++) {
                 DrawPoint drawPoint = newScribble.points[i];
                 if (i == 0) {
@@ -211,7 +252,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   }
                 }
               }
-              scribbles.last = newScribble;
+              widget.scribbles.last = newScribble;
             }
           });
         },
@@ -237,7 +278,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 painter: CanvasCustomPainter(
                     texts: widget.texts,
                     uploads: widget.uploads,
-                    scribbles: scribbles,
+                    scribbles: widget.scribbles,
                     offset: _calculateOffset(widget.offset,
                         widget.sessionOffset, widget.zoomOptions.scale),
                     scale: widget.zoomOptions.scale,

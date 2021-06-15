@@ -36,10 +36,12 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           SelectedFigureTypeToolbar.rect, PaintingStyle.stroke),
       new UploadOptions(SelectedUpload.Image),
       new TextOptions(SelectedTextColorToolbar.ColorPreset1),
-      false);
+      false,
+      Toolbar.SettingsSelected.none);
   ZoomOptions zoomOptions = new ZoomOptions(1);
   List<Upload> uploads = [];
   List<TextItem> texts = [];
+  List<Scribble> scribbles = [];
   Offset offset = Offset.zero;
   Offset _sessionOffset = Offset.zero;
 
@@ -62,6 +64,11 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             toolbarOptions: toolbarOptions,
             zoomOptions: zoomOptions,
             appBarHeight: appBar.preferredSize.height,
+            onScribblesChange: (scribbles) {
+              setState(() {
+                this.scribbles = scribbles;
+              });
+            },
             onChangedZoomOptions: (zoomOptions) {
               setState(() {
                 this.zoomOptions = zoomOptions;
@@ -77,9 +84,21 @@ class _WhiteboardViewState extends State<WhiteboardView> {
               })
             },
             uploads: uploads,
+            onChangedToolbarOptions: (toolBarOptions) {
+              setState(() {
+                this.toolbarOptions = toolBarOptions;
+              });
+            },
+            scribbles: scribbles,
           ),
-          TextsCanvas(sessionOffset: _sessionOffset, offset: offset, texts: texts, toolbarOptions: toolbarOptions,),
+          TextsCanvas(
+            sessionOffset: _sessionOffset,
+            offset: offset,
+            texts: texts,
+            toolbarOptions: toolbarOptions,
+          ),
           Toolbar.Toolbar(
+            scribbles: scribbles,
             toolbarOptions: toolbarOptions,
             zoomOptions: zoomOptions,
             offset: offset,
@@ -88,6 +107,11 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             onChangedToolbarOptions: (toolBarOptions) {
               setState(() {
                 this.toolbarOptions = toolBarOptions;
+              });
+            },
+            onScribblesChange: (scribbles) {
+              setState(() {
+                this.scribbles = scribbles;
               });
             },
           ),
