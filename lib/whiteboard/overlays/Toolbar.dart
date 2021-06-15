@@ -3,6 +3,7 @@ import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/PencilToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/TextToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/UploadToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Zoom.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ enum SelectedTool {
   eraser,
   highlighter,
   straightLine,
+  text,
   figure,
   upload,
 }
@@ -34,17 +36,20 @@ class ToolbarOptions {
   EraserOptions eraserOptions;
   FigureOptions figureOptions;
   UploadOptions uploadOptions;
+  TextOptions textOptions;
   bool colorPickerOpen;
 
   ToolbarOptions(
-      this.selectedTool,
-      this.pencilOptions,
-      this.highlighterOptions,
-      this.straightLineOptions,
-      this.eraserOptions,
-      this.figureOptions,
-      this.uploadOptions,
-      this.colorPickerOpen);
+    this.selectedTool,
+    this.pencilOptions,
+    this.highlighterOptions,
+    this.straightLineOptions,
+    this.eraserOptions,
+    this.figureOptions,
+    this.uploadOptions,
+    this.textOptions,
+    this.colorPickerOpen,
+  );
 }
 
 class Toolbar extends StatefulWidget {
@@ -92,9 +97,9 @@ class _ToolbarState extends State<Toolbar> {
                 Icon(OwnIcons.eraser),
                 Icon(OwnIcons.highlight),
                 Icon(OwnIcons.flow_line),
+                Icon(OwnIcons.text_fields),
                 Icon(OwnIcons.change_history),
                 Icon(Icons.file_upload_outlined),
-                Icon(Icons.cake),
                 Icon(Icons.cake),
                 Icon(Icons.cake),
               ],
@@ -188,8 +193,19 @@ class _ToolbarState extends State<Toolbar> {
               widget.toolbarOptions = toolbarOptions;
               widget.onChangedToolbarOptions(toolbarOptions);
             })
-          }, offset: widget.offset,
+          },
+          offset: widget.offset,
           sessionOffset: widget.offset,
+        );
+      case SelectedTool.text:
+        return TextToolbar(
+          toolbarOptions: widget.toolbarOptions,
+          onChangedToolbarOptions: (toolbarOptions) => {
+            setState(() {
+              widget.toolbarOptions = toolbarOptions;
+              widget.onChangedToolbarOptions(toolbarOptions);
+            })
+          },
         );
       default:
         return Container();

@@ -44,3 +44,13 @@ class Upload{
 
   Upload(this.uploadType, this.uint8List, this.offset, this.image);
 }
+
+class TextItem{
+  bool editing;
+  double strokeWidth;
+  Color color;
+  String text;
+  Offset offset;
+
+  TextItem(this.editing, this.strokeWidth, this.color, this.text, this.offset);
+}

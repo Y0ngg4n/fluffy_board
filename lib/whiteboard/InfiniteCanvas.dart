@@ -24,6 +24,7 @@ class InfiniteCanvasPage extends StatefulWidget {
   Zoom.ZoomOptions zoomOptions;
   double appBarHeight;
   List<Upload> uploads;
+  List<TextItem> texts;
   Offset offset;
   Offset sessionOffset;
   OnOffsetChange onOffsetChange;
@@ -36,7 +37,8 @@ class InfiniteCanvasPage extends StatefulWidget {
       required this.uploads,
       required this.offset,
       required this.sessionOffset,
-      required this.onOffsetChange});
+      required this.onOffsetChange,
+      required this.texts});
 
   @override
   _InfiniteCanvasPageState createState() => _InfiniteCanvasPageState();
@@ -63,23 +65,35 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         onScaleStart: (details) {
           this.setState(() {
             _initialScale = widget.zoomOptions.scale;
+            Offset newOffset = (details.localFocalPoint - widget.offset) /
+                widget.zoomOptions.scale;
             if (widget.toolbarOptions.selectedTool == SelectedTool.pencil ||
                 widget.toolbarOptions.selectedTool ==
                     SelectedTool.highlighter ||
                 widget.toolbarOptions.selectedTool ==
                     SelectedTool.straightLine ||
                 widget.toolbarOptions.selectedTool == SelectedTool.figure) {
-              Offset newOffset =
-                  (details.localFocalPoint - widget.offset) / widget.zoomOptions.scale;
               scribbles.add(_getScribble(newOffset));
+            } else if (widget.toolbarOptions.selectedTool ==
+                SelectedTool.text) {
+              widget.texts.add(new TextItem(
+                  true,
+                  widget.toolbarOptions.textOptions.strokeWidth,
+                  widget.toolbarOptions.textOptions.colorPresets[
+                      widget.toolbarOptions.textOptions.currentColor],
+                  "",
+                  newOffset));
             } else {
               _initialFocalPoint = details.focalPoint;
+              for (TextItem textItem in widget.texts) {
+                textItem.editing = false;
+              }
             }
           });
         },
         onScaleUpdate: (details) {
-          Offset newOffset =
-              (details.localFocalPoint - widget.offset) / widget.zoomOptions.scale;
+          Offset newOffset = (details.localFocalPoint - widget.offset) /
+              widget.zoomOptions.scale;
           this.setState(() {
             cursorPosition = details.localFocalPoint / widget.zoomOptions.scale;
             widget.zoomOptions.scale = details.scale * _initialScale;
@@ -87,12 +101,13 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
             switch (widget.toolbarOptions.selectedTool) {
               case SelectedTool.move:
                 widget.sessionOffset = details.focalPoint - _initialFocalPoint;
+                widget.onOffsetChange(widget.offset, widget.sessionOffset);
                 // print(_calculateOffset(offset, _sessionOffset, scale));
                 break;
               case SelectedTool.eraser:
                 int removeIndex = -1;
-                Offset calculatedOffset = _calculateOffset(
-                    widget.offset, widget.sessionOffset, widget.zoomOptions.scale);
+                Offset calculatedOffset = _calculateOffset(widget.offset,
+                    widget.sessionOffset, widget.zoomOptions.scale);
                 for (int i = 0; i < scribbles.length; i++) {
                   // Check in viewport
                   Scribble currentScribble = scribbles[i];
@@ -220,10 +235,11 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
             child: ClipRRect(
               child: CustomPaint(
                 painter: CanvasCustomPainter(
+                    texts: widget.texts,
                     uploads: widget.uploads,
                     scribbles: scribbles,
-                    offset: _calculateOffset(
-                        widget.offset, widget.sessionOffset, widget.zoomOptions.scale),
+                    offset: _calculateOffset(widget.offset,
+                        widget.sessionOffset, widget.zoomOptions.scale),
                     scale: widget.zoomOptions.scale,
                     cursorRadius: cursorRadius,
                     cursorPosition: cursorPosition,

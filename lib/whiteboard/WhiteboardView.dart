@@ -1,10 +1,12 @@
 import 'package:fluffy_board/dashboard/filemanager/FileManager.dart';
 import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
+import 'package:fluffy_board/whiteboard/TextsCanvas.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/EraserToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/HighlighterToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/PencilToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/TextToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/UploadToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Zoom.dart';
 import 'package:flutter/material.dart';
@@ -27,13 +29,17 @@ class _WhiteboardViewState extends State<WhiteboardView> {
       Toolbar.SelectedTool.move,
       new PencilOptions(SelectedPencilColorToolbar.ColorPreset1),
       new HighlighterOptions(SelectedHighlighterColorToolbar.ColorPreset1),
-      new StraightLineOptions(SelectedStraightLineColorToolbar.ColorPreset1, SelectedStraightLineCapToolbar.Normal),
+      new StraightLineOptions(SelectedStraightLineColorToolbar.ColorPreset1,
+          SelectedStraightLineCapToolbar.Normal),
       new EraserOptions(),
-      new FigureOptions(SelectedFigureColorToolbar.ColorPreset1, SelectedFigureTypeToolbar.rect, PaintingStyle.stroke),
+      new FigureOptions(SelectedFigureColorToolbar.ColorPreset1,
+          SelectedFigureTypeToolbar.rect, PaintingStyle.stroke),
       new UploadOptions(SelectedUpload.Image),
+      new TextOptions(SelectedTextColorToolbar.ColorPreset1),
       false);
   ZoomOptions zoomOptions = new ZoomOptions(1);
   List<Upload> uploads = [];
+  List<TextItem> texts = [];
   Offset offset = Offset.zero;
   Offset _sessionOffset = Offset.zero;
 
@@ -60,15 +66,19 @@ class _WhiteboardViewState extends State<WhiteboardView> {
               setState(() {
                 this.zoomOptions = zoomOptions;
               });
-            }, offset: offset,
+            },
+            offset: offset,
+            texts: texts,
             sessionOffset: _sessionOffset,
             onOffsetChange: (offset, sessionOffset) => {
-              setState((){
+              setState(() {
                 this.offset = offset;
                 this._sessionOffset = sessionOffset;
               })
-            }, uploads: uploads,
+            },
+            uploads: uploads,
           ),
+          TextsCanvas(sessionOffset: _sessionOffset, offset: offset, texts: texts, toolbarOptions: toolbarOptions,),
           Toolbar.Toolbar(
             toolbarOptions: toolbarOptions,
             zoomOptions: zoomOptions,

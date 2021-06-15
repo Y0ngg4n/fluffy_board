@@ -17,17 +17,18 @@ class CanvasCustomPainter extends CustomPainter {
   Offset cursorPosition;
   Offset screenSize;
   List<Upload> uploads;
+  List<TextItem> texts;
 
-  CanvasCustomPainter({
-    required this.scribbles,
-    required this.offset,
-    required this.scale,
-    required this.cursorRadius,
-    required this.cursorPosition,
-    required this.toolbarOptions,
-    required this.screenSize,
-    required this.uploads
-  });
+  CanvasCustomPainter(
+      {required this.scribbles,
+      required this.offset,
+      required this.scale,
+      required this.cursorRadius,
+      required this.cursorPosition,
+      required this.toolbarOptions,
+      required this.screenSize,
+      required this.uploads,
+      required this.texts});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -61,15 +62,14 @@ class CanvasCustomPainter extends CustomPainter {
               Rect.fromLTWH(
                   scribble.points.first.dx + offset.dx,
                   scribble.points.first.dy + offset.dy,
-                  scribble.points.last.dx -
-                      scribble.points.first.dx,
-                  scribble.points.last.dy -
-                      scribble.points.first.dy),
+                  scribble.points.last.dx - scribble.points.first.dx,
+                  scribble.points.last.dy - scribble.points.first.dy),
               figurePaint);
           break;
         case SelectedFigureTypeToolbar.triangle:
           Path path = new Path();
-          path.moveTo((scribble.points.first + offset).dx, (scribble.points.first + offset).dy);
+          path.moveTo((scribble.points.first + offset).dx,
+              (scribble.points.first + offset).dy);
           List<Offset> points = List.empty(growable: true);
           points.add(scribble.points.first + offset);
           points.add(scribble.points.last + offset);
@@ -82,10 +82,8 @@ class CanvasCustomPainter extends CustomPainter {
           canvas.drawPath(path, figurePaint);
           break;
         case SelectedFigureTypeToolbar.circle:
-          double deltaX =
-              scribble.points.last.dx - scribble.points.first.dx;
-          double deltaY =
-              scribble.points.last.dy - scribble.points.first.dy;
+          double deltaX = scribble.points.last.dx - scribble.points.first.dx;
+          double deltaY = scribble.points.last.dy - scribble.points.first.dy;
           double distance = sqrt((deltaX * deltaX) + (deltaY * deltaY));
           canvas.drawCircle(
               scribble.points.first + offset, distance, figurePaint);
@@ -108,10 +106,37 @@ class CanvasCustomPainter extends CustomPainter {
           break;
       }
     }
-
+   // Images
     Paint imagePaint = new Paint();
-    for (Upload upload in uploads){
+    for (Upload upload in uploads) {
       canvas.drawImage(upload.image!, upload.offset, imagePaint);
+    }
+
+    for (TextItem textItem in texts){
+      if(textItem.editing) continue;
+
+      final textStyle = TextStyle(
+        color: textItem.color,
+        fontSize: textItem.strokeWidth,
+      );
+
+      final textSpan = TextSpan(
+        text: textItem.text,
+        style: textStyle,
+      );
+
+      final textPainter = TextPainter(
+        text: textSpan,
+        textDirection: TextDirection.ltr,
+      );
+
+      textPainter.layout(
+        minWidth: 0,
+        maxWidth: size.width,
+      );
+
+      Offset newOffset = textItem.offset + offset;
+      textPainter.paint(canvas, newOffset);
     }
 
     Paint cursorPaint = Paint()
