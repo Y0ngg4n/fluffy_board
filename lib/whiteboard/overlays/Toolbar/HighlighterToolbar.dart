@@ -17,12 +17,36 @@ class HighlighterOptions extends DrawOptions {
   SelectedHighlighterColorToolbar selectedHighlighterColorToolbar =
       SelectedHighlighterColorToolbar.ColorPreset1;
 
-  HighlighterOptions(this.selectedHighlighterColorToolbar)
-      : super(
-            List.from({Colors.limeAccent, Colors.lightGreen, Colors.lightBlue}),
-            5,
-            StrokeCap.square,
-            0);
+  HighlighterOptions(this.selectedHighlighterColorToolbar,
+      List<Color> colors, double strokeWidth, StrokeCap strokeCap, int currentColor, dynamic Function(DrawOptions) onHighlighterChange)
+      : super(colors, strokeWidth, strokeCap, currentColor, onHighlighterChange);
+}
+
+class EncodeHighlighterOptions{
+  List<String> colorPresets;
+  double strokeWidth;
+
+  EncodeHighlighterOptions(this.colorPresets, this.strokeWidth);
+
+  Map toJson() {
+    return {
+      'color_presets': colorPresets,
+      'stroke_width': strokeWidth,
+    };
+  }
+}
+
+
+class DecodeHighlighterOptions{
+  late List<dynamic> colorPresets;
+  late double strokeWidth;
+
+
+  DecodeHighlighterOptions(this.colorPresets, this.strokeWidth);
+
+  factory DecodeHighlighterOptions.fromJson(dynamic json){
+    return DecodeHighlighterOptions(json['color_presets'] as List<dynamic>, json['stroke_width'] as double);
+  }
 }
 
 class HighlighterToolbar extends StatefulWidget {
@@ -64,6 +88,9 @@ class _HighlighterToolbarState extends State<HighlighterToolbar> {
                       widget.toolbarOptions.highlighterOptions.strokeWidth = value;
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
                     });
+                  },
+                  onChangeEnd: (value) {
+                    widget.toolbarOptions.highlighterOptions.onDrawOptionChange(widget.toolbarOptions.highlighterOptions);
                   },
                   min: 5,
                   max: 50,

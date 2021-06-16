@@ -15,6 +15,16 @@ import 'ActionButtons.dart';
 class Dashboard extends StatefulWidget {
   @override
   _DashboardState createState() => _DashboardState();
+
+  static Widget loading(String name) {
+    return (Scaffold(
+      appBar: AppBar(
+        title: Text(name),
+      ),
+      body: Center(child: CircularProgressIndicator()),
+    ));
+  }
+
 }
 
 class _DashboardState extends State<Dashboard> {
@@ -35,11 +45,11 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     const name = "Dashboard";
 
-    if (!checkedLogin && !storageReady || (!checkedLogin && !storageReady && !loggedIn)) return (_loading(name));
+    if (!checkedLogin && !storageReady || (!checkedLogin && !storageReady && !loggedIn)) return (Dashboard.loading(name));
     Future.delayed(const Duration(milliseconds: 1000), () {
       if (!loggedIn) Navigator.pushReplacementNamed(context, '/login');
     });
-    if(!loggedIn) return (_loading(name));
+    if(!loggedIn) return (Dashboard.loading(name));
     return (Scaffold(
       appBar:
           AppBar(title: Text(name), actions: [AvatarIcon()]),
@@ -51,14 +61,7 @@ class _DashboardState extends State<Dashboard> {
 
   Future<void> afterFirstLayout(BuildContext context) async {}
 
-  Widget _loading(String name) {
-    return (Scaffold(
-      appBar: AppBar(
-        title: Text(name),
-      ),
-      body: Center(child: CircularProgressIndicator()),
-    ));
-  }
+
 
   _setStorageReady() {
     auth_token = accountStorage.getItem("auth_token");

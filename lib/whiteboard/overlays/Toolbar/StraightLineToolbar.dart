@@ -22,10 +22,35 @@ class StraightLineOptions extends DrawOptions {
   SelectedStraightLineCapToolbar selectedStraightLineCapToolbar =
       SelectedStraightLineCapToolbar.Normal;
 
-  StraightLineOptions(this.selectedStraightLineColorToolbar,
-      this.selectedStraightLineCapToolbar)
-      : super(List.from({Colors.black, Colors.red, Colors.blue}), 1,
-            StrokeCap.round, 0);
+  StraightLineOptions(this.selectedStraightLineColorToolbar, this.selectedStraightLineCapToolbar,
+      List<Color> colors, double strokeWidth, StrokeCap strokeCap, int currentColor, dynamic Function(DrawOptions) onHighlighterChange)
+      : super(colors, strokeWidth, strokeCap, currentColor, onHighlighterChange);
+}
+
+class EncodeStraightLineOptions{
+  List<String> colorPresets;
+  double strokeWidth;
+
+  EncodeStraightLineOptions(this.colorPresets, this.strokeWidth);
+
+  Map toJson() {
+    return {
+      'color_presets': colorPresets,
+      'stroke_width': strokeWidth,
+    };
+  }
+}
+
+class DecodeStraightLineOptions{
+  late List<dynamic> colorPresets;
+  late double strokeWidth;
+
+
+  DecodeStraightLineOptions(this.colorPresets, this.strokeWidth);
+
+  factory DecodeStraightLineOptions.fromJson(dynamic json){
+    return DecodeStraightLineOptions(json['color_presets'] as List<dynamic>, json['stroke_width'] as double);
+  }
 }
 
 class StraightLineToolbar extends StatefulWidget {
@@ -69,6 +94,9 @@ class _StraightLineToolbarState extends State<StraightLineToolbar> {
                           value;
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
                     });
+                  },
+                  onChangeEnd: (value) {
+                    widget.toolbarOptions.straightLineOptions.onDrawOptionChange(widget.toolbarOptions.straightLineOptions);
                   },
                   min: 1,
                   max: 50,

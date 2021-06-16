@@ -10,9 +10,32 @@ import 'DrawOptions.dart';
 
 class EraserOptions extends DrawOptions {
 
-  EraserOptions()
-      : super(List.empty(),
-      50, StrokeCap.round, 0);
+  EraserOptions(List<Color> colors, double strokeWidth, StrokeCap strokeCap, int currentColor, dynamic Function(DrawOptions) onEraserChange)
+      : super(colors, strokeWidth, strokeCap, currentColor, onEraserChange);
+}
+
+class EncodeEraserOptions{
+  double strokeWidth;
+
+  EncodeEraserOptions(this.strokeWidth);
+
+  Map toJson() {
+    return {
+      'stroke_width': strokeWidth,
+    };
+  }
+}
+
+
+class DecodeEraserOptions{
+  late double strokeWidth;
+
+
+  DecodeEraserOptions(this.strokeWidth);
+
+  factory DecodeEraserOptions.fromJson(dynamic json){
+    return DecodeEraserOptions(json['stroke_width'] as double);
+  }
 }
 
 class EraserToolbar extends StatefulWidget {
@@ -52,6 +75,9 @@ class _EraserToolbarState extends State<EraserToolbar> {
                       widget.toolbarOptions.eraserOptions.strokeWidth = value;
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
                     });
+                  },
+                  onChangeEnd: (value) {
+                    widget.toolbarOptions.eraserOptions.onDrawOptionChange(widget.toolbarOptions.eraserOptions);
                   },
                   min: 1,
                   max: 200,

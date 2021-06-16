@@ -246,7 +246,7 @@ class _FileManagerState extends State<FileManager> {
                           context,
                           MaterialPageRoute<void>(
                               builder: (BuildContext context) =>
-                                  WhiteboardView(whiteboard)));
+                                  WhiteboardView(whiteboard, widget.auth_token)));
                     },
                   ),
                   Text(

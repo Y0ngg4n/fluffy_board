@@ -19,7 +19,7 @@ class UploadOptions extends DrawOptions {
   SelectedUpload selectedUpload = SelectedUpload.Image;
 
   UploadOptions(this.selectedUpload)
-      : super(List.empty(growable: false), 1, StrokeCap.round, 0);
+      : super(List.empty(growable: false), 1, StrokeCap.round, 0, (DrawOptions)=>{});
 }
 
 class UploadToolbar extends StatefulWidget {

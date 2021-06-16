@@ -19,7 +19,7 @@ class BackgroundOptions extends DrawOptions {
 
   BackgroundOptions(this.selectedBackgroundTypeToolbar)
       : super(List.empty(),
-      50, StrokeCap.round, 0);
+      50, StrokeCap.round, 0,(DrawOptions)=>{});
 }
 
 class BackgroundToolbar extends StatefulWidget {

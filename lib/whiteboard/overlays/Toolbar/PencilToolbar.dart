@@ -17,10 +17,39 @@ class PencilOptions extends DrawOptions {
   SelectedPencilColorToolbar selectedPencilColorToolbar =
       SelectedPencilColorToolbar.ColorPreset1;
 
-  PencilOptions(this.selectedPencilColorToolbar)
-      : super(List.from({Colors.black, Colors.red, Colors.blue}),
-      1, StrokeCap.round, 0);
+  PencilOptions(this.selectedPencilColorToolbar,
+      List<Color> colors, double strokeWidth, StrokeCap strokeCap, int currentColor, dynamic Function(DrawOptions) onPencilChange)
+      : super(colors, strokeWidth, strokeCap, currentColor, onPencilChange);
 }
+
+class EncodePencilOptions{
+  List<String> colorPresets;
+  double strokeWidth;
+
+  EncodePencilOptions(this.colorPresets, this.strokeWidth);
+
+  Map toJson() {
+    return {
+      'color_presets': colorPresets,
+      'stroke_width': strokeWidth,
+    };
+  }
+
+}
+
+
+class DecodePencilOptions{
+  late List<dynamic> colorPresets;
+  late double strokeWidth;
+
+
+  DecodePencilOptions(this.colorPresets, this.strokeWidth);
+
+  factory DecodePencilOptions.fromJson(dynamic json){
+    return DecodePencilOptions(json['color_presets'] as List<dynamic>, json['stroke_width'] as double);
+  }
+}
+
 
 class PencilToolbar extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
@@ -60,7 +89,11 @@ class _PencilToolbarState extends State<PencilToolbar> {
                     setState(() {
                       widget.toolbarOptions.pencilOptions.strokeWidth = value;
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
+
                     });
+                  },
+                  onChangeEnd: (value) {
+                    widget.toolbarOptions.pencilOptions.onDrawOptionChange(widget.toolbarOptions.pencilOptions);
                   },
                   min: 1,
                   max: 50,

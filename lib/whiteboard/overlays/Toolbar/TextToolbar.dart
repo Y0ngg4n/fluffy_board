@@ -19,7 +19,7 @@ class TextOptions extends DrawOptions {
 
   TextOptions(this.selectedTextColorToolbar)
       : super(List.from({Colors.black, Colors.red, Colors.blue}),
-      10, StrokeCap.round, 0);
+      10, StrokeCap.round, 0, (DrawOptions)=>{});
 }
 
 class TextToolbar extends StatefulWidget {

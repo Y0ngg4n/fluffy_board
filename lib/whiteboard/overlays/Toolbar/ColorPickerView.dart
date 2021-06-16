@@ -63,6 +63,19 @@ class _ColorPickerViewState extends State<ColorPickerView> {
                     }else{
                     drawOptions.colorPresets[drawOptions.currentColor] = color;
                     widget.onChangedToolbarOptions(widget.toolbarOptions);
+                    switch (widget.toolbarOptions.selectedTool){
+                      case Toolbar.SelectedTool.pencil:
+                        widget.toolbarOptions.pencilOptions.onDrawOptionChange(widget.toolbarOptions.pencilOptions);
+                        break;
+                      case Toolbar.SelectedTool.highlighter:
+                        widget.toolbarOptions.highlighterOptions.onDrawOptionChange(widget.toolbarOptions.highlighterOptions);
+                        break;
+                      case Toolbar.SelectedTool.straightLine:
+                        widget.toolbarOptions.straightLineOptions.onDrawOptionChange(widget.toolbarOptions.straightLineOptions);
+                        break;
+                      default:
+                        break;
+                    }
                     }
                   })
                 },

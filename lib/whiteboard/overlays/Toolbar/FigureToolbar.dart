@@ -31,7 +31,7 @@ class FigureOptions extends DrawOptions {
 
   FigureOptions(this.selectedFigureColorToolbar, this.selectedFigureTypeToolbar, this.paintingStyle)
       : super(List.from({Colors.black, Colors.red, Colors.blue}), 1,
-            StrokeCap.round, 0);
+            StrokeCap.round, 0, (DrawOptions)=>{});
 }
 
 class FigureToolbar extends StatefulWidget {
