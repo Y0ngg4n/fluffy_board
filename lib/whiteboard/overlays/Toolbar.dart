@@ -45,6 +45,7 @@ class ToolbarOptions {
   bool colorPickerOpen;
   SettingsSelected settingsSelected;
   Scribble? settingsSelectedScribble;
+  Upload? settingsSelectedUpload;
 
   ToolbarOptions(
       this.selectedTool,
@@ -56,7 +57,8 @@ class ToolbarOptions {
       this.uploadOptions,
       this.textOptions,
       this.colorPickerOpen,
-      this.settingsSelected);
+      this.settingsSelected
+      );
 }
 
 class Toolbar extends StatefulWidget {

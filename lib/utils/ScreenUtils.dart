@@ -25,6 +25,14 @@ class ScreenUtils {
       return false;
   }
 
+  static bool inRect(Rect rect, Offset location) {
+    if (location.dx >= rect.topLeft.dx && location.dx <= rect.topRight.dx
+    && location.dy >= rect.topCenter.dy && location.dy <= rect.bottomCenter.dy)
+      return true;
+    else
+      return false;
+  }
+
   static bool checkScribbleIfNotInScreen(
       Scribble currentScribble,
       Offset calculatedOffset,

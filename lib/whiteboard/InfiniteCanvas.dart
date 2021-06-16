@@ -57,6 +57,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
   Offset cursorPosition = Offset.zero;
   Offset onSettingsMove = Offset.zero;
   List<DrawPoint> onSettingsMovePoints = [];
+  Offset? onSettingsMoveUploadOffset;
   late double cursorRadius;
   late double _initcursorRadius;
 
@@ -95,6 +96,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 SelectedTool.settings) {
               Offset calculatedOffset = _calculateOffset(widget.offset,
                   widget.sessionOffset, widget.zoomOptions.scale);
+              // Check Scribbles
               for (int i = 0; i < widget.scribbles.length; i++) {
                 // Check in viewport
                 Scribble currentScribble = widget.scribbles[i];
@@ -117,7 +119,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                       newOffset.dx.toInt(),
                       newDrawPoint.y.toInt(),
                       newOffset.dy.toInt(),
-                      5)) {
+                      10)) {
                     widget.toolbarOptions.settingsSelectedScribble =
                         currentScribble;
                     widget.toolbarOptions.settingsSelected =
@@ -125,6 +127,26 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                     widget.onChangedToolbarOptions(widget.toolbarOptions);
                     onSettingsMove = newOffset;
                     onSettingsMovePoints = currentScribble.points;
+                    break;
+                  }
+                }
+              }
+              // Check uploads
+              for (Upload upload in widget.uploads) {
+                // Check if image
+                if (upload.image != null) {
+                  if (ScreenUtils.inRect(
+                      Rect.fromLTWH(
+                          upload.offset.dx,
+                          upload.offset.dy,
+                          upload.image!.width.toDouble(),
+                          upload.image!.height.toDouble()),
+                      newOffset)) {
+                    widget.toolbarOptions.settingsSelectedUpload = upload;
+                    widget.toolbarOptions.settingsSelected =
+                        SettingsSelected.image;
+                    onSettingsMove = newOffset;
+                    onSettingsMoveUploadOffset = upload.offset;
                     break;
                   }
                 }
@@ -221,18 +243,21 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                         SettingsSelected.scribble &&
                     widget.toolbarOptions.settingsSelectedScribble != null &&
                     onSettingsMovePoints.isNotEmpty) {
-                  List<DrawPoint> points = onSettingsMovePoints;
                   List<DrawPoint> newPoints = List.empty(growable: true);
-                  for (DrawPoint drawPoint in points) {
+                  for (DrawPoint drawPoint in onSettingsMovePoints) {
                     newPoints.add(new DrawPoint.of(
                         drawPoint + (newOffset - onSettingsMove)));
                   }
-                  print(points);
-                  print(newPoints);
                   widget.toolbarOptions.settingsSelectedScribble!.points =
                       newPoints;
-                  widget.onChangedToolbarOptions(widget.toolbarOptions);
+                } else if (widget.toolbarOptions.settingsSelected ==
+                        SettingsSelected.image &&
+                    widget.toolbarOptions.settingsSelectedUpload != null &&
+                    onSettingsMoveUploadOffset != null) {
+                  widget.toolbarOptions.settingsSelectedUpload!.offset =
+                      (onSettingsMoveUploadOffset! + (newOffset - onSettingsMove));
                 }
+                widget.onChangedToolbarOptions(widget.toolbarOptions);
                 break;
               default:
                 Scribble newScribble = widget.scribbles.last;
