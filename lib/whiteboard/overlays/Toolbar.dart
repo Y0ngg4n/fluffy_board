@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 
 import '../DrawPoint.dart';
+import 'Toolbar/BackgroundToolbar.dart';
 import 'Toolbar/ColorPickerView.dart';
 import 'Toolbar/EraserToolbar.dart';
 import 'Toolbar/PencilToolbar.dart';
@@ -29,6 +30,7 @@ enum SelectedTool {
   text,
   figure,
   upload,
+  background
 }
 
 typedef OnChangedToolbarOptions<T> = Function(ToolbarOptions);
@@ -42,6 +44,7 @@ class ToolbarOptions {
   FigureOptions figureOptions;
   UploadOptions uploadOptions;
   TextOptions textOptions;
+  BackgroundOptions backgroundOptions;
   bool colorPickerOpen;
   SettingsSelected settingsSelected;
   Scribble? settingsSelectedScribble;
@@ -56,6 +59,7 @@ class ToolbarOptions {
       this.figureOptions,
       this.uploadOptions,
       this.textOptions,
+      this.backgroundOptions,
       this.colorPickerOpen,
       this.settingsSelected
       );
@@ -114,7 +118,7 @@ class _ToolbarState extends State<Toolbar> {
                 Icon(OwnIcons.text_fields),
                 Icon(OwnIcons.change_history),
                 Icon(Icons.file_upload_outlined),
-                Icon(Icons.cake),
+                Icon(Icons.grid_4x4),
               ],
               onPressed: (int index) {
                 setState(() {
@@ -227,6 +231,15 @@ class _ToolbarState extends State<Toolbar> {
         );
       case SelectedTool.settings:
         return Container();
+      case SelectedTool.background:
+        return BackgroundToolbar(toolbarOptions: widget.toolbarOptions, onChangedToolbarOptions: (toolbarOptions) {
+          setState(() {
+            setState(() {
+              widget.toolbarOptions = toolbarOptions;
+              widget.onChangedToolbarOptions(toolbarOptions);
+            });
+          });
+        });
     }
   }
 

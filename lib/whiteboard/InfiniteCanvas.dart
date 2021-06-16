@@ -170,7 +170,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
               case SelectedTool.move:
                 widget.sessionOffset = details.focalPoint - _initialFocalPoint;
                 widget.onOffsetChange(widget.offset, widget.sessionOffset);
-                // print(_calculateOffset(offset, _sessionOffset, scale));
+                break;
+              case SelectedTool.background:
                 break;
               case SelectedTool.eraser:
                 int removeIndex = -1;

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/BackgroundToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -159,6 +160,44 @@ class CanvasCustomPainter extends CustomPainter {
 
     // Draw Cursor radius
     canvas.drawCircle(cursorPosition, cursorRadius, cursorPaint);
+
+    Paint backgroundPaint = Paint()
+      ..strokeCap = StrokeCap.round
+      ..isAntiAlias = true
+      ..color = Colors.blueGrey
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+
+    // Draw Background
+    if (toolbarOptions.backgroundOptions.selectedBackgroundTypeToolbar ==
+        SelectedBackgroundTypeToolbar.Lines || toolbarOptions.backgroundOptions.selectedBackgroundTypeToolbar ==
+        SelectedBackgroundTypeToolbar.Grid) {
+      for (int i = -offset.dy.toInt().abs();
+          i <
+              (((screenSize.dy - offset.dy) / scale) /
+                  toolbarOptions.backgroundOptions.strokeWidth);
+          i++) {
+        canvas.drawLine(
+            new Offset(0,
+                (toolbarOptions.backgroundOptions.strokeWidth * i) + offset.dy / scale),
+            new Offset(screenSize.dx / scale,
+                (toolbarOptions.backgroundOptions.strokeWidth * i) + offset.dy / scale),
+            backgroundPaint);
+      }
+    }
+    if(toolbarOptions.backgroundOptions.selectedBackgroundTypeToolbar ==
+        SelectedBackgroundTypeToolbar.Grid){
+      for (int i = -offset.dx.toInt().abs();
+      i <
+          (((screenSize.dx - offset.dx) / scale) /
+              toolbarOptions.backgroundOptions.strokeWidth);
+      i++) {
+        canvas.drawLine(
+            new Offset((toolbarOptions.backgroundOptions.strokeWidth * i) + offset.dx / scale, 0),
+            new Offset((toolbarOptions.backgroundOptions.strokeWidth * i) + offset.dx / scale, screenSize.dx / scale,),
+            backgroundPaint);
+      }
+    }
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:fluffy_board/dashboard/filemanager/FileManager.dart';
 import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
 import 'package:fluffy_board/whiteboard/TextsCanvas.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/BackgroundToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/EraserToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/HighlighterToolbar.dart';
@@ -36,6 +37,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           SelectedFigureTypeToolbar.rect, PaintingStyle.stroke),
       new UploadOptions(SelectedUpload.Image),
       new TextOptions(SelectedTextColorToolbar.ColorPreset1),
+      new BackgroundOptions(SelectedBackgroundTypeToolbar.White),
       false,
       Toolbar.SettingsSelected.none);
   ZoomOptions zoomOptions = new ZoomOptions(1);
