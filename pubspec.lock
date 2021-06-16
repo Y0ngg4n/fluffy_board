@@ -98,7 +98,7 @@ packages:
       name: file
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.1.1"
+    version: "6.1.2"
   file_picker:
     dependency: transitive
     description:
@@ -274,7 +274,7 @@ packages:
       name: package_info_plus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.3"
   package_info_plus_linux:
     dependency: transitive
     description:
@@ -421,7 +421,7 @@ packages:
       name: share_plus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.2"
+    version: "2.1.4"
   share_plus_linux:
     dependency: transitive
     description:

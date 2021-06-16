@@ -55,6 +55,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
   double _initialScale = 0.5;
   Offset _initialFocalPoint = Offset.zero;
   Offset cursorPosition = Offset.zero;
+  Offset onSettingsMove = Offset.zero;
+  List<DrawPoint> onSettingsMovePoints = [];
   late double cursorRadius;
   late double _initcursorRadius;
 
@@ -104,8 +106,9 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                     widget.zoomOptions.scale)) {
                   continue;
                 }
-                List<Point> listOfPoints =
-                    widget.scribbles[i].points.map((e) => Point(e.dx, e.dy)).toList();
+                List<Point> listOfPoints = widget.scribbles[i].points
+                    .map((e) => Point(e.dx, e.dy))
+                    .toList();
                 listOfPoints = listOfPoints.smooth(listOfPoints.length * 5);
                 for (int p = 0; p < listOfPoints.length; p++) {
                   Point newDrawPoint = listOfPoints[p];
@@ -120,6 +123,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                     widget.toolbarOptions.settingsSelected =
                         SettingsSelected.scribble;
                     widget.onChangedToolbarOptions(widget.toolbarOptions);
+                    onSettingsMove = newOffset;
+                    onSettingsMovePoints = currentScribble.points;
                     break;
                   }
                 }
@@ -160,8 +165,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                       widget.zoomOptions.scale)) {
                     continue;
                   }
-                  List<Point> listOfPoints = widget.scribbles[i]
-                      .points
+                  List<Point> listOfPoints = widget.scribbles[i].points
                       .map((e) => Point(e.dx, e.dy))
                       .toList();
                   listOfPoints = listOfPoints.smooth(listOfPoints.length * 5);
@@ -212,6 +216,24 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 else
                   lastScribble.points.last = newDrawPoint;
                 break;
+              case SelectedTool.settings:
+                if (widget.toolbarOptions.settingsSelected ==
+                        SettingsSelected.scribble &&
+                    widget.toolbarOptions.settingsSelectedScribble != null &&
+                    onSettingsMovePoints.isNotEmpty) {
+                  List<DrawPoint> points = onSettingsMovePoints;
+                  List<DrawPoint> newPoints = List.empty(growable: true);
+                  for (DrawPoint drawPoint in points) {
+                    newPoints.add(new DrawPoint.of(
+                        drawPoint + (newOffset - onSettingsMove)));
+                  }
+                  print(points);
+                  print(newPoints);
+                  widget.toolbarOptions.settingsSelectedScribble!.points =
+                      newPoints;
+                  widget.onChangedToolbarOptions(widget.toolbarOptions);
+                }
+                break;
               default:
                 Scribble newScribble = widget.scribbles.last;
                 DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
@@ -224,7 +246,9 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
             widget.offset += widget.sessionOffset;
             widget.sessionOffset = Offset.zero;
             widget.onOffsetChange(widget.offset, widget.sessionOffset);
-
+            onSettingsMove = Offset.zero;
+            onSettingsMovePoints = [];
+            widget.onChangedToolbarOptions(widget.toolbarOptions);
             if (widget.toolbarOptions.selectedTool == SelectedTool.pencil ||
                 widget.toolbarOptions.selectedTool ==
                     SelectedTool.highlighter ||
