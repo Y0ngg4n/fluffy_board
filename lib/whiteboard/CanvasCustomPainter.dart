@@ -169,8 +169,8 @@ class CanvasCustomPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     // Draw Background
-    if (toolbarOptions.backgroundOptions.selectedBackgroundTypeToolbar ==
-        SelectedBackgroundTypeToolbar.Lines || toolbarOptions.backgroundOptions.selectedBackgroundTypeToolbar ==
+    if (SelectedBackgroundTypeToolbar.values[toolbarOptions.backgroundOptions.selectedBackground] ==
+        SelectedBackgroundTypeToolbar.Lines || SelectedBackgroundTypeToolbar.values[toolbarOptions.backgroundOptions.selectedBackground]  ==
         SelectedBackgroundTypeToolbar.Grid) {
       for (int i = -offset.dy.toInt().abs();
           i <
@@ -185,7 +185,7 @@ class CanvasCustomPainter extends CustomPainter {
             backgroundPaint);
       }
     }
-    if(toolbarOptions.backgroundOptions.selectedBackgroundTypeToolbar ==
+    if(SelectedBackgroundTypeToolbar.values[toolbarOptions.backgroundOptions.selectedBackground] ==
         SelectedBackgroundTypeToolbar.Grid){
       for (int i = -offset.dx.toInt().abs();
       i <

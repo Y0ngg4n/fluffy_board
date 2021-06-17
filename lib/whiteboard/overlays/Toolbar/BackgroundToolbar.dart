@@ -14,13 +14,42 @@ enum SelectedBackgroundTypeToolbar {
 }
 
 class BackgroundOptions extends DrawOptions {
-  SelectedBackgroundTypeToolbar selectedBackgroundTypeToolbar =
-      SelectedBackgroundTypeToolbar.White;
+  int selectedBackground;
 
-  BackgroundOptions(this.selectedBackgroundTypeToolbar)
-      : super(List.empty(),
-      50, StrokeCap.round, 0,(DrawOptions)=>{});
+  BackgroundOptions(this.selectedBackground,
+      List<Color> colors,
+      double strokeWidth,
+      StrokeCap strokeCap,
+      int currentColor,
+      dynamic Function(DrawOptions) onBackgroundChange)
+      : super(colors, strokeWidth, strokeCap, currentColor, onBackgroundChange);
 }
+
+class EncodeBackgroundOptions {
+double strokeWidth;
+int selectedBackground;
+
+EncodeBackgroundOptions(this.strokeWidth, this.selectedBackground);
+
+Map toJson() {
+  return {
+    'stroke_width': strokeWidth,
+    'selected_background': selectedBackground,
+  };
+}
+}
+
+class DecodeBackgroundOptions {
+  double strokeWidth;
+  int selectedBackground;
+
+  DecodeBackgroundOptions(this.strokeWidth, this.selectedBackground);
+
+  factory DecodeBackgroundOptions.fromJson(dynamic json) {
+    return DecodeBackgroundOptions(json['stroke_width'] as double, json['selected_background'] as int);
+  }
+}
+
 
 class BackgroundToolbar extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
@@ -34,9 +63,14 @@ class BackgroundToolbar extends StatefulWidget {
 }
 
 class _BackgroundToolbarState extends State<BackgroundToolbar> {
-  int beforeIndex = -1;
-  int realBeforeIndex = 0;
-  List<bool> selectedBackgroundTypeList = List.generate(3, (i) => i == 0 ? true : false);
+  late List<bool> selectedBackgroundTypeList;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    selectedBackgroundTypeList = List.generate(3, (i) => i == widget.toolbarOptions.backgroundOptions.selectedBackground ? true : false);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +96,10 @@ class _BackgroundToolbarState extends State<BackgroundToolbar> {
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
                     });
                   },
+                  onChangeEnd: (value){
+                    widget.toolbarOptions.backgroundOptions.onDrawOptionChange(
+                        widget.toolbarOptions.backgroundOptions);
+                  },
                   min: 50,
                   max: 200,
                 ),
@@ -69,9 +107,7 @@ class _BackgroundToolbarState extends State<BackgroundToolbar> {
               ToggleButtons(
                   onPressed: (index) {
                     setState(() {
-                      widget.toolbarOptions.backgroundOptions.currentColor = index;
-                      widget.toolbarOptions.colorPickerOpen =
-                          !widget.toolbarOptions.colorPickerOpen;
+                      widget.toolbarOptions.backgroundOptions.selectedBackground = index;
 
                       for (int buttonIndex = 0;
                           buttonIndex < selectedBackgroundTypeList.length;
@@ -82,23 +118,10 @@ class _BackgroundToolbarState extends State<BackgroundToolbar> {
                           selectedBackgroundTypeList[buttonIndex] = false;
                         }
                       }
-                      if (beforeIndex == index) {
-                        widget.toolbarOptions.colorPickerOpen = false;
-                        beforeIndex = -1;
-                      } else if (beforeIndex == -1) {
-                        widget.toolbarOptions.colorPickerOpen = false;
-                        beforeIndex = -2;
-                      } else if (realBeforeIndex != index) {
-                        widget.toolbarOptions.colorPickerOpen = false;
-                      } else {
-                        widget.toolbarOptions.colorPickerOpen = true;
-                        beforeIndex = index;
-                      }
-                      realBeforeIndex = index;
 
-                      widget.toolbarOptions.backgroundOptions.selectedBackgroundTypeToolbar =
-                          SelectedBackgroundTypeToolbar.values[index];
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
+                      widget.toolbarOptions.backgroundOptions.onDrawOptionChange(
+                          widget.toolbarOptions.backgroundOptions);
                     });
                   },
                   direction: Axis.vertical,

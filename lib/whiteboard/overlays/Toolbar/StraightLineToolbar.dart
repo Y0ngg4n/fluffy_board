@@ -16,40 +16,42 @@ enum SelectedStraightLineColorToolbar {
 enum SelectedStraightLineCapToolbar { Normal, Arrow }
 
 class StraightLineOptions extends DrawOptions {
-  SelectedStraightLineColorToolbar selectedStraightLineColorToolbar =
-      SelectedStraightLineColorToolbar.ColorPreset1;
+  int selectedCap;
 
-  SelectedStraightLineCapToolbar selectedStraightLineCapToolbar =
-      SelectedStraightLineCapToolbar.Normal;
-
-  StraightLineOptions(this.selectedStraightLineColorToolbar, this.selectedStraightLineCapToolbar,
-      List<Color> colors, double strokeWidth, StrokeCap strokeCap, int currentColor, dynamic Function(DrawOptions) onHighlighterChange)
-      : super(colors, strokeWidth, strokeCap, currentColor, onHighlighterChange);
+  StraightLineOptions(this.selectedCap,
+      List<Color> colors, double strokeWidth, StrokeCap strokeCap, int currentColor, dynamic Function(DrawOptions) onStraightLineChange)
+      : super(colors, strokeWidth, strokeCap, currentColor, onStraightLineChange);
 }
 
 class EncodeStraightLineOptions{
   List<String> colorPresets;
   double strokeWidth;
+  int selectedColor;
+  int selectedCap;
 
-  EncodeStraightLineOptions(this.colorPresets, this.strokeWidth);
+  EncodeStraightLineOptions(this.colorPresets, this.strokeWidth, this.selectedColor, this.selectedCap);
 
   Map toJson() {
     return {
       'color_presets': colorPresets,
       'stroke_width': strokeWidth,
+      'selected_color': selectedColor,
+      'selected_cap': selectedCap,
     };
   }
 }
 
 class DecodeStraightLineOptions{
-  late List<dynamic> colorPresets;
-  late double strokeWidth;
+  List<dynamic> colorPresets;
+  double strokeWidth;
+  int selectedColor;
+  int selectedCap;
 
-
-  DecodeStraightLineOptions(this.colorPresets, this.strokeWidth);
+  DecodeStraightLineOptions(this.colorPresets, this.strokeWidth, this.selectedColor, this.selectedCap);
 
   factory DecodeStraightLineOptions.fromJson(dynamic json){
-    return DecodeStraightLineOptions(json['color_presets'] as List<dynamic>, json['stroke_width'] as double);
+    return DecodeStraightLineOptions(json['color_presets'] as List<dynamic>, json['stroke_width'] as double,
+    json['selected_color'] as int, json['selected_cap'] as int);
   }
 }
 
@@ -67,8 +69,15 @@ class StraightLineToolbar extends StatefulWidget {
 class _StraightLineToolbarState extends State<StraightLineToolbar> {
   int beforeIndex = -1;
   int realBeforeIndex = 0;
-  List<bool> selectedColorList = List.generate(3, (i) => i == 0 ? true : false);
-  List<bool> selectedCapList = List.generate(2, (i) => i == 0 ? true : false);
+  late List<bool> selectedColorList;
+  late List<bool> selectedCapList;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedColorList = List.generate(3, (i) => i == widget.toolbarOptions.straightLineOptions.currentColor ? true : false);
+    selectedCapList = List.generate(2, (i) => i == widget.toolbarOptions.straightLineOptions.selectedCap ? true : false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +119,7 @@ class _StraightLineToolbarState extends State<StraightLineToolbar> {
                   Icon(Icons.arrow_forward),
                 ],
                 onPressed: (index) {
+                  widget.toolbarOptions.straightLineOptions.selectedCap = index;
                   for (int buttonIndex = 0;
                       buttonIndex < selectedCapList.length;
                       buttonIndex++) {
@@ -118,10 +128,9 @@ class _StraightLineToolbarState extends State<StraightLineToolbar> {
                     } else {
                       selectedCapList[buttonIndex] = false;
                     }
-                    widget.toolbarOptions.straightLineOptions
-                            .selectedStraightLineCapToolbar =
-                        SelectedStraightLineCapToolbar.values[index];
                     widget.onChangedToolbarOptions(widget.toolbarOptions);
+                    widget.toolbarOptions.straightLineOptions.onDrawOptionChange(
+                        widget.toolbarOptions.straightLineOptions);
                   }
                 },
               ),
@@ -156,10 +165,9 @@ class _StraightLineToolbarState extends State<StraightLineToolbar> {
                       }
                       realBeforeIndex = index;
 
-                      widget.toolbarOptions
-                        ..straightLineOptions.selectedStraightLineColorToolbar =
-                            SelectedStraightLineColorToolbar.values[index];
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
+                      widget.toolbarOptions.straightLineOptions.onDrawOptionChange(
+                          widget.toolbarOptions.straightLineOptions);
                     });
                   },
                   direction: Axis.vertical,

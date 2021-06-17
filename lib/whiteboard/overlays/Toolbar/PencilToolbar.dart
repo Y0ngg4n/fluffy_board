@@ -7,49 +7,44 @@ import '../Toolbar.dart' as Toolbar;
 
 import 'DrawOptions.dart';
 
-enum SelectedPencilColorToolbar {
-  ColorPreset1,
-  ColorPreset2,
-  ColorPreset3,
-}
-
 class PencilOptions extends DrawOptions {
-  SelectedPencilColorToolbar selectedPencilColorToolbar =
-      SelectedPencilColorToolbar.ColorPreset1;
-
-  PencilOptions(this.selectedPencilColorToolbar,
-      List<Color> colors, double strokeWidth, StrokeCap strokeCap, int currentColor, dynamic Function(DrawOptions) onPencilChange)
+  PencilOptions(
+      List<Color> colors,
+      double strokeWidth,
+      StrokeCap strokeCap,
+      int currentColor,
+      dynamic Function(DrawOptions) onPencilChange)
       : super(colors, strokeWidth, strokeCap, currentColor, onPencilChange);
 }
 
-class EncodePencilOptions{
+class EncodePencilOptions {
   List<String> colorPresets;
   double strokeWidth;
+  int selectedColor;
 
-  EncodePencilOptions(this.colorPresets, this.strokeWidth);
+  EncodePencilOptions(this.colorPresets, this.strokeWidth, this.selectedColor);
 
   Map toJson() {
     return {
       'color_presets': colorPresets,
       'stroke_width': strokeWidth,
+      'selected_color': selectedColor,
     };
   }
-
 }
 
+class DecodePencilOptions {
+  List<dynamic> colorPresets;
+  double strokeWidth;
+  int selectedColor;
 
-class DecodePencilOptions{
-  late List<dynamic> colorPresets;
-  late double strokeWidth;
+  DecodePencilOptions(this.colorPresets, this.strokeWidth, this.selectedColor);
 
-
-  DecodePencilOptions(this.colorPresets, this.strokeWidth);
-
-  factory DecodePencilOptions.fromJson(dynamic json){
-    return DecodePencilOptions(json['color_presets'] as List<dynamic>, json['stroke_width'] as double);
+  factory DecodePencilOptions.fromJson(dynamic json) {
+    return DecodePencilOptions(json['color_presets'] as List<dynamic>,
+        json['stroke_width'] as double, json['selected_color'] as int);
   }
 }
-
 
 class PencilToolbar extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
@@ -65,7 +60,14 @@ class PencilToolbar extends StatefulWidget {
 class _PencilToolbarState extends State<PencilToolbar> {
   int beforeIndex = -1;
   int realBeforeIndex = 0;
-  List<bool> selectedColorList = List.generate(3, (i) => i == 0 ? true : false);
+  late List<bool> selectedColorList;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selectedColorList = List.generate(3, (i) => i == widget.toolbarOptions.pencilOptions.currentColor ? true : false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,11 +91,11 @@ class _PencilToolbarState extends State<PencilToolbar> {
                     setState(() {
                       widget.toolbarOptions.pencilOptions.strokeWidth = value;
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
-
                     });
                   },
                   onChangeEnd: (value) {
-                    widget.toolbarOptions.pencilOptions.onDrawOptionChange(widget.toolbarOptions.pencilOptions);
+                    widget.toolbarOptions.pencilOptions.onDrawOptionChange(
+                        widget.toolbarOptions.pencilOptions);
                   },
                   min: 1,
                   max: 50,
@@ -129,10 +131,9 @@ class _PencilToolbarState extends State<PencilToolbar> {
                       }
                       realBeforeIndex = index;
 
-                      widget.toolbarOptions.pencilOptions
-                              .selectedPencilColorToolbar =
-                          SelectedPencilColorToolbar.values[index];
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
+                      widget.toolbarOptions.pencilOptions.onDrawOptionChange(
+                          widget.toolbarOptions.pencilOptions);
                     });
                   },
                   direction: Axis.vertical,

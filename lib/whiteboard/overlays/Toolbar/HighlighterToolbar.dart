@@ -7,31 +7,23 @@ import '../Toolbar.dart' as Toolbar;
 
 import 'DrawOptions.dart';
 
-enum SelectedHighlighterColorToolbar {
-  ColorPreset1,
-  ColorPreset2,
-  ColorPreset3,
-}
-
 class HighlighterOptions extends DrawOptions {
-  SelectedHighlighterColorToolbar selectedHighlighterColorToolbar =
-      SelectedHighlighterColorToolbar.ColorPreset1;
-
-  HighlighterOptions(this.selectedHighlighterColorToolbar,
-      List<Color> colors, double strokeWidth, StrokeCap strokeCap, int currentColor, dynamic Function(DrawOptions) onHighlighterChange)
+  HighlighterOptions(List<Color> colors, double strokeWidth, StrokeCap strokeCap, int currentColor, dynamic Function(DrawOptions) onHighlighterChange)
       : super(colors, strokeWidth, strokeCap, currentColor, onHighlighterChange);
 }
 
 class EncodeHighlighterOptions{
   List<String> colorPresets;
   double strokeWidth;
+  int selectedColor;
 
-  EncodeHighlighterOptions(this.colorPresets, this.strokeWidth);
+  EncodeHighlighterOptions(this.colorPresets, this.strokeWidth, this.selectedColor);
 
   Map toJson() {
     return {
       'color_presets': colorPresets,
       'stroke_width': strokeWidth,
+      'selected_color': selectedColor,
     };
   }
 }
@@ -40,12 +32,13 @@ class EncodeHighlighterOptions{
 class DecodeHighlighterOptions{
   late List<dynamic> colorPresets;
   late double strokeWidth;
+  int selectedColor;
 
 
-  DecodeHighlighterOptions(this.colorPresets, this.strokeWidth);
+  DecodeHighlighterOptions(this.colorPresets, this.strokeWidth, this.selectedColor);
 
   factory DecodeHighlighterOptions.fromJson(dynamic json){
-    return DecodeHighlighterOptions(json['color_presets'] as List<dynamic>, json['stroke_width'] as double);
+    return DecodeHighlighterOptions(json['color_presets'] as List<dynamic>, json['stroke_width'] as double, json['selected_color'] as int);
   }
 }
 
@@ -63,7 +56,13 @@ class HighlighterToolbar extends StatefulWidget {
 class _HighlighterToolbarState extends State<HighlighterToolbar> {
   int beforeIndex = -1;
   int realBeforeIndex = 0;
-  List<bool> selectedColorList = List.generate(3, (i) => i == 0 ? true : false);
+  late List<bool> selectedColorList;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedColorList = List.generate(3, (i) => i == widget.toolbarOptions.highlighterOptions.currentColor ? true : false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,10 +126,9 @@ class _HighlighterToolbarState extends State<HighlighterToolbar> {
                       }
                       realBeforeIndex = index;
 
-                      widget.toolbarOptions.highlighterOptions
-                              .selectedHighlighterColorToolbar =
-                          SelectedHighlighterColorToolbar.values[index];
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
+                      widget.toolbarOptions.highlighterOptions.onDrawOptionChange(
+                          widget.toolbarOptions.highlighterOptions);
                     });
                   },
                   direction: Axis.vertical,

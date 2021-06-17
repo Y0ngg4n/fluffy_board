@@ -7,12 +7,6 @@ import '../Toolbar.dart' as Toolbar;
 
 import 'DrawOptions.dart';
 
-enum SelectedFigureColorToolbar {
-  ColorPreset1,
-  ColorPreset2,
-  ColorPreset3,
-}
-
 enum SelectedFigureTypeToolbar {
   none,
   rect,
@@ -21,17 +15,48 @@ enum SelectedFigureTypeToolbar {
 }
 
 class FigureOptions extends DrawOptions {
-  SelectedFigureColorToolbar selectedFigureColorToolbar =
-      SelectedFigureColorToolbar.ColorPreset1;
+  int selectedFigure;
+  int selectedFill;
 
-  SelectedFigureTypeToolbar selectedFigureTypeToolbar =
-      SelectedFigureTypeToolbar.rect;
 
-  PaintingStyle paintingStyle = PaintingStyle.stroke;
+  FigureOptions(this.selectedFigure, this.selectedFill,
+      List<Color> colors, double strokeWidth, StrokeCap strokeCap, int currentColor, dynamic Function(DrawOptions) onFigureChange)
+      : super(colors, strokeWidth, strokeCap, currentColor, onFigureChange);
+}
 
-  FigureOptions(this.selectedFigureColorToolbar, this.selectedFigureTypeToolbar, this.paintingStyle)
-      : super(List.from({Colors.black, Colors.red, Colors.blue}), 1,
-            StrokeCap.round, 0, (DrawOptions)=>{});
+class EncodeFigureOptions{
+  List<String> colorPresets;
+  double strokeWidth;
+  int selectedColor;
+  int selectedFigure;
+  int selectedFill;
+
+  EncodeFigureOptions(this.colorPresets, this.strokeWidth, this.selectedColor, this.selectedFigure, this.selectedFill);
+
+  Map toJson() {
+    return {
+      'color_presets': colorPresets,
+      'stroke_width': strokeWidth,
+      'selected_color': selectedColor,
+      'selected_figure': selectedFigure,
+      'selected_fill': selectedFill,
+    };
+  }
+}
+
+class DecodeFigureptions{
+  List<dynamic> colorPresets;
+  double strokeWidth;
+  int selectedColor;
+  int selectedFigure;
+  int selectedFill;
+
+  DecodeFigureptions(this.colorPresets, this.strokeWidth, this.selectedColor, this.selectedFigure, this.selectedFill);
+
+  factory DecodeFigureptions.fromJson(dynamic json){
+    return DecodeFigureptions(json['color_presets'] as List<dynamic>, json['stroke_width'] as double,
+        json['selected_color'] as int, json['selected_figure'] as int, json['selected_fill'] as int);
+  }
 }
 
 class FigureToolbar extends StatefulWidget {
@@ -48,9 +73,17 @@ class FigureToolbar extends StatefulWidget {
 class _FigureToolbarState extends State<FigureToolbar> {
   int beforeIndex = -1;
   int realBeforeIndex = 0;
-  List<bool> selectedColorList = List.generate(3, (i) => i == 0 ? true : false);
-  List<bool> selectedTypeList = List.generate(3, (i) => i == 0 ? true : false);
-  List<bool> selectedPaintingStyle = List.generate(2, (i) => i == 1 ? true : false);
+  late List<bool> selectedColorList;
+  late List<bool> selectedTypeList;
+  late List<bool> selectedPaintingStyle;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedColorList = List.generate(3, (i) => i == widget.toolbarOptions.figureOptions.currentColor ? true : false);
+    selectedTypeList = List.generate(3, (i) => i == widget.toolbarOptions.figureOptions.selectedFigure ? true : false);
+    selectedPaintingStyle = List.generate(2, (i) => i == widget.toolbarOptions.figureOptions.selectedFill ? true : false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +108,9 @@ class _FigureToolbarState extends State<FigureToolbar> {
                       widget.toolbarOptions.figureOptions.strokeWidth = value;
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
                     });
+                  },
+                  onChangeEnd: (value) {
+                    widget.toolbarOptions.figureOptions.onDrawOptionChange(widget.toolbarOptions.figureOptions);
                   },
                   min: 1,
                   max: 50,
@@ -110,10 +146,9 @@ class _FigureToolbarState extends State<FigureToolbar> {
                       }
                       realBeforeIndex = index;
 
-                      widget.toolbarOptions.figureOptions
-                              .selectedFigureColorToolbar =
-                          SelectedFigureColorToolbar.values[index];
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
+                      widget.toolbarOptions.figureOptions.onDrawOptionChange(
+                          widget.toolbarOptions.figureOptions);
                     });
                   },
                   direction: Axis.vertical,
@@ -138,6 +173,7 @@ class _FigureToolbarState extends State<FigureToolbar> {
                   Icon(OwnIcons.circle_empty),
                 ],
                 onPressed: (index) {
+                  widget.toolbarOptions.figureOptions.selectedFigure = index;
                   setState(() {
                     for (int buttonIndex = 0;
                     buttonIndex < selectedTypeList.length;
@@ -148,10 +184,9 @@ class _FigureToolbarState extends State<FigureToolbar> {
                         selectedTypeList[buttonIndex] = false;
                       }
                     }
-                    widget.toolbarOptions.figureOptions
-                            .selectedFigureTypeToolbar =
-                        SelectedFigureTypeToolbar.values[index + 1];
                     widget.onChangedToolbarOptions(widget.toolbarOptions);
+                    widget.toolbarOptions.figureOptions.onDrawOptionChange(
+                        widget.toolbarOptions.figureOptions);
                   });
                 },
               ),
@@ -164,6 +199,7 @@ class _FigureToolbarState extends State<FigureToolbar> {
                 ],
                 onPressed: (index) {
                   setState(() {
+                    widget.toolbarOptions.figureOptions.selectedFill = index;
                     for (int buttonIndex = 0;
                     buttonIndex < selectedPaintingStyle.length;
                     buttonIndex++) {
@@ -173,10 +209,9 @@ class _FigureToolbarState extends State<FigureToolbar> {
                         selectedPaintingStyle[buttonIndex] = false;
                       }
                     }
-                    widget.toolbarOptions.figureOptions
-                        .paintingStyle =
-                    PaintingStyle.values[index];
                     widget.onChangedToolbarOptions(widget.toolbarOptions);
+                    widget.toolbarOptions.figureOptions.onDrawOptionChange(
+                        widget.toolbarOptions.figureOptions);
                   });
                 },
               )

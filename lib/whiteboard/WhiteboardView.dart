@@ -133,6 +133,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
     HighlighterOptions highlighterOptions = await _getHighlighterOptions();
     EraserOptions eraserOptions = await _getEraserOptions();
     StraightLineOptions straightLineOptions = await _getStraightLineOptions();
+    FigureOptions figureOptions = await _getFigureOptions();
+    BackgroundOptions backgroundOptions = await _getBackgroundOptions();
     setState(() {
       toolbarOptions = new Toolbar.ToolbarOptions(
           Toolbar.SelectedTool.move,
@@ -140,11 +142,10 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           highlighterOptions,
           straightLineOptions,
           eraserOptions,
-          new FigureOptions(SelectedFigureColorToolbar.ColorPreset1,
-              SelectedFigureTypeToolbar.rect, PaintingStyle.stroke),
+          figureOptions,
           new UploadOptions(SelectedUpload.Image),
           new TextOptions(SelectedTextColorToolbar.ColorPreset1),
-          new BackgroundOptions(SelectedBackgroundTypeToolbar.White),
+          backgroundOptions,
           false,
           Toolbar.SettingsSelected.none);
     });
@@ -164,17 +165,15 @@ class _WhiteboardViewState extends State<WhiteboardView> {
       DecodePencilOptions decodePencilOptions =
           DecodePencilOptions.fromJson(jsonDecode(pencilResponse.body));
       pencilOptions = new PencilOptions(
-          SelectedPencilColorToolbar.ColorPreset1,
           decodePencilOptions.colorPresets
               .map((e) => HexColor.fromHex(e))
               .toList(),
           decodePencilOptions.strokeWidth,
           StrokeCap.round,
-          0,
+          decodePencilOptions.selectedColor,
           (drawOptions) => _sendPencilToolbarOptions(drawOptions));
     } else {
       pencilOptions = PencilOptions(
-          SelectedPencilColorToolbar.ColorPreset1,
           List.from({Colors.black, Colors.blue, Colors.red}),
           1,
           StrokeCap.round,
@@ -200,17 +199,15 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           DecodeHighlighterOptions.fromJson(
               jsonDecode(highlighterResponse.body));
       highlighterOptions = new HighlighterOptions(
-          SelectedHighlighterColorToolbar.ColorPreset1,
           decodeHighlighterOptions.colorPresets
               .map((e) => HexColor.fromHex(e))
               .toList(),
           decodeHighlighterOptions.strokeWidth,
           StrokeCap.square,
-          0,
+          decodeHighlighterOptions.selectedColor,
           (drawOptions) => _sendHighlighterToolbarOptions(drawOptions));
     } else {
       highlighterOptions = HighlighterOptions(
-          SelectedHighlighterColorToolbar.ColorPreset1,
           List.from({
             Colors.limeAccent,
             Colors.lightGreenAccent,
@@ -251,7 +248,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   }
 
   Future<StraightLineOptions> _getStraightLineOptions() async {
-    http.Response highlighterResponse = await http.get(
+    http.Response straightLineResponse = await http.get(
         Uri.parse(
             dotenv.env['REST_API_URL']! + "/toolbar-options/straight-line/get"),
         headers: {
@@ -261,35 +258,97 @@ class _WhiteboardViewState extends State<WhiteboardView> {
         });
 
     StraightLineOptions straightLineOptions;
-    if (highlighterResponse.statusCode == 200) {
-      DecodeHighlighterOptions decodeHighlighterOptions =
-      DecodeHighlighterOptions.fromJson(
-          jsonDecode(highlighterResponse.body));
+    if (straightLineResponse.statusCode == 200) {
+      DecodeStraightLineOptions decodeStraightLineOptions =
+          DecodeStraightLineOptions.fromJson(
+              jsonDecode(straightLineResponse.body));
       straightLineOptions = new StraightLineOptions(
-          SelectedStraightLineColorToolbar.ColorPreset1,
-          SelectedStraightLineCapToolbar.Normal,
-          decodeHighlighterOptions.colorPresets
+          decodeStraightLineOptions.selectedCap,
+          decodeStraightLineOptions.colorPresets
               .map((e) => HexColor.fromHex(e))
               .toList(),
-          decodeHighlighterOptions.strokeWidth,
+          decodeStraightLineOptions.strokeWidth,
           StrokeCap.square,
-          0,
-              (drawOptions) => _sendStraightLineToolbarOptions(drawOptions));
+          decodeStraightLineOptions.selectedColor,
+          (drawOptions) => _sendStraightLineToolbarOptions(drawOptions));
     } else {
       straightLineOptions = StraightLineOptions(
-          SelectedStraightLineColorToolbar.ColorPreset1,
-          SelectedStraightLineCapToolbar.Normal,
-          List.from({
-            Colors.black,
-            Colors.blue,
-            Colors.red
-          }),
+          0,
+          List.from({Colors.black, Colors.blue, Colors.red}),
           5,
           StrokeCap.square,
           0,
-              (drawOptions) => _sendStraightLineToolbarOptions(drawOptions));
+          (drawOptions) => _sendStraightLineToolbarOptions(drawOptions));
     }
     return straightLineOptions;
+  }
+
+  Future<FigureOptions> _getFigureOptions() async {
+    http.Response straightLineResponse = await http.get(
+        Uri.parse(dotenv.env['REST_API_URL']! + "/toolbar-options/figure/get"),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json",
+          'Authorization': 'Bearer ' + widget.auth_token,
+        });
+
+    FigureOptions figureOptions;
+    if (straightLineResponse.statusCode == 200) {
+      DecodeFigureptions decodeFigureptions =
+          DecodeFigureptions.fromJson(jsonDecode(straightLineResponse.body));
+      figureOptions = new FigureOptions(
+          decodeFigureptions.selectedFigure,
+          decodeFigureptions.selectedFill,
+          decodeFigureptions.colorPresets
+              .map((e) => HexColor.fromHex(e))
+              .toList(),
+          decodeFigureptions.strokeWidth,
+          StrokeCap.round,
+          decodeFigureptions.selectedColor,
+          (drawOptions) => _sendFigureToolbarOptions(drawOptions));
+    } else {
+      figureOptions = FigureOptions(
+          0,
+          1,
+          List.from({Colors.black, Colors.blue, Colors.red}),
+          1,
+          StrokeCap.round,
+          0,
+          (drawOptions) => _sendFigureToolbarOptions(drawOptions));
+    }
+    return figureOptions;
+  }
+
+  Future<BackgroundOptions> _getBackgroundOptions() async {
+    http.Response backgroundResponse = await http.get(
+        Uri.parse(dotenv.env['REST_API_URL']! + "/toolbar-options/background/get"),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json",
+          'Authorization': 'Bearer ' + widget.auth_token,
+        });
+
+    BackgroundOptions backgroundOptions;
+    if (backgroundResponse.statusCode == 200) {
+      DecodeBackgroundOptions decodeBackgroundOptions =
+      DecodeBackgroundOptions.fromJson(jsonDecode(backgroundResponse.body));
+      backgroundOptions = new BackgroundOptions(
+          decodeBackgroundOptions.selectedBackground,
+          List.empty(),
+          decodeBackgroundOptions.strokeWidth,
+          StrokeCap.round,
+          0,
+              (drawOptions) => _sendBackgroundToolbarOptions(drawOptions));
+    } else {
+      backgroundOptions = BackgroundOptions(
+          0,
+          List.empty(),
+          50,
+          StrokeCap.round,
+          0,
+              (drawOptions) => _sendBackgroundToolbarOptions(drawOptions));
+    }
+    return backgroundOptions;
   }
 
   _sendPencilToolbarOptions(DrawOptions drawOptions) async {
@@ -304,7 +363,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
         },
         body: jsonEncode(new EncodePencilOptions(
             pencilOptions.colorPresets.map((e) => e.toHex()).toList(),
-            pencilOptions.strokeWidth)));
+            pencilOptions.strokeWidth,
+            pencilOptions.currentColor)));
   }
 
   _sendHighlighterToolbarOptions(DrawOptions drawOptions) async {
@@ -319,7 +379,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
         },
         body: jsonEncode(new EncodeHighlighterOptions(
             highlighterOptions.colorPresets.map((e) => e.toHex()).toList(),
-            highlighterOptions.strokeWidth)));
+            highlighterOptions.strokeWidth,
+            highlighterOptions.currentColor)));
   }
 
   _sendEraserToolbarOptions(DrawOptions drawOptions) async {
@@ -336,7 +397,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   }
 
   _sendStraightLineToolbarOptions(DrawOptions drawOptions) async {
-    StraightLineOptions straightLineOptions = drawOptions as StraightLineOptions;
+    StraightLineOptions straightLineOptions =
+        drawOptions as StraightLineOptions;
     await http.post(
         Uri.parse(dotenv.env['REST_API_URL']! +
             "/toolbar-options/straight-line/update"),
@@ -347,7 +409,41 @@ class _WhiteboardViewState extends State<WhiteboardView> {
         },
         body: jsonEncode(new EncodeStraightLineOptions(
             straightLineOptions.colorPresets.map((e) => e.toHex()).toList(),
-            straightLineOptions.strokeWidth)));
+            straightLineOptions.strokeWidth,
+            straightLineOptions.currentColor,
+            straightLineOptions.selectedCap)));
+  }
+
+  _sendFigureToolbarOptions(DrawOptions drawOptions) async {
+    FigureOptions figureOptions = drawOptions as FigureOptions;
+    await http.post(
+        Uri.parse(
+            dotenv.env['REST_API_URL']! + "/toolbar-options/figure/update"),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json",
+          'Authorization': 'Bearer ' + widget.auth_token,
+        },
+        body: jsonEncode(new EncodeFigureOptions(
+            figureOptions.colorPresets.map((e) => e.toHex()).toList(),
+            figureOptions.strokeWidth,
+            figureOptions.currentColor,
+            figureOptions.selectedFigure,
+            figureOptions.selectedFill)));
+  }
+
+  _sendBackgroundToolbarOptions(DrawOptions drawOptions) async {
+    BackgroundOptions backgroundOptions = drawOptions as BackgroundOptions;
+    await http.post(
+        Uri.parse(
+            dotenv.env['REST_API_URL']! + "/toolbar-options/background/update"),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json",
+          'Authorization': 'Bearer ' + widget.auth_token,
+        },
+        body: jsonEncode(new EncodeBackgroundOptions(
+            backgroundOptions.strokeWidth, backgroundOptions.selectedBackground)));
   }
 }
 

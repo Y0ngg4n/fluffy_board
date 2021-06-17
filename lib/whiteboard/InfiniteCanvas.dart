@@ -219,8 +219,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   lastScribble.points
                       .removeRange(2, lastScribble.points.length);
                 lastScribble.points.last = newDrawPoint;
-                if (widget.toolbarOptions.straightLineOptions
-                        .selectedStraightLineCapToolbar ==
+                if (SelectedStraightLineCapToolbar.values[widget
+                        .toolbarOptions.straightLineOptions.selectedCap] ==
                     SelectedStraightLineCapToolbar.Arrow)
                   fillArrow(
                       lastScribble.points.first.dx,
@@ -256,7 +256,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                     widget.toolbarOptions.settingsSelectedUpload != null &&
                     onSettingsMoveUploadOffset != null) {
                   widget.toolbarOptions.settingsSelectedUpload!.offset =
-                      (onSettingsMoveUploadOffset! + (newOffset - onSettingsMove));
+                      (onSettingsMoveUploadOffset! +
+                          (newOffset - onSettingsMove));
                 }
                 widget.onChangedToolbarOptions(widget.toolbarOptions);
                 break;
@@ -380,8 +381,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
       color = widget.toolbarOptions.figureOptions
           .colorPresets[widget.toolbarOptions.figureOptions.currentColor];
       selectedFigureTypeToolbar =
-          widget.toolbarOptions.figureOptions.selectedFigureTypeToolbar;
-      paintingStyle = widget.toolbarOptions.figureOptions.paintingStyle;
+          SelectedFigureTypeToolbar.values[widget.toolbarOptions.figureOptions.selectedFigure];
+      paintingStyle = PaintingStyle.values[widget.toolbarOptions.figureOptions.selectedFill];
     }
 
     return new Scribble(strokeWidth, strokeCap, color, drawPoints,
