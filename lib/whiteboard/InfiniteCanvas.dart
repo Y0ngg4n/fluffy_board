@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
+import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dart';
@@ -12,8 +14,11 @@ import 'dart:ui';
 import 'package:smoothie/smoothie.dart';
 
 import 'CanvasCustomPainter.dart';
+import 'Websocket/WebsocketConnection.dart';
+import 'Websocket/WebsocketTypes.dart';
 import 'overlays/Toolbar.dart' as Toolbar;
 import 'overlays/Zoom.dart' as Zoom;
+import 'package:uuid/uuid.dart';
 
 typedef OnOffsetChange = Function(Offset offset, Offset sessionOffset);
 typedef OnScribblesChange = Function(List<Scribble>);
@@ -32,6 +37,8 @@ class InfiniteCanvasPage extends StatefulWidget {
   OnOffsetChange onOffsetChange;
   OnChangedToolbarOptions onChangedToolbarOptions;
   OnScribblesChange onScribblesChange;
+  WebsocketConnection websocketConnection;
+  String auth_token;
 
   InfiniteCanvasPage(
       {required this.toolbarOptions,
@@ -45,7 +52,9 @@ class InfiniteCanvasPage extends StatefulWidget {
       required this.onChangedToolbarOptions,
       required this.texts,
       required this.scribbles,
-      required this.onScribblesChange});
+      required this.onScribblesChange,
+      required this.websocketConnection,
+      required this.auth_token});
 
   @override
   _InfiniteCanvasPageState createState() => _InfiniteCanvasPageState();
@@ -60,6 +69,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
   Offset? onSettingsMoveUploadOffset;
   late double cursorRadius;
   late double _initcursorRadius;
+  var uuid = Uuid();
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +91,17 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 widget.toolbarOptions.selectedTool ==
                     SelectedTool.straightLine ||
                 widget.toolbarOptions.selectedTool == SelectedTool.figure) {
-              widget.scribbles.add(_getScribble(newOffset));
+              Scribble newScribble = _getScribble(newOffset);
+              widget.scribbles.add(newScribble);
+              String data = jsonEncode(WSScribbleAdd(
+                  newScribble.uuid,
+                  newScribble.selectedFigureTypeToolbar.index,
+                  newScribble.strokeWidth,
+                  newScribble.strokeCap.index,
+                  newScribble.color.toHex(),
+                  newScribble.points,
+                  newScribble.paintingStyle.index));
+              widget.websocketConnection.channel.add("scribble-add#" + data);
               widget.onScribblesChange(widget.scribbles);
             } else if (widget.toolbarOptions.selectedTool ==
                 SelectedTool.text) {
@@ -265,6 +285,21 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 Scribble newScribble = widget.scribbles.last;
                 DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
                 newScribble.points.add(newDrawPoint);
+                String data = jsonEncode(WSScribbleUpdate(
+                  newScribble.uuid,
+                  newScribble.selectedFigureTypeToolbar.index,
+                  newScribble.strokeWidth,
+                  newScribble.strokeCap.index,
+                  newScribble.color.toHex(),
+                  newScribble.points,
+                  newScribble.paintingStyle.index,
+                  newScribble.leftExtremity,
+                  newScribble.rightExtremity,
+                  newScribble.topExtremity,
+                  newScribble.bottomExtremity,
+                ));
+                widget.websocketConnection.channel
+                    .add("scribble-update#" + data);
             }
           });
         },
@@ -380,12 +415,13 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
       strokeWidth = widget.toolbarOptions.figureOptions.strokeWidth;
       color = widget.toolbarOptions.figureOptions
           .colorPresets[widget.toolbarOptions.figureOptions.currentColor];
-      selectedFigureTypeToolbar =
-          SelectedFigureTypeToolbar.values[widget.toolbarOptions.figureOptions.selectedFigure];
-      paintingStyle = PaintingStyle.values[widget.toolbarOptions.figureOptions.selectedFill];
+      selectedFigureTypeToolbar = SelectedFigureTypeToolbar
+          .values[widget.toolbarOptions.figureOptions.selectedFigure];
+      paintingStyle = PaintingStyle
+          .values[widget.toolbarOptions.figureOptions.selectedFill];
     }
 
-    return new Scribble(strokeWidth, strokeCap, color, drawPoints,
+    return new Scribble(uuid.v4(), strokeWidth, strokeCap, color, drawPoints,
         selectedFigureTypeToolbar, paintingStyle);
   }
 

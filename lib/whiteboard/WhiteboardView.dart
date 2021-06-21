@@ -4,6 +4,7 @@ import 'package:fluffy_board/dashboard/Dashboard.dart';
 import 'package:fluffy_board/dashboard/filemanager/FileManager.dart';
 import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
 import 'package:fluffy_board/whiteboard/TextsCanvas.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/BackgroundToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/DrawOptions.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/EraserToolbar.dart';
@@ -40,10 +41,12 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   List<Scribble> scribbles = [];
   Offset offset = Offset.zero;
   Offset _sessionOffset = Offset.zero;
+  late WebsocketConnection websocketConnection;
 
   @override
   void initState() {
     super.initState();
+    websocketConnection = WebsocketConnection.getInstance(widget.whiteboard.id, widget.auth_token);
     // WidgetsBinding.instance!
     //     .addPostFrameCallback((_) => _createToolbars(context));
     _getToolBarOptions();
@@ -63,6 +66,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
         appBar: (appBar),
         body: Stack(children: [
           InfiniteCanvasPage(
+            auth_token: widget.auth_token,
+            websocketConnection: websocketConnection,
             toolbarOptions: toolbarOptions!,
             zoomOptions: zoomOptions,
             appBarHeight: appBar.preferredSize.height,
@@ -308,7 +313,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           (drawOptions) => _sendFigureToolbarOptions(drawOptions));
     } else {
       figureOptions = FigureOptions(
-          0,
+          1,
           1,
           List.from({Colors.black, Colors.blue, Colors.red}),
           1,

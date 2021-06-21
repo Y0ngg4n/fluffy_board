@@ -2,8 +2,10 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'overlays/Toolbar/FigureToolbar.dart';
+import 'package:uuid/uuid.dart';
 
 class Scribble {
+  String uuid;
   SelectedFigureTypeToolbar selectedFigureTypeToolbar;
   double strokeWidth;
   StrokeCap strokeCap;
@@ -15,7 +17,7 @@ class Scribble {
       rightExtremity = 0,
       bottomExtremity = 0;
 
-  Scribble(this.strokeWidth, this.strokeCap, this.color, this.points, this.selectedFigureTypeToolbar, this.paintingStyle);
+  Scribble(this.uuid, this.strokeWidth, this.strokeCap, this.color, this.points, this.selectedFigureTypeToolbar, this.paintingStyle);
 }
 
 class DrawPoint extends Offset {
@@ -28,6 +30,13 @@ class DrawPoint extends Offset {
   }
 
   DrawPoint.of(Offset offset) : super(offset.dx, offset.dy);
+
+  Map toJson() {
+    return {
+      'dx': dx,
+      'dy': dy,
+    };
+  }
 }
 
 enum UploadType {

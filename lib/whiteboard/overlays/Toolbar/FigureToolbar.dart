@@ -81,7 +81,7 @@ class _FigureToolbarState extends State<FigureToolbar> {
   void initState() {
     super.initState();
     selectedColorList = List.generate(3, (i) => i == widget.toolbarOptions.figureOptions.currentColor ? true : false);
-    selectedTypeList = List.generate(3, (i) => i == widget.toolbarOptions.figureOptions.selectedFigure ? true : false);
+    selectedTypeList = List.generate(3, (i) => i == widget.toolbarOptions.figureOptions.selectedFigure - 1 ? true : false);
     selectedPaintingStyle = List.generate(2, (i) => i == widget.toolbarOptions.figureOptions.selectedFill ? true : false);
   }
 
@@ -173,7 +173,7 @@ class _FigureToolbarState extends State<FigureToolbar> {
                   Icon(OwnIcons.circle_empty),
                 ],
                 onPressed: (index) {
-                  widget.toolbarOptions.figureOptions.selectedFigure = index;
+                  widget.toolbarOptions.figureOptions.selectedFigure = index + 1;
                   setState(() {
                     for (int buttonIndex = 0;
                     buttonIndex < selectedTypeList.length;
