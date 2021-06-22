@@ -50,7 +50,7 @@ class UploadToolbar extends StatefulWidget {
 }
 
 class _UploadToolbarState extends State<UploadToolbar> {
-  List<bool> selectedUploadList = List.generate(3, (i) => false);
+  List<bool> selectedUploadList = List.generate(1, (i) => false);
   var uuid = Uuid();
   @override
   Widget build(BuildContext context) {
@@ -114,8 +114,6 @@ class _UploadToolbarState extends State<UploadToolbar> {
                   isSelected: selectedUploadList,
                   children: <Widget>[
                     Icon(Icons.image),
-                    Icon(OwnIcons.color_lens),
-                    Icon(OwnIcons.color_lens),
                   ]),
             ],
           ),
