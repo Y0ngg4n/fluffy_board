@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:fluffy_board/whiteboard/overlays/Zoom.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'package:file_picker_cross/file_picker_cross.dart';
+import 'package:uuid/uuid.dart';
 
 import '../Toolbar.dart' as Toolbar;
 
@@ -29,6 +34,7 @@ class UploadToolbar extends StatefulWidget {
   Offset offset;
   Offset sessionOffset;
   ZoomOptions zoomOptions;
+  WebsocketConnection websocketConnection;
 
   UploadToolbar(
       {required this.toolbarOptions,
@@ -36,7 +42,8 @@ class UploadToolbar extends StatefulWidget {
       required this.uploads,
       required this.offset,
       required this.sessionOffset,
-      required this.zoomOptions});
+      required this.zoomOptions,
+      required this.websocketConnection});
 
   @override
   _UploadToolbarState createState() => _UploadToolbarState();
@@ -44,7 +51,7 @@ class UploadToolbar extends StatefulWidget {
 
 class _UploadToolbarState extends State<UploadToolbar> {
   List<bool> selectedUploadList = List.generate(3, (i) => false);
-
+  var uuid = Uuid();
   @override
   Widget build(BuildContext context) {
     const _borderRadius = 50.0;
@@ -79,7 +86,8 @@ class _UploadToolbarState extends State<UploadToolbar> {
                         }
                       }
                       ui.decodeImageFromList(result.toUint8List(), (image) {
-                        widget.uploads.add(new Upload(
+                        Upload upload = new Upload(
+                            uuid.v4(),
                             UploadType.Image,
                             result.toUint8List(),
                             widget.offset +
@@ -88,7 +96,17 @@ class _UploadToolbarState extends State<UploadToolbar> {
                                         (image.width / 2),
                                     (ScreenUtils.getScreenHeight(context) / 2) -
                                         (image.height / 2)),
-                            image));
+                            image);
+                        widget.uploads.add(upload);
+                        String data = jsonEncode(WSUploadAdd(
+                            upload.uuid,
+                            upload.uploadType.index,
+                            upload.offset.dx,
+                            upload.offset.dy,
+                            // List.generate(10, (index) => 0)
+                            upload.uint8List.toList()
+                        ));
+                        widget.websocketConnection.channel.add("upload-add#" + data);
                       });
                     });
                   },

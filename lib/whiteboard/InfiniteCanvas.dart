@@ -274,6 +274,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   widget.toolbarOptions.settingsSelectedUpload!.offset =
                       (onSettingsMoveUploadOffset! +
                           (newOffset - onSettingsMove));
+                  sendUploadUpdate(widget.toolbarOptions.settingsSelectedUpload!);
                 }
                 widget.onChangedToolbarOptions(widget.toolbarOptions);
                 break;
@@ -488,5 +489,15 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
     ));
     widget.websocketConnection.channel
         .add("scribble-delete#" + data);
+  }
+
+  sendUploadUpdate(Upload newUpload){
+    String data = jsonEncode(WSUploadUpdate(
+      newUpload.uuid,
+      newUpload.offset.dx,
+      newUpload.offset.dy,
+    ));
+    widget.websocketConnection.channel
+        .add("upload-update#" + data);
   }
 }

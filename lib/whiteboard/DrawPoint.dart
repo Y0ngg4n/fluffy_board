@@ -47,13 +47,15 @@ enum UploadType {
 }
 
 class Upload{
+  String uuid;
   UploadType uploadType;
   Offset offset;
 
   Uint8List uint8List;
   Image? image;
 
-  Upload(this.uploadType, this.uint8List, this.offset, this.image);
+
+  Upload(this.uuid, this.uploadType, this.uint8List, this.offset, this.image);
 }
 
 class TextItem{

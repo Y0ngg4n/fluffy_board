@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:core';
+import 'dart:typed_data';
 
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:flutter/material.dart';
@@ -171,6 +172,81 @@ class DecodeGetScribbleList{
     List<DecodeGetScribble> points = new List.empty(growable: true);
     for (Map<String, dynamic> json in jsonList) {
       points.add(new DecodeGetScribble.fromJson(json));
+    }
+    return points;
+  }
+}
+
+class WSUploadAdd {
+  String uuid;
+  int uploadType;
+  double offset_dx;
+  double offset_dy;
+  List<int> imageData;
+
+  WSUploadAdd.fromJson(Map<String, dynamic> json)
+      : uuid = json['uuid'],
+        uploadType = json['upload_type'],
+        offset_dx = json['offset_dx'],
+        offset_dy = json['offset_dy'],
+        imageData = json['image_data'].cast<int>();
+
+  Map toJson() {
+    return {
+      'uuid': uuid,
+      'upload_type': uploadType,
+      'offset_dx': offset_dx,
+      'offset_dy': offset_dy,
+      'image_data': imageData,
+    };
+  }
+
+  WSUploadAdd(this.uuid, this.uploadType, this.offset_dx, this.offset_dy,
+      this.imageData);
+}
+
+class WSUploadUpdate {
+  String uuid;
+  double offset_dx;
+  double offset_dy;
+
+  WSUploadUpdate.fromJson(Map<String, dynamic> json)
+      : uuid = json['uuid'],
+        offset_dx = json['offset_dx'],
+        offset_dy = json['offset_dy'];
+
+  Map toJson() {
+    return {
+      'uuid': uuid,
+      'offset_dx': offset_dx,
+      'offset_dy': offset_dy,
+    };
+  }
+
+  WSUploadUpdate(this.uuid, this.offset_dx, this.offset_dy);
+}
+
+class DecodeGetUpload {
+  String uuid;
+  int uploadType;
+  double offset_dx;
+  double offset_dy;
+
+  List<int> imageData;
+
+  DecodeGetUpload.fromJson(Map<String, dynamic> json)
+      : uuid = json['id'],
+        uploadType = json['upload_type'],
+        offset_dx = json['offset_dx'],
+        offset_dy = json['offset_dy'],
+        imageData = json['image_data'].cast<int>();
+}
+
+class DecodeGetUploadList{
+  static List<DecodeGetUpload> fromJsonList(List<dynamic> jsonList) {
+    List<DecodeGetUpload> points = new List.empty(growable: true);
+    for (Map<String, dynamic> json in jsonList) {
+      points.add(new DecodeGetUpload.fromJson(json));
     }
     return points;
   }

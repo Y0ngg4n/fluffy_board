@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:fluffy_board/dashboard/Dashboard.dart';
 import 'package:fluffy_board/dashboard/filemanager/FileManager.dart';
@@ -23,6 +24,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'DrawPoint.dart';
 import 'overlays/Toolbar.dart' as Toolbar;
+import 'dart:ui' as ui;
 
 class WhiteboardView extends StatefulWidget {
   Whiteboard whiteboard;
@@ -74,6 +76,22 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             for (int i = scribbles.length - 1; i >= 0; i--) {
               if (scribbles[i].uuid == id) {
                 scribbles.removeAt(i);
+                break;
+              }
+            }
+          });
+        },
+        onUploadAdd: (upload) {
+          setState(() {
+            uploads.add(upload);
+          });
+        },
+        onUploadUpdate: (upload) {
+          setState(() {
+            // Reverse Upload Search for better Performance
+            for (int i = uploads.length - 1; i >= 0; i--) {
+              if (uploads[i].uuid == upload.uuid) {
+                uploads[i].offset = upload.offset;
                 break;
               }
             }
@@ -150,6 +168,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             offset: offset,
             sessionOffset: _sessionOffset,
             uploads: uploads,
+            websocketConnection: websocketConnection,
             onChangedToolbarOptions: (toolBarOptions) {
               setState(() {
                 this.toolbarOptions = toolBarOptions;
@@ -197,6 +216,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
 
   Future _getWhiteboardData() async {
     await _getScribbles();
+    await _getUploads();
   }
 
   Future<PencilOptions> _getPencilOptions() async {
@@ -520,6 +540,36 @@ class _WhiteboardViewState extends State<WhiteboardView> {
               SelectedFigureTypeToolbar
                   .values[decodeGetScribble.selectedFigureTypeToolbar],
               PaintingStyle.values[decodeGetScribble.paintingStyle]));
+        }
+      });
+    }
+  }
+
+  Future _getUploads() async {
+    http.Response uploadResponse = await http.post(
+        Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/upload/get"),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json",
+          'Authorization': 'Bearer ' + widget.auth_token,
+        },
+        body: jsonEncode({"whiteboard": widget.whiteboard.id}));
+
+    if (uploadResponse.statusCode == 200) {
+      List<DecodeGetUpload> decodedUploads =
+          DecodeGetUploadList.fromJsonList(jsonDecode(uploadResponse.body));
+      setState(() {
+        for (DecodeGetUpload decodeGetUpload in decodedUploads) {
+          Uint8List uint8list = Uint8List.fromList(decodeGetUpload.imageData);
+          ui.decodeImageFromList(uint8list, (image) {
+            uploads.add(new Upload(
+                decodeGetUpload.uuid,
+                UploadType.values[decodeGetUpload.uploadType],
+                uint8list,
+                new Offset(
+                    decodeGetUpload.offset_dx, decodeGetUpload.offset_dy),
+                image));
+          });
         }
       });
     }

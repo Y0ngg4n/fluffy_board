@@ -1,6 +1,7 @@
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/PencilToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/SettingsToolbar/ScribbleSettings.dart';
@@ -74,6 +75,7 @@ class Toolbar extends StatefulWidget {
   ZoomOptions zoomOptions;
   List<Scribble> scribbles;
   OnScribblesChange onScribblesChange;
+  WebsocketConnection websocketConnection;
 
   Toolbar(
       {required this.toolbarOptions,
@@ -83,7 +85,8 @@ class Toolbar extends StatefulWidget {
       required this.sessionOffset,
       required this.zoomOptions,
       required this.scribbles,
-      required this.onScribblesChange});
+      required this.onScribblesChange,
+      required this.websocketConnection});
 
   @override
   _ToolbarState createState() => _ToolbarState();
@@ -207,6 +210,7 @@ class _ToolbarState extends State<Toolbar> {
         );
       case SelectedTool.upload:
         return UploadToolbar(
+          websocketConnection: widget.websocketConnection,
           uploads: widget.uploads,
           zoomOptions: widget.zoomOptions,
           toolbarOptions: widget.toolbarOptions,
