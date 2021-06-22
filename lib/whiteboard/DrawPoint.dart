@@ -31,6 +31,8 @@ class DrawPoint extends Offset {
 
   DrawPoint.of(Offset offset) : super(offset.dx, offset.dy);
 
+  DrawPoint.fromJson(Map<String, dynamic> json): super(json['dx'], json['dy']);
+
   Map toJson() {
     return {
       'dx': dx,

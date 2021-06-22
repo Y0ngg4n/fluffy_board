@@ -93,15 +93,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 widget.toolbarOptions.selectedTool == SelectedTool.figure) {
               Scribble newScribble = _getScribble(newOffset);
               widget.scribbles.add(newScribble);
-              String data = jsonEncode(WSScribbleAdd(
-                  newScribble.uuid,
-                  newScribble.selectedFigureTypeToolbar.index,
-                  newScribble.strokeWidth,
-                  newScribble.strokeCap.index,
-                  newScribble.color.toHex(),
-                  newScribble.points,
-                  newScribble.paintingStyle.index));
-              widget.websocketConnection.channel.add("scribble-add#" + data);
+              sendCreateScribble(newScribble);
               widget.onScribblesChange(widget.scribbles);
             } else if (widget.toolbarOptions.selectedTool ==
                 SelectedTool.text) {
@@ -225,6 +217,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                     }
                   }
                   if (removeIndex != -1) {
+                    sendScribbleDelete(widget.scribbles[removeIndex]);
                     widget.scribbles.removeAt(removeIndex);
                     break;
                   }
@@ -250,6 +243,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                       lastScribble.points,
                       widget.toolbarOptions.straightLineOptions.strokeWidth +
                           10);
+                this.sendScribbleUpdate(lastScribble);
                 break;
               case SelectedTool.figure:
                 Scribble lastScribble = widget.scribbles.last;
@@ -258,6 +252,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   lastScribble.points.add(newDrawPoint);
                 else
                   lastScribble.points.last = newDrawPoint;
+                this.sendScribbleUpdate(lastScribble);
                 break;
               case SelectedTool.settings:
                 if (widget.toolbarOptions.settingsSelected ==
@@ -271,6 +266,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   }
                   widget.toolbarOptions.settingsSelectedScribble!.points =
                       newPoints;
+                  sendScribbleUpdate(widget.toolbarOptions.settingsSelectedScribble!);
                 } else if (widget.toolbarOptions.settingsSelected ==
                         SettingsSelected.image &&
                     widget.toolbarOptions.settingsSelectedUpload != null &&
@@ -285,21 +281,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 Scribble newScribble = widget.scribbles.last;
                 DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
                 newScribble.points.add(newDrawPoint);
-                String data = jsonEncode(WSScribbleUpdate(
-                  newScribble.uuid,
-                  newScribble.selectedFigureTypeToolbar.index,
-                  newScribble.strokeWidth,
-                  newScribble.strokeCap.index,
-                  newScribble.color.toHex(),
-                  newScribble.points,
-                  newScribble.paintingStyle.index,
-                  newScribble.leftExtremity,
-                  newScribble.rightExtremity,
-                  newScribble.topExtremity,
-                  newScribble.bottomExtremity,
-                ));
-                widget.websocketConnection.channel
-                    .add("scribble-update#" + data);
+                this.sendScribbleUpdate(newScribble);
             }
           });
         },
@@ -339,6 +321,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 }
               }
               widget.scribbles.last = newScribble;
+              sendScribbleUpdate(newScribble);
             }
           });
         },
@@ -468,5 +451,42 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
     // path.lineTo(point_x_3, point_y_3);
     // path.lineTo(point_x_1, point_y_1);
     // path.lineTo(point_x_1, point_y_1);
+  }
+
+  sendCreateScribble(Scribble newScribble){
+    String data = jsonEncode(WSScribbleAdd(
+        newScribble.uuid,
+        newScribble.selectedFigureTypeToolbar.index,
+        newScribble.strokeWidth,
+        newScribble.strokeCap.index,
+        newScribble.color.toHex(),
+        newScribble.points,
+        newScribble.paintingStyle.index));
+    widget.websocketConnection.channel.add("scribble-add#" + data);
+  }
+
+  sendScribbleUpdate(Scribble newScribble){
+    String data = jsonEncode(WSScribbleUpdate(
+      newScribble.uuid,
+      newScribble.strokeWidth,
+      newScribble.strokeCap.index,
+      newScribble.color.toHex(),
+      newScribble.points,
+      newScribble.paintingStyle.index,
+      newScribble.leftExtremity,
+      newScribble.rightExtremity,
+      newScribble.topExtremity,
+      newScribble.bottomExtremity,
+    ));
+    widget.websocketConnection.channel
+        .add("scribble-update#" + data);
+  }
+
+  sendScribbleDelete(Scribble deleteScribble){
+    String data = jsonEncode(WSScribbleDelete(
+      deleteScribble.uuid,
+    ));
+    widget.websocketConnection.channel
+        .add("scribble-delete#" + data);
   }
 }

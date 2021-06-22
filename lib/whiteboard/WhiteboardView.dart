@@ -46,10 +46,47 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   @override
   void initState() {
     super.initState();
-    websocketConnection = WebsocketConnection.getInstance(widget.whiteboard.id, widget.auth_token);
+    websocketConnection = WebsocketConnection.getInstance(
+        whiteboard: widget.whiteboard.id,
+        auth_token: widget.auth_token,
+        onScribbleAdd: (scribble) {
+          setState(() {
+            scribbles.add(scribble);
+          });
+        },
+        onScribbleUpdate: (scribble) {
+          setState(() {
+            // Reverse Scribble Search for better Performance
+            for (int i = scribbles.length - 1; i >= 0; i--) {
+              if (scribbles[i].uuid == scribble.uuid) {
+                scribble.selectedFigureTypeToolbar =
+                    scribbles[i].selectedFigureTypeToolbar;
+                scribbles[i] = scribble;
+                break;
+              }
+            }
+          });
+        },
+        onScribbleDelete: (id) {
+          setState(() {
+            // Reverse Scribble Search for better Performance
+            for (int i = scribbles.length - 1; i >= 0; i--) {
+              if (scribbles[i].uuid == id) {
+                scribbles.removeAt(i);
+                break;
+              }
+            }
+          });
+        });
     // WidgetsBinding.instance!
     //     .addPostFrameCallback((_) => _createToolbars(context));
     _getToolBarOptions();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    websocketConnection.dispose();
   }
 
   @override
@@ -326,7 +363,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
 
   Future<BackgroundOptions> _getBackgroundOptions() async {
     http.Response backgroundResponse = await http.get(
-        Uri.parse(dotenv.env['REST_API_URL']! + "/toolbar-options/background/get"),
+        Uri.parse(
+            dotenv.env['REST_API_URL']! + "/toolbar-options/background/get"),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
@@ -336,14 +374,14 @@ class _WhiteboardViewState extends State<WhiteboardView> {
     BackgroundOptions backgroundOptions;
     if (backgroundResponse.statusCode == 200) {
       DecodeBackgroundOptions decodeBackgroundOptions =
-      DecodeBackgroundOptions.fromJson(jsonDecode(backgroundResponse.body));
+          DecodeBackgroundOptions.fromJson(jsonDecode(backgroundResponse.body));
       backgroundOptions = new BackgroundOptions(
           decodeBackgroundOptions.selectedBackground,
           List.empty(),
           decodeBackgroundOptions.strokeWidth,
           StrokeCap.round,
           0,
-              (drawOptions) => _sendBackgroundToolbarOptions(drawOptions));
+          (drawOptions) => _sendBackgroundToolbarOptions(drawOptions));
     } else {
       backgroundOptions = BackgroundOptions(
           0,
@@ -351,7 +389,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           50,
           StrokeCap.round,
           0,
-              (drawOptions) => _sendBackgroundToolbarOptions(drawOptions));
+          (drawOptions) => _sendBackgroundToolbarOptions(drawOptions));
     }
     return backgroundOptions;
   }
@@ -448,7 +486,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           'Authorization': 'Bearer ' + widget.auth_token,
         },
         body: jsonEncode(new EncodeBackgroundOptions(
-            backgroundOptions.strokeWidth, backgroundOptions.selectedBackground)));
+            backgroundOptions.strokeWidth,
+            backgroundOptions.selectedBackground)));
   }
 }
 
