@@ -57,10 +57,10 @@ class Whiteboards {
 }
 
 class ExtWhiteboard {
-  late String id, owner, parent, name;
-  late int created;
+  String id, account, directory, name, original;
+  bool edit;
 
-  ExtWhiteboard(this.id, this.owner, this.parent, this.name, this.created);
+  ExtWhiteboard(this.id, this.account, this.directory, this.name, this.original, this.edit);
 }
 
 class ExtWhiteboards {
@@ -70,8 +70,8 @@ class ExtWhiteboards {
 
   ExtWhiteboards.fromJson(List<dynamic> json) {
     for (Map<String, dynamic> row in json) {
-      list.add(new ExtWhiteboard(row['id'], row['owner'], row['directory'],
-          row['name'], row['created']));
+      list.add(new ExtWhiteboard(row['id'], row['account'], row['directory'],
+          row['name'], row['original'], row['edit']));
     }
   }
 }
@@ -246,7 +246,7 @@ class _FileManagerState extends State<FileManager> {
                           context,
                           MaterialPageRoute<void>(
                               builder: (BuildContext context) =>
-                                  WhiteboardView(whiteboard, widget.auth_token)));
+                                  WhiteboardView(whiteboard, null, widget.auth_token)));
                     },
                   ),
                   Text(
@@ -313,7 +313,13 @@ class _FileManagerState extends State<FileManager> {
                 children: [
                   InkWell(
                     child: Icon(Icons.assignment_ind, size: file_icon_size),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                              builder: (BuildContext context) =>
+                                  WhiteboardView(null, whiteboard, widget.auth_token)));
+                    },
                   ),
                   Text(
                     whiteboard.name,
@@ -511,6 +517,7 @@ class _FileManagerState extends State<FileManager> {
         Directories.fromJson(jsonDecode(utf8.decode((dirResponse.bodyBytes))));
     Whiteboards whiteboards =
         Whiteboards.fromJson(jsonDecode(utf8.decode((wbResponse.bodyBytes))));
+    print(utf8.decode((wbExtResponse.bodyBytes)));
     ExtWhiteboards extWhiteboards = ExtWhiteboards.fromJson(
         jsonDecode(utf8.decode((wbExtResponse.bodyBytes))));
     setState(() {
@@ -518,7 +525,7 @@ class _FileManagerState extends State<FileManager> {
       this.whiteboards = whiteboards;
       this.extWhiteboards = extWhiteboards;
     });
-    if (dirResponse.statusCode == 200 && wbResponse.statusCode == 200)
+    if (dirResponse.statusCode == 200 && wbResponse.statusCode == 200 && wbExtResponse.statusCode == 200)
       _refreshController.refreshCompleted();
     else
       _refreshController.refreshFailed();

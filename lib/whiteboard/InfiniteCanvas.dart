@@ -81,6 +81,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
     return Scaffold(
       body: GestureDetector(
         onScaleStart: (details) {
+          print("scale Start");
           this.setState(() {
             _initialScale = widget.zoomOptions.scale;
             Offset newOffset = (details.localFocalPoint - widget.offset) /

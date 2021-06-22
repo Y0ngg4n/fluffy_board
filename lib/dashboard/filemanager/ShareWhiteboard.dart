@@ -157,7 +157,7 @@ class _ShareWhiteboardFormState extends State<ShareWhiteboardForm> {
                           icon: Icon(Icons.content_copy),
                           onPressed: () {
                             Clipboard.setData(
-                                new ClipboardData(text: viewController.text));
+                                new ClipboardData(text: editController.text));
                             _copySuccess();
                           }),
                     )),

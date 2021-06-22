@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
@@ -78,10 +79,19 @@ class _AddExtWhiteboardFormState extends State<AddExtWhiteboardForm> {
             children: <Widget>[
               TextFormField(
                 controller: nameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     icon: Icon(Icons.email_outlined),
                     hintText: "Enter your Invite ID",
+                    suffixIcon: IconButton(
+                        icon: Icon(Icons.content_paste),
+                        onPressed: () async {
+                          ClipboardData? clipboardData = await Clipboard.getData("text/plain");
+                          if(clipboardData != null && clipboardData.text != null){
+                            nameController.text = clipboardData.text!;
+                          }
+                        },
+                    ),
                     labelText: "Invite ID"),
                 validator: (value) {
                   if (value == null || value.isEmpty
@@ -117,6 +127,8 @@ class _AddExtWhiteboardFormState extends State<AddExtWhiteboardForm> {
                                         'directory': widget.directory,
                                         'permission_id': splitInviteId[1]
                                       }));
+                                  print(splitInviteId[0]);
+                                  print(splitInviteId[1]);
                                   if (response.statusCode == 200) {
                                     Navigator.pop(context);
                                     widget._refreshController.requestRefresh();
