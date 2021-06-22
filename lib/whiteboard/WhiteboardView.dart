@@ -5,6 +5,7 @@ import 'package:fluffy_board/dashboard/filemanager/FileManager.dart';
 import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
 import 'package:fluffy_board/whiteboard/TextsCanvas.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/BackgroundToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/DrawOptions.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/EraserToolbar.dart';
@@ -81,6 +82,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
     // WidgetsBinding.instance!
     //     .addPostFrameCallback((_) => _createToolbars(context));
     _getToolBarOptions();
+    _getWhiteboardData();
   }
 
   @override
@@ -191,6 +193,10 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           false,
           Toolbar.SettingsSelected.none);
     });
+  }
+
+  Future _getWhiteboardData() async {
+    await _getScribbles();
   }
 
   Future<PencilOptions> _getPencilOptions() async {
@@ -488,6 +494,35 @@ class _WhiteboardViewState extends State<WhiteboardView> {
         body: jsonEncode(new EncodeBackgroundOptions(
             backgroundOptions.strokeWidth,
             backgroundOptions.selectedBackground)));
+  }
+
+  Future _getScribbles() async {
+    http.Response scribbleResponse = await http.post(
+        Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/scribble/get"),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json",
+          'Authorization': 'Bearer ' + widget.auth_token,
+        },
+        body: jsonEncode({"whiteboard": widget.whiteboard.id}));
+
+    if (scribbleResponse.statusCode == 200) {
+      List<DecodeGetScribble> decodedScribbles =
+          DecodeGetScribbleList.fromJsonList(jsonDecode(scribbleResponse.body));
+      setState(() {
+        for (DecodeGetScribble decodeGetScribble in decodedScribbles) {
+          scribbles.add(new Scribble(
+              decodeGetScribble.uuid,
+              decodeGetScribble.strokeWidth,
+              StrokeCap.values[decodeGetScribble.strokeCap],
+              HexColor.fromHex(decodeGetScribble.color),
+              decodeGetScribble.points,
+              SelectedFigureTypeToolbar
+                  .values[decodeGetScribble.selectedFigureTypeToolbar],
+              PaintingStyle.values[decodeGetScribble.paintingStyle]));
+        }
+      });
+    }
   }
 }
 

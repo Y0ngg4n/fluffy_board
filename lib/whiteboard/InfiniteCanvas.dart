@@ -217,7 +217,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                     }
                   }
                   if (removeIndex != -1) {
-                    sendScribbleDelete(widget.scribbles[removeIndex]);
+                    sendScribbleDelete(currentScribble);
                     widget.scribbles.removeAt(removeIndex);
                     break;
                   }

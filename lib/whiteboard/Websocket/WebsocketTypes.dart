@@ -94,18 +94,16 @@ class WSScribbleUpdate {
     };
   }
 
-  WSScribbleUpdate(
-    this.uuid,
-    this.strokeWidth,
-    this.strokeCap,
-    this.color,
-    this.points,
-    this.paintingStyle,
-    this.leftExtremity,
-    this.rightExtremity,
-    this.topExtremity,
-    this.bottomExtremity,
-  );
+  WSScribbleUpdate(this.uuid,
+      this.strokeWidth,
+      this.strokeCap,
+      this.color,
+      this.points,
+      this.paintingStyle,
+      this.leftExtremity,
+      this.rightExtremity,
+      this.topExtremity,
+      this.bottomExtremity,);
 }
 
 class WSScribbleDelete {
@@ -119,7 +117,61 @@ class WSScribbleDelete {
     };
   }
 
-  WSScribbleDelete(
-    this.uuid,
-  );
+  WSScribbleDelete(this.uuid,);
+}
+
+class DecodeGetScribble {
+  String uuid;
+  int selectedFigureTypeToolbar;
+  double strokeWidth;
+  int strokeCap;
+  String color;
+  List<DrawPoint> points;
+  int paintingStyle;
+  double leftExtremity, rightExtremity, topExtremity, bottomExtremity;
+
+  static List<DrawPoint> fromJsonList(List<dynamic> jsonList) {
+    List<DrawPoint> points = new List.empty(growable: true);
+    for (Map<String, dynamic> json in jsonList) {
+      points.add(new DrawPoint.fromJson(json));
+    }
+    return points;
+  }
+
+
+  DecodeGetScribble(
+      this.uuid,
+      this.selectedFigureTypeToolbar,
+      this.strokeWidth,
+      this.strokeCap,
+      this.color,
+      this.points,
+      this.paintingStyle,
+      this.leftExtremity,
+      this.rightExtremity,
+      this.topExtremity,
+      this.bottomExtremity);
+
+  DecodeGetScribble.fromJson(Map<String, dynamic> json)
+      : uuid = json['id'],
+        selectedFigureTypeToolbar = json['selected_figure_type_toolbar'],
+        strokeWidth = json['stroke_width'],
+        strokeCap = json['stroke_cap'],
+        color = json['color'],
+        points = WSScribbleAdd.fromJsonList(json['points']),
+        paintingStyle = json['painting_style'],
+        leftExtremity = json['left_extremity'],
+        rightExtremity = json['right_extremity'],
+        topExtremity = json['top_extremity'],
+        bottomExtremity = json['bottom_extremity'];
+}
+
+class DecodeGetScribbleList{
+  static List<DecodeGetScribble> fromJsonList(List<dynamic> jsonList) {
+    List<DecodeGetScribble> points = new List.empty(growable: true);
+    for (Map<String, dynamic> json in jsonList) {
+      points.add(new DecodeGetScribble.fromJson(json));
+    }
+    return points;
+  }
 }
