@@ -53,7 +53,9 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   void initState() {
     super.initState();
     websocketConnection = WebsocketConnection.getInstance(
-        whiteboard: widget.whiteboard == null ? widget.extWhiteboard!.original : widget.whiteboard!.id,
+        whiteboard: widget.whiteboard == null
+            ? widget.extWhiteboard!.original
+            : widget.whiteboard!.id,
         auth_token: widget.auth_token,
         onScribbleAdd: (scribble) {
           setState(() {
@@ -115,32 +117,39 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   @override
   Widget build(BuildContext context) {
     AppBar appBar = AppBar(
-      title: Text(widget.whiteboard == null ? widget.extWhiteboard!.name : widget.whiteboard!.name),
+      title: Text(widget.whiteboard == null
+          ? widget.extWhiteboard!.name
+          : widget.whiteboard!.name),
     );
 
     if (toolbarOptions == null) {
-      return Dashboard.loading(widget.whiteboard == null ? widget.extWhiteboard!.name : widget.whiteboard!.name);
+      return Dashboard.loading(widget.whiteboard == null
+          ? widget.extWhiteboard!.name
+          : widget.whiteboard!.name);
     }
 
-    Widget toolbar = (widget.whiteboard != null || (widget.extWhiteboard != null && widget.extWhiteboard!.edit)) ? (Toolbar.Toolbar(
-      scribbles: scribbles,
-      toolbarOptions: toolbarOptions!,
-      zoomOptions: zoomOptions,
-      offset: offset,
-      sessionOffset: _sessionOffset,
-      uploads: uploads,
-      websocketConnection: websocketConnection,
-      onChangedToolbarOptions: (toolBarOptions) {
-        setState(() {
-          this.toolbarOptions = toolBarOptions;
-        });
-      },
-      onScribblesChange: (scribbles) {
-        setState(() {
-          this.scribbles = scribbles;
-        });
-      },
-    )) : Container();
+    Widget toolbar = (widget.whiteboard != null ||
+            (widget.extWhiteboard != null && widget.extWhiteboard!.edit))
+        ? (Toolbar.Toolbar(
+            scribbles: scribbles,
+            toolbarOptions: toolbarOptions!,
+            zoomOptions: zoomOptions,
+            offset: offset,
+            sessionOffset: _sessionOffset,
+            uploads: uploads,
+            websocketConnection: websocketConnection,
+            onChangedToolbarOptions: (toolBarOptions) {
+              setState(() {
+                this.toolbarOptions = toolBarOptions;
+              });
+            },
+            onScribblesChange: (scribbles) {
+              setState(() {
+                this.scribbles = scribbles;
+              });
+            },
+          ))
+        : Container();
 
     return Scaffold(
         appBar: (appBar),
@@ -184,7 +193,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             texts: texts,
             toolbarOptions: toolbarOptions!,
           ),
-         toolbar,
+          toolbar,
           ZoomView(
             zoomOptions: zoomOptions,
             onChangedZoomOptions: (zoomOptions) {
@@ -529,7 +538,14 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           "accept": "application/json",
           'Authorization': 'Bearer ' + widget.auth_token,
         },
-        body: jsonEncode({"whiteboard": (widget.whiteboard == null) ? widget.extWhiteboard!.original : widget.whiteboard!.id}));
+        body: jsonEncode({
+          "whiteboard": (widget.whiteboard == null)
+              ? widget.extWhiteboard!.original
+              : widget.whiteboard!.id,
+          "permission_id": widget.whiteboard == null
+              ? widget.extWhiteboard!.permissionId
+              : widget.whiteboard!.edit_id
+        }));
 
     if (scribbleResponse.statusCode == 200) {
       List<DecodeGetScribble> decodedScribbles =
@@ -558,8 +574,14 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           "accept": "application/json",
           'Authorization': 'Bearer ' + widget.auth_token,
         },
-        body: jsonEncode({"whiteboard": widget.whiteboard == null ? widget.extWhiteboard!.original : widget.whiteboard!.id}));
-
+        body: jsonEncode({
+          "whiteboard": widget.whiteboard == null
+              ? widget.extWhiteboard!.original
+              : widget.whiteboard!.id,
+          "permission_id": widget.whiteboard == null
+              ? widget.extWhiteboard!.permissionId
+              : widget.whiteboard!.edit_id
+        }));
     if (uploadResponse.statusCode == 200) {
       List<DecodeGetUpload> decodedUploads =
           DecodeGetUploadList.fromJsonList(jsonDecode(uploadResponse.body));

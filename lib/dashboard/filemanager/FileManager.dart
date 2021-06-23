@@ -57,10 +57,10 @@ class Whiteboards {
 }
 
 class ExtWhiteboard {
-  String id, account, directory, name, original;
+  String id, account, directory, name, original, permissionId;
   bool edit;
 
-  ExtWhiteboard(this.id, this.account, this.directory, this.name, this.original, this.edit);
+  ExtWhiteboard(this.id, this.account, this.directory, this.name, this.original, this.edit, this.permissionId);
 }
 
 class ExtWhiteboards {
@@ -71,7 +71,7 @@ class ExtWhiteboards {
   ExtWhiteboards.fromJson(List<dynamic> json) {
     for (Map<String, dynamic> row in json) {
       list.add(new ExtWhiteboard(row['id'], row['account'], row['directory'],
-          row['name'], row['original'], row['edit']));
+          row['name'], row['original'], row['edit'], row['permission_id']));
     }
   }
 }
