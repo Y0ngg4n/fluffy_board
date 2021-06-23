@@ -226,6 +226,21 @@ class WSUploadUpdate {
   WSUploadUpdate(this.uuid, this.offset_dx, this.offset_dy);
 }
 
+class WSUploadDelete {
+  String uuid;
+
+  WSUploadDelete.fromJson(Map<String, dynamic> json)
+      : uuid = json['uuid'];
+
+  Map toJson() {
+    return {
+      'uuid': uuid,
+    };
+  }
+
+  WSUploadDelete(this.uuid);
+}
+
 class DecodeGetUpload {
   String uuid;
   int uploadType;

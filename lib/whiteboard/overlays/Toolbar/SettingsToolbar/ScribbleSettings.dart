@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
 import '../../../DrawPoint.dart';
+import '../../../WhiteboardView.dart';
 import '../../Toolbar.dart' as Toolbar;
 
 class ScribbleSettings extends StatefulWidget {
@@ -12,12 +17,14 @@ class ScribbleSettings extends StatefulWidget {
   OnScribblesChange onScribblesChange;
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
+  WebsocketConnection websocketConnection;
 
   ScribbleSettings({required this.selectedScribble,
   required this.toolbarOptions,
   required this.onChangedToolbarOptions,
   required this.scribbles,
-  required this.onScribblesChange});
+  required this.onScribblesChange,
+  required this.websocketConnection});
 
   @override
   _ScribbleSettingsState createState() => _ScribbleSettingsState();
@@ -46,6 +53,7 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
                   onChanged: (value) {
                     setState(() {
                       widget.selectedScribble!.strokeWidth = value;
+                      sendScribbleUpdate(widget.selectedScribble!);
                     });
                   },
                   min: 1,
@@ -53,7 +61,7 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
                 ),
               ),
               OutlinedButton(onPressed: () {
-                widget.toolbarOptions.colorPickerOpen = true;
+                widget.toolbarOptions.colorPickerOpen = !widget.toolbarOptions.colorPickerOpen;
                 widget.onChangedToolbarOptions(widget.toolbarOptions);
               }, child: Icon(OwnIcons.color_lens,
                   color: widget.selectedScribble!.color)),
@@ -61,6 +69,7 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
                 setState(() {
                   widget.scribbles.remove(widget.selectedScribble!);
                   widget.onScribblesChange(widget.scribbles);
+                  sendScribbleDelete(widget.selectedScribble!);
                 });
               }, child: Icon(Icons.delete))
             ],
@@ -68,5 +77,30 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
         ),
       ),
     );
+  }
+
+  sendScribbleUpdate(Scribble newScribble){
+    String data = jsonEncode(WSScribbleUpdate(
+      newScribble.uuid,
+      newScribble.strokeWidth,
+      newScribble.strokeCap.index,
+      newScribble.color.toHex(),
+      newScribble.points,
+      newScribble.paintingStyle.index,
+      newScribble.leftExtremity,
+      newScribble.rightExtremity,
+      newScribble.topExtremity,
+      newScribble.bottomExtremity,
+    ));
+    widget.websocketConnection.channel
+        .add("scribble-update#" + data);
+  }
+
+  sendScribbleDelete(Scribble newScribble){
+    String data = jsonEncode(WSScribbleDelete(
+      newScribble.uuid,
+    ));
+    widget.websocketConnection.channel
+        .add("scribble-delete#" + data);
   }
 }

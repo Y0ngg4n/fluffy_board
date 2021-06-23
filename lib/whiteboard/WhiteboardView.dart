@@ -101,7 +101,19 @@ class _WhiteboardViewState extends State<WhiteboardView> {
               }
             }
           });
-        });
+        },
+        onUploadDelete: (id) {
+          setState(() {
+            // Reverse Scribble Search for better Performance
+            for (int i = uploads.length - 1; i >= 0; i--) {
+              if (uploads[i].uuid == id) {
+                uploads.removeAt(i);
+                break;
+              }
+            }
+          });
+        },
+    );
     // WidgetsBinding.instance!
     //     .addPostFrameCallback((_) => _createToolbars(context));
     _getToolBarOptions();
@@ -146,6 +158,11 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             onScribblesChange: (scribbles) {
               setState(() {
                 this.scribbles = scribbles;
+              });
+            },
+            onUploadsChange: (uploads) {
+              setState(() {
+                this.uploads = uploads;
               });
             },
           ))
@@ -224,7 +241,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           new TextOptions(SelectedTextColorToolbar.ColorPreset1),
           backgroundOptions,
           false,
-          Toolbar.SettingsSelected.none);
+          Toolbar.SettingsSelected.none,
+          websocketConnection);
     });
   }
 

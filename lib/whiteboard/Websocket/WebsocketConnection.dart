@@ -23,6 +23,7 @@ typedef OnScribbleDelete = Function(String);
 
 typedef OnUploadAdd = Function(Upload);
 typedef OnUploadUpdate = Function(Upload);
+typedef OnUploadDelete = Function(String);
 
 class WebsocketConnection {
   static WebsocketConnection? _singleton = null;
@@ -41,6 +42,7 @@ class WebsocketConnection {
 
   OnUploadAdd onUploadAdd;
   OnUploadUpdate onUploadUpdate;
+  OnUploadDelete onUploadDelete;
 
   WebsocketConnection(
       {required this.whiteboard,
@@ -49,7 +51,8 @@ class WebsocketConnection {
       required this.onScribbleUpdate,
       required this.onScribbleDelete,
       required this.onUploadAdd,
-      required this.onUploadUpdate});
+      required this.onUploadUpdate,
+      required this.onUploadDelete});
 
   static WebsocketConnection getInstance({
     required String whiteboard,
@@ -59,6 +62,7 @@ class WebsocketConnection {
     required Function(String) onScribbleDelete,
     required Function(Upload) onUploadAdd,
     required Function(Upload) onUploadUpdate,
+    required Function(String) onUploadDelete,
   }) {
     if (_singleton == null) {
       _singleton = new WebsocketConnection(
@@ -68,7 +72,9 @@ class WebsocketConnection {
           onScribbleUpdate: onScribbleUpdate,
           onScribbleDelete: onScribbleDelete,
           onUploadAdd: onUploadAdd,
-          onUploadUpdate: onUploadUpdate);
+          onUploadUpdate: onUploadUpdate,
+        onUploadDelete: onUploadDelete
+      );
       _singleton!.initWebSocketConnection(whiteboard, auth_token);
     }
     ;
@@ -151,6 +157,11 @@ class WebsocketConnection {
             Uint8List.fromList(List.empty()),
             new Offset(json.offset_dx, json.offset_dy),
             null));
+      }else if (message.startsWith(r"upload-delete#")) {
+        WSUploadDelete json = WSUploadDelete.fromJson(
+            jsonDecode(message.replaceFirst(r"upload-delete#", ""))
+            as Map<String, dynamic>);
+        onUploadDelete(json.uuid);
       }
     }, onDone: () {
       print("connecting aborted");

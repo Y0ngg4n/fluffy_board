@@ -5,6 +5,7 @@ import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/PencilToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/SettingsToolbar/ScribbleSettings.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/SettingsToolbar/UploadSettings.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/TextToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/UploadToolbar.dart';
@@ -50,6 +51,7 @@ class ToolbarOptions {
   SettingsSelected settingsSelected;
   Scribble? settingsSelectedScribble;
   Upload? settingsSelectedUpload;
+  WebsocketConnection websocketConnection;
 
   ToolbarOptions(
       this.selectedTool,
@@ -62,8 +64,8 @@ class ToolbarOptions {
       this.textOptions,
       this.backgroundOptions,
       this.colorPickerOpen,
-      this.settingsSelected
-      );
+      this.settingsSelected,
+      this.websocketConnection);
 }
 
 class Toolbar extends StatefulWidget {
@@ -75,6 +77,7 @@ class Toolbar extends StatefulWidget {
   ZoomOptions zoomOptions;
   List<Scribble> scribbles;
   OnScribblesChange onScribblesChange;
+  OnUploadsChange onUploadsChange;
   WebsocketConnection websocketConnection;
 
   Toolbar(
@@ -86,6 +89,7 @@ class Toolbar extends StatefulWidget {
       required this.zoomOptions,
       required this.scribbles,
       required this.onScribblesChange,
+      required this.onUploadsChange,
       required this.websocketConnection});
 
   @override
@@ -236,14 +240,16 @@ class _ToolbarState extends State<Toolbar> {
       case SelectedTool.settings:
         return Container();
       case SelectedTool.background:
-        return BackgroundToolbar(toolbarOptions: widget.toolbarOptions, onChangedToolbarOptions: (toolbarOptions) {
-          setState(() {
-            setState(() {
-              widget.toolbarOptions = toolbarOptions;
-              widget.onChangedToolbarOptions(toolbarOptions);
+        return BackgroundToolbar(
+            toolbarOptions: widget.toolbarOptions,
+            onChangedToolbarOptions: (toolbarOptions) {
+              setState(() {
+                setState(() {
+                  widget.toolbarOptions = toolbarOptions;
+                  widget.onChangedToolbarOptions(toolbarOptions);
+                });
+              });
             });
-          });
-        });
     }
   }
 
@@ -254,23 +260,43 @@ class _ToolbarState extends State<Toolbar> {
         break;
       case SettingsSelected.scribble:
         return ScribbleSettings(
-            toolbarOptions: widget.toolbarOptions,
-            selectedScribble: widget.toolbarOptions.settingsSelectedScribble,
-            onChangedToolbarOptions: (toolbarOptions) {
-              setState(() {
-                widget.toolbarOptions = toolbarOptions;
-                widget.onChangedToolbarOptions(toolbarOptions);
-              });
-            },
-            onScribblesChange: (scribbles) {
-              setState(() {
-                widget.scribbles = scribbles;
-                widget.onScribblesChange(scribbles);
-              });
-            }, scribbles: widget.scribbles,);
+          websocketConnection: widget.websocketConnection,
+          toolbarOptions: widget.toolbarOptions,
+          selectedScribble: widget.toolbarOptions.settingsSelectedScribble,
+          onChangedToolbarOptions: (toolbarOptions) {
+            setState(() {
+              widget.toolbarOptions = toolbarOptions;
+              widget.onChangedToolbarOptions(toolbarOptions);
+            });
+          },
+          onScribblesChange: (scribbles) {
+            setState(() {
+              widget.scribbles = scribbles;
+              widget.onScribblesChange(scribbles);
+            });
+          },
+          scribbles: widget.scribbles,
+        );
         break;
       case SettingsSelected.image:
-        return Container();
+        return UploadSettings(
+          websocketConnection: widget.websocketConnection,
+          selectedUpload: widget.toolbarOptions.settingsSelectedUpload,
+          toolbarOptions: widget.toolbarOptions,
+          onChangedToolbarOptions: (toolbarOptions) {
+            setState(() {
+              widget.toolbarOptions = toolbarOptions;
+              widget.onChangedToolbarOptions(toolbarOptions);
+            });
+          },
+          uploads: widget.uploads,
+          onUploadsChange: (uploads) {
+            setState(() {
+              widget.uploads = uploads;
+              widget.onUploadsChange(uploads);
+            });
+          },
+        );
         break;
       case SettingsSelected.text:
         return Container();
@@ -281,6 +307,7 @@ class _ToolbarState extends State<Toolbar> {
   Widget _openColorPicker() {
     if (widget.toolbarOptions.colorPickerOpen)
       return ColorPickerView(
+        websocketConnection: widget.websocketConnection,
         selectedSettingsScribble:
             widget.toolbarOptions.settingsSelectedScribble,
         toolbarOptions: widget.toolbarOptions,

@@ -22,6 +22,7 @@ import 'package:uuid/uuid.dart';
 
 typedef OnOffsetChange = Function(Offset offset, Offset sessionOffset);
 typedef OnScribblesChange = Function(List<Scribble>);
+typedef OnUploadsChange = Function(List<Upload>);
 typedef OnChangedToolbarOptions<T> = Function(Toolbar.ToolbarOptions);
 
 class InfiniteCanvasPage extends StatefulWidget {
