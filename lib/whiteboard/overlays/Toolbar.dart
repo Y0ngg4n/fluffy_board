@@ -280,6 +280,11 @@ class _ToolbarState extends State<Toolbar> {
             setState(() {
               widget.scribbles = scribbles;
               widget.onScribblesChange(scribbles);
+              if(!scribbles.contains(widget.toolbarOptions.settingsSelectedScribble)){
+                widget.toolbarOptions.settingsSelectedScribble = null;
+                widget.toolbarOptions.settingsSelected = SettingsSelected.none;
+                widget.onChangedToolbarOptions(widget.toolbarOptions);
+              }
             });
           },
           scribbles: widget.scribbles,
@@ -301,6 +306,11 @@ class _ToolbarState extends State<Toolbar> {
             setState(() {
               widget.uploads = uploads;
               widget.onUploadsChange(uploads);
+              if(!uploads.contains(widget.toolbarOptions.settingsSelectedUpload)){
+                widget.toolbarOptions.settingsSelectedUpload = null;
+                widget.toolbarOptions.settingsSelected = SettingsSelected.none;
+                widget.onChangedToolbarOptions(widget.toolbarOptions);
+              }
             });
           },
         );
@@ -321,6 +331,11 @@ class _ToolbarState extends State<Toolbar> {
             setState(() {
               widget.texts = texts;
               widget.onTextItemsChange(texts);
+              if(!texts.contains(widget.toolbarOptions.settingsSelectedTextItem)){
+                widget.toolbarOptions.settingsSelectedTextItem = null;
+                widget.toolbarOptions.settingsSelected = SettingsSelected.none;
+                widget.onChangedToolbarOptions(widget.toolbarOptions);
+              }
             });
           },
         );

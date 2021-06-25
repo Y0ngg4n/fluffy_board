@@ -48,8 +48,8 @@ class _UploadSettingsState extends State<UploadSettings> {
               OutlinedButton(onPressed: () {
                 setState(() {
                   widget.uploads.remove(widget.selectedUpload!);
-                  widget.onUploadsChange(widget.uploads);
                   sendUploadDelete(widget.selectedUpload!);
+                  widget.onUploadsChange(widget.uploads);
                 });
               }, child: Icon(Icons.delete))
             ],

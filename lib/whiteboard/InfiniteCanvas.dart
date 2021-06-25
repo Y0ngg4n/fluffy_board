@@ -73,7 +73,6 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
   late double cursorRadius;
   late double _initcursorRadius;
   var uuid = Uuid();
-  String selectedTextUuid="";
 
   @override
   Widget build(BuildContext context) {
@@ -105,10 +104,10 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   uuid.v4(),
                   true,
                   widget.toolbarOptions.textOptions.strokeWidth,
-                  500,
-                  250,
+                  ScreenUtils.getScreenWidth(context).toInt(),
+                  ScreenUtils.getScreenHeight(context).toInt(),
                   widget.toolbarOptions.textOptions.colorPresets[
-                  widget.toolbarOptions.textOptions.currentColor],
+                      widget.toolbarOptions.textOptions.currentColor],
                   "",
                   newOffset);
               widget.texts.add(textItem);
@@ -178,17 +177,16 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                     Rect.fromLTWH(textItem.offset.dx, textItem.offset.dy,
                         textPainter.width, textPainter.height),
                     newOffset)) {
+                  if (widget.toolbarOptions.settingsSelectedTextItem != null &&
+                      widget.toolbarOptions.settingsSelectedTextItem!.uuid ==
+                          textItem.uuid) {
+                    textItem.editing = true;
+                  }
                   widget.toolbarOptions.settingsSelectedTextItem = textItem;
                   widget.toolbarOptions.settingsSelected =
                       SettingsSelected.text;
                   onSettingsMove = newOffset;
                   onSettingsMoveTextItemOffset = textItem.offset;
-                  if(selectedTextUuid.isNotEmpty){
-                    selectedTextUuid = "";
-                    textItem.editing = true;
-                  }else {
-                    selectedTextUuid = textItem.uuid;
-                  }
                   break;
                 }
               }
@@ -197,6 +195,10 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
               for (TextItem textItem in widget.texts) {
                 textItem.editing = false;
               }
+              widget.toolbarOptions.settingsSelectedTextItem = null;
+              widget.toolbarOptions.settingsSelectedUpload = null;
+              widget.toolbarOptions.settingsSelectedScribble = null;
+              widget.onChangedToolbarOptions(widget.toolbarOptions);
             }
           });
         },
@@ -537,16 +539,6 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
     ));
     widget.websocketConnection.channel.add("upload-update#" + data);
   }
-
-  // sendTextItemUpdate(TextItem newTextItem) {
-  //   String data = jsonEncode(WSUploadUpdate(
-  //     newUpload.uuid,
-  //     newUpload.offset.dx,
-  //     newUpload.offset.dy,
-  //   ));
-  //   widget.websocketConnection.channel
-  //       .add("upload-update#" + data);
-  // }
 
   sendCreateTextItem(TextItem textItem) {
     String data = jsonEncode(WSTextItemAdd(

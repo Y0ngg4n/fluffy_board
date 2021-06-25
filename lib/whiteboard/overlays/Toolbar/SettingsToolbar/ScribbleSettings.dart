@@ -68,8 +68,8 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
               OutlinedButton(onPressed: () {
                 setState(() {
                   widget.scribbles.remove(widget.selectedScribble!);
-                  widget.onScribblesChange(widget.scribbles);
                   sendScribbleDelete(widget.selectedScribble!);
+                  widget.onScribblesChange(widget.scribbles);
                 });
               }, child: Icon(Icons.delete))
             ],

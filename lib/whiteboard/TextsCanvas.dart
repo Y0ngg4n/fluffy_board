@@ -15,7 +15,6 @@ class TextsCanvas extends StatefulWidget {
   Offset sessionOffset;
   Toolbar.ToolbarOptions toolbarOptions;
   WebsocketConnection websocketConnection;
-
   TextsCanvas(
       {required this.texts,
       required this.offset,
@@ -36,16 +35,26 @@ class _TextsCanvasState extends State<TextsCanvas> {
       if (!textItem.editing) continue;
       TextEditingController textEditingController = new TextEditingController();
       textEditingController.text = textItem.text;
-      textItem.strokeWidth = widget.toolbarOptions.textOptions.strokeWidth;
-      textItem.color = widget.toolbarOptions.textOptions
-          .colorPresets[widget.toolbarOptions.textOptions.currentColor];
+      double strokeWidth;
+      Color color;
+      if(widget.toolbarOptions.settingsSelectedTextItem == null){
+        textItem.strokeWidth = widget.toolbarOptions.textOptions.strokeWidth;
+        strokeWidth = widget.toolbarOptions.textOptions.strokeWidth;
+        textItem.color = widget.toolbarOptions.textOptions
+            .colorPresets[widget.toolbarOptions.textOptions.currentColor];
+        color = widget.toolbarOptions.textOptions
+            .colorPresets[widget.toolbarOptions.textOptions.currentColor];
+      }else{
+        strokeWidth = widget.toolbarOptions.settingsSelectedTextItem!.strokeWidth;
+        color = widget.toolbarOptions.settingsSelectedTextItem!.color;
+      }
+
       texts.add(Positioned(
         child: TextField(
           controller: textEditingController,
           style: TextStyle(
-              fontSize: widget.toolbarOptions.textOptions.strokeWidth,
-              color: widget.toolbarOptions.textOptions.colorPresets[
-                  widget.toolbarOptions.textOptions.currentColor]),
+              fontSize: strokeWidth,
+              color: color),
           decoration: const InputDecoration(
               border: OutlineInputBorder(), hintText: "Text"),
           minLines: 3,

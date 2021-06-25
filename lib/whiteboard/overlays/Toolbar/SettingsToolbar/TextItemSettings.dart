@@ -19,12 +19,13 @@ class TextItemSettings extends StatefulWidget {
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
   WebsocketConnection websocketConnection;
 
-  TextItemSettings({required this.selectedTextItem,
-  required this.toolbarOptions,
-  required this.onChangedToolbarOptions,
-  required this.texts,
-  required this.onTextItemsChange,
-  required this.websocketConnection});
+  TextItemSettings(
+      {required this.selectedTextItem,
+      required this.toolbarOptions,
+      required this.onChangedToolbarOptions,
+      required this.texts,
+      required this.onTextItemsChange,
+      required this.websocketConnection});
 
   @override
   _TextItemSettingsState createState() => _TextItemSettingsState();
@@ -53,6 +54,7 @@ class _TextItemSettingsState extends State<TextItemSettings> {
                   onChanged: (value) {
                     setState(() {
                       widget.selectedTextItem!.strokeWidth = value;
+                      widget.onTextItemsChange(widget.texts);
                       sendUpdateTextItem(widget.selectedTextItem!);
                     });
                   },
@@ -60,18 +62,23 @@ class _TextItemSettingsState extends State<TextItemSettings> {
                   max: 250,
                 ),
               ),
-              OutlinedButton(onPressed: () {
-                widget.toolbarOptions.colorPickerOpen = !widget.toolbarOptions.colorPickerOpen;
-                widget.onChangedToolbarOptions(widget.toolbarOptions);
-              }, child: Icon(OwnIcons.color_lens,
-                  color: widget.selectedTextItem!.color)),
-              OutlinedButton(onPressed: () {
-                setState(() {
-                  widget.texts.remove(widget.selectedTextItem!);
-                  widget.onTextItemsChange(widget.texts);
-                  sendTextItemDelete(widget.selectedTextItem!);
-                });
-              }, child: Icon(Icons.delete))
+              OutlinedButton(
+                  onPressed: () {
+                    widget.toolbarOptions.colorPickerOpen =
+                        !widget.toolbarOptions.colorPickerOpen;
+                    widget.onChangedToolbarOptions(widget.toolbarOptions);
+                  },
+                  child: Icon(OwnIcons.color_lens,
+                      color: widget.selectedTextItem!.color)),
+              OutlinedButton(
+                  onPressed: () {
+                    setState(() {
+                      widget.texts.remove(widget.selectedTextItem!);
+                      sendTextItemDelete(widget.selectedTextItem!);
+                      widget.onTextItemsChange(widget.texts);
+                    });
+                  },
+                  child: Icon(Icons.delete))
             ],
           ),
         ),
@@ -92,11 +99,10 @@ class _TextItemSettingsState extends State<TextItemSettings> {
     widget.websocketConnection.channel.add("textitem-update#" + data);
   }
 
-  sendTextItemDelete(TextItem newTextItem){
+  sendTextItemDelete(TextItem newTextItem) {
     String data = jsonEncode(WSScribbleDelete(
       newTextItem.uuid,
     ));
-    widget.websocketConnection.channel
-        .add("text-item-delete#" + data);
+    widget.websocketConnection.channel.add("text-item-delete#" + data);
   }
 }
