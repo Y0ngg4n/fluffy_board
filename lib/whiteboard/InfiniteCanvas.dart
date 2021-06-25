@@ -211,7 +211,12 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
             widget.onChangedZoomOptions(widget.zoomOptions);
             switch (widget.toolbarOptions.selectedTool) {
               case SelectedTool.move:
-                widget.sessionOffset = details.focalPoint - _initialFocalPoint;
+                // TODO: Test on mobile
+                if(details.pointerCount == 2){
+                  widget.sessionOffset = details.focalPoint * 3 - _initialFocalPoint;
+                }else{
+                  widget.sessionOffset = details.focalPoint - _initialFocalPoint;
+                }
                 widget.onOffsetChange(widget.offset, widget.sessionOffset);
                 break;
               case SelectedTool.background:

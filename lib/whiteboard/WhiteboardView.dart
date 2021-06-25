@@ -235,9 +235,15 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           toolbar,
           ZoomView(
             zoomOptions: zoomOptions,
+            offset: offset,
             onChangedZoomOptions: (zoomOptions) {
               setState(() {
                 this.zoomOptions = zoomOptions;
+              });
+            },
+            onChangedOffset: (offset){
+              setState(() {
+                this.offset = offset;
               });
             },
           )
