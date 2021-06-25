@@ -113,7 +113,22 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             }
           });
         },
-    );
+        onTextItemAdd: (textItem) {
+          setState(() {
+            texts.add(textItem);
+          });
+        },
+        onTextItemUpdate: (textItem) {
+          setState(() {
+            // Reverse TextItem Search for better Performance
+            for (int i = texts.length - 1; i >= 0; i--) {
+              if (texts[i].uuid == textItem.uuid) {
+                texts[i] = textItem;
+                break;
+              }
+            }
+          });
+        });
     // WidgetsBinding.instance!
     //     .addPostFrameCallback((_) => _createToolbars(context));
     _getToolBarOptions();
@@ -143,6 +158,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
     Widget toolbar = (widget.whiteboard != null ||
             (widget.extWhiteboard != null && widget.extWhiteboard!.edit))
         ? (Toolbar.Toolbar(
+            texts: texts,
             scribbles: scribbles,
             toolbarOptions: toolbarOptions!,
             zoomOptions: zoomOptions,
@@ -163,6 +179,11 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             onUploadsChange: (uploads) {
               setState(() {
                 this.uploads = uploads;
+              });
+            },
+            onTextItemsChange: (textItems) {
+              setState(() {
+                this.texts = textItems;
               });
             },
           ))
@@ -205,6 +226,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             scribbles: scribbles,
           ),
           TextsCanvas(
+            websocketConnection: websocketConnection,
             sessionOffset: _sessionOffset,
             offset: offset,
             texts: texts,
@@ -249,6 +271,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   Future _getWhiteboardData() async {
     await _getScribbles();
     await _getUploads();
+    await _getTextItems();
   }
 
   Future<PencilOptions> _getPencilOptions() async {
@@ -615,6 +638,42 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                     decodeGetUpload.offset_dx, decodeGetUpload.offset_dy),
                 image));
           });
+        }
+      });
+    }
+  }
+
+  Future _getTextItems() async {
+    http.Response textItemResponse = await http.post(
+        Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/textitem/get"),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json",
+          'Authorization': 'Bearer ' + widget.auth_token,
+        },
+        body: jsonEncode({
+          "whiteboard": widget.whiteboard == null
+              ? widget.extWhiteboard!.original
+              : widget.whiteboard!.id,
+          "permission_id": widget.whiteboard == null
+              ? widget.extWhiteboard!.permissionId
+              : widget.whiteboard!.edit_id
+        }));
+    if (textItemResponse.statusCode == 200) {
+      List<DecodeGetTextItem> decodeTextItems =
+          DecodeGetTextItemList.fromJsonList(jsonDecode(textItemResponse.body));
+      setState(() {
+        for (DecodeGetTextItem decodeGetTextItem in decodeTextItems) {
+          texts.add(new TextItem(
+              decodeGetTextItem.uuid,
+              false,
+              decodeGetTextItem.strokeWidth,
+              decodeGetTextItem.maxWidth,
+              decodeGetTextItem.maxHeight,
+              HexColor.fromHex(decodeGetTextItem.color),
+              decodeGetTextItem.contentText,
+              new Offset(
+                  decodeGetTextItem.offset_dx, decodeGetTextItem.offset_dy)));
         }
       });
     }

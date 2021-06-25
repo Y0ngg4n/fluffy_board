@@ -266,3 +266,109 @@ class DecodeGetUploadList{
     return points;
   }
 }
+
+class WSTextItemAdd {
+  String uuid;
+  double strokeWidth;
+  int maxWidth;
+  int maxHeight;
+  String color;
+  String content_text;
+  double offset_dx;
+  double offset_dy;
+
+  WSTextItemAdd.fromJson(Map<String, dynamic> json)
+      : uuid = json['uuid'],
+        strokeWidth = json['stroke_width'],
+        maxWidth = json['max_width'],
+        maxHeight = json['max_height'],
+        color = json['color'],
+        content_text = json['content_text'],
+        offset_dx = json['offset_dx'],
+        offset_dy = json['offset_dy'];
+
+  Map toJson() {
+    return {
+      'uuid': uuid,
+      'stroke_width': strokeWidth,
+      'max_width': maxWidth,
+      'max_height': maxHeight,
+      'color': color,
+      'content_text': content_text,
+      'offset_dx': offset_dx,
+      'offset_dy': offset_dy
+    };
+  }
+
+  WSTextItemAdd(this.uuid, this.strokeWidth, this.maxWidth, this.maxHeight,
+      this.color, this.content_text, this.offset_dx, this.offset_dy);
+}
+
+class WSTextItemUpdate {
+  String uuid;
+  double strokeWidth;
+  int maxWidth;
+  int maxHeight;
+  String color;
+  String content_text;
+  double offset_dx;
+  double offset_dy;
+
+
+  WSTextItemUpdate.fromJson(Map<String, dynamic> json)
+      : uuid = json['uuid'],
+        strokeWidth = json['stroke_width'],
+        maxWidth = json['max_width'],
+        maxHeight = json['max_height'],
+        color = json['color'],
+        content_text = json['content_text'],
+        offset_dx = json['offset_dx'],
+        offset_dy = json['offset_dy'];
+
+  Map toJson() {
+    return {
+      'uuid': uuid,
+      'stroke_width': strokeWidth,
+      'max_width': maxWidth,
+      'max_height': maxHeight,
+      'color': color,
+      'content_text': content_text,
+      'offset_dx': offset_dx,
+      'offset_dy': offset_dy
+    };
+  }
+
+  WSTextItemUpdate(this.uuid, this.strokeWidth, this.maxWidth, this.maxHeight,
+      this.color, this.content_text, this.offset_dx, this.offset_dy);
+}
+
+class DecodeGetTextItem {
+  String uuid;
+  double strokeWidth;
+  int maxHeight;
+  int maxWidth;
+  String color;
+  String contentText;
+  double offset_dx;
+  double offset_dy;
+
+  DecodeGetTextItem.fromJson(Map<String, dynamic> json)
+      : uuid = json['id'],
+        strokeWidth = json['stroke_width'],
+        maxHeight = json['max_height'],
+        maxWidth = json['max_width'],
+        color = json['color'],
+        contentText = json['content_text'],
+        offset_dx = json['offset_dx'],
+        offset_dy = json['offset_dy'];
+}
+
+class DecodeGetTextItemList{
+  static List<DecodeGetTextItem> fromJsonList(List<dynamic> jsonList) {
+    List<DecodeGetTextItem> points = new List.empty(growable: true);
+    for (Map<String, dynamic> json in jsonList) {
+      points.add(new DecodeGetTextItem.fromJson(json));
+    }
+    return points;
+  }
+}

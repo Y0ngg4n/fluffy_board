@@ -132,4 +132,27 @@ class ScreenUtils {
         ? true
         : false;
   }
+
+  static TextPainter getTextPainter(TextItem textItem){
+    final textStyle = TextStyle(
+      color: textItem.color,
+      fontSize: textItem.strokeWidth,
+    );
+
+    final textSpan = TextSpan(
+      text: textItem.text,
+      style: textStyle,
+    );
+
+    final textPainter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr,
+    );
+
+    textPainter.layout(
+      minWidth: 0,
+      maxWidth: 500,
+    );
+    return textPainter;
+  }
 }

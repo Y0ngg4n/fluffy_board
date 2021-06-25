@@ -25,6 +25,9 @@ typedef OnUploadAdd = Function(Upload);
 typedef OnUploadUpdate = Function(Upload);
 typedef OnUploadDelete = Function(String);
 
+typedef OnTextItemAdd = Function(TextItem);
+typedef OnTextItemUpdate = Function(TextItem);
+
 class WebsocketConnection {
   static WebsocketConnection? _singleton = null;
 
@@ -44,26 +47,33 @@ class WebsocketConnection {
   OnUploadUpdate onUploadUpdate;
   OnUploadDelete onUploadDelete;
 
-  WebsocketConnection(
-      {required this.whiteboard,
-      required this.auth_token,
-      required this.onScribbleAdd,
-      required this.onScribbleUpdate,
-      required this.onScribbleDelete,
-      required this.onUploadAdd,
-      required this.onUploadUpdate,
-      required this.onUploadDelete});
+  OnTextItemAdd onTextItemAdd;
+  OnTextItemUpdate onTextItemUpdate;
 
-  static WebsocketConnection getInstance({
-    required String whiteboard,
-    required String auth_token,
-    required Function(Scribble) onScribbleAdd,
-    required Function(Scribble) onScribbleUpdate,
-    required Function(String) onScribbleDelete,
-    required Function(Upload) onUploadAdd,
-    required Function(Upload) onUploadUpdate,
-    required Function(String) onUploadDelete,
-  }) {
+  WebsocketConnection({
+    required this.whiteboard,
+    required this.auth_token,
+    required this.onScribbleAdd,
+    required this.onScribbleUpdate,
+    required this.onScribbleDelete,
+    required this.onUploadAdd,
+    required this.onUploadUpdate,
+    required this.onUploadDelete,
+    required this.onTextItemAdd,
+    required this.onTextItemUpdate,
+  });
+
+  static WebsocketConnection getInstance(
+      {required String whiteboard,
+      required String auth_token,
+      required Function(Scribble) onScribbleAdd,
+      required Function(Scribble) onScribbleUpdate,
+      required Function(String) onScribbleDelete,
+      required Function(Upload) onUploadAdd,
+      required Function(Upload) onUploadUpdate,
+      required Function(String) onUploadDelete,
+      required Function(TextItem) onTextItemAdd,
+      required Function(TextItem) onTextItemUpdate}) {
     if (_singleton == null) {
       _singleton = new WebsocketConnection(
           whiteboard: whiteboard,
@@ -73,8 +83,9 @@ class WebsocketConnection {
           onScribbleDelete: onScribbleDelete,
           onUploadAdd: onUploadAdd,
           onUploadUpdate: onUploadUpdate,
-        onUploadDelete: onUploadDelete
-      );
+          onUploadDelete: onUploadDelete,
+          onTextItemAdd: onTextItemAdd,
+          onTextItemUpdate: onTextItemUpdate);
       _singleton!.initWebSocketConnection(whiteboard, auth_token);
     }
     ;
@@ -157,11 +168,37 @@ class WebsocketConnection {
             Uint8List.fromList(List.empty()),
             new Offset(json.offset_dx, json.offset_dy),
             null));
-      }else if (message.startsWith(r"upload-delete#")) {
+      } else if (message.startsWith(r"upload-delete#")) {
         WSUploadDelete json = WSUploadDelete.fromJson(
             jsonDecode(message.replaceFirst(r"upload-delete#", ""))
-            as Map<String, dynamic>);
+                as Map<String, dynamic>);
         onUploadDelete(json.uuid);
+      } else if (message.startsWith(r"textitem-add#")) {
+        WSTextItemAdd json = WSTextItemAdd.fromJson(
+            jsonDecode(message.replaceFirst(r"textitem-add#", ""))
+                as Map<String, dynamic>);
+        onTextItemAdd(new TextItem(
+            json.uuid,
+            false,
+            json.strokeWidth,
+            json.maxWidth,
+            json.maxHeight,
+            HexColor.fromHex(json.color),
+            json.content_text,
+            new Offset(json.offset_dx, json.offset_dy)));
+      } else if (message.startsWith(r"textitem-update#")) {
+        WSTextItemUpdate json = WSTextItemUpdate.fromJson(
+            jsonDecode(message.replaceFirst(r"textitem-update#", ""))
+                as Map<String, dynamic>);
+        onTextItemUpdate(new TextItem(
+            json.uuid,
+            false,
+            json.strokeWidth,
+            json.maxWidth,
+            json.maxHeight,
+            HexColor.fromHex(json.color),
+            json.content_text,
+            new Offset(json.offset_dx, json.offset_dy)));
       }
     }, onDone: () {
       print("connecting aborted");

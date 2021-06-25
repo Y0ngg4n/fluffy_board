@@ -19,6 +19,7 @@ import 'Toolbar/ColorPickerView.dart';
 import 'Toolbar/EraserToolbar.dart';
 import 'Toolbar/PencilToolbar.dart';
 import 'Toolbar/HighlighterToolbar.dart';
+import 'Toolbar/SettingsToolbar/TextItemSettings.dart';
 
 enum SettingsSelected { none, scribble, image, text }
 
@@ -51,6 +52,7 @@ class ToolbarOptions {
   SettingsSelected settingsSelected;
   Scribble? settingsSelectedScribble;
   Upload? settingsSelectedUpload;
+  TextItem? settingsSelectedTextItem;
   WebsocketConnection websocketConnection;
 
   ToolbarOptions(
@@ -78,7 +80,9 @@ class Toolbar extends StatefulWidget {
   List<Scribble> scribbles;
   OnScribblesChange onScribblesChange;
   OnUploadsChange onUploadsChange;
+  OnTextItemsChange onTextItemsChange;
   WebsocketConnection websocketConnection;
+  List<TextItem> texts;
 
   Toolbar(
       {required this.toolbarOptions,
@@ -90,7 +94,9 @@ class Toolbar extends StatefulWidget {
       required this.scribbles,
       required this.onScribblesChange,
       required this.onUploadsChange,
-      required this.websocketConnection});
+      required this.websocketConnection,
+      required this.texts,
+      required this.onTextItemsChange});
 
   @override
   _ToolbarState createState() => _ToolbarState();
@@ -229,6 +235,7 @@ class _ToolbarState extends State<Toolbar> {
         );
       case SelectedTool.text:
         return TextToolbar(
+          websocketConnection: widget.websocketConnection,
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {
@@ -299,7 +306,24 @@ class _ToolbarState extends State<Toolbar> {
         );
         break;
       case SettingsSelected.text:
-        return Container();
+        return TextItemSettings(
+          websocketConnection: widget.websocketConnection,
+          selectedTextItem: widget.toolbarOptions.settingsSelectedTextItem,
+          toolbarOptions: widget.toolbarOptions,
+          onChangedToolbarOptions: (toolbarOptions) {
+            setState(() {
+              widget.toolbarOptions = toolbarOptions;
+              widget.onChangedToolbarOptions(toolbarOptions);
+            });
+          },
+          texts: widget.texts,
+          onTextItemsChange: (texts) {
+            setState(() {
+              widget.texts = texts;
+              widget.onTextItemsChange(texts);
+            });
+          },
+        );
         break;
     }
   }
@@ -314,6 +338,7 @@ class _ToolbarState extends State<Toolbar> {
         onChangedToolbarOptions: (toolBarOptions) {
           widget.onChangedToolbarOptions(toolBarOptions);
         },
+        selectedTextItemScribble: widget.toolbarOptions.settingsSelectedTextItem,
       );
     else {
       return Container();

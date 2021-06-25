@@ -23,6 +23,7 @@ import 'package:uuid/uuid.dart';
 typedef OnOffsetChange = Function(Offset offset, Offset sessionOffset);
 typedef OnScribblesChange = Function(List<Scribble>);
 typedef OnUploadsChange = Function(List<Upload>);
+typedef OnTextItemsChange = Function(List<TextItem>);
 typedef OnChangedToolbarOptions<T> = Function(Toolbar.ToolbarOptions);
 
 class InfiniteCanvasPage extends StatefulWidget {
@@ -68,9 +69,11 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
   Offset onSettingsMove = Offset.zero;
   List<DrawPoint> onSettingsMovePoints = [];
   Offset? onSettingsMoveUploadOffset;
+  Offset? onSettingsMoveTextItemOffset;
   late double cursorRadius;
   late double _initcursorRadius;
   var uuid = Uuid();
+  String selectedTextUuid="";
 
   @override
   Widget build(BuildContext context) {
@@ -98,13 +101,18 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
               widget.onScribblesChange(widget.scribbles);
             } else if (widget.toolbarOptions.selectedTool ==
                 SelectedTool.text) {
-              widget.texts.add(new TextItem(
+              TextItem textItem = new TextItem(
+                  uuid.v4(),
                   true,
                   widget.toolbarOptions.textOptions.strokeWidth,
+                  500,
+                  250,
                   widget.toolbarOptions.textOptions.colorPresets[
-                      widget.toolbarOptions.textOptions.currentColor],
+                  widget.toolbarOptions.textOptions.currentColor],
                   "",
-                  newOffset));
+                  newOffset);
+              widget.texts.add(textItem);
+              sendCreateTextItem(textItem);
             } else if (widget.toolbarOptions.selectedTool ==
                 SelectedTool.settings) {
               Offset calculatedOffset = _calculateOffset(widget.offset,
@@ -162,6 +170,26 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                     onSettingsMoveUploadOffset = upload.offset;
                     break;
                   }
+                }
+              }
+              for (TextItem textItem in widget.texts) {
+                TextPainter textPainter = ScreenUtils.getTextPainter(textItem);
+                if (ScreenUtils.inRect(
+                    Rect.fromLTWH(textItem.offset.dx, textItem.offset.dy,
+                        textPainter.width, textPainter.height),
+                    newOffset)) {
+                  widget.toolbarOptions.settingsSelectedTextItem = textItem;
+                  widget.toolbarOptions.settingsSelected =
+                      SettingsSelected.text;
+                  onSettingsMove = newOffset;
+                  onSettingsMoveTextItemOffset = textItem.offset;
+                  if(selectedTextUuid.isNotEmpty){
+                    selectedTextUuid = "";
+                    textItem.editing = true;
+                  }else {
+                    selectedTextUuid = textItem.uuid;
+                  }
+                  break;
                 }
               }
             } else {
@@ -267,7 +295,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   }
                   widget.toolbarOptions.settingsSelectedScribble!.points =
                       newPoints;
-                  sendScribbleUpdate(widget.toolbarOptions.settingsSelectedScribble!);
+                  sendScribbleUpdate(
+                      widget.toolbarOptions.settingsSelectedScribble!);
                 } else if (widget.toolbarOptions.settingsSelected ==
                         SettingsSelected.image &&
                     widget.toolbarOptions.settingsSelectedUpload != null &&
@@ -275,7 +304,17 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   widget.toolbarOptions.settingsSelectedUpload!.offset =
                       (onSettingsMoveUploadOffset! +
                           (newOffset - onSettingsMove));
-                  sendUploadUpdate(widget.toolbarOptions.settingsSelectedUpload!);
+                  sendUploadUpdate(
+                      widget.toolbarOptions.settingsSelectedUpload!);
+                } else if (widget.toolbarOptions.settingsSelected ==
+                        SettingsSelected.text &&
+                    widget.toolbarOptions.settingsSelectedTextItem != null &&
+                    onSettingsMoveTextItemOffset != null) {
+                  widget.toolbarOptions.settingsSelectedTextItem!.offset =
+                      (onSettingsMoveTextItemOffset! +
+                          (newOffset - onSettingsMove));
+                  sendUpdateTextItem(
+                      widget.toolbarOptions.settingsSelectedTextItem!);
                 }
                 widget.onChangedToolbarOptions(widget.toolbarOptions);
                 break;
@@ -455,7 +494,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
     // path.lineTo(point_x_1, point_y_1);
   }
 
-  sendCreateScribble(Scribble newScribble){
+  sendCreateScribble(Scribble newScribble) {
     String data = jsonEncode(WSScribbleAdd(
         newScribble.uuid,
         newScribble.selectedFigureTypeToolbar.index,
@@ -467,7 +506,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
     widget.websocketConnection.channel.add("scribble-add#" + data);
   }
 
-  sendScribbleUpdate(Scribble newScribble){
+  sendScribbleUpdate(Scribble newScribble) {
     String data = jsonEncode(WSScribbleUpdate(
       newScribble.uuid,
       newScribble.strokeWidth,
@@ -480,25 +519,58 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
       newScribble.topExtremity,
       newScribble.bottomExtremity,
     ));
-    widget.websocketConnection.channel
-        .add("scribble-update#" + data);
+    widget.websocketConnection.channel.add("scribble-update#" + data);
   }
 
-  sendScribbleDelete(Scribble deleteScribble){
+  sendScribbleDelete(Scribble deleteScribble) {
     String data = jsonEncode(WSScribbleDelete(
       deleteScribble.uuid,
     ));
-    widget.websocketConnection.channel
-        .add("scribble-delete#" + data);
+    widget.websocketConnection.channel.add("scribble-delete#" + data);
   }
 
-  sendUploadUpdate(Upload newUpload){
+  sendUploadUpdate(Upload newUpload) {
     String data = jsonEncode(WSUploadUpdate(
       newUpload.uuid,
       newUpload.offset.dx,
       newUpload.offset.dy,
     ));
-    widget.websocketConnection.channel
-        .add("upload-update#" + data);
+    widget.websocketConnection.channel.add("upload-update#" + data);
+  }
+
+  // sendTextItemUpdate(TextItem newTextItem) {
+  //   String data = jsonEncode(WSUploadUpdate(
+  //     newUpload.uuid,
+  //     newUpload.offset.dx,
+  //     newUpload.offset.dy,
+  //   ));
+  //   widget.websocketConnection.channel
+  //       .add("upload-update#" + data);
+  // }
+
+  sendCreateTextItem(TextItem textItem) {
+    String data = jsonEncode(WSTextItemAdd(
+        textItem.uuid,
+        textItem.strokeWidth,
+        textItem.maxWidth,
+        textItem.maxHeight,
+        textItem.color.toHex(),
+        textItem.text,
+        textItem.offset.dx,
+        textItem.offset.dy));
+    widget.websocketConnection.channel.add("textitem-add#" + data);
+  }
+
+  sendUpdateTextItem(TextItem textItem) {
+    String data = jsonEncode(WSTextItemUpdate(
+        textItem.uuid,
+        textItem.strokeWidth,
+        textItem.maxWidth,
+        textItem.maxHeight,
+        textItem.color.toHex(),
+        textItem.text,
+        textItem.offset.dx,
+        textItem.offset.dy));
+    widget.websocketConnection.channel.add("textitem-update#" + data);
   }
 }

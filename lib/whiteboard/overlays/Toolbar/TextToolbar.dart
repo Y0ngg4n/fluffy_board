@@ -1,8 +1,14 @@
+import 'dart:convert';
+
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/utils/own_icons_icons.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
+import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
+import '../../DrawPoint.dart';
 import '../Toolbar.dart' as Toolbar;
 
 import 'DrawOptions.dart';
@@ -18,16 +24,19 @@ class TextOptions extends DrawOptions {
       SelectedTextColorToolbar.ColorPreset1;
 
   TextOptions(this.selectedTextColorToolbar)
-      : super(List.from({Colors.black, Colors.red, Colors.blue}),
-      10, StrokeCap.round, 0, (DrawOptions)=>{});
+      : super(List.from({Colors.black, Colors.red, Colors.blue}), 10,
+            StrokeCap.round, 0, (DrawOptions) => {});
 }
 
 class TextToolbar extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
+  WebsocketConnection websocketConnection;
 
   TextToolbar(
-      {required this.toolbarOptions, required this.onChangedToolbarOptions});
+      {required this.toolbarOptions,
+      required this.onChangedToolbarOptions,
+      required this.websocketConnection});
 
   @override
   _TextToolbarState createState() => _TextToolbarState();
@@ -41,6 +50,7 @@ class _TextToolbarState extends State<TextToolbar> {
   @override
   Widget build(BuildContext context) {
     const _borderRadius = 50.0;
+    // TODO: Add Update on Text when slider changed
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 24, 0, 24),
@@ -106,14 +116,14 @@ class _TextToolbarState extends State<TextToolbar> {
                   isSelected: selectedColorList,
                   children: <Widget>[
                     Icon(OwnIcons.color_lens,
-                        color: widget
-                            .toolbarOptions.textOptions.colorPresets[0]),
+                        color:
+                            widget.toolbarOptions.textOptions.colorPresets[0]),
                     Icon(OwnIcons.color_lens,
-                        color: widget
-                            .toolbarOptions.textOptions.colorPresets[1]),
+                        color:
+                            widget.toolbarOptions.textOptions.colorPresets[1]),
                     Icon(OwnIcons.color_lens,
-                        color: widget
-                            .toolbarOptions.textOptions.colorPresets[2]),
+                        color:
+                            widget.toolbarOptions.textOptions.colorPresets[2]),
                   ]),
             ],
           ),

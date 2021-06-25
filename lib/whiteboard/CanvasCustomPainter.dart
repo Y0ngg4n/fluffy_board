@@ -119,26 +119,7 @@ class CanvasCustomPainter extends CustomPainter {
     for (TextItem textItem in texts) {
       if (textItem.editing) continue;
 
-      final textStyle = TextStyle(
-        color: textItem.color,
-        fontSize: textItem.strokeWidth,
-      );
-
-      final textSpan = TextSpan(
-        text: textItem.text,
-        style: textStyle,
-      );
-
-      final textPainter = TextPainter(
-        text: textSpan,
-        textDirection: TextDirection.ltr,
-      );
-
-      textPainter.layout(
-        minWidth: 0,
-        maxWidth: size.width,
-      );
-
+      TextPainter textPainter = ScreenUtils.getTextPainter(textItem);
       if (ScreenUtils.checkTextPainterIfNotInScreen(
           textPainter,
           textItem.offset,

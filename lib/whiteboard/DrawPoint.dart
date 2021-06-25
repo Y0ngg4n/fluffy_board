@@ -59,11 +59,15 @@ class Upload{
 }
 
 class TextItem{
+  String uuid;
   bool editing;
   double strokeWidth;
+  int maxWidth;
+  int maxHeight;
   Color color;
   String text;
   Offset offset;
 
-  TextItem(this.editing, this.strokeWidth, this.color, this.text, this.offset);
+  TextItem(this.uuid, this.editing, this.strokeWidth, this.maxWidth, this.maxHeight,
+      this.color, this.text, this.offset);
 }
