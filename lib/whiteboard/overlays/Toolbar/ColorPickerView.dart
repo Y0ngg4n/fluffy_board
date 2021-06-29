@@ -19,14 +19,14 @@ class ColorPickerView extends StatefulWidget {
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
   Scribble? selectedSettingsScribble;
   TextItem? selectedTextItemScribble;
-  WebsocketConnection websocketConnection;
+  WebsocketConnection? websocketConnection;
 
   ColorPickerView(
       {required this.toolbarOptions,
       required this.onChangedToolbarOptions,
       required this.selectedSettingsScribble,
       required this.websocketConnection,
-  required this.selectedTextItemScribble});
+      required this.selectedTextItemScribble});
 
   @override
   _ColorPickerViewState createState() => _ColorPickerViewState();
@@ -56,7 +56,9 @@ class _ColorPickerViewState extends State<ColorPickerView> {
               child: ColorPicker(
                 // Use the screenPickerColor as start color.
                 color: drawOptions == null
-                    ? widget.selectedSettingsScribble == null ? widget.selectedTextItemScribble!.color : widget.selectedSettingsScribble!.color
+                    ? widget.selectedSettingsScribble == null
+                        ? widget.selectedTextItemScribble!.color
+                        : widget.selectedSettingsScribble!.color
                     : drawOptions.colorPresets[drawOptions.currentColor],
                 // Update the screenPickerColor using the callback.
                 width: ScreenUtils.getScreenWidth(context) < 700 ||
@@ -70,14 +72,13 @@ class _ColorPickerViewState extends State<ColorPickerView> {
                 onColorChanged: (Color color) => {
                   setState(() {
                     if (drawOptions == null) {
-                      if(widget.selectedSettingsScribble != null){
+                      if (widget.selectedSettingsScribble != null) {
                         widget.selectedSettingsScribble!.color = color;
                         sendScribbleUpdate(widget.selectedSettingsScribble!);
-                      }else if(widget.selectedTextItemScribble != null){
+                      } else if (widget.selectedTextItemScribble != null) {
                         widget.selectedTextItemScribble!.color = color;
                         sendUpdateTextItem(widget.selectedTextItemScribble!);
                       }
-
                     } else {
                       drawOptions.colorPresets[drawOptions.currentColor] =
                           color;
@@ -166,7 +167,8 @@ class _ColorPickerViewState extends State<ColorPickerView> {
       newScribble.topExtremity,
       newScribble.bottomExtremity,
     ));
-    widget.websocketConnection.channel.add("scribble-update#" + data);
+    if (widget.websocketConnection != null)
+      widget.websocketConnection!.channel.add("scribble-update#" + data);
   }
 
   sendUpdateTextItem(TextItem textItem) {
@@ -179,6 +181,7 @@ class _ColorPickerViewState extends State<ColorPickerView> {
         textItem.text,
         textItem.offset.dx,
         textItem.offset.dy));
-    widget.websocketConnection.channel.add("textitem-update#" + data);
+    if (widget.websocketConnection != null)
+      widget.websocketConnection!.channel.add("textitem-update#" + data);
   }
 }

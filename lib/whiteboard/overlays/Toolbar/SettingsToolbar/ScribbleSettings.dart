@@ -17,14 +17,15 @@ class ScribbleSettings extends StatefulWidget {
   OnScribblesChange onScribblesChange;
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
-  WebsocketConnection websocketConnection;
+  WebsocketConnection? websocketConnection;
 
-  ScribbleSettings({required this.selectedScribble,
-  required this.toolbarOptions,
-  required this.onChangedToolbarOptions,
-  required this.scribbles,
-  required this.onScribblesChange,
-  required this.websocketConnection});
+  ScribbleSettings(
+      {required this.selectedScribble,
+      required this.toolbarOptions,
+      required this.onChangedToolbarOptions,
+      required this.scribbles,
+      required this.onScribblesChange,
+      required this.websocketConnection});
 
   @override
   _ScribbleSettingsState createState() => _ScribbleSettingsState();
@@ -60,18 +61,23 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
                   max: 50,
                 ),
               ),
-              OutlinedButton(onPressed: () {
-                widget.toolbarOptions.colorPickerOpen = !widget.toolbarOptions.colorPickerOpen;
-                widget.onChangedToolbarOptions(widget.toolbarOptions);
-              }, child: Icon(OwnIcons.color_lens,
-                  color: widget.selectedScribble!.color)),
-              OutlinedButton(onPressed: () {
-                setState(() {
-                  widget.scribbles.remove(widget.selectedScribble!);
-                  sendScribbleDelete(widget.selectedScribble!);
-                  widget.onScribblesChange(widget.scribbles);
-                });
-              }, child: Icon(Icons.delete))
+              OutlinedButton(
+                  onPressed: () {
+                    widget.toolbarOptions.colorPickerOpen =
+                        !widget.toolbarOptions.colorPickerOpen;
+                    widget.onChangedToolbarOptions(widget.toolbarOptions);
+                  },
+                  child: Icon(OwnIcons.color_lens,
+                      color: widget.selectedScribble!.color)),
+              OutlinedButton(
+                  onPressed: () {
+                    setState(() {
+                      widget.scribbles.remove(widget.selectedScribble!);
+                      sendScribbleDelete(widget.selectedScribble!);
+                      widget.onScribblesChange(widget.scribbles);
+                    });
+                  },
+                  child: Icon(Icons.delete))
             ],
           ),
         ),
@@ -79,7 +85,7 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
     );
   }
 
-  sendScribbleUpdate(Scribble newScribble){
+  sendScribbleUpdate(Scribble newScribble) {
     String data = jsonEncode(WSScribbleUpdate(
       newScribble.uuid,
       newScribble.strokeWidth,
@@ -92,15 +98,15 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
       newScribble.topExtremity,
       newScribble.bottomExtremity,
     ));
-    widget.websocketConnection.channel
-        .add("scribble-update#" + data);
+    if (widget.websocketConnection != null)
+      widget.websocketConnection!.channel.add("scribble-update#" + data);
   }
 
-  sendScribbleDelete(Scribble newScribble){
+  sendScribbleDelete(Scribble newScribble) {
     String data = jsonEncode(WSScribbleDelete(
       newScribble.uuid,
     ));
-    widget.websocketConnection.channel
-        .add("scribble-delete#" + data);
+    if (widget.websocketConnection != null)
+      widget.websocketConnection!.channel.add("scribble-delete#" + data);
   }
 }

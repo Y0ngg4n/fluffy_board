@@ -16,7 +16,7 @@ class UploadSettings extends StatefulWidget {
   OnUploadsChange onUploadsChange;
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
-  WebsocketConnection websocketConnection;
+  WebsocketConnection? websocketConnection;
 
   UploadSettings({required this.selectedUpload,
   required this.toolbarOptions,
@@ -63,7 +63,8 @@ class _UploadSettingsState extends State<UploadSettings> {
     String data = jsonEncode(WSUploadDelete(
       newUpload.uuid,
     ));
-    widget.websocketConnection.channel
+    if (widget.websocketConnection != null)
+    widget.websocketConnection!.channel
         .add("upload-delete#" + data);
   }
 }

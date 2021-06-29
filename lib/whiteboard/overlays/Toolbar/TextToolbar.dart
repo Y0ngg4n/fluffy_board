@@ -31,7 +31,7 @@ class TextOptions extends DrawOptions {
 class TextToolbar extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
-  WebsocketConnection websocketConnection;
+  WebsocketConnection? websocketConnection;
 
   TextToolbar(
       {required this.toolbarOptions,

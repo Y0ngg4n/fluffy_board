@@ -39,7 +39,7 @@ class InfiniteCanvasPage extends StatefulWidget {
   OnOffsetChange onOffsetChange;
   OnChangedToolbarOptions onChangedToolbarOptions;
   OnScribblesChange onScribblesChange;
-  WebsocketConnection websocketConnection;
+  WebsocketConnection? websocketConnection;
   String auth_token;
 
   InfiniteCanvasPage(
@@ -212,10 +212,12 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
             switch (widget.toolbarOptions.selectedTool) {
               case SelectedTool.move:
                 // TODO: Test on mobile
-                if(details.pointerCount == 2){
-                  widget.sessionOffset = details.focalPoint * 3 - _initialFocalPoint;
-                }else{
-                  widget.sessionOffset = details.focalPoint - _initialFocalPoint;
+                if (details.pointerCount == 2) {
+                  widget.sessionOffset =
+                      details.focalPoint * 3 - _initialFocalPoint;
+                } else {
+                  widget.sessionOffset =
+                      details.focalPoint - _initialFocalPoint;
                 }
                 widget.onOffsetChange(widget.offset, widget.sessionOffset);
                 break;
@@ -510,7 +512,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         newScribble.color.toHex(),
         newScribble.points,
         newScribble.paintingStyle.index));
-    widget.websocketConnection.channel.add("scribble-add#" + data);
+    if (widget.websocketConnection != null)
+      widget.websocketConnection!.channel.add("scribble-add#" + data);
   }
 
   sendScribbleUpdate(Scribble newScribble) {
@@ -526,14 +529,15 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
       newScribble.topExtremity,
       newScribble.bottomExtremity,
     ));
-    widget.websocketConnection.channel.add("scribble-update#" + data);
+    if (widget.websocketConnection != null)
+      widget.websocketConnection!.channel.add("scribble-update#" + data);
   }
 
   sendScribbleDelete(Scribble deleteScribble) {
     String data = jsonEncode(WSScribbleDelete(
       deleteScribble.uuid,
     ));
-    widget.websocketConnection.channel.add("scribble-delete#" + data);
+    widget.websocketConnection!.channel.add("scribble-delete#" + data);
   }
 
   sendUploadUpdate(Upload newUpload) {
@@ -542,7 +546,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
       newUpload.offset.dx,
       newUpload.offset.dy,
     ));
-    widget.websocketConnection.channel.add("upload-update#" + data);
+    if (widget.websocketConnection != null)
+      widget.websocketConnection!.channel.add("upload-update#" + data);
   }
 
   sendCreateTextItem(TextItem textItem) {
@@ -555,7 +560,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         textItem.text,
         textItem.offset.dx,
         textItem.offset.dy));
-    widget.websocketConnection.channel.add("textitem-add#" + data);
+    if (widget.websocketConnection != null)
+      widget.websocketConnection!.channel.add("textitem-add#" + data);
   }
 
   sendUpdateTextItem(TextItem textItem) {
@@ -568,6 +574,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         textItem.text,
         textItem.offset.dx,
         textItem.offset.dy));
-    widget.websocketConnection.channel.add("textitem-update#" + data);
+    if (widget.websocketConnection != null)
+      widget.websocketConnection!.channel.add("textitem-update#" + data);
   }
 }

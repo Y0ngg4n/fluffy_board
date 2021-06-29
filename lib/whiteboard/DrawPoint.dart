@@ -1,19 +1,38 @@
+import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
 
 import 'overlays/Toolbar/FigureToolbar.dart';
 import 'package:uuid/uuid.dart';
 
+class Scribbles {
+  List<Scribble> list = [];
+
+  toJSONEncodable() {
+    return list.map((item) {
+      return jsonEncode(item.toJSONEncodable());
+    }).toList();
+  }
+
+  Scribbles.fromJson(List<dynamic> json) {
+    for (dynamic entry in json) {
+      list.add(Scribble.fromJson(jsonDecode(entry)));
+    }
+  }
+
+  Scribbles(this.list);
+}
+
 class Scribble {
   String uuid;
   SelectedFigureTypeToolbar selectedFigureTypeToolbar;
   double strokeWidth;
-  StrokeCap strokeCap;
-  Color color;
+  ui.StrokeCap strokeCap;
+  ui.Color color;
   List<DrawPoint> points;
-  PaintingStyle paintingStyle;
+  ui.PaintingStyle paintingStyle;
   double leftExtremity = 0,
       topExtremity = 0,
       rightExtremity = 0,
@@ -21,14 +40,13 @@ class Scribble {
 
   toJSONEncodable() {
     Map<String, dynamic> m = new Map();
-
     m['uuid'] = uuid;
     m['selected_figure_type_toolbar'] = selectedFigureTypeToolbar.index;
     m['stroke_width'] = strokeWidth;
     m['stroke_cap'] = strokeCap.index;
     m['color'] = color.toHex();
-    m['points'] = points.map((e) => e.toJson());
-    m['painting_style'] = paintingStyle;
+    m['points'] = jsonEncode(new DrawPoints(points).toJSONEncodable());
+    m['painting_style'] = paintingStyle.index;
     m['left_extremity'] = leftExtremity;
     m['right_extremity'] = rightExtremity;
     m['top_extremity'] = topExtremity;
@@ -42,10 +60,10 @@ class Scribble {
         selectedFigureTypeToolbar = SelectedFigureTypeToolbar
             .values[json['selected_figure_type_toolbar']],
         strokeWidth = json['stroke_width'],
-        strokeCap = StrokeCap.values[json['stroke_cap']],
+        strokeCap = ui.StrokeCap.values[json['stroke_cap']],
         color = HexColor.fromHex(json['color']),
-        points = json['points'],
-        paintingStyle = PaintingStyle.values[json['painting_style']],
+        points = DrawPoints.fromJson(jsonDecode(json['points'])).list,
+        paintingStyle = ui.PaintingStyle.values[json['painting_style']],
         leftExtremity = json['left_extremity'],
         rightExtremity = json['right_extremity'],
         topExtremity = json['top_extremity'],
@@ -55,7 +73,25 @@ class Scribble {
       this.selectedFigureTypeToolbar, this.paintingStyle);
 }
 
-class DrawPoint extends Offset {
+class DrawPoints {
+  List<DrawPoint> list = [];
+
+  toJSONEncodable() {
+    return list.map((item) {
+      return jsonEncode(item.toJson());
+    }).toList();
+  }
+
+  DrawPoints.fromJson(List<dynamic> json) {
+    for (dynamic entry in json) {
+      list.add(DrawPoint.fromJson(jsonDecode(entry)));
+    }
+  }
+
+  DrawPoints(this.list);
+}
+
+class DrawPoint extends ui.Offset {
   bool empty = false;
 
   DrawPoint(double dx, double dy) : super(dx, dy);
@@ -64,7 +100,7 @@ class DrawPoint extends Offset {
     this.empty = true;
   }
 
-  DrawPoint.of(Offset offset) : super(offset.dx, offset.dy);
+  DrawPoint.of(ui.Offset offset) : super(offset.dx, offset.dy);
 
   DrawPoint.fromJson(Map<String, dynamic> json) : super(json['dx'], json['dy']);
 
@@ -81,15 +117,73 @@ enum UploadType {
   PDF,
 }
 
+class Uploads {
+  List<Upload> list = [];
+
+  toJSONEncodable() {
+    return list.map((item) {
+      return jsonEncode(item.toJson());
+    }).toList();
+  }
+
+  Uploads.fromJson(List<dynamic> json) {
+    for (dynamic entry in json) {
+      Upload upload = Upload.fromJson(jsonDecode(entry));
+      ui.decodeImageFromList(upload.uint8List, (result) {
+        upload.image = result;
+        list.add(upload);
+      });
+    }
+  }
+
+  Uploads(this.list);
+}
+
 class Upload {
   String uuid;
   UploadType uploadType;
-  Offset offset;
+  ui.Offset offset;
 
   Uint8List uint8List;
-  Image? image;
+  ui.Image? image;
+
+  Upload.fromJson(Map<String, dynamic> json)
+      : uuid = json['uuid'],
+        uploadType = UploadType.values[json['upload_type']],
+        offset = new ui.Offset(json['offset_dx'], json['offset_dy']),
+        uint8List =
+            Uint8List.fromList(jsonDecode(json['uint8list']).cast<int>()),
+        image = null;
+
+  Map toJson() {
+    return {
+      'uuid': uuid,
+      'upload_type': uploadType.index,
+      'offset_dx': offset.dx,
+      'offset_dy': offset.dy,
+      'uint8list': jsonEncode(uint8List.toList())
+    };
+  }
 
   Upload(this.uuid, this.uploadType, this.uint8List, this.offset, this.image);
+}
+
+class TextItems {
+  List<TextItem> list = [];
+
+  toJSONEncodable() {
+    return list.map((item) {
+      return jsonEncode(item.toJSONEncodable());
+    }).toList();
+  }
+
+  TextItems.fromJson(List<dynamic> json) {
+    for (dynamic entry in json) {
+      list.add(TextItem.fromJson(jsonDecode(entry)));
+    }
+  }
+
+  TextItems(this.list);
 }
 
 class TextItem {
@@ -98,9 +192,33 @@ class TextItem {
   double strokeWidth;
   int maxWidth;
   int maxHeight;
-  Color color;
+  ui.Color color;
   String text;
-  Offset offset;
+  ui.Offset offset;
+
+  toJSONEncodable() {
+    Map<String, dynamic> m = new Map();
+    m['uuid'] = uuid;
+    m['stroke_width'] = strokeWidth;
+    m['max_width'] = maxWidth;
+    m['max_height'] = maxHeight;
+    m['color'] = color.toHex();
+    m['text'] = text;
+    m['offset_dx'] = offset.dx;
+    m['offset_dy'] = offset.dy;
+
+    return m;
+  }
+
+  TextItem.fromJson(Map<String, dynamic> json)
+      : uuid = json['uuid'],
+        editing = false,
+        strokeWidth = json['stroke_width'],
+        maxWidth = json['max_width'],
+        maxHeight = json['max_height'],
+        color = HexColor.fromHex(json['color']),
+        text = json['text'],
+        offset = new ui.Offset(json['offset_dx'], json['offset_dy']);
 
   TextItem(this.uuid, this.editing, this.strokeWidth, this.maxWidth,
       this.maxHeight, this.color, this.text, this.offset);

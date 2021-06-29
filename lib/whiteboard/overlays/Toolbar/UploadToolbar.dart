@@ -23,7 +23,7 @@ class UploadToolbar extends StatefulWidget {
   Offset offset;
   Offset sessionOffset;
   ZoomOptions zoomOptions;
-  WebsocketConnection websocketConnection;
+  WebsocketConnection? websocketConnection;
 
   UploadToolbar(
       {required this.toolbarOptions,
@@ -83,8 +83,9 @@ class _UploadToolbarState extends State<UploadToolbar> {
                           upload.offset.dy,
                           // List.generate(10, (index) => 0)
                           upload.uint8List.toList()));
-                      widget.websocketConnection.channel
-                          .add("upload-add#" + data);
+                      if (widget.websocketConnection != null)
+                        widget.websocketConnection!.channel
+                            .add("upload-add#" + data);
                     });
                   });
                 },
@@ -113,8 +114,9 @@ class _UploadToolbarState extends State<UploadToolbar> {
                         upload.offset.dy,
                         // List.generate(10, (index) => 0)
                         upload.uint8List.toList()));
-                    widget.websocketConnection.channel
-                        .add("upload-add#" + data);
+                    if (widget.websocketConnection != null)
+                      widget.websocketConnection!.channel
+                          .add("upload-add#" + data);
                   }
                 },
                 child: Icon(Icons.picture_as_pdf),

@@ -52,7 +52,7 @@ class ToolbarOptions {
   Scribble? settingsSelectedScribble;
   Upload? settingsSelectedUpload;
   TextItem? settingsSelectedTextItem;
-  WebsocketConnection websocketConnection;
+  WebsocketConnection? websocketConnection;
 
   ToolbarOptions(
       this.selectedTool,
@@ -79,7 +79,7 @@ class Toolbar extends StatefulWidget {
   OnScribblesChange onScribblesChange;
   OnUploadsChange onUploadsChange;
   OnTextItemsChange onTextItemsChange;
-  WebsocketConnection websocketConnection;
+  WebsocketConnection? websocketConnection;
   List<TextItem> texts;
 
   Toolbar(

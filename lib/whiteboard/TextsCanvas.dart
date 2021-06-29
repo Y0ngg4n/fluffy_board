@@ -14,7 +14,8 @@ class TextsCanvas extends StatefulWidget {
   Offset offset;
   Offset sessionOffset;
   Toolbar.ToolbarOptions toolbarOptions;
-  WebsocketConnection websocketConnection;
+  WebsocketConnection? websocketConnection;
+
   TextsCanvas(
       {required this.texts,
       required this.offset,
@@ -37,24 +38,23 @@ class _TextsCanvasState extends State<TextsCanvas> {
       textEditingController.text = textItem.text;
       double strokeWidth;
       Color color;
-      if(widget.toolbarOptions.settingsSelectedTextItem == null){
+      if (widget.toolbarOptions.settingsSelectedTextItem == null) {
         textItem.strokeWidth = widget.toolbarOptions.textOptions.strokeWidth;
         strokeWidth = widget.toolbarOptions.textOptions.strokeWidth;
         textItem.color = widget.toolbarOptions.textOptions
             .colorPresets[widget.toolbarOptions.textOptions.currentColor];
         color = widget.toolbarOptions.textOptions
             .colorPresets[widget.toolbarOptions.textOptions.currentColor];
-      }else{
-        strokeWidth = widget.toolbarOptions.settingsSelectedTextItem!.strokeWidth;
+      } else {
+        strokeWidth =
+            widget.toolbarOptions.settingsSelectedTextItem!.strokeWidth;
         color = widget.toolbarOptions.settingsSelectedTextItem!.color;
       }
 
       texts.add(Positioned(
         child: TextField(
           controller: textEditingController,
-          style: TextStyle(
-              fontSize: strokeWidth,
-              color: color),
+          style: TextStyle(fontSize: strokeWidth, color: color),
           decoration: const InputDecoration(
               border: OutlineInputBorder(), hintText: "Text"),
           minLines: 3,
@@ -89,6 +89,7 @@ class _TextsCanvasState extends State<TextsCanvas> {
         textItem.text,
         textItem.offset.dx,
         textItem.offset.dy));
-    widget.websocketConnection.channel.add("textitem-update#" + data);
+    if (widget.websocketConnection != null)
+      widget.websocketConnection!.channel.add("textitem-update#" + data);
   }
 }

@@ -21,7 +21,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
+import 'package:localstorage/localstorage.dart';
 import 'DrawPoint.dart';
 import 'overlays/Toolbar.dart' as Toolbar;
 import 'dart:ui' as ui;
@@ -31,9 +31,11 @@ import 'overlays/Toolbar.dart';
 class WhiteboardView extends StatefulWidget {
   Whiteboard? whiteboard;
   ExtWhiteboard? extWhiteboard;
+  OfflineWhiteboard? offlineWhiteboard;
   String auth_token;
 
-  WhiteboardView(this.whiteboard, this.extWhiteboard, this.auth_token);
+  WhiteboardView(this.whiteboard, this.extWhiteboard, this.offlineWhiteboard,
+      this.auth_token);
 
   @override
   _WhiteboardViewState createState() => _WhiteboardViewState();
@@ -47,116 +49,124 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   List<Scribble> scribbles = [];
   Offset offset = Offset.zero;
   Offset _sessionOffset = Offset.zero;
-  late WebsocketConnection websocketConnection;
+  WebsocketConnection? websocketConnection;
+  final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
 
   @override
   void initState() {
     super.initState();
-    websocketConnection = WebsocketConnection.getInstance(
-        whiteboard: widget.whiteboard == null
-            ? widget.extWhiteboard!.original
-            : widget.whiteboard!.id,
-        auth_token: widget.auth_token,
-        onScribbleAdd: (scribble) {
-          setState(() {
-            scribbles.add(scribble);
-          });
-        },
-        onScribbleUpdate: (scribble) {
-          setState(() {
-            // Reverse Scribble Search for better Performance
-            for (int i = scribbles.length - 1; i >= 0; i--) {
-              if (scribbles[i].uuid == scribble.uuid) {
-                scribble.selectedFigureTypeToolbar =
-                    scribbles[i].selectedFigureTypeToolbar;
-                scribbles[i] = scribble;
-                break;
+    if (widget.offlineWhiteboard == null) {
+      websocketConnection = WebsocketConnection.getInstance(
+          whiteboard: widget.whiteboard == null
+              ? widget.extWhiteboard!.original
+              : widget.whiteboard!.id,
+          auth_token: widget.auth_token,
+          onScribbleAdd: (scribble) {
+            setState(() {
+              scribbles.add(scribble);
+            });
+          },
+          onScribbleUpdate: (scribble) {
+            setState(() {
+              // Reverse Scribble Search for better Performance
+              for (int i = scribbles.length - 1; i >= 0; i--) {
+                if (scribbles[i].uuid == scribble.uuid) {
+                  scribble.selectedFigureTypeToolbar =
+                      scribbles[i].selectedFigureTypeToolbar;
+                  scribbles[i] = scribble;
+                  break;
+                }
               }
-            }
-          });
-        },
-        onScribbleDelete: (id) {
-          setState(() {
-            // Reverse Scribble Search for better Performance
-            for (int i = scribbles.length - 1; i >= 0; i--) {
-              if (scribbles[i].uuid == id) {
-                scribbles.removeAt(i);
-                break;
+            });
+          },
+          onScribbleDelete: (id) {
+            setState(() {
+              // Reverse Scribble Search for better Performance
+              for (int i = scribbles.length - 1; i >= 0; i--) {
+                if (scribbles[i].uuid == id) {
+                  scribbles.removeAt(i);
+                  break;
+                }
               }
-            }
-          });
-        },
-        onUploadAdd: (upload) {
-          setState(() {
-            uploads.add(upload);
-          });
-        },
-        onUploadUpdate: (upload) {
-          setState(() {
-            // Reverse Upload Search for better Performance
-            for (int i = uploads.length - 1; i >= 0; i--) {
-              if (uploads[i].uuid == upload.uuid) {
-                uploads[i].offset = upload.offset;
-                break;
+            });
+          },
+          onUploadAdd: (upload) {
+            setState(() {
+              uploads.add(upload);
+            });
+          },
+          onUploadUpdate: (upload) {
+            setState(() {
+              // Reverse Upload Search for better Performance
+              for (int i = uploads.length - 1; i >= 0; i--) {
+                if (uploads[i].uuid == upload.uuid) {
+                  uploads[i].offset = upload.offset;
+                  break;
+                }
               }
-            }
-          });
-        },
-        onUploadDelete: (id) {
-          setState(() {
-            // Reverse Scribble Search for better Performance
-            for (int i = uploads.length - 1; i >= 0; i--) {
-              if (uploads[i].uuid == id) {
-                uploads.removeAt(i);
-                break;
+            });
+          },
+          onUploadDelete: (id) {
+            setState(() {
+              // Reverse Scribble Search for better Performance
+              for (int i = uploads.length - 1; i >= 0; i--) {
+                if (uploads[i].uuid == id) {
+                  uploads.removeAt(i);
+                  break;
+                }
               }
-            }
-          });
-        },
-        onTextItemAdd: (textItem) {
-          setState(() {
-            texts.add(textItem);
-          });
-        },
-        onTextItemUpdate: (textItem) {
-          setState(() {
-            // Reverse TextItem Search for better Performance
-            for (int i = texts.length - 1; i >= 0; i--) {
-              if (texts[i].uuid == textItem.uuid) {
-                texts[i] = textItem;
-                break;
+            });
+          },
+          onTextItemAdd: (textItem) {
+            setState(() {
+              texts.add(textItem);
+            });
+          },
+          onTextItemUpdate: (textItem) {
+            setState(() {
+              // Reverse TextItem Search for better Performance
+              for (int i = texts.length - 1; i >= 0; i--) {
+                if (texts[i].uuid == textItem.uuid) {
+                  texts[i] = textItem;
+                  break;
+                }
               }
-            }
+            });
           });
-        });
-    // WidgetsBinding.instance!
-    //     .addPostFrameCallback((_) => _createToolbars(context));
-    _getToolBarOptions();
+      // WidgetsBinding.instance!
+      //     .addPostFrameCallback((_) => _createToolbars(context));
+    }
     _getWhiteboardData();
+    _getToolBarOptions();
   }
 
   @override
   void dispose() {
     super.dispose();
-    websocketConnection.dispose();
+    if (websocketConnection != null) websocketConnection!.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     AppBar appBar = AppBar(
       title: Text(widget.whiteboard == null
-          ? widget.extWhiteboard!.name
+          ? widget.extWhiteboard == null
+              ? widget.offlineWhiteboard!.name
+              : widget.extWhiteboard!.name
           : widget.whiteboard!.name),
     );
 
     if (toolbarOptions == null) {
       return Dashboard.loading(widget.whiteboard == null
-          ? widget.extWhiteboard!.name
+          ? widget.extWhiteboard == null
+              ? widget.offlineWhiteboard!.name
+              : widget.extWhiteboard!.name
           : widget.whiteboard!.name);
     }
 
     Widget toolbar = (widget.whiteboard != null ||
-            (widget.extWhiteboard != null && widget.extWhiteboard!.edit))
+            (widget.extWhiteboard != null && widget.extWhiteboard!.edit) ||
+            widget.offlineWhiteboard != null)
         ? (Toolbar.Toolbar(
             texts: texts,
             scribbles: scribbles,
@@ -241,7 +251,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                 this.zoomOptions = zoomOptions;
               });
             },
-            onChangedOffset: (offset){
+            onChangedOffset: (offset) {
               setState(() {
                 this.offset = offset;
               });
@@ -274,9 +284,18 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   }
 
   Future _getWhiteboardData() async {
-    await _getScribbles();
-    await _getUploads();
-    await _getTextItems();
+    if (websocketConnection != null) {
+      await _getScribbles();
+      await _getUploads();
+      await _getTextItems();
+    }
+    if (widget.offlineWhiteboard != null) {
+      setState(() {
+        scribbles = widget.offlineWhiteboard!.scribbles.list;
+        uploads = widget.offlineWhiteboard!.uploads.list;
+        texts = widget.offlineWhiteboard!.texts.list;
+      });
+    }
   }
 
   Future<PencilOptions> _getPencilOptions() async {
@@ -682,6 +701,18 @@ class _WhiteboardViewState extends State<WhiteboardView> {
         }
       });
     }
+  }
+
+  saveOfflineWhiteboard() {
+    fileManagerStorage.setItem(
+        "offline_whiteboard-" + widget.offlineWhiteboard!.uuid,
+        new OfflineWhiteboard(
+                widget.offlineWhiteboard!.uuid,
+                widget.offlineWhiteboard!.name,
+                new Uploads(uploads),
+                new TextItems(texts),
+                new Scribbles(scribbles))
+            .toJSONEncodable());
   }
 }
 

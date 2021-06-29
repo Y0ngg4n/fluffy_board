@@ -17,7 +17,7 @@ class TextItemSettings extends StatefulWidget {
   OnTextItemsChange onTextItemsChange;
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
-  WebsocketConnection websocketConnection;
+  WebsocketConnection? websocketConnection;
 
   TextItemSettings(
       {required this.selectedTextItem,
@@ -96,13 +96,15 @@ class _TextItemSettingsState extends State<TextItemSettings> {
         textItem.text,
         textItem.offset.dx,
         textItem.offset.dy));
-    widget.websocketConnection.channel.add("textitem-update#" + data);
+    if (widget.websocketConnection != null)
+    widget.websocketConnection!.channel.add("textitem-update#" + data);
   }
 
   sendTextItemDelete(TextItem newTextItem) {
     String data = jsonEncode(WSScribbleDelete(
       newTextItem.uuid,
     ));
-    widget.websocketConnection.channel.add("text-item-delete#" + data);
+    if (widget.websocketConnection != null)
+    widget.websocketConnection!.channel.add("text-item-delete#" + data);
   }
 }
