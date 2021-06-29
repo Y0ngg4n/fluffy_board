@@ -102,7 +102,6 @@ class _UploadToolbarState extends State<UploadToolbar> {
                     context,
                     MaterialPageRoute(builder: (context) => PDFImport()),
                   ) as ImportedPDF;
-
                   for (int i = 0; i < result.images.length; i++) {
                     Offset offset = widget.offset +
                         new Offset(

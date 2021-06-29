@@ -159,6 +159,7 @@ class _FileManagerState extends State<FileManager> {
   final LocalStorage fileManagerStorageIndex =
       new LocalStorage('filemanager-index');
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
+  var uuid = Uuid();
 
   @override
   void initState() {
@@ -361,7 +362,7 @@ class _FileManagerState extends State<FileManager> {
                     case 3:
                       OfflineWhiteboard offlineWhiteboard =
                           new OfflineWhiteboard(
-                              whiteboard.id,
+                              uuid.v4(),
                               whiteboard.name,
                               await _getUploads(
                                   whiteboard.id, whiteboard.edit_id),
