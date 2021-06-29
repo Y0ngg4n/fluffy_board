@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 
 import '../DrawPoint.dart';
+import '../WhiteboardView.dart';
 import 'Toolbar/BackgroundToolbar.dart';
 import 'Toolbar/ColorPickerView.dart';
 import 'Toolbar/EraserToolbar.dart';
@@ -81,6 +82,7 @@ class Toolbar extends StatefulWidget {
   OnTextItemsChange onTextItemsChange;
   WebsocketConnection? websocketConnection;
   List<TextItem> texts;
+  OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
 
   Toolbar(
       {required this.toolbarOptions,
@@ -94,7 +96,8 @@ class Toolbar extends StatefulWidget {
       required this.onUploadsChange,
       required this.websocketConnection,
       required this.texts,
-      required this.onTextItemsChange});
+      required this.onTextItemsChange,
+      required this.onSaveOfflineWhiteboard});
 
   @override
   _ToolbarState createState() => _ToolbarState();
@@ -229,6 +232,7 @@ class _ToolbarState extends State<Toolbar> {
             })
           },
           offset: widget.offset,
+          onSaveOfflineWhiteboard: () => widget.onSaveOfflineWhiteboard(),
           sessionOffset: widget.offset,
         );
       case SelectedTool.text:
@@ -290,6 +294,7 @@ class _ToolbarState extends State<Toolbar> {
         break;
       case SettingsSelected.image:
         return UploadSettings(
+          onSaveOfflineWhiteboard: () => widget.onSaveOfflineWhiteboard(),
           websocketConnection: widget.websocketConnection,
           selectedUpload: widget.toolbarOptions.settingsSelectedUpload,
           toolbarOptions: widget.toolbarOptions,

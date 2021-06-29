@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 
 import '../../../DrawPoint.dart';
+import '../../../WhiteboardView.dart';
 import '../../Toolbar.dart' as Toolbar;
 
 class UploadSettings extends StatefulWidget {
@@ -17,13 +18,15 @@ class UploadSettings extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
   WebsocketConnection? websocketConnection;
+  OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
 
   UploadSettings({required this.selectedUpload,
   required this.toolbarOptions,
   required this.onChangedToolbarOptions,
   required this.uploads,
   required this.onUploadsChange,
-  required this.websocketConnection});
+  required this.websocketConnection,
+  required this.onSaveOfflineWhiteboard});
 
   @override
   _UploadSettingsState createState() => _UploadSettingsState();
@@ -50,6 +53,7 @@ class _UploadSettingsState extends State<UploadSettings> {
                   widget.uploads.remove(widget.selectedUpload!);
                   sendUploadDelete(widget.selectedUpload!);
                   widget.onUploadsChange(widget.uploads);
+                  widget.onSaveOfflineWhiteboard();
                 });
               }, child: Icon(Icons.delete))
             ],

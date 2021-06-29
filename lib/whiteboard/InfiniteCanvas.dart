@@ -41,6 +41,7 @@ class InfiniteCanvasPage extends StatefulWidget {
   OnScribblesChange onScribblesChange;
   WebsocketConnection? websocketConnection;
   String auth_token;
+  OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
 
   InfiniteCanvasPage(
       {required this.toolbarOptions,
@@ -56,7 +57,8 @@ class InfiniteCanvasPage extends StatefulWidget {
       required this.scribbles,
       required this.onScribblesChange,
       required this.websocketConnection,
-      required this.auth_token});
+      required this.auth_token,
+      required this.onSaveOfflineWhiteboard});
 
   @override
   _InfiniteCanvasPageState createState() => _InfiniteCanvasPageState();
@@ -372,6 +374,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
               }
               widget.scribbles.last = newScribble;
               sendScribbleUpdate(newScribble);
+              widget.onSaveOfflineWhiteboard();
             }
           });
         },

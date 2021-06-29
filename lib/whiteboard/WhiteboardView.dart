@@ -28,6 +28,8 @@ import 'dart:ui' as ui;
 
 import 'overlays/Toolbar.dart';
 
+typedef OnSaveOfflineWhiteboard = Function();
+
 class WhiteboardView extends StatefulWidget {
   Whiteboard? whiteboard;
   ExtWhiteboard? extWhiteboard;
@@ -168,6 +170,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             (widget.extWhiteboard != null && widget.extWhiteboard!.edit) ||
             widget.offlineWhiteboard != null)
         ? (Toolbar.Toolbar(
+            onSaveOfflineWhiteboard: () => saveOfflineWhiteboard(),
             texts: texts,
             scribbles: scribbles,
             toolbarOptions: toolbarOptions!,
@@ -203,6 +206,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
         appBar: (appBar),
         body: Stack(children: [
           InfiniteCanvasPage(
+            onSaveOfflineWhiteboard: () => saveOfflineWhiteboard(),
             auth_token: widget.auth_token,
             websocketConnection: websocketConnection,
             toolbarOptions: toolbarOptions!,
@@ -704,6 +708,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   }
 
   saveOfflineWhiteboard() {
+    print("save");
+    if (widget.offlineWhiteboard == null) return;
     fileManagerStorage.setItem(
         "offline_whiteboard-" + widget.offlineWhiteboard!.uuid,
         new OfflineWhiteboard(

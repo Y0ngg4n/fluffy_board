@@ -12,6 +12,7 @@ import 'dart:ui' as ui;
 import 'package:file_picker_cross/file_picker_cross.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../WhiteboardView.dart';
 import '../Toolbar.dart' as Toolbar;
 
 import 'DrawOptions.dart';
@@ -24,6 +25,8 @@ class UploadToolbar extends StatefulWidget {
   Offset sessionOffset;
   ZoomOptions zoomOptions;
   WebsocketConnection? websocketConnection;
+  OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
+
 
   UploadToolbar(
       {required this.toolbarOptions,
@@ -32,7 +35,8 @@ class UploadToolbar extends StatefulWidget {
       required this.offset,
       required this.sessionOffset,
       required this.zoomOptions,
-      required this.websocketConnection});
+      required this.websocketConnection,
+      required this.onSaveOfflineWhiteboard});
 
   @override
   _UploadToolbarState createState() => _UploadToolbarState();
@@ -86,6 +90,7 @@ class _UploadToolbarState extends State<UploadToolbar> {
                       if (widget.websocketConnection != null)
                         widget.websocketConnection!.channel
                             .add("upload-add#" + data);
+                      widget.onSaveOfflineWhiteboard();
                     });
                   });
                 },
@@ -117,6 +122,7 @@ class _UploadToolbarState extends State<UploadToolbar> {
                     if (widget.websocketConnection != null)
                       widget.websocketConnection!.channel
                           .add("upload-add#" + data);
+                    widget.onSaveOfflineWhiteboard();
                   }
                 },
                 child: Icon(Icons.picture_as_pdf),
