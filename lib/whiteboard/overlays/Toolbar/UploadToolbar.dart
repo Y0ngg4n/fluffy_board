@@ -5,6 +5,7 @@ import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/PDFImport.dart';
 import 'package:fluffy_board/whiteboard/overlays/Zoom.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
@@ -14,18 +15,6 @@ import 'package:uuid/uuid.dart';
 import '../Toolbar.dart' as Toolbar;
 
 import 'DrawOptions.dart';
-
-enum SelectedUpload {
-  Image,
-  PDF,
-}
-
-class UploadOptions extends DrawOptions {
-  SelectedUpload selectedUpload = SelectedUpload.Image;
-
-  UploadOptions(this.selectedUpload)
-      : super(List.empty(growable: false), 1, StrokeCap.round, 0, (DrawOptions)=>{});
-}
 
 class UploadToolbar extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
@@ -52,6 +41,7 @@ class UploadToolbar extends StatefulWidget {
 class _UploadToolbarState extends State<UploadToolbar> {
   List<bool> selectedUploadList = List.generate(1, (i) => false);
   var uuid = Uuid();
+
   @override
   Widget build(BuildContext context) {
     const _borderRadius = 50.0;
@@ -66,55 +56,69 @@ class _UploadToolbarState extends State<UploadToolbar> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              ToggleButtons(
-                  onPressed: (index) async {
-                    widget.toolbarOptions.uploadOptions.selectedUpload =
-                        SelectedUpload.values[index];
-                    widget.onChangedToolbarOptions(widget.toolbarOptions);
-                    FilePickerCross result =
-                        await FilePickerCross.importFromStorage(
-                      type: FileTypeCross.image,
-                    );
-                    setState(() {
-                      for (int buttonIndex = 0;
-                          buttonIndex < selectedUploadList.length;
-                          buttonIndex++) {
-                        if (buttonIndex == index) {
-                          selectedUploadList[buttonIndex] = true;
-                        } else {
-                          selectedUploadList[buttonIndex] = false;
-                        }
-                      }
-                      ui.decodeImageFromList(result.toUint8List(), (image) {
-                        Upload upload = new Upload(
-                            uuid.v4(),
-                            UploadType.Image,
-                            result.toUint8List(),
-                            widget.offset +
-                                new Offset(
-                                    (ScreenUtils.getScreenWidth(context) / 2) -
-                                        (image.width / 2),
-                                    (ScreenUtils.getScreenHeight(context) / 2) -
-                                        (image.height / 2)),
-                            image);
-                        widget.uploads.add(upload);
-                        String data = jsonEncode(WSUploadAdd(
-                            upload.uuid,
-                            upload.uploadType.index,
-                            upload.offset.dx,
-                            upload.offset.dy,
-                            // List.generate(10, (index) => 0)
-                            upload.uint8List.toList()
-                        ));
-                        widget.websocketConnection.channel.add("upload-add#" + data);
-                      });
+              OutlinedButton(
+                onPressed: () async {
+                  FilePickerCross result =
+                      await FilePickerCross.importFromStorage(
+                    type: FileTypeCross.image,
+                  );
+                  setState(() {
+                    ui.decodeImageFromList(result.toUint8List(), (image) {
+                      Upload upload = new Upload(
+                          uuid.v4(),
+                          UploadType.Image,
+                          result.toUint8List(),
+                          widget.offset +
+                              new Offset(
+                                  (ScreenUtils.getScreenWidth(context) / 2) -
+                                      (image.width / 2),
+                                  (ScreenUtils.getScreenHeight(context) / 2) -
+                                      (image.height / 2)),
+                          image);
+                      widget.uploads.add(upload);
+                      String data = jsonEncode(WSUploadAdd(
+                          upload.uuid,
+                          upload.uploadType.index,
+                          upload.offset.dx,
+                          upload.offset.dy,
+                          // List.generate(10, (index) => 0)
+                          upload.uint8List.toList()));
+                      widget.websocketConnection.channel
+                          .add("upload-add#" + data);
                     });
-                  },
-                  direction: Axis.vertical,
-                  isSelected: selectedUploadList,
-                  children: <Widget>[
-                    Icon(Icons.image),
-                  ]),
+                  });
+                },
+                child: Icon(Icons.image),
+              ),
+              OutlinedButton(
+                onPressed: () async {
+                  final ImportedPDF result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PDFImport()),
+                  ) as ImportedPDF;
+
+                  for (int i = 0; i < result.images.length; i++) {
+                    Offset offset = widget.offset +
+                        new Offset(
+                            (ScreenUtils.getScreenWidth(context) / 2) -
+                                (result.images[i].width / 2),
+                            (result.images[i].height + result.spacing) * i);
+                    Upload upload = new Upload(uuid.v4(), UploadType.PDF,
+                        result.imageData[i], offset, result.images[i]);
+                    widget.uploads.add(upload);
+                    String data = jsonEncode(WSUploadAdd(
+                        upload.uuid,
+                        upload.uploadType.index,
+                        upload.offset.dx,
+                        upload.offset.dy,
+                        // List.generate(10, (index) => 0)
+                        upload.uint8List.toList()));
+                    // widget.websocketConnection.channel
+                    //     .add("upload-add#" + data);
+                  }
+                },
+                child: Icon(Icons.picture_as_pdf),
+              ),
             ],
           ),
         ),

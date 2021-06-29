@@ -54,9 +54,12 @@ dev_dependencies:
   path_icon: ^0.7.0
   # Upload
   file_picker_cross: ^4.4.2
+  printing: ^5.4.3
+  pdf: ^3.4.2
   # Server Connection
   uuid: ^3.0.4
   web_socket_channel: ^2.1.0
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

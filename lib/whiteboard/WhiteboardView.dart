@@ -265,7 +265,6 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           straightLineOptions,
           eraserOptions,
           figureOptions,
-          new UploadOptions(SelectedUpload.Image),
           new TextOptions(SelectedTextColorToolbar.ColorPreset1),
           backgroundOptions,
           false,

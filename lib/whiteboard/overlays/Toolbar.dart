@@ -45,7 +45,6 @@ class ToolbarOptions {
   StraightLineOptions straightLineOptions;
   EraserOptions eraserOptions;
   FigureOptions figureOptions;
-  UploadOptions uploadOptions;
   TextOptions textOptions;
   BackgroundOptions backgroundOptions;
   bool colorPickerOpen;
@@ -62,7 +61,6 @@ class ToolbarOptions {
       this.straightLineOptions,
       this.eraserOptions,
       this.figureOptions,
-      this.uploadOptions,
       this.textOptions,
       this.backgroundOptions,
       this.colorPickerOpen,

@@ -3,17 +3,19 @@ import 'dart:convert';
 import 'package:fluffy_board/dashboard/filemanager/RenameFolder.dart';
 import 'package:fluffy_board/dashboard/filemanager/RenameWhiteboard.dart';
 import 'package:fluffy_board/dashboard/filemanager/ShareWhiteboard.dart';
-import 'package:fluffy_board/utils/ScreenUtils.dart';
+import 'package:fluffy_board/whiteboard/DrawPoint.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
+import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
-
+import 'package:localstorage/localstorage.dart';
 import '../ActionButtons.dart';
+import 'package:uuid/uuid.dart';
 
 class Directory {
   late String id, owner, parent, filename;
@@ -60,7 +62,8 @@ class ExtWhiteboard {
   String id, account, directory, name, original, permissionId;
   bool edit;
 
-  ExtWhiteboard(this.id, this.account, this.directory, this.name, this.original, this.edit, this.permissionId);
+  ExtWhiteboard(this.id, this.account, this.directory, this.name, this.original,
+      this.edit, this.permissionId);
 }
 
 class ExtWhiteboards {
@@ -74,6 +77,40 @@ class ExtWhiteboards {
           row['name'], row['original'], row['edit'], row['permission_id']));
     }
   }
+}
+
+class OfflineWhiteboard {
+  String uuid;
+  List<Upload> uploads;
+  List<TextItem> texts;
+  List<Scribble> scribbles;
+
+  toJSONEncodable() {
+    Map<String, dynamic> m = new Map();
+
+    m['uuid'] = uuid;
+    m['uploads'] = uploads;
+    m['texts'] = texts;
+    m['scribbles'] = scribbles;
+
+    return m;
+  }
+
+  OfflineWhiteboard.fromJson(Map<String, dynamic> json): uuid = "", uploads =[], texts = [], scribbles=json['scribbles'];
+
+  OfflineWhiteboard(this.uuid, this.uploads, this.texts, this.scribbles);
+}
+
+class OfflineWhiteboards {
+  List<OfflineWhiteboard> list = [];
+
+  toJSONEncodable() {
+    return list.map((item) {
+      return item.toJSONEncodable();
+    }).toList();
+  }
+
+  OfflineWhiteboards(this.list);
 }
 
 class FileManager extends StatefulWidget {
@@ -90,16 +127,20 @@ class _FileManagerState extends State<FileManager> {
   late Directories directories = new Directories([]);
   late Whiteboards whiteboards = new Whiteboards([]);
   late ExtWhiteboards extWhiteboards = new ExtWhiteboards([]);
+  late OfflineWhiteboards offlineWhiteboards = new OfflineWhiteboards([]);
   String currentDirectory = "";
   List<Directory> currentDirectoryPath = [];
   RefreshController _refreshController =
       RefreshController(initialRefresh: true);
   double font_size = 25;
   double file_icon_size = 50;
+  final LocalStorage offlineWhiteboardStorage =
+      new LocalStorage('offline_whiteboards');
 
   @override
   void initState() {
     super.initState();
+    _getOfflineWhiteboards();
   }
 
   @override
@@ -110,6 +151,7 @@ class _FileManagerState extends State<FileManager> {
     _mapBreadCrumbs(breadCrumbItems);
     _mapWhiteboards(directoryAndWhiteboardButtons);
     _mapExtWhiteboards(directoryAndWhiteboardButtons);
+    _mapOfflineWhiteboards(directoryAndWhiteboardButtons);
 
     return Container(
         child: Column(children: [
@@ -154,7 +196,8 @@ class _FileManagerState extends State<FileManager> {
               Column(
                 children: [
                   InkWell(
-                    child: Icon(Icons.folder_open_outlined, size: file_icon_size),
+                    child:
+                        Icon(Icons.folder_open_outlined, size: file_icon_size),
                     onTap: () {
                       setState(() {
                         currentDirectory = directory.id;
@@ -245,8 +288,8 @@ class _FileManagerState extends State<FileManager> {
                       Navigator.push(
                           context,
                           MaterialPageRoute<void>(
-                              builder: (BuildContext context) =>
-                                  WhiteboardView(whiteboard, null, widget.auth_token)));
+                              builder: (BuildContext context) => WhiteboardView(
+                                  whiteboard, null, widget.auth_token)));
                     },
                   ),
                   Text(
@@ -259,8 +302,9 @@ class _FileManagerState extends State<FileManager> {
                   PopupMenuItem(child: Text("Rename Whiteboard"), value: 0),
                   PopupMenuItem(child: Text("Delete Whiteboard"), value: 1),
                   PopupMenuItem(child: Text("Share Whiteboard"), value: 2),
+                  PopupMenuItem(child: Text("Download Whiteboard"), value: 3),
                 ],
-                onSelected: (value) {
+                onSelected: (value) async {
                   switch (value) {
                     case 0:
                       Navigator.push(
@@ -292,6 +336,16 @@ class _FileManagerState extends State<FileManager> {
                                 _refreshController),
                           ));
                       break;
+                    case 3:
+                      offlineWhiteboardStorage.setItem(
+                          whiteboard.id,
+                          new OfflineWhiteboard(
+                              whiteboard.id,
+                              [],
+                              [],
+                              await _getScribbles(
+                                  whiteboard.id, whiteboard.edit_id)).toJSONEncodable());
+                      break;
                   }
                 },
               )
@@ -317,8 +371,52 @@ class _FileManagerState extends State<FileManager> {
                       Navigator.push(
                           context,
                           MaterialPageRoute<void>(
-                              builder: (BuildContext context) =>
-                                  WhiteboardView(null, whiteboard, widget.auth_token)));
+                              builder: (BuildContext context) => WhiteboardView(
+                                  null, whiteboard, widget.auth_token)));
+                    },
+                  ),
+                  Text(
+                    whiteboard.name,
+                    // style: TextStyle(fontSize: file_font_size),
+                  ),
+                ],
+              ),
+              PopupMenuButton(
+                itemBuilder: (context) => [
+                  PopupMenuItem(child: Text("Delete Whiteboard"), value: 0),
+                ],
+                onSelected: (value) {
+                  switch (value) {
+                    case 0:
+                      _deleteExtWhiteboardDialog(context, whiteboard);
+                      break;
+                  }
+                },
+              )
+            ],
+          ),
+        ],
+      ));
+    }
+  }
+
+  _mapOfflineWhiteboards(whiteboardButtons) {
+    for (ExtWhiteboard whiteboard in extWhiteboards.list) {
+      whiteboardButtons.add(Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Column(
+                children: [
+                  InkWell(
+                    child: Icon(Icons.download_for_offline_outlined, size: file_icon_size),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                              builder: (BuildContext context) => WhiteboardView(
+                                  null, whiteboard, widget.auth_token)));
                     },
                   ),
                   Text(
@@ -520,14 +618,61 @@ class _FileManagerState extends State<FileManager> {
     print(utf8.decode((wbExtResponse.bodyBytes)));
     ExtWhiteboards extWhiteboards = ExtWhiteboards.fromJson(
         jsonDecode(utf8.decode((wbExtResponse.bodyBytes))));
+
+    // OfflineWhiteboards offlineWhiteboards = OfflineWhiteboards.fromJson(offlineWhiteboardStorage);
+
     setState(() {
       this.directories = directories;
       this.whiteboards = whiteboards;
       this.extWhiteboards = extWhiteboards;
     });
-    if (dirResponse.statusCode == 200 && wbResponse.statusCode == 200 && wbExtResponse.statusCode == 200)
+    if (dirResponse.statusCode == 200 &&
+        wbResponse.statusCode == 200 &&
+        wbExtResponse.statusCode == 200)
       _refreshController.refreshCompleted();
     else
       _refreshController.refreshFailed();
+  }
+
+  _getOfflineWhiteboards(){
+    List<OfflineWhiteboard> offlineWhiteboards = List.empty(growable: true);
+    offlineWhiteboardStorage.stream.forEach((element) {
+      offlineWhiteboards.add(OfflineWhiteboard.fromJson(element));
+    });
+    setState(() {
+      this.offlineWhiteboards = new OfflineWhiteboards(offlineWhiteboards);
+    });
+  }
+
+  Future<List<Scribble>> _getScribbles(
+      String whiteboard, String permissionId) async {
+    http.Response scribbleResponse = await http.post(
+        Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/scribble/get"),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json",
+          'Authorization': 'Bearer ' + widget.auth_token,
+        },
+        body: jsonEncode(
+            {"whiteboard": whiteboard, "permission_id": permissionId}));
+    List<Scribble> scribbles = new List.empty(growable: true);
+    if (scribbleResponse.statusCode == 200) {
+      List<DecodeGetScribble> decodedScribbles =
+          DecodeGetScribbleList.fromJsonList(jsonDecode(scribbleResponse.body));
+      setState(() {
+        for (DecodeGetScribble decodeGetScribble in decodedScribbles) {
+          scribbles.add(new Scribble(
+              decodeGetScribble.uuid,
+              decodeGetScribble.strokeWidth,
+              StrokeCap.values[decodeGetScribble.strokeCap],
+              HexColor.fromHex(decodeGetScribble.color),
+              decodeGetScribble.points,
+              SelectedFigureTypeToolbar
+                  .values[decodeGetScribble.selectedFigureTypeToolbar],
+              PaintingStyle.values[decodeGetScribble.paintingStyle]));
+        }
+      });
+    }
+    return scribbles;
   }
 }
