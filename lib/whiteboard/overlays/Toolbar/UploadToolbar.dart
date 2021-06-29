@@ -113,8 +113,8 @@ class _UploadToolbarState extends State<UploadToolbar> {
                         upload.offset.dy,
                         // List.generate(10, (index) => 0)
                         upload.uint8List.toList()));
-                    // widget.websocketConnection.channel
-                    //     .add("upload-add#" + data);
+                    widget.websocketConnection.channel
+                        .add("upload-add#" + data);
                   }
                 },
                 child: Icon(Icons.picture_as_pdf),
