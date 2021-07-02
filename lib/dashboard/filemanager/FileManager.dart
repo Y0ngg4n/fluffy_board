@@ -83,6 +83,7 @@ class ExtWhiteboards {
 
 class OfflineWhiteboard {
   String uuid;
+  String directory;
   String name;
   Uploads uploads;
   TextItems texts;
@@ -92,6 +93,7 @@ class OfflineWhiteboard {
     Map<String, dynamic> m = new Map();
 
     m['uuid'] = uuid;
+    m['directory'] = directory;
     m['name'] = name;
     m['uploads'] = uploads.toJSONEncodable();
     m['texts'] = texts.toJSONEncodable();
@@ -101,6 +103,7 @@ class OfflineWhiteboard {
 
   OfflineWhiteboard.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'],
+        directory = json['directory'],
         name = json['name'],
         uploads = json['uploads'] != null
             ? Uploads.fromJson(json['uploads'])
@@ -112,8 +115,8 @@ class OfflineWhiteboard {
             ? Scribbles.fromJson(json['scribbles'])
             : new Scribbles([]);
 
-  OfflineWhiteboard(
-      this.uuid, this.name, this.uploads, this.texts, this.scribbles);
+  OfflineWhiteboard(this.uuid, this.directory, this.name, this.uploads,
+      this.texts, this.scribbles);
 }
 
 class OfflineWhiteboards {
@@ -132,6 +135,15 @@ class OfflineWhiteboards {
   }
 
   OfflineWhiteboards(this.list);
+}
+
+class CreateWhiteboardResponse {
+  String id;
+  String directory;
+
+  CreateWhiteboardResponse.fromJson(Map<String, dynamic> json)
+      : this.id = json['id'],
+        this.directory = json['directory'];
 }
 
 class FileManager extends StatefulWidget {
@@ -161,6 +173,12 @@ class _FileManagerState extends State<FileManager> {
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
   var uuid = Uuid();
 
+  _showUploadError() {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Error while uploading Whiteboard!"),
+        backgroundColor: Colors.red));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -168,6 +186,8 @@ class _FileManagerState extends State<FileManager> {
 
   @override
   Widget build(BuildContext context) {
+    // fileManagerStorage.clear();
+    // fileManagerStorageIndex.clear();
     List<Widget> directoryAndWhiteboardButtons = [];
     List<BreadCrumbItem> breadCrumbItems = [];
     _mapDirectories(directoryAndWhiteboardButtons);
@@ -363,6 +383,7 @@ class _FileManagerState extends State<FileManager> {
                       OfflineWhiteboard offlineWhiteboard =
                           new OfflineWhiteboard(
                               uuid.v4(),
+                              currentDirectory,
                               whiteboard.name,
                               await _getUploads(
                                   whiteboard.id, whiteboard.edit_id),
@@ -464,11 +485,51 @@ class _FileManagerState extends State<FileManager> {
               PopupMenuButton(
                 itemBuilder: (context) => [
                   PopupMenuItem(child: Text("Delete Whiteboard"), value: 0),
+                  PopupMenuItem(child: Text("Upload Whiteboard"), value: 1)
                 ],
-                onSelected: (value) {
+                onSelected: (value) async {
                   switch (value) {
                     case 0:
                       _deleteOfflineWhiteboardDialog(context, whiteboard);
+                      break;
+                    case 1:
+                      http.Response response = await http.post(
+                          Uri.parse(dotenv.env['REST_API_URL']! +
+                              "/filemanager/whiteboard/create"),
+                          headers: {
+                            "content-type": "application/json",
+                            "accept": "application/json",
+                            'Authorization': 'Bearer ' + widget.auth_token,
+                          },
+                          body: jsonEncode({
+                            'name': whiteboard.name,
+                            'directory': whiteboard.directory,
+                            'password': "",
+                          }));
+                      CreateWhiteboardResponse createWhiteboardResponse =
+                          CreateWhiteboardResponse.fromJson(
+                              jsonDecode(response.body));
+                      if (response.statusCode == 200) {
+                        whiteboard.uuid = createWhiteboardResponse.id;
+                        print(jsonEncode(whiteboard.toJSONEncodable()));
+                        http.Response response = await http.post(
+                            Uri.parse(dotenv.env['REST_API_URL']! +
+                                "/offline-whiteboard/import"),
+                            headers: {
+                              "content-type": "application/json",
+                              "accept": "application/json",
+                              'Authorization': 'Bearer ' + widget.auth_token,
+                            },
+                            body: jsonEncode(whiteboard.toJSONEncodable()));
+                        if (response.statusCode == 200) {
+                          print("Import Successfull");
+                        } else {
+                          _showUploadError();
+                        }
+                        _refreshController.requestRefresh();
+                      } else {
+                        _showUploadError();
+                      }
                       break;
                   }
                 },
@@ -704,20 +765,24 @@ class _FileManagerState extends State<FileManager> {
   _getOfflineWhiteboards() {
     setState(() {
       this.offlineWhiteboardIds = Set.of(
-          jsonDecode(fileManagerStorageIndex.getItem("indexes") ?? [])
-              .cast<String>());
-      print(offlineWhiteboardIds);
+          jsonDecode(fileManagerStorageIndex.getItem("indexes"))
+                  .cast<String>() ??
+              []);
       List<OfflineWhiteboard> offlineWhiteboards = List.empty(growable: true);
       for (String id in offlineWhiteboardIds) {
-        Map<String, dynamic>? json = fileManagerStorage.getItem("offline_whiteboard-" + id);
-        if(json != null){
-          offlineWhiteboards.add(OfflineWhiteboard.fromJson(json));
+        Map<String, dynamic>? json =
+            fileManagerStorage.getItem("offline_whiteboard-" + id);
+        if (json != null) {
+          OfflineWhiteboard offlineWhiteboard =
+              OfflineWhiteboard.fromJson(json);
+          if ((offlineWhiteboard.directory.isEmpty &&
+                  currentDirectory.isEmpty) ||
+              offlineWhiteboard.directory == currentDirectory) {
+            offlineWhiteboards.add(offlineWhiteboard);
+          }
         }
-
       }
-      setState(() {
-        this.offlineWhiteboards = new OfflineWhiteboards(offlineWhiteboards);
-      });
+      this.offlineWhiteboards = new OfflineWhiteboards(offlineWhiteboards);
     });
   }
 
@@ -763,26 +828,32 @@ class _FileManagerState extends State<FileManager> {
         },
         body: jsonEncode(
             {"whiteboard": whiteboard, "permission_id": permissionId}));
-    List<Upload> uploads = new List.empty(growable: true);
     if (uploadResponse.statusCode == 200) {
       List<DecodeGetUpload> decodedUploads =
           DecodeGetUploadList.fromJsonList(jsonDecode(uploadResponse.body));
-      setState(() {
-        for (DecodeGetUpload decodeGetUpload in decodedUploads) {
-          Uint8List uint8list = Uint8List.fromList(decodeGetUpload.imageData);
-          ui.decodeImageFromList(uint8list, (image) {
-            uploads.add(new Upload(
-                decodeGetUpload.uuid,
-                UploadType.values[decodeGetUpload.uploadType],
-                uint8list,
-                new Offset(
-                    decodeGetUpload.offset_dx, decodeGetUpload.offset_dy),
-                image));
-          });
-        }
-      });
+      List<Upload> decodedUploadsWithImages =
+          await getDecodedUploadImages(decodedUploads);
+      return new Uploads(decodedUploadsWithImages);
     }
-    return new Uploads(uploads);
+    return new Uploads([]);
+  }
+
+  Future<List<Upload>> getDecodedUploadImages(
+      List<DecodeGetUpload> decodedUploads) async {
+    List<Upload> uploads = new List.empty(growable: true);
+    for (DecodeGetUpload decodeGetUpload in decodedUploads) {
+      Uint8List uint8list = Uint8List.fromList(decodeGetUpload.imageData);
+      final ui.Codec codec =
+          await PaintingBinding.instance!.instantiateImageCodec(uint8list);
+      final ui.FrameInfo frameInfo = await codec.getNextFrame();
+      uploads.add(new Upload(
+          decodeGetUpload.uuid,
+          UploadType.values[decodeGetUpload.uploadType],
+          uint8list,
+          new Offset(decodeGetUpload.offset_dx, decodeGetUpload.offset_dy),
+          frameInfo.image));
+    }
+    return uploads;
   }
 
   Future<TextItems> _getTextItems(

@@ -12,13 +12,13 @@ class Scribbles {
 
   toJSONEncodable() {
     return list.map((item) {
-      return jsonEncode(item.toJSONEncodable());
+      return item.toJSONEncodable();
     }).toList();
   }
 
   Scribbles.fromJson(List<dynamic> json) {
     for (dynamic entry in json) {
-      list.add(Scribble.fromJson(jsonDecode(entry)));
+      list.add(Scribble.fromJson(entry));
     }
   }
 
@@ -45,7 +45,7 @@ class Scribble {
     m['stroke_width'] = strokeWidth;
     m['stroke_cap'] = strokeCap.index;
     m['color'] = color.toHex();
-    m['points'] = jsonEncode(new DrawPoints(points).toJSONEncodable());
+    m['points'] = new DrawPoints(points).toJSONEncodable();
     m['painting_style'] = paintingStyle.index;
     m['left_extremity'] = leftExtremity;
     m['right_extremity'] = rightExtremity;
@@ -62,7 +62,7 @@ class Scribble {
         strokeWidth = json['stroke_width'],
         strokeCap = ui.StrokeCap.values[json['stroke_cap']],
         color = HexColor.fromHex(json['color']),
-        points = DrawPoints.fromJson(jsonDecode(json['points'])).list,
+        points = DrawPoints.fromJson(json['points']).list,
         paintingStyle = ui.PaintingStyle.values[json['painting_style']],
         leftExtremity = json['left_extremity'],
         rightExtremity = json['right_extremity'],
@@ -78,13 +78,13 @@ class DrawPoints {
 
   toJSONEncodable() {
     return list.map((item) {
-      return jsonEncode(item.toJson());
+      return item.toJson();
     }).toList();
   }
 
   DrawPoints.fromJson(List<dynamic> json) {
     for (dynamic entry in json) {
-      list.add(DrawPoint.fromJson(jsonDecode(entry)));
+      list.add(DrawPoint.fromJson(entry.cast<String, dynamic>()));
     }
   }
 
@@ -122,13 +122,13 @@ class Uploads {
 
   toJSONEncodable() {
     return list.map((item) {
-      return jsonEncode(item.toJson());
+      return item.toJson();
     }).toList();
   }
 
   Uploads.fromJson(List<dynamic> json) {
     for (dynamic entry in json) {
-      Upload upload = Upload.fromJson(jsonDecode(entry));
+      Upload upload = Upload.fromJson(entry.cast<String, dynamic>());
       ui.decodeImageFromList(upload.uint8List, (result) {
         upload.image = result;
         list.add(upload);
@@ -152,16 +152,17 @@ class Upload {
         uploadType = UploadType.values[json['upload_type']],
         offset = new ui.Offset(json['offset_dx'], json['offset_dy']),
         uint8List =
-            Uint8List.fromList(jsonDecode(json['uint8list']).cast<int>()),
+            Uint8List.fromList(json['uint8list'].cast<int>()),
         image = null;
 
   Map toJson() {
+    List<int> list = uint8List.toList();
     return {
       'uuid': uuid,
       'upload_type': uploadType.index,
       'offset_dx': offset.dx,
       'offset_dy': offset.dy,
-      'uint8list': jsonEncode(uint8List.toList())
+      'uint8list': list
     };
   }
 
@@ -173,13 +174,13 @@ class TextItems {
 
   toJSONEncodable() {
     return list.map((item) {
-      return jsonEncode(item.toJSONEncodable());
+      return item.toJSONEncodable();
     }).toList();
   }
 
   TextItems.fromJson(List<dynamic> json) {
     for (dynamic entry in json) {
-      list.add(TextItem.fromJson(jsonDecode(entry)));
+      list.add(TextItem.fromJson(entry));
     }
   }
 

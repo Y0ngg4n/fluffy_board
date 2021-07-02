@@ -714,6 +714,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
         "offline_whiteboard-" + widget.offlineWhiteboard!.uuid,
         new OfflineWhiteboard(
                 widget.offlineWhiteboard!.uuid,
+                widget.offlineWhiteboard!.directory,
                 widget.offlineWhiteboard!.name,
                 new Uploads(uploads),
                 new TextItems(texts),

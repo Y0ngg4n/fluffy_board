@@ -87,7 +87,7 @@ class CanvasCustomPainter extends CustomPainter {
     for (Upload upload in uploads) {
       if (ScreenUtils.checkUploadIfNotInScreen(
           upload, offset, screenSize.dx, screenSize.dy, scale)) continue;
-
+      if(upload.image == null) continue;
       canvas.drawImage(upload.image!, upload.offset + offset, imagePaint);
     }
 
