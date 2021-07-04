@@ -92,6 +92,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.1"
+  dots_indicator:
+    dependency: transitive
+    description:
+      name: dots_indicator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   email_validator:
     dependency: "direct dev"
     description:
@@ -182,7 +189,7 @@ packages:
       name: flex_color_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.2"
+    version: "2.1.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -247,6 +254,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.2"
+  introduction_screen:
+    dependency: "direct dev"
+    description:
+      name: introduction_screen
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   js:
     dependency: transitive
     description:
@@ -580,7 +594,7 @@ packages:
       name: url_launcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.7"
+    version: "6.0.8"
   url_launcher_linux:
     dependency: transitive
     description:

@@ -59,6 +59,8 @@ dev_dependencies:
   # Server Connection
   uuid: ^3.0.4
   web_socket_channel: ^2.1.0
+  # Documentation
+  introduction_screen: ^2.1.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

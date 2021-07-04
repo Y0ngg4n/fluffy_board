@@ -1,4 +1,5 @@
 import 'package:fluffy_board/dashboard/filemanager/AddFolder.dart';
+import 'package:fluffy_board/documentation/FileManagerIntroduction.dart';
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
 import 'package:flutter/material.dart';
 
@@ -34,12 +35,13 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       routes: {
+        '/intro': (context) => FileManagerIntroduction(),
         '/register': (context) => Register(),
         '/login': (context) => Login(),
         '/dashboard': (context) => Dashboard(),
         '/edit-account': (context) => EditAccount(),
       },
-      initialRoute: '/dashboard',
+      initialRoute: '/intro',
     );
   }
 }

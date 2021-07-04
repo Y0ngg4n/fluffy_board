@@ -167,7 +167,7 @@ class _FileManagerState extends State<FileManager> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: true);
   double font_size = 25;
-  double file_icon_size = 50;
+  double file_icon_size = 100;
   final LocalStorage fileManagerStorageIndex =
       new LocalStorage('filemanager-index');
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
@@ -223,7 +223,7 @@ class _FileManagerState extends State<FileManager> {
               controller: _refreshController,
               onRefresh: _getDirectoriesAndWhiteboards,
               child: GridView.extent(
-                maxCrossAxisExtent: 100,
+                maxCrossAxisExtent: 200,
                 children: directoryAndWhiteboardButtons,
               )))
     ]));
@@ -236,7 +236,8 @@ class _FileManagerState extends State<FileManager> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Column(
+              Expanded(
+                  child: Column(
                 children: [
                   InkWell(
                     child:
@@ -254,7 +255,7 @@ class _FileManagerState extends State<FileManager> {
                     // style: TextStyle(fontSize: file_font_size),
                   )
                 ],
-              ),
+              )),
               PopupMenuButton(
                 itemBuilder: (context) => [
                   PopupMenuItem(child: Text("Rename Folder"), value: 0),
@@ -323,22 +324,26 @@ class _FileManagerState extends State<FileManager> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Column(
-                children: [
-                  InkWell(
-                    child: Icon(Icons.assignment, size: file_icon_size),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute<void>(
-                              builder: (BuildContext context) => WhiteboardView(
-                                  whiteboard, null, null, widget.auth_token)));
-                    },
-                  ),
-                  Text(
-                    whiteboard.name,
-                  )
-                ],
+              Expanded(
+                child: Column(
+                  children: [
+                    InkWell(
+                      child: Icon(Icons.assignment, size: file_icon_size),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                                builder: (BuildContext context) =>
+                                    WhiteboardView(whiteboard, null, null,
+                                        widget.auth_token)));
+                      },
+                    ),
+                    Text(
+                      whiteboard.name,
+                      maxLines: 1,
+                    ),
+                  ],
+                ),
               ),
               PopupMenuButton(
                 itemBuilder: (context) => [
@@ -420,23 +425,26 @@ class _FileManagerState extends State<FileManager> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Column(
-                children: [
-                  InkWell(
-                    child: Icon(Icons.assignment_ind, size: file_icon_size),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute<void>(
-                              builder: (BuildContext context) => WhiteboardView(
-                                  null, whiteboard, null, widget.auth_token)));
-                    },
-                  ),
-                  Text(
-                    whiteboard.name,
-                    // style: TextStyle(fontSize: file_font_size),
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  children: [
+                    InkWell(
+                      child: Icon(Icons.assignment_ind, size: file_icon_size),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                                builder: (BuildContext context) =>
+                                    WhiteboardView(null, whiteboard, null,
+                                        widget.auth_token)));
+                      },
+                    ),
+                    Text(
+                      whiteboard.name,
+                      // style: TextStyle(fontSize: file_font_size),
+                    ),
+                  ],
+                ),
               ),
               PopupMenuButton(
                 itemBuilder: (context) => [
@@ -464,23 +472,26 @@ class _FileManagerState extends State<FileManager> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Column(
-                children: [
-                  InkWell(
-                    child: Icon(Icons.download_for_offline_outlined,
-                        size: file_icon_size),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute<void>(
-                              builder: (BuildContext context) => WhiteboardView(
-                                  null, null, whiteboard, widget.auth_token)));
-                    },
-                  ),
-                  Text(whiteboard.name
-                      // style: TextStyle(fontSize: file_font_size),
-                      ),
-                ],
+              Expanded(
+                child: Column(
+                  children: [
+                    InkWell(
+                      child: Icon(Icons.download_for_offline_outlined,
+                          size: file_icon_size),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                                builder: (BuildContext context) =>
+                                    WhiteboardView(null, null, whiteboard,
+                                        widget.auth_token)));
+                      },
+                    ),
+                    Text(whiteboard.name
+                        // style: TextStyle(fontSize: file_font_size),
+                        ),
+                  ],
+                ),
               ),
               PopupMenuButton(
                 itemBuilder: (context) => [
