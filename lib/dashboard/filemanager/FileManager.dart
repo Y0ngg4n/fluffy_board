@@ -212,7 +212,7 @@ class _FileManagerState extends State<FileManager> {
               ),
             ),
             ActionButtons(
-                widget.auth_token, currentDirectory, _refreshController),
+                widget.auth_token, currentDirectory, _refreshController, offlineWhiteboards, offlineWhiteboardIds),
           ],
         ),
       ),
@@ -511,7 +511,6 @@ class _FileManagerState extends State<FileManager> {
                               jsonDecode(response.body));
                       if (response.statusCode == 200) {
                         whiteboard.uuid = createWhiteboardResponse.id;
-                        print(jsonEncode(whiteboard.toJSONEncodable()));
                         http.Response response = await http.post(
                             Uri.parse(dotenv.env['REST_API_URL']! +
                                 "/offline-whiteboard/import"),
@@ -745,7 +744,6 @@ class _FileManagerState extends State<FileManager> {
         Directories.fromJson(jsonDecode(utf8.decode((dirResponse.bodyBytes))));
     Whiteboards whiteboards =
         Whiteboards.fromJson(jsonDecode(utf8.decode((wbResponse.bodyBytes))));
-    print(utf8.decode((wbExtResponse.bodyBytes)));
     ExtWhiteboards extWhiteboards = ExtWhiteboards.fromJson(
         jsonDecode(utf8.decode((wbExtResponse.bodyBytes))));
     _getOfflineWhiteboards();

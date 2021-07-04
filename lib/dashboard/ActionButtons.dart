@@ -1,4 +1,5 @@
 import 'package:fluffy_board/dashboard/filemanager/AddFolder.dart';
+import 'package:fluffy_board/dashboard/filemanager/AddOfflineWhiteboard.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
@@ -8,12 +9,15 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'filemanager/AddExtWhiteboard.dart';
 import 'filemanager/AddWhiteboard.dart';
+import 'filemanager/FileManager.dart';
 
 class ActionButtons extends StatefulWidget {
   String auth_token, parent;
   RefreshController _refreshController;
+  OfflineWhiteboards offlineWhiteboards;
+  Set<String> offlineWhiteboardIds;
 
-  ActionButtons(this.auth_token, this.parent, this._refreshController);
+  ActionButtons(this.auth_token, this.parent, this._refreshController, this.offlineWhiteboards, this.offlineWhiteboardIds);
 
   @override
   _ActionButtonsState createState() => _ActionButtonsState();
@@ -28,6 +32,9 @@ class _ActionButtonsState extends State<ActionButtons> {
             Padding(
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: ElevatedButton(onPressed: _createWhiteboard, child: Text("Create Whiteboard"))),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: ElevatedButton(onPressed: _createOfflineWhiteboard, child: Text("Create Offline Whiteboard"))),
             Padding(
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: ElevatedButton(onPressed: _createFolder, child: Text("Create Folder"))),
@@ -49,6 +56,13 @@ class _ActionButtonsState extends State<ActionButtons> {
     Navigator.push(context, MaterialPageRoute<void>(
       builder: (BuildContext context) => AddWhiteboard(widget.auth_token,
          widget.parent, widget._refreshController),
+    ),);
+  }
+
+  _createOfflineWhiteboard(){
+    Navigator.push(context, MaterialPageRoute<void>(
+      builder: (BuildContext context) => AddOfflineWhiteboard(widget.auth_token,
+          widget.parent, widget._refreshController, widget.offlineWhiteboards, widget.offlineWhiteboardIds),
     ),);
   }
 
