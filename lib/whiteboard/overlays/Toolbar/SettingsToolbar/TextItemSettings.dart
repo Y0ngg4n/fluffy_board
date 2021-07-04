@@ -68,8 +68,11 @@ class _TextItemSettingsState extends State<TextItemSettings> {
                         !widget.toolbarOptions.colorPickerOpen;
                     widget.onChangedToolbarOptions(widget.toolbarOptions);
                   },
-                  child: Icon(OwnIcons.color_lens,
-                      color: widget.selectedTextItem!.color)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(14.0),
+                    child: Icon(OwnIcons.color_lens,
+                        color: widget.selectedTextItem!.color),
+                  )),
               OutlinedButton(
                   onPressed: () {
                     setState(() {
@@ -78,7 +81,10 @@ class _TextItemSettingsState extends State<TextItemSettings> {
                       widget.onTextItemsChange(widget.texts);
                     });
                   },
-                  child: Icon(Icons.delete))
+                  child: Padding(
+                    padding: const EdgeInsets.all(14.0),
+                    child: Icon(Icons.delete),
+                  ))
             ],
           ),
         ),

@@ -55,7 +55,10 @@ class _UploadSettingsState extends State<UploadSettings> {
                   widget.onUploadsChange(widget.uploads);
                   widget.onSaveOfflineWhiteboard();
                 });
-              }, child: Icon(Icons.delete))
+              }, child: Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: Icon(Icons.delete),
+              ))
             ],
           ),
         ),

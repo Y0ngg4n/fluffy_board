@@ -27,7 +27,6 @@ class UploadToolbar extends StatefulWidget {
   WebsocketConnection? websocketConnection;
   OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
 
-
   UploadToolbar(
       {required this.toolbarOptions,
       required this.onChangedToolbarOptions,
@@ -66,6 +65,8 @@ class _UploadToolbarState extends State<UploadToolbar> {
                       await FilePickerCross.importFromStorage(
                     type: FileTypeCross.image,
                   );
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("Trying to import your Image ...")));
                   setState(() {
                     ui.decodeImageFromList(result.toUint8List(), (image) {
                       Upload upload = new Upload(
@@ -94,7 +95,10 @@ class _UploadToolbarState extends State<UploadToolbar> {
                     });
                   });
                 },
-                child: Icon(Icons.image),
+                child: Padding(
+                  padding: const EdgeInsets.all(14.0),
+                  child: Icon(Icons.image),
+                ),
               ),
               OutlinedButton(
                 onPressed: () async {
@@ -102,6 +106,8 @@ class _UploadToolbarState extends State<UploadToolbar> {
                     context,
                     MaterialPageRoute(builder: (context) => PDFImport()),
                   ) as ImportedPDF;
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("Trying to import your PDF ...")));
                   for (int i = 0; i < result.images.length; i++) {
                     Offset offset = widget.offset +
                         new Offset(
@@ -124,7 +130,10 @@ class _UploadToolbarState extends State<UploadToolbar> {
                     widget.onSaveOfflineWhiteboard();
                   }
                 },
-                child: Icon(Icons.picture_as_pdf),
+                child: Padding(
+                  padding: const EdgeInsets.all(14.0),
+                  child: Icon(Icons.picture_as_pdf),
+                ),
               ),
             ],
           ),

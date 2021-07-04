@@ -67,8 +67,11 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
                         !widget.toolbarOptions.colorPickerOpen;
                     widget.onChangedToolbarOptions(widget.toolbarOptions);
                   },
-                  child: Icon(OwnIcons.color_lens,
-                      color: widget.selectedScribble!.color)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(14.0),
+                    child: Icon(OwnIcons.color_lens,
+                        color: widget.selectedScribble!.color),
+                  )),
               OutlinedButton(
                   onPressed: () {
                     setState(() {
@@ -77,7 +80,10 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
                       widget.onScribblesChange(widget.scribbles);
                     });
                   },
-                  child: Icon(Icons.delete))
+                  child: Padding(
+                    padding: const EdgeInsets.all(14.0),
+                    child: Icon(Icons.delete),
+                  ))
             ],
           ),
         ),

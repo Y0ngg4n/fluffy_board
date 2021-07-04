@@ -34,69 +34,110 @@ class _ZoomViewState extends State<ZoomView> {
   Widget build(BuildContext context) {
     double moveFactorVertical = ScreenUtils.getScreenHeight(context);
     double moveFactorHorizontal = ScreenUtils.getScreenWidth(context);
+
+    final buttonStyle = ButtonStyle(
+      backgroundColor:
+          MaterialStateProperty.resolveWith((states) => Colors.white70),
+    );
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Card(
-              child: (Column(
-                children: [
-                  Row(
-                    children: [
-                      OutlinedButton(onPressed: (){setState(() {
-                        widget.offset += new Offset(0, moveFactorVertical);
-                        widget.onChangedOffset(widget.offset);
-                      });}, child: Icon(Icons.arrow_upward_outlined))
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      OutlinedButton(onPressed: (){setState(() {
-                        widget.offset += new Offset(moveFactorHorizontal, 0);
-                        widget.onChangedOffset(widget.offset);
-                      });}, child: Icon(Icons.arrow_left_outlined)),
-                      OutlinedButton(onPressed: (){
-                        widget.onChangedOffset(Offset.zero);
-                      }, child: Icon(Icons.reset_tv)),
-                      OutlinedButton(onPressed: (){setState(() {
-                        widget.offset += new Offset(-moveFactorHorizontal, 0);
-                        widget.onChangedOffset(widget.offset);
-                      });}, child: Icon(Icons.arrow_right_outlined)),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      OutlinedButton(onPressed: (){setState(() {
-                        widget.offset += new Offset(0, -moveFactorVertical);
-                        widget.onChangedOffset(widget.offset);
-                      });}, child: Icon(Icons.arrow_downward_outlined))
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      OutlinedButton(
-                          onPressed: () {
-                            widget.zoomOptions.scale =
-                                widget.zoomOptions.scale + zoomFactor;
-                            widget.onChangedZoomOptions(widget.zoomOptions);
-                          },
-                          child: Icon(Icons.add)),
-                      OutlinedButton(
-                          onPressed: () {
-                            if (widget.zoomOptions.scale - zoomFactor <=
-                                zoomFactor) return;
-                            widget.zoomOptions.scale =
-                                widget.zoomOptions.scale - zoomFactor;
-                            widget.onChangedZoomOptions(widget.zoomOptions);
-                          },
-                          child: Icon(Icons.remove))
-                    ],
-                  )
-                ],
-              )),
-            )
+            Container(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0,0,4,0),
+                child: (Column(
+                  children: [
+                    Row(
+                      children: [
+                        OutlinedButton(
+                            style: buttonStyle,
+                            onPressed: () {
+                              setState(() {
+                                widget.offset +=
+                                    new Offset(0, moveFactorVertical);
+                                widget.onChangedOffset(widget.offset);
+                              });
+                            },
+                            child: Icon(Icons.arrow_upward_outlined))
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        OutlinedButton(
+                            style: buttonStyle,
+                            onPressed: () {
+                              setState(() {
+                                widget.offset +=
+                                    new Offset(moveFactorHorizontal, 0);
+                                widget.onChangedOffset(widget.offset);
+                              });
+                            },
+                            child: Icon(Icons.arrow_left_outlined)),
+                        OutlinedButton(
+                            style: buttonStyle,
+                            onPressed: () {
+                              widget.onChangedOffset(Offset.zero);
+                            },
+                            child: Icon(Icons.reset_tv)),
+                        OutlinedButton(
+                            style: buttonStyle,
+                            onPressed: () {
+                              setState(() {
+                                widget.offset +=
+                                    new Offset(-moveFactorHorizontal, 0);
+                                widget.onChangedOffset(widget.offset);
+                              });
+                            },
+                            child: Icon(Icons.arrow_right_outlined)),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        OutlinedButton(
+                            style: buttonStyle,
+                            onPressed: () {
+                              setState(() {
+                                widget.offset +=
+                                    new Offset(0, -moveFactorVertical);
+                                widget.onChangedOffset(widget.offset);
+                              });
+                            },
+                            child: Icon(Icons.arrow_downward_outlined))
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
+                      child: Row(
+                        children: [
+                          OutlinedButton(
+                              style: buttonStyle,
+                              onPressed: () {
+                                if (widget.zoomOptions.scale - zoomFactor <=
+                                    zoomFactor) return;
+                                widget.zoomOptions.scale =
+                                    widget.zoomOptions.scale - zoomFactor;
+                                widget.onChangedZoomOptions(widget.zoomOptions);
+                              },
+                              child: Icon(Icons.remove)),
+                          OutlinedButton(
+                              style: buttonStyle,
+                              onPressed: () {
+                                widget.zoomOptions.scale =
+                                    widget.zoomOptions.scale + zoomFactor;
+                                widget.onChangedZoomOptions(widget.zoomOptions);
+                              },
+                              child: Icon(Icons.add)),
+                        ],
+                      ),
+                    )
+                  ],
+                )),
+              ),
+            ),
           ],
         )
       ],
