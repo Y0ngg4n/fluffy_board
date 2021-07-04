@@ -211,8 +211,8 @@ class _FileManagerState extends State<FileManager> {
                 direction: Axis.horizontal,
               ),
             ),
-            ActionButtons(
-                widget.auth_token, currentDirectory, _refreshController, offlineWhiteboards, offlineWhiteboardIds),
+            ActionButtons(widget.auth_token, currentDirectory,
+                _refreshController, offlineWhiteboards, offlineWhiteboardIds),
           ],
         ),
       ),
