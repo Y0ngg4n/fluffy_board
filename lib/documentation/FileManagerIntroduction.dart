@@ -111,22 +111,11 @@ class _FileManagerIntroductionState extends State<FileManagerIntroduction>
 
   @override
   Widget build(BuildContext context) {
-    if (!introStorageReady) return (Dashboard.loading("Fluffy Board"));
-    SchedulerBinding.instance!.addPostFrameCallback((_) => {
-          Future.delayed(const Duration(milliseconds: 1000), () {
-            if (introStorage.getItem('read') != null)
-              Navigator.restorablePushReplacementNamed(context, '/dashboard');
-          })
-        });
-    if (introStorage.getItem('read') != null)
-      return (Dashboard.loading("Fluffy Board"));
-
     return IntroductionScreen(
       pages: pages,
       onDone: () {
         introStorage.setItem('read', true);
-        SchedulerBinding.instance!.addPostFrameCallback((_) =>
-            {Navigator.restorablePushReplacementNamed(context, '/dashboard')});
+        Navigator.of(context).pop();
       },
       next: const Icon(Icons.arrow_right),
       showNextButton: true,

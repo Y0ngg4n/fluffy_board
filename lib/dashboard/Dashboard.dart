@@ -30,7 +30,9 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final LocalStorage accountStorage = new LocalStorage('account');
+  final LocalStorage introStorage = new LocalStorage('intro');
   bool storageReady = false;
+  bool introStorageReady = false;
   bool checkedLogin = false;
   bool online = true;
   bool loggedIn = false;
@@ -41,7 +43,8 @@ class _DashboardState extends State<Dashboard> {
   void initState() {
     super.initState();
     SchedulerBinding.instance!.addPostFrameCallback((_) => {
-          accountStorage.ready.then((value) async => {_setStorageReady()})
+          accountStorage.ready.then((value) async => {_setStorageReady()}),
+          introStorage.ready.then((value) async => {_setIntroStorageReady()})
         });
   }
 
@@ -49,14 +52,21 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     const name = "Dashboard";
 
-    if (!checkedLogin && !storageReady) return (Dashboard.loading(name));
+    if ((!checkedLogin && !storageReady) || !introStorageReady) return (Dashboard.loading(name));
     SchedulerBinding.instance!.addPostFrameCallback((_) => {
           Future.delayed(const Duration(milliseconds: 1000), () {
             if (checkedLogin && !loggedIn && online)
-              Navigator.pushReplacementNamed(context, '/login');
+              Navigator.of(context).pushReplacementNamed('/login');
           })
         });
     if (!checkedLogin && !loggedIn && online) return (Dashboard.loading(name));
+    if(introStorage.getItem('read') == null)
+      SchedulerBinding.instance!.addPostFrameCallback((_) => {
+        Future.delayed(const Duration(milliseconds: 1000), () {
+          if (checkedLogin && !loggedIn && online)
+            Navigator.of(context).pushNamed('/intro');
+        })
+      });
     return (Scaffold(
       appBar: AppBar(title: Text(name), actions: [AvatarIcon(online)]),
       body: Container(
@@ -64,8 +74,6 @@ class _DashboardState extends State<Dashboard> {
       ),
     ));
   }
-
-  Future<void> afterFirstLayout(BuildContext context) async {}
 
   _setStorageReady() {
     auth_token = accountStorage.getItem("auth_token");
@@ -76,6 +84,12 @@ class _DashboardState extends State<Dashboard> {
       this.username = username;
     });
     _checkLoggedIn(auth_token);
+  }
+
+  _setIntroStorageReady(){
+    setState(() {
+      introStorageReady = true;
+    });
   }
 
   Future _checkLoggedIn(String auth_token) async {

@@ -180,6 +180,12 @@ class _FileManagerState extends State<FileManager> {
         backgroundColor: Colors.red));
   }
 
+  _showMoveError() {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Error while moving Whiteboard!"),
+        backgroundColor: Colors.red));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -232,69 +238,80 @@ class _FileManagerState extends State<FileManager> {
 
   _mapDirectories(directoryButtons) {
     for (Directory directory in directories.list) {
-      directoryButtons.add(Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+      directoryButtons.add(DragTarget(
+        onAccept: (data) async {
+          await _moveWhiteboard(data, directory.id);
+        },
+        builder: (context, candidateData, rejectedData) {
+          return (Column(
             children: [
-              Expanded(
-                  child: Column(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  InkWell(
-                    child:
-                        Icon(Icons.folder_open_outlined, size: file_icon_size),
-                    onTap: () {
-                      setState(() {
-                        currentDirectory = directory.id;
-                        currentDirectoryPath.add(directory);
-                      });
-                      _refreshController.requestRefresh();
+                  Expanded(
+                      child: Column(
+                    children: [
+                      InkWell(
+                        child: Icon(Icons.folder_open_outlined,
+                            size: file_icon_size),
+                        onTap: () {
+                          setState(() {
+                            currentDirectory = directory.id;
+                            currentDirectoryPath.add(directory);
+                          });
+                          _refreshController.requestRefresh();
+                        },
+                      ),
+                      Text(
+                        directory.filename,
+                        // style: TextStyle(fontSize: file_font_size),
+                      )
+                    ],
+                  )),
+                  PopupMenuButton(
+                    itemBuilder: (context) => [
+                      PopupMenuItem(child: Text("Rename Folder"), value: 0),
+                      PopupMenuItem(child: Text("Delete Folder"), value: 1),
+                    ],
+                    onSelected: (value) {
+                      switch (value) {
+                        case 0:
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context) => RenameFolder(
+                                    widget.auth_token,
+                                    directory.id,
+                                    currentDirectory,
+                                    directory.filename,
+                                    _refreshController),
+                              ));
+                          break;
+                        case 1:
+                          _deleteFolderDialog(context, directory);
+                          break;
+                      }
                     },
-                  ),
-                  Text(
-                    directory.filename,
-                    // style: TextStyle(fontSize: file_font_size),
                   )
                 ],
-              )),
-              PopupMenuButton(
-                itemBuilder: (context) => [
-                  PopupMenuItem(child: Text("Rename Folder"), value: 0),
-                  PopupMenuItem(child: Text("Delete Folder"), value: 1),
-                ],
-                onSelected: (value) {
-                  switch (value) {
-                    case 0:
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute<void>(
-                            builder: (BuildContext context) => RenameFolder(
-                                widget.auth_token,
-                                directory.id,
-                                currentDirectory,
-                                directory.filename,
-                                _refreshController),
-                          ));
-                      break;
-                    case 1:
-                      _deleteFolderDialog(context, directory);
-                      break;
-                  }
-                },
-              )
+              ),
             ],
-          ),
-        ],
+          ));
+        },
       ));
     }
   }
 
   _mapBreadCrumbs(breadCrumbItems) {
     breadCrumbItems.add(BreadCrumbItem(
-        content: Icon(
-          Icons.home,
-          size: font_size,
-        ),
+        content: DragTarget(onAccept: (data) async {
+          await _moveWhiteboard(data, "");
+        }, builder: (context, candidateData, rejectedData) {
+          return Icon(
+            Icons.home,
+            size: font_size,
+          );
+        }),
         onTap: () {
           setState(() {
             currentDirectory = "";
@@ -306,7 +323,14 @@ class _FileManagerState extends State<FileManager> {
       String filename = currentDirectoryPath[i].filename;
       String uuid = currentDirectoryPath[i].id;
       breadCrumbItems.add(BreadCrumbItem(
-          content: Text(filename, style: TextStyle(fontSize: font_size)),
+          content: DragTarget(
+            onAccept: (data) async {
+              await _moveWhiteboard(data, uuid);
+            },
+            builder: (context, candidateData, rejectedData) {
+              return Text(filename, style: TextStyle(fontSize: font_size));
+            },
+          ),
           onTap: () {
             setState(() {
               currentDirectory = uuid;
@@ -320,234 +344,249 @@ class _FileManagerState extends State<FileManager> {
 
   _mapWhiteboards(whiteboardButtons) {
     for (Whiteboard whiteboard in whiteboards.list) {
-      whiteboardButtons.add(Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    InkWell(
-                      child: Icon(Icons.assignment, size: file_icon_size),
-                      onTap: () {
+      whiteboardButtons.add(LongPressDraggable<Whiteboard>(
+        data: whiteboard,
+        feedback: Icon(Icons.assignment, size: file_icon_size),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      InkWell(
+                        child: Icon(Icons.assignment, size: file_icon_size),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                  builder: (BuildContext context) =>
+                                      WhiteboardView(whiteboard, null, null,
+                                          widget.auth_token)));
+                        },
+                      ),
+                      Text(
+                        whiteboard.name,
+                        maxLines: 1,
+                      ),
+                    ],
+                  ),
+                ),
+                PopupMenuButton(
+                  itemBuilder: (context) => [
+                    PopupMenuItem(child: Text("Rename Whiteboard"), value: 0),
+                    PopupMenuItem(child: Text("Delete Whiteboard"), value: 1),
+                    PopupMenuItem(child: Text("Share Whiteboard"), value: 2),
+                    PopupMenuItem(child: Text("Download Whiteboard"), value: 3),
+                  ],
+                  onSelected: (value) async {
+                    switch (value) {
+                      case 0:
                         Navigator.push(
                             context,
                             MaterialPageRoute<void>(
-                                builder: (BuildContext context) =>
-                                    WhiteboardView(whiteboard, null, null,
-                                        widget.auth_token)));
-                      },
-                    ),
-                    Text(
-                      whiteboard.name,
-                      maxLines: 1,
-                    ),
-                  ],
-                ),
-              ),
-              PopupMenuButton(
-                itemBuilder: (context) => [
-                  PopupMenuItem(child: Text("Rename Whiteboard"), value: 0),
-                  PopupMenuItem(child: Text("Delete Whiteboard"), value: 1),
-                  PopupMenuItem(child: Text("Share Whiteboard"), value: 2),
-                  PopupMenuItem(child: Text("Download Whiteboard"), value: 3),
-                ],
-                onSelected: (value) async {
-                  switch (value) {
-                    case 0:
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute<void>(
-                            builder: (BuildContext context) => RenameWhiteboard(
-                                widget.auth_token,
-                                whiteboard.id,
+                              builder: (BuildContext context) =>
+                                  RenameWhiteboard(
+                                      widget.auth_token,
+                                      whiteboard.id,
+                                      currentDirectory,
+                                      whiteboard.name,
+                                      _refreshController),
+                            ));
+                        break;
+                      case 1:
+                        _deleteWhiteboardDialog(context, whiteboard);
+                        break;
+                      case 2:
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (BuildContext context) =>
+                                  ShareWhiteboard(
+                                      widget.auth_token,
+                                      widget.username,
+                                      whiteboard.id,
+                                      whiteboard.name,
+                                      currentDirectory,
+                                      whiteboard.view_id,
+                                      whiteboard.edit_id,
+                                      _refreshController),
+                            ));
+                        break;
+                      case 3:
+                        OfflineWhiteboard offlineWhiteboard =
+                            new OfflineWhiteboard(
+                                uuid.v4(),
                                 currentDirectory,
                                 whiteboard.name,
-                                _refreshController),
-                          ));
-                      break;
-                    case 1:
-                      _deleteWhiteboardDialog(context, whiteboard);
-                      break;
-                    case 2:
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute<void>(
-                            builder: (BuildContext context) => ShareWhiteboard(
-                                widget.auth_token,
-                                widget.username,
-                                whiteboard.id,
-                                whiteboard.name,
-                                currentDirectory,
-                                whiteboard.view_id,
-                                whiteboard.edit_id,
-                                _refreshController),
-                          ));
-                      break;
-                    case 3:
-                      OfflineWhiteboard offlineWhiteboard =
-                          new OfflineWhiteboard(
-                              uuid.v4(),
-                              currentDirectory,
-                              whiteboard.name,
-                              await _getUploads(
-                                  whiteboard.id, whiteboard.edit_id),
-                              await _getTextItems(
-                                  whiteboard.id, whiteboard.edit_id),
-                              await _getScribbles(
-                                  whiteboard.id, whiteboard.edit_id));
-                      offlineWhiteboards.list.add(offlineWhiteboard);
-                      fileManagerStorage.setItem(
-                          "offline_whiteboard-" + offlineWhiteboard.uuid,
-                          offlineWhiteboard.toJSONEncodable());
-                      for (OfflineWhiteboard offWhi
-                          in offlineWhiteboards.list) {
-                        offlineWhiteboardIds.add(offWhi.uuid);
-                      }
-                      fileManagerStorageIndex.setItem(
-                          "indexes", jsonEncode(offlineWhiteboardIds.toList()));
-                      _refreshController.requestRefresh();
-                      break;
-                  }
-                },
-              )
-            ],
-          ),
-        ],
+                                await _getUploads(
+                                    whiteboard.id, whiteboard.edit_id),
+                                await _getTextItems(
+                                    whiteboard.id, whiteboard.edit_id),
+                                await _getScribbles(
+                                    whiteboard.id, whiteboard.edit_id));
+                        offlineWhiteboards.list.add(offlineWhiteboard);
+                        fileManagerStorage.setItem(
+                            "offline_whiteboard-" + offlineWhiteboard.uuid,
+                            offlineWhiteboard.toJSONEncodable());
+                        for (OfflineWhiteboard offWhi
+                            in offlineWhiteboards.list) {
+                          offlineWhiteboardIds.add(offWhi.uuid);
+                        }
+                        fileManagerStorageIndex.setItem("indexes",
+                            jsonEncode(offlineWhiteboardIds.toList()));
+                        _refreshController.requestRefresh();
+                        break;
+                    }
+                  },
+                )
+              ],
+            ),
+          ],
+        ),
       ));
     }
   }
 
   _mapExtWhiteboards(whiteboardButtons) {
     for (ExtWhiteboard whiteboard in extWhiteboards.list) {
-      whiteboardButtons.add(Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    InkWell(
-                      child: Icon(Icons.assignment_ind, size: file_icon_size),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute<void>(
-                                builder: (BuildContext context) =>
-                                    WhiteboardView(null, whiteboard, null,
-                                        widget.auth_token)));
-                      },
-                    ),
-                    Text(
-                      whiteboard.name,
-                      // style: TextStyle(fontSize: file_font_size),
-                    ),
-                  ],
+      whiteboardButtons.add(LongPressDraggable<ExtWhiteboard>(
+        data: whiteboard,
+        feedback: Icon(Icons.assignment_ind, size: file_icon_size),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      InkWell(
+                        child: Icon(Icons.assignment_ind, size: file_icon_size),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                  builder: (BuildContext context) =>
+                                      WhiteboardView(null, whiteboard, null,
+                                          widget.auth_token)));
+                        },
+                      ),
+                      Text(
+                        whiteboard.name,
+                        // style: TextStyle(fontSize: file_font_size),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              PopupMenuButton(
-                itemBuilder: (context) => [
-                  PopupMenuItem(child: Text("Delete Whiteboard"), value: 0),
-                ],
-                onSelected: (value) {
-                  switch (value) {
-                    case 0:
-                      _deleteExtWhiteboardDialog(context, whiteboard);
-                      break;
-                  }
-                },
-              )
-            ],
-          ),
-        ],
+                PopupMenuButton(
+                  itemBuilder: (context) => [
+                    PopupMenuItem(child: Text("Delete Whiteboard"), value: 0),
+                  ],
+                  onSelected: (value) {
+                    switch (value) {
+                      case 0:
+                        _deleteExtWhiteboardDialog(context, whiteboard);
+                        break;
+                    }
+                  },
+                )
+              ],
+            ),
+          ],
+        ),
       ));
     }
   }
 
   _mapOfflineWhiteboards(whiteboardButtons) {
     for (OfflineWhiteboard whiteboard in offlineWhiteboards.list) {
-      whiteboardButtons.add(Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    InkWell(
-                      child: Icon(Icons.download_for_offline_outlined,
-                          size: file_icon_size),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute<void>(
-                                builder: (BuildContext context) =>
-                                    WhiteboardView(null, null, whiteboard,
-                                        widget.auth_token)));
-                      },
-                    ),
-                    Text(whiteboard.name
-                        // style: TextStyle(fontSize: file_font_size),
-                        ),
-                  ],
+      whiteboardButtons.add(LongPressDraggable<OfflineWhiteboard>(
+        data: whiteboard,
+        feedback:
+            Icon(Icons.download_for_offline_outlined, size: file_icon_size),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      InkWell(
+                        child: Icon(Icons.download_for_offline_outlined,
+                            size: file_icon_size),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                  builder: (BuildContext context) =>
+                                      WhiteboardView(null, null, whiteboard,
+                                          widget.auth_token)));
+                        },
+                      ),
+                      Text(whiteboard.name
+                          // style: TextStyle(fontSize: file_font_size),
+                          ),
+                    ],
+                  ),
                 ),
-              ),
-              PopupMenuButton(
-                itemBuilder: (context) => [
-                  PopupMenuItem(child: Text("Delete Whiteboard"), value: 0),
-                  PopupMenuItem(child: Text("Upload Whiteboard"), value: 1)
-                ],
-                onSelected: (value) async {
-                  switch (value) {
-                    case 0:
-                      _deleteOfflineWhiteboardDialog(context, whiteboard);
-                      break;
-                    case 1:
-                      http.Response response = await http.post(
-                          Uri.parse(dotenv.env['REST_API_URL']! +
-                              "/filemanager/whiteboard/create"),
-                          headers: {
-                            "content-type": "application/json",
-                            "accept": "application/json",
-                            'Authorization': 'Bearer ' + widget.auth_token,
-                          },
-                          body: jsonEncode({
-                            'name': whiteboard.name,
-                            'directory': whiteboard.directory,
-                            'password': "",
-                          }));
-                      CreateWhiteboardResponse createWhiteboardResponse =
-                          CreateWhiteboardResponse.fromJson(
-                              jsonDecode(response.body));
-                      if (response.statusCode == 200) {
-                        whiteboard.uuid = createWhiteboardResponse.id;
+                PopupMenuButton(
+                  itemBuilder: (context) => [
+                    PopupMenuItem(child: Text("Delete Whiteboard"), value: 0),
+                    PopupMenuItem(child: Text("Upload Whiteboard"), value: 1)
+                  ],
+                  onSelected: (value) async {
+                    switch (value) {
+                      case 0:
+                        _deleteOfflineWhiteboardDialog(context, whiteboard);
+                        break;
+                      case 1:
                         http.Response response = await http.post(
                             Uri.parse(dotenv.env['REST_API_URL']! +
-                                "/offline-whiteboard/import"),
+                                "/filemanager/whiteboard/create"),
                             headers: {
                               "content-type": "application/json",
                               "accept": "application/json",
                               'Authorization': 'Bearer ' + widget.auth_token,
                             },
-                            body: jsonEncode(whiteboard.toJSONEncodable()));
+                            body: jsonEncode({
+                              'name': whiteboard.name,
+                              'directory': whiteboard.directory,
+                              'password': "",
+                            }));
+                        CreateWhiteboardResponse createWhiteboardResponse =
+                            CreateWhiteboardResponse.fromJson(
+                                jsonDecode(response.body));
                         if (response.statusCode == 200) {
-                          print("Import Successfull");
+                          whiteboard.uuid = createWhiteboardResponse.id;
+                          http.Response response = await http.post(
+                              Uri.parse(dotenv.env['REST_API_URL']! +
+                                  "/offline-whiteboard/import"),
+                              headers: {
+                                "content-type": "application/json",
+                                "accept": "application/json",
+                                'Authorization': 'Bearer ' + widget.auth_token,
+                              },
+                              body: jsonEncode(whiteboard.toJSONEncodable()));
+                          if (response.statusCode == 200) {
+                            print("Import Successfull");
+                          } else {
+                            _showUploadError();
+                          }
+                          _refreshController.requestRefresh();
                         } else {
                           _showUploadError();
                         }
-                        _refreshController.requestRefresh();
-                      } else {
-                        _showUploadError();
-                      }
-                      break;
-                  }
-                },
-              )
-            ],
-          ),
-        ],
+                        break;
+                    }
+                  },
+                )
+              ],
+            ),
+          ],
+        ),
       ));
     }
   }
@@ -715,6 +754,56 @@ class _FileManagerState extends State<FileManager> {
             ],
           );
         });
+  }
+
+  _moveWhiteboard(dynamic data, String directoryUuid) async {
+    if (data is Whiteboard) {
+      Whiteboard whiteboard = data;
+      whiteboard.parent = directoryUuid;
+      http.Response response = await http.post(
+          Uri.parse(
+              dotenv.env['REST_API_URL']! + "/filemanager/whiteboard/move"),
+          headers: {
+            "content-type": "application/json",
+            "accept": "application/json",
+            'Authorization': 'Bearer ' + widget.auth_token,
+          },
+          body: jsonEncode({
+            'id': whiteboard.id,
+            'directory': directoryUuid,
+          }));
+      if (response.statusCode == 200) {
+        _refreshController.requestRefresh();
+      } else {
+        _showMoveError();
+      }
+    } else if (data is ExtWhiteboard) {
+      ExtWhiteboard whiteboard = data;
+      whiteboard.directory = directoryUuid;
+      http.Response response = await http.post(
+          Uri.parse(
+              dotenv.env['REST_API_URL']! + "/filemanager-ext/whiteboard/move"),
+          headers: {
+            "content-type": "application/json",
+            "accept": "application/json",
+            'Authorization': 'Bearer ' + widget.auth_token,
+          },
+          body: jsonEncode({
+            'id': whiteboard.id,
+            'directory': directoryUuid,
+          }));
+      if (response.statusCode == 200) {
+        _refreshController.requestRefresh();
+      } else {
+        _showMoveError();
+      }
+    } else if (data is OfflineWhiteboard) {
+      OfflineWhiteboard whiteboard = data;
+      whiteboard.directory = directoryUuid;
+      fileManagerStorage.setItem("offline_whiteboard-" + whiteboard.uuid,
+          whiteboard.toJSONEncodable());
+      _refreshController.requestRefresh();
+    }
   }
 
   Future<void> _getDirectoriesAndWhiteboards() async {

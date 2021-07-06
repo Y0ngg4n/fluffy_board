@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
         '/dashboard': (context) => Dashboard(),
         '/edit-account': (context) => EditAccount(),
       },
-      initialRoute: '/intro',
+      initialRoute: '/dashboard',
     );
   }
 }
