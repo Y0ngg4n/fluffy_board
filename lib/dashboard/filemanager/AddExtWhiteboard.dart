@@ -79,6 +79,7 @@ class _AddExtWhiteboardFormState extends State<AddExtWhiteboardForm> {
             children: <Widget>[
               TextFormField(
                 controller: nameController,
+                onFieldSubmitted: (value) => _addExtWhiteboard(),
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     icon: Icon(Icons.email_outlined),
@@ -104,45 +105,47 @@ class _AddExtWhiteboardFormState extends State<AddExtWhiteboardForm> {
               Padding(
                   padding: const EdgeInsets.all(16),
                        child: ElevatedButton(
-                            onPressed: () async {
-                              // Validate returns true if the form is valid, or false otherwise.
-                              if (_formKey.currentState!.validate()) {
-                                // If the form is valid, display a snackbar. In the real world,
-                                // you'd often call a server or save the information in a database.
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Trying to let you in ...')));
-                                try {
-                                  String inviteId = nameController.text;
-                                  List splitInviteId = inviteId.split("#");
-                                  http.Response response = await http.post(
-                                      Uri.parse(dotenv.env['REST_API_URL']! +
-                                          "/filemanager-ext/whiteboard/create"),
-                                      headers: {
-                                        "content-type": "application/json",
-                                        "accept": "application/json",
-                                        'Authorization': 'Bearer ' + widget.auth_token,
-                                      },
-                                      body: jsonEncode({
-                                        'id': splitInviteId[0],
-                                        'directory': widget.directory,
-                                        'permission_id': splitInviteId[1]
-                                      }));
-                                  print(splitInviteId[0]);
-                                  print(splitInviteId[1]);
-                                  if (response.statusCode == 200) {
-                                    Navigator.pop(context);
-                                    widget._refreshController.requestRefresh();
-                                  }else{
-                                    _showError();
-                                  }
-                                } catch (e) {
-                                  print(e);
-                                  _showError();
-                                }
-                              }
-                            },
+                            onPressed: () => _addExtWhiteboard(),
                             child: Text("Import Whiteboard")))
                       ])),
     );
+  }
+
+  _addExtWhiteboard() async {
+    // Validate returns true if the form is valid, or false otherwise.
+    if (_formKey.currentState!.validate()) {
+      // If the form is valid, display a snackbar. In the real world,
+      // you'd often call a server or save the information in a database.
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Trying to let you in ...')));
+      try {
+        String inviteId = nameController.text;
+        List splitInviteId = inviteId.split("#");
+        http.Response response = await http.post(
+            Uri.parse(dotenv.env['REST_API_URL']! +
+                "/filemanager-ext/whiteboard/create"),
+            headers: {
+              "content-type": "application/json",
+              "accept": "application/json",
+              'Authorization': 'Bearer ' + widget.auth_token,
+            },
+            body: jsonEncode({
+              'id': splitInviteId[0],
+              'directory': widget.directory,
+              'permission_id': splitInviteId[1]
+            }));
+        print(splitInviteId[0]);
+        print(splitInviteId[1]);
+        if (response.statusCode == 200) {
+          Navigator.pop(context);
+          widget._refreshController.requestRefresh();
+        }else{
+          _showError();
+        }
+      } catch (e) {
+        print(e);
+        _showError();
+      }
+    }
   }
 }

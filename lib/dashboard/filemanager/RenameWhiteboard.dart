@@ -92,6 +92,7 @@ class _RenameWhiteboardFormState extends State<RenameWhiteboardForm> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
             TextFormField(
+              onFieldSubmitted: (value) => _renameWhiteboard(),
               controller: nameController,
               decoration: const InputDecoration(
                   border: OutlineInputBorder(),
@@ -110,41 +111,43 @@ class _RenameWhiteboardFormState extends State<RenameWhiteboardForm> {
             Padding(
                 padding: const EdgeInsets.all(16),
                 child: ElevatedButton(
-                    onPressed: () async {
-                      // Validate returns true if the form is valid, or false otherwise.
-                      if (_formKey.currentState!.validate()) {
-                        // If the form is valid, display a snackbar. In the real world,
-                        // you'd often call a server or save the information in a database.
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('Trying to rename whiteboard ...')));
-                        try {
-                          http.Response response = await http.post(
-                              Uri.parse(dotenv.env['REST_API_URL']! +
-                                  "/filemanager/whiteboard/rename"),
-                              headers: {
-                                "content-type": "application/json",
-                                "accept": "application/json",
-                                'Authorization':
-                                    'Bearer ' + widget.auth_token,
-                              },
-                              body: jsonEncode({
-                                'id': widget.id,
-                                'name': nameController.text,
-                              }));
-                          if (response.statusCode == 200) {
-                            Navigator.pop(context);
-                            widget._refreshController.requestRefresh();
-                          } else {
-                            _showError();
-                          }
-                        } catch (e) {
-                          print(e);
-                          _showError();
-                        }
-                      }
-                    },
+                    onPressed: () => _renameWhiteboard(),
                     child: Text("Rename Whiteboard")))
           ])),
     );
+  }
+
+  _renameWhiteboard() async{
+    // Validate returns true if the form is valid, or false otherwise.
+    if (_formKey.currentState!.validate()) {
+      // If the form is valid, display a snackbar. In the real world,
+      // you'd often call a server or save the information in a database.
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Trying to rename whiteboard ...')));
+      try {
+        http.Response response = await http.post(
+            Uri.parse(dotenv.env['REST_API_URL']! +
+                "/filemanager/whiteboard/rename"),
+            headers: {
+              "content-type": "application/json",
+              "accept": "application/json",
+              'Authorization':
+              'Bearer ' + widget.auth_token,
+            },
+            body: jsonEncode({
+              'id': widget.id,
+              'name': nameController.text,
+            }));
+        if (response.statusCode == 200) {
+          Navigator.pop(context);
+          widget._refreshController.requestRefresh();
+        } else {
+          _showError();
+        }
+      } catch (e) {
+        print(e);
+        _showError();
+      }
+    }
   }
 }

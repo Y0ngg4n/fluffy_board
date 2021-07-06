@@ -42,24 +42,25 @@ class RegisterForm extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
+  final TextStyle defaultStyle = TextStyle(color: Colors.grey);
+  final TextStyle linkStyle = TextStyle(color: Colors.blue);
+
+  final TextEditingController usernameController =
+  new TextEditingController();
+  final TextEditingController emailController = new TextEditingController();
+  final TextEditingController passwordController =
+  new TextEditingController();
+  final LocalStorage storage = new LocalStorage('account');
+
+  _showError() {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Error while registering your account! Please try an other Email."),
+        backgroundColor: Colors.red));
+  }
 
   @override
   Widget build(BuildContext context) {
-    TextStyle defaultStyle = TextStyle(color: Colors.grey);
-    TextStyle linkStyle = TextStyle(color: Colors.blue);
 
-    final TextEditingController usernameController =
-        new TextEditingController();
-    final TextEditingController emailController = new TextEditingController();
-    final TextEditingController passwordController =
-        new TextEditingController();
-    final LocalStorage storage = new LocalStorage('account');
-
-    _showError() {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Error while registering your account! Please try an other Email."),
-          backgroundColor: Colors.red));
-    }
 
     return Form(
       key: _formKey,
@@ -106,6 +107,7 @@ class _RegisterFormState extends State<RegisterForm> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextFormField(
+              onFieldSubmitted: (value) => _register(),
               controller: passwordController,
               obscureText: true,
               decoration: const InputDecoration(
@@ -167,48 +169,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       return Center(child: CircularProgressIndicator());
                     }
                     return (ElevatedButton(
-                        onPressed: () async {
-                          // Validate returns true if the form is valid, or false otherwise.
-                          if (_formKey.currentState!.validate()) {
-                            // If the form is valid, display a snackbar. In the real world,
-                            // you'd often call a server or save the information in a database.
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text('Creating your Account ...')));
-                            try {
-                              http.Response response = await http.post(
-                                  Uri.parse(dotenv.env['REST_API_URL']! +
-                                      "/account/register"),
-                                  headers: {
-                                    "content-type": "application/json",
-                                    "accept": "application/json",
-                                  },
-                                  body: jsonEncode({
-                                    'name': usernameController.text,
-                                    'email': emailController.text,
-                                    'password': passwordController.text,
-                                  }));
-                              if (response.statusCode == 200) {
-                                Map<String, dynamic> body =
-                                    jsonDecode(utf8.decode(response.bodyBytes));
-                                await storage.setItem(
-                                    "auth_token", body['auth_token']);
-                                await storage.setItem(
-                                    "id", body['id']);
-                                await storage.setItem("username", usernameController.text);
-                                await storage.setItem("email", emailController.text);
-                                Navigator.pushReplacementNamed(
-                                    context, '/dashboard');
-                              } else {
-                                _showError();
-                              }
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content:
-                                          Text("Error creating account!")));
-                            }
-                          }
-                        },
+                        onPressed: () => _register(),
                         child: Text("Register")));
                   })),
           Padding(
@@ -233,5 +194,48 @@ class _RegisterFormState extends State<RegisterForm> {
         ],
       )),
     );
+  }
+
+  _register() async {
+    // Validate returns true if the form is valid, or false otherwise.
+    if (_formKey.currentState!.validate()) {
+      // If the form is valid, display a snackbar. In the real world,
+      // you'd often call a server or save the information in a database.
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Creating your Account ...')));
+      try {
+        http.Response response = await http.post(
+            Uri.parse(dotenv.env['REST_API_URL']! +
+                "/account/register"),
+            headers: {
+              "content-type": "application/json",
+              "accept": "application/json",
+            },
+            body: jsonEncode({
+              'name': usernameController.text,
+              'email': emailController.text,
+              'password': passwordController.text,
+            }));
+        if (response.statusCode == 200) {
+          Map<String, dynamic> body =
+          jsonDecode(utf8.decode(response.bodyBytes));
+          await storage.setItem(
+              "auth_token", body['auth_token']);
+          await storage.setItem(
+              "id", body['id']);
+          await storage.setItem("username", usernameController.text);
+          await storage.setItem("email", emailController.text);
+          Navigator.pushReplacementNamed(
+              context, '/dashboard');
+        } else {
+          _showError();
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content:
+                Text("Error creating account!")));
+      }
+    }
   }
 }

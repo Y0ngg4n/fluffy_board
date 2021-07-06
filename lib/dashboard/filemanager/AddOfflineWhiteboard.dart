@@ -90,6 +90,7 @@ class _AddOfflineWhiteboardFormState extends State<AddOfflineWhiteboardForm> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               TextFormField(
+                onFieldSubmitted: (value) => _addOfflineWhiteboard(),
                 controller: nameController,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
@@ -108,37 +109,39 @@ class _AddOfflineWhiteboardFormState extends State<AddOfflineWhiteboardForm> {
               Padding(
                   padding: const EdgeInsets.all(16),
                        child: ElevatedButton(
-                            onPressed: () async {
-                              // Validate returns true if the form is valid, or false otherwise.
-                              if (_formKey.currentState!.validate()) {
-                                // If the form is valid, display a snackbar. In the real world,
-                                // you'd often call a server or save the information in a database.
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Trying to create your Offline Whiteboard ...')));
-                                OfflineWhiteboard offlineWhiteboard =
-                                new OfflineWhiteboard(
-                                    uuid.v4(),
-                                    widget.directory,
-                                    nameController.text,
-                                    new Uploads([]),
-                                    new TextItems([]),
-                                    new Scribbles([]));
-
-                                widget.offlineWhiteboards.list.add(offlineWhiteboard);
-                                fileManagerStorage.setItem(
-                                    "offline_whiteboard-" + offlineWhiteboard.uuid,
-                                    offlineWhiteboard.toJSONEncodable());
-                                for (OfflineWhiteboard offWhi in widget.offlineWhiteboards.list) {
-                                  widget.offlineWhiteboardIds.add(offWhi.uuid);
-                                }
-                                fileManagerStorageIndex.setItem(
-                                    "indexes", jsonEncode(widget.offlineWhiteboardIds.toList()));
-                                Navigator.pop(context);
-                                widget._refreshController.requestRefresh();
-                              }
-                            },
+                            onPressed: () => _addOfflineWhiteboard(),
                             child: Text("Create Offline Whiteboard")))
                       ])),
     );
+  }
+
+  _addOfflineWhiteboard() async{
+    // Validate returns true if the form is valid, or false otherwise.
+    if (_formKey.currentState!.validate()) {
+      // If the form is valid, display a snackbar. In the real world,
+      // you'd often call a server or save the information in a database.
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Trying to create your Offline Whiteboard ...')));
+      OfflineWhiteboard offlineWhiteboard =
+      new OfflineWhiteboard(
+          uuid.v4(),
+          widget.directory,
+          nameController.text,
+          new Uploads([]),
+          new TextItems([]),
+          new Scribbles([]));
+
+      widget.offlineWhiteboards.list.add(offlineWhiteboard);
+      fileManagerStorage.setItem(
+          "offline_whiteboard-" + offlineWhiteboard.uuid,
+          offlineWhiteboard.toJSONEncodable());
+      for (OfflineWhiteboard offWhi in widget.offlineWhiteboards.list) {
+        widget.offlineWhiteboardIds.add(offWhi.uuid);
+      }
+      fileManagerStorageIndex.setItem(
+          "indexes", jsonEncode(widget.offlineWhiteboardIds.toList()));
+      Navigator.pop(context);
+      widget._refreshController.requestRefresh();
+    }
   }
 }

@@ -56,6 +56,8 @@ dev_dependencies:
   file_picker_cross: ^4.4.2
   printing: ^5.4.3
   pdf: ^3.4.2
+  #Export:
+  file_saver: ^0.0.8
   # Server Connection
   uuid: ^3.0.4
   web_socket_channel: ^2.1.0

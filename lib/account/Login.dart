@@ -40,23 +40,21 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController emailController = new TextEditingController();
+  final TextEditingController passwordController = new TextEditingController();
+  final LocalStorage storage = new LocalStorage('account');
+
+  _showError() {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Error while login you in!"),
+        backgroundColor: Colors.red));
+  }
+
+  final TextStyle defaultStyle = TextStyle(color: Colors.grey);
+  final TextStyle linkStyle = TextStyle(color: Colors.blue);
 
   @override
   Widget build(BuildContext context) {
-    TextStyle defaultStyle = TextStyle(color: Colors.grey);
-    TextStyle linkStyle = TextStyle(color: Colors.blue);
-    final TextEditingController emailController = new TextEditingController();
-    final TextEditingController passwordController =
-        new TextEditingController();
-    final LocalStorage storage = new LocalStorage('account');
-
-    _showError(){
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-              Text("Error while login you in!"), backgroundColor: Colors.red));
-    }
-
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -77,6 +75,7 @@ class _LoginFormState extends State<LoginForm> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextFormField(
+              onFieldSubmitted: (value) => _login(),
               controller: passwordController,
               obscureText: true,
               decoration: const InputDecoration(
@@ -95,46 +94,7 @@ class _LoginFormState extends State<LoginForm> {
                       return Center(child: CircularProgressIndicator());
                     }
                     return (ElevatedButton(
-                        onPressed: () async {
-                          // Validate returns true if the form is valid, or false otherwise.
-                          if (_formKey.currentState!.validate()) {
-                            // If the form is valid, display a snackbar. In the real world,
-                            // you'd often call a server or save the information in a database.
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Trying to login ...')));
-                            try {
-                              http.Response response = await http.post(
-                                  Uri.parse(dotenv.env['REST_API_URL']! +
-                                      "/account/login"),
-                                  headers: {
-                                    "content-type": "application/json",
-                                    "accept": "application/json",
-                                  },
-                                  body: jsonEncode({
-                                    'email': emailController.text,
-                                    'password': passwordController.text,
-                                  }));
-                              if (response.statusCode == 200) {
-                                Map<String, dynamic> body =
-                                    jsonDecode(utf8.decode(response.bodyBytes));
-                                await storage.setItem(
-                                    "auth_token", body['auth_token']);
-                                await storage.setItem(
-                                    "id", body['id']);
-                                await storage.setItem("email", body['email']);
-                                await storage.setItem("username", body['name']);
-                                Navigator.pushReplacementNamed(
-                                    context, '/dashboard');
-                              }else{
-                                _showError();
-                              }
-                            } catch (e) {
-                              print(e);
-                              _showError();
-                            }
-                          }
-                        },
-                        child: Text("Login")));
+                        onPressed: () => _login(), child: Text("Login")));
                   })),
           Padding(
             padding: const EdgeInsets.all(16),
@@ -158,5 +118,41 @@ class _LoginFormState extends State<LoginForm> {
         ],
       )),
     );
+  }
+
+  _login() async {
+    // Validate returns true if the form is valid, or false otherwise.
+    if (_formKey.currentState!.validate()) {
+      // If the form is valid, display a snackbar. In the real world,
+      // you'd often call a server or save the information in a database.
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Trying to login ...')));
+      try {
+        http.Response response = await http.post(
+            Uri.parse(dotenv.env['REST_API_URL']! + "/account/login"),
+            headers: {
+              "content-type": "application/json",
+              "accept": "application/json",
+            },
+            body: jsonEncode({
+              'email': emailController.text,
+              'password': passwordController.text,
+            }));
+        if (response.statusCode == 200) {
+          Map<String, dynamic> body =
+              jsonDecode(utf8.decode(response.bodyBytes));
+          await storage.setItem("auth_token", body['auth_token']);
+          await storage.setItem("id", body['id']);
+          await storage.setItem("email", body['email']);
+          await storage.setItem("username", body['name']);
+          Navigator.pushReplacementNamed(context, '/dashboard');
+        } else {
+          _showError();
+        }
+      } catch (e) {
+        print(e);
+        _showError();
+      }
+    }
   }
 }

@@ -18,6 +18,7 @@ import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 import 'package:localstorage/localstorage.dart';
 import '../ActionButtons.dart';
 import 'package:uuid/uuid.dart';
+import 'package:file_saver/file_saver.dart';
 
 class Directory {
   late String id, owner, parent, filename;
@@ -193,8 +194,6 @@ class _FileManagerState extends State<FileManager> {
 
   @override
   Widget build(BuildContext context) {
-    // fileManagerStorage.clear();
-    // fileManagerStorageIndex.clear();
     List<Widget> directoryAndWhiteboardButtons = [];
     List<BreadCrumbItem> breadCrumbItems = [];
     _mapDirectories(directoryAndWhiteboardButtons);
@@ -243,60 +242,64 @@ class _FileManagerState extends State<FileManager> {
           await _moveWhiteboard(data, directory.id);
         },
         builder: (context, candidateData, rejectedData) {
-          return (Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(
-                      child: Column(
-                    children: [
-                      InkWell(
-                        child: Icon(Icons.folder_open_outlined,
-                            size: file_icon_size),
-                        onTap: () {
-                          setState(() {
-                            currentDirectory = directory.id;
-                            currentDirectoryPath.add(directory);
-                          });
-                          _refreshController.requestRefresh();
-                        },
-                      ),
-                      Text(
-                        directory.filename,
-                        // style: TextStyle(fontSize: file_font_size),
-                      )
-                    ],
-                  )),
-                  PopupMenuButton(
-                    itemBuilder: (context) => [
-                      PopupMenuItem(child: Text("Rename Folder"), value: 0),
-                      PopupMenuItem(child: Text("Delete Folder"), value: 1),
-                    ],
-                    onSelected: (value) {
-                      switch (value) {
-                        case 0:
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute<void>(
-                                builder: (BuildContext context) => RenameFolder(
-                                    widget.auth_token,
-                                    directory.id,
-                                    currentDirectory,
-                                    directory.filename,
-                                    _refreshController),
-                              ));
-                          break;
-                        case 1:
-                          _deleteFolderDialog(context, directory);
-                          break;
-                      }
-                    },
-                  )
-                ],
-              ),
-            ],
-          ));
+          return LongPressDraggable<Directory>(
+            data: directory,
+            feedback: Icon(Icons.folder_open_outlined, size: file_icon_size),
+            child: (Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Expanded(
+                        child: Column(
+                      children: [
+                        InkWell(
+                          child: Icon(Icons.folder_open_outlined,
+                              size: file_icon_size),
+                          onTap: () {
+                            setState(() {
+                              currentDirectory = directory.id;
+                              currentDirectoryPath.add(directory);
+                            });
+                            _refreshController.requestRefresh();
+                          },
+                        ),
+                        Text(
+                          directory.filename,
+                          // style: TextStyle(fontSize: file_font_size),
+                        )
+                      ],
+                    )),
+                    PopupMenuButton(
+                      itemBuilder: (context) => [
+                        PopupMenuItem(child: Text("Rename Folder"), value: 0),
+                        PopupMenuItem(child: Text("Delete Folder"), value: 1),
+                      ],
+                      onSelected: (value) {
+                        switch (value) {
+                          case 0:
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute<void>(
+                                  builder: (BuildContext context) => RenameFolder(
+                                      widget.auth_token,
+                                      directory.id,
+                                      currentDirectory,
+                                      directory.filename,
+                                      _refreshController),
+                                ));
+                            break;
+                          case 1:
+                            _deleteFolderDialog(context, directory);
+                            break;
+                        }
+                      },
+                    )
+                  ],
+                ),
+              ],
+            )),
+          );
         },
       ));
     }
@@ -535,7 +538,8 @@ class _FileManagerState extends State<FileManager> {
                 PopupMenuButton(
                   itemBuilder: (context) => [
                     PopupMenuItem(child: Text("Delete Whiteboard"), value: 0),
-                    PopupMenuItem(child: Text("Upload Whiteboard"), value: 1)
+                    PopupMenuItem(child: Text("Upload Whiteboard"), value: 1),
+                    PopupMenuItem(child: Text("Export Whiteboard"), value: 2)
                   ],
                   onSelected: (value) async {
                     switch (value) {
@@ -579,6 +583,12 @@ class _FileManagerState extends State<FileManager> {
                         } else {
                           _showUploadError();
                         }
+                        break;
+                      case 2:
+                        await FileSaver.instance.saveFile("FluffyBoard-"+ whiteboard.name, Uint8List.fromList(jsonEncode(whiteboard.toJSONEncodable()).codeUnits), "json");
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text("Downloaded the Whiteboard to your Downloads folder"),
+                            backgroundColor: Colors.green));
                         break;
                     }
                   },
@@ -803,6 +813,27 @@ class _FileManagerState extends State<FileManager> {
       fileManagerStorage.setItem("offline_whiteboard-" + whiteboard.uuid,
           whiteboard.toJSONEncodable());
       _refreshController.requestRefresh();
+    }else if (data is Directory) {
+      Directory directory = data;
+      if(directory.id == directoryUuid) return;
+      http.Response response = await http.post(
+          Uri.parse(
+              dotenv.env['REST_API_URL']! + "/filemanager/directory/move"),
+          headers: {
+            "content-type": "application/json",
+            "accept": "application/json",
+            'Authorization': 'Bearer ' + widget.auth_token,
+          },
+          body: jsonEncode({
+            'id': directory.id,
+            'parent': directoryUuid,
+          }));
+      directory.id = directoryUuid;
+      if (response.statusCode == 200) {
+        _refreshController.requestRefresh();
+      } else {
+        _showMoveError();
+      }
     }
   }
 
@@ -875,10 +906,11 @@ class _FileManagerState extends State<FileManager> {
     await fileManagerStorageIndex.ready;
     await fileManagerStorage.ready;
     setState(() {
-      this.offlineWhiteboardIds = Set.of(
-          jsonDecode(fileManagerStorageIndex.getItem("indexes"))
-                  .cast<String>() ??
-              []);
+      try{
+        this.offlineWhiteboardIds = Set.of(jsonDecode(fileManagerStorageIndex.getItem("indexes")).cast<String>() ?? []);
+      }catch (e){
+        this.offlineWhiteboardIds = Set.of([]);
+      }
       List<OfflineWhiteboard> offlineWhiteboards = List.empty(growable: true);
       for (String id in offlineWhiteboardIds) {
         Map<String, dynamic>? json =
