@@ -4,6 +4,7 @@ import 'package:flutter/scheduler.dart';
 import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:flutter_gifimage/flutter_gifimage.dart';
 
 class FileManagerIntroduction extends StatefulWidget {
   @override
@@ -11,27 +12,98 @@ class FileManagerIntroduction extends StatefulWidget {
       _FileManagerIntroductionState();
 }
 
-class _FileManagerIntroductionState extends State<FileManagerIntroduction> {
+class _FileManagerIntroductionState extends State<FileManagerIntroduction>
+    with TickerProviderStateMixin {
   final LocalStorage introStorage = new LocalStorage('intro');
   bool introStorageReady = false;
   List<PageViewModel> pages = List.empty();
+  late GifController controller;
 
   @override
   void initState() {
     super.initState();
-    introStorage.ready.then((value) =>
-        setState(() {
+    controller = GifController(vsync: this);
+    controller.duration = Duration(seconds: 5);
+    introStorage.ready.then((value) => setState(() {
           introStorageReady = true;
         }));
     pages = List.of([
       PageViewModel(
-        title: "Title of first page",
-        body:
-        "Here you can write the description of the page, to explain someting...",
+        title: "Create Whiteboard",
+        body: "You can create Whiteboards and give them a name",
         image: Center(
-          child: Image.network(
-              "https://media.tenor.com/images/9a977fdf29d86ecaae3309a12ef853ed/tenor.gif",
-              height: 175.0),
+            child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.asset(
+              "assets/images/FileManagerIntro/CreateWhiteboard.gif"),
+        )),
+      ),
+      PageViewModel(
+        title: "Rename Whiteboard",
+        body: "If you want to change the name you can rename your Whiteboards",
+        image: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset(
+                "assets/images/FileManagerIntro/RenameWhiteboard.gif"),
+          ),
+        ),
+      ),
+      PageViewModel(
+        title: "Share Whiteboard",
+        body:
+            "You can share your Whiteboards and others can import them to their collection",
+        image: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset(
+                "assets/images/FileManagerIntro/ShareWhiteboard.gif"),
+          ),
+        ),
+      ),
+      PageViewModel(
+        title: "Download Whiteboards",
+        body: "You can download Whiteboards to keep them local",
+        image: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset(
+                "assets/images/FileManagerIntro/DownloadWhiteboard.gif"),
+          ),
+        ),
+      ),
+      PageViewModel(
+        title: "Upload Whiteboards",
+        body:
+            "You can upload your local Whiteboards to sync them with the cloud",
+        image: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset(
+                "assets/images/FileManagerIntro/UploadWhiteboard.gif"),
+          ),
+        ),
+      ),
+      PageViewModel(
+        title: "Delete Whiteboards",
+        body: "You can delete Whiteboards if you don´t need them anymore",
+        image: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset(
+                "assets/images/FileManagerIntro/DeleteWhiteboard.gif"),
+          ),
+        ),
+      ),
+      PageViewModel(
+        title: "Create Folder",
+        body: "You can create Folders to manage your Whiteboards",
+        image: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child:
+                Image.asset("assets/images/FileManagerIntro/CreateFolder.gif"),
+          ),
         ),
       ),
     ]);
@@ -40,20 +112,21 @@ class _FileManagerIntroductionState extends State<FileManagerIntroduction> {
   @override
   Widget build(BuildContext context) {
     if (!introStorageReady) return (Dashboard.loading("Fluffy Board"));
-    SchedulerBinding.instance!.addPostFrameCallback((_) =>
-    {
-      Future.delayed(const Duration(milliseconds: 2000), () {
-        if (introStorage.getItem('read') != null) Navigator
-            .restorablePushReplacementNamed(context, '/dashboard');
-      })
-    });
+    SchedulerBinding.instance!.addPostFrameCallback((_) => {
+          Future.delayed(const Duration(milliseconds: 1000), () {
+            if (introStorage.getItem('read') != null)
+              Navigator.restorablePushReplacementNamed(context, '/dashboard');
+          })
+        });
+    if (introStorage.getItem('read') != null)
+      return (Dashboard.loading("Fluffy Board"));
+
     return IntroductionScreen(
       pages: pages,
       onDone: () {
-        // introStorage.setItem('read', true);
-        SchedulerBinding.instance!.addPostFrameCallback((_) => {
-        Navigator.restorablePushReplacementNamed(context, '/dashboard')
-        });
+        introStorage.setItem('read', true);
+        SchedulerBinding.instance!.addPostFrameCallback((_) =>
+            {Navigator.restorablePushReplacementNamed(context, '/dashboard')});
       },
       next: const Icon(Icons.arrow_right),
       showNextButton: true,

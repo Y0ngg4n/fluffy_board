@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:fluffy_board/dashboard/AvatarIcon.dart';
@@ -31,6 +32,7 @@ class _DashboardState extends State<Dashboard> {
   final LocalStorage accountStorage = new LocalStorage('account');
   bool storageReady = false;
   bool checkedLogin = false;
+  bool online = true;
   bool loggedIn = false;
   late String auth_token;
   late String username;
@@ -38,27 +40,27 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    accountStorage.ready.then((value) async => {_setStorageReady()});
+    SchedulerBinding.instance!.addPostFrameCallback((_) => {
+          accountStorage.ready.then((value) async => {_setStorageReady()})
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     const name = "Dashboard";
 
-    if (!checkedLogin && !storageReady ||
-        (!checkedLogin && !storageReady && !loggedIn))
-      return (Dashboard.loading(name));
+    if (!checkedLogin && !storageReady) return (Dashboard.loading(name));
     SchedulerBinding.instance!.addPostFrameCallback((_) => {
           Future.delayed(const Duration(milliseconds: 1000), () {
-            if (!loggedIn) Navigator.pushReplacementNamed(context, '/login');
+            if (checkedLogin && !loggedIn && online)
+              Navigator.pushReplacementNamed(context, '/login');
           })
         });
-
-    if (!loggedIn) return (Dashboard.loading(name));
+    if (!checkedLogin && !loggedIn && online) return (Dashboard.loading(name));
     return (Scaffold(
-      appBar: AppBar(title: Text(name), actions: [AvatarIcon()]),
+      appBar: AppBar(title: Text(name), actions: [AvatarIcon(online)]),
       body: Container(
-        child: FileManager(auth_token, username),
+        child: FileManager(auth_token, username, online),
       ),
     ));
   }
@@ -84,17 +86,23 @@ class _DashboardState extends State<Dashboard> {
         loggedIn = false;
       });
     } else {
-      http.Response response = await http.get(
-          Uri.parse(dotenv.env['REST_API_URL']! + "/account/check"),
-          headers: {
-            "content-type": "application/json",
-            "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
-          });
-      setState(() {
-        checkedLogin = true;
-        loggedIn = response.statusCode == 200 ? true : false;
-      });
+      try {
+        http.Response response = await http.get(
+            Uri.parse(dotenv.env['REST_API_URL']! + "/account/check"),
+            headers: {
+              "content-type": "application/json",
+              "accept": "application/json",
+              'Authorization': 'Bearer ' + auth_token,
+            });
+        setState(() {
+          checkedLogin = true;
+          loggedIn = response.statusCode == 200 ? true : false;
+        });
+      } catch (e) {
+        setState(() {
+          online = false;
+        });
+      }
     }
   }
 }

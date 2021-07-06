@@ -3,6 +3,10 @@ import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
 
 class AvatarIcon extends StatefulWidget {
+  bool online;
+
+  AvatarIcon(this.online);
+
   @override
   _AvatarIconState createState() => _AvatarIconState();
 }
@@ -12,6 +16,7 @@ class _AvatarIconState extends State<AvatarIcon> {
 
   @override
   Widget build(BuildContext context) {
+    if(!widget.online) return Container();
     return Container(
       child:
         PopupMenuButton(

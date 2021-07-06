@@ -149,8 +149,9 @@ class CreateWhiteboardResponse {
 class FileManager extends StatefulWidget {
   String auth_token;
   String username;
+  bool online;
 
-  FileManager(this.auth_token, this.username);
+  FileManager(this.auth_token, this.username, this.online);
 
   @override
   _FileManagerState createState() => _FileManagerState();
@@ -717,6 +718,16 @@ class _FileManagerState extends State<FileManager> {
   }
 
   Future<void> _getDirectoriesAndWhiteboards() async {
+    await _getOfflineWhiteboards();
+    if (!widget.online) {
+      setState(() {
+        this.directories = new Directories([]);
+        this.whiteboards = new Whiteboards([]);
+        this.extWhiteboards = new ExtWhiteboards([]);
+      });
+      _refreshController.refreshCompleted();
+      return;
+    }
     http.Response dirResponse = await http.post(
         Uri.parse(dotenv.env['REST_API_URL']! + "/filemanager/directory/get"),
         headers: {
@@ -757,7 +768,7 @@ class _FileManagerState extends State<FileManager> {
         Whiteboards.fromJson(jsonDecode(utf8.decode((wbResponse.bodyBytes))));
     ExtWhiteboards extWhiteboards = ExtWhiteboards.fromJson(
         jsonDecode(utf8.decode((wbExtResponse.bodyBytes))));
-    _getOfflineWhiteboards();
+
     setState(() {
       this.directories = directories;
       this.whiteboards = whiteboards;
@@ -771,7 +782,9 @@ class _FileManagerState extends State<FileManager> {
       _refreshController.refreshFailed();
   }
 
-  _getOfflineWhiteboards() {
+  _getOfflineWhiteboards() async {
+    await fileManagerStorageIndex.ready;
+    await fileManagerStorage.ready;
     setState(() {
       this.offlineWhiteboardIds = Set.of(
           jsonDecode(fileManagerStorageIndex.getItem("indexes"))

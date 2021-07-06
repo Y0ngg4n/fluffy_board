@@ -61,6 +61,14 @@ dev_dependencies:
   web_socket_channel: ^2.1.0
   # Documentation
   introduction_screen: ^2.1.0
+  flutter_gifimage: ^1.0.1
+  flutter_launcher_icons: ^0.9.0
+
+#   App Icons
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/AppLogo.svg"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -80,6 +88,7 @@ flutter:
 
   assets:
     - .env
+    - assets/images/FileManagerIntro/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
