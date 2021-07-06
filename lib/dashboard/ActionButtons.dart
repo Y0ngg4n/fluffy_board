@@ -18,9 +18,11 @@ class ActionButtons extends StatefulWidget {
   RefreshController _refreshController;
   OfflineWhiteboards offlineWhiteboards;
   Set<String> offlineWhiteboardIds;
+  bool online;
+  Directories directories;
 
   ActionButtons(this.auth_token, this.parent, this._refreshController,
-      this.offlineWhiteboards, this.offlineWhiteboardIds);
+      this.offlineWhiteboards, this.offlineWhiteboardIds, this.online, this.directories);
 
   @override
   _ActionButtonsState createState() => _ActionButtonsState();
@@ -35,11 +37,13 @@ class _ActionButtonsState extends State<ActionButtons> {
   Widget build(BuildContext context) {
     return Wrap(
       children: [
-        Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-            child: ElevatedButton(
-                onPressed: _createWhiteboard,
-                child: Text("Create Whiteboard"))),
+        widget.online
+            ? Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: ElevatedButton(
+                    onPressed: _createWhiteboard,
+                    child: Text("Create Whiteboard")))
+            : Container(),
         Padding(
             padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
             child: ElevatedButton(
@@ -49,16 +53,20 @@ class _ActionButtonsState extends State<ActionButtons> {
             padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
             child: ElevatedButton(
                 onPressed: _createFolder, child: Text("Create Folder"))),
-        Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-            child: ElevatedButton(
-                onPressed: _collabOnWhiteboard,
-                child: Text("Collab on Whiteboard"))),
-        Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-            child: ElevatedButton(
-                onPressed: _importWhiteboard,
-                child: Text("Import Whiteboard"))),
+        widget.online
+            ? Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: ElevatedButton(
+                    onPressed: _collabOnWhiteboard,
+                    child: Text("Collab on Whiteboard")))
+            : Container(),
+        widget.online
+            ? Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: ElevatedButton(
+                    onPressed: _importWhiteboard,
+                    child: Text("Import Whiteboard")))
+            : Container(),
       ],
     );
   }
@@ -68,7 +76,7 @@ class _ActionButtonsState extends State<ActionButtons> {
       context,
       MaterialPageRoute<void>(
         builder: (BuildContext context) => AddFolder(
-            widget.auth_token, widget.parent, widget._refreshController),
+            widget.auth_token, widget.parent, widget._refreshController, widget.directories, widget.online),
       ),
     );
   }
@@ -115,17 +123,20 @@ class _ActionButtonsState extends State<ActionButtons> {
     String json = new String.fromCharCodes(result.toUint8List());
     OfflineWhiteboard offlineWhiteboard =
         OfflineWhiteboard.fromJson(jsonDecode(json));
-    fileManagerStorage.setItem(
-        "offline_whiteboard-" + offlineWhiteboard.uuid, offlineWhiteboard.toJSONEncodable());
+    fileManagerStorage.setItem("offline_whiteboard-" + offlineWhiteboard.uuid,
+        offlineWhiteboard.toJSONEncodable());
     Set<String> offlineWhiteboardIds = Set.of([]);
-    try{
-      offlineWhiteboardIds = Set.of(jsonDecode(fileManagerStorageIndex.getItem("indexes")).cast<String>() ?? []);
-    }catch (ignore){
+    try {
+      offlineWhiteboardIds = Set.of(
+          jsonDecode(fileManagerStorageIndex.getItem("indexes"))
+                  .cast<String>() ??
+              []);
+    } catch (ignore) {
       offlineWhiteboardIds = Set.of([]);
     }
     offlineWhiteboardIds.add(offlineWhiteboard.uuid);
-    fileManagerStorageIndex.setItem("indexes",
-        jsonEncode(offlineWhiteboardIds.toList()));
+    fileManagerStorageIndex.setItem(
+        "indexes", jsonEncode(offlineWhiteboardIds.toList()));
     widget._refreshController.requestRefresh();
   }
 }

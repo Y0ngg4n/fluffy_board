@@ -6,13 +6,18 @@ import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:uuid/uuid.dart';
+import 'FileManager.dart';
 
 class AddFolder extends StatefulWidget {
   String auth_token;
   String parent;
   RefreshController _refreshController;
+  Directories directories;
+  bool online;
 
-  AddFolder(this.auth_token, this.parent, this._refreshController);
+  AddFolder(this.auth_token, this.parent, this._refreshController,
+      this.directories, this.online);
 
   @override
   _AddFolderState createState() => _AddFolderState();
@@ -33,11 +38,19 @@ class _AddFolderState extends State<AddFolder> {
                 if (constraints.maxWidth > 600) {
                   return (FractionallySizedBox(
                       widthFactor: 0.5,
-                      child: AddFolderForm(widget.auth_token, widget.parent,
-                          widget._refreshController)));
+                      child: AddFolderForm(
+                          widget.auth_token,
+                          widget.parent,
+                          widget._refreshController,
+                          widget.directories,
+                          widget.online)));
                 } else {
-                  return (AddFolderForm(widget.auth_token, widget.parent,
-                      widget._refreshController));
+                  return (AddFolderForm(
+                      widget.auth_token,
+                      widget.parent,
+                      widget._refreshController,
+                      widget.directories,
+                      widget.online));
                 }
               },
             ),
@@ -50,8 +63,11 @@ class AddFolderForm extends StatefulWidget {
   String auth_token;
   String parent;
   RefreshController _refreshController;
+  Directories directories;
+  bool online;
 
-  AddFolderForm(this.auth_token, this.parent, this._refreshController);
+  AddFolderForm(this.auth_token, this.parent, this._refreshController,
+      this.directories, this.online);
 
   @override
   _AddFolderFormState createState() => _AddFolderFormState();
@@ -61,12 +77,16 @@ class _AddFolderFormState extends State<AddFolderForm> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController nameController = new TextEditingController();
+  final LocalStorage storage = new LocalStorage('account');
+  final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
 
   _showError() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Error while adding Folder! Please try an other Name."),
         backgroundColor: Colors.red));
   }
+
+  var uuid = Uuid();
 
   @override
   Widget build(BuildContext context) {
@@ -109,28 +129,44 @@ class _AddFolderFormState extends State<AddFolderForm> {
       // you'd often call a server or save the information in a database.
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Trying to create folder ...')));
-      try {
-        http.Response response = await http.post(
-            Uri.parse(
-                dotenv.env['REST_API_URL']! + "/filemanager/directory/create"),
-            headers: {
-              "content-type": "application/json",
-              "accept": "application/json",
-              'Authorization': 'Bearer ' + widget.auth_token,
-            },
-            body: jsonEncode({
-              'filename': nameController.text,
-              'parent': widget.parent,
-            }));
-        if (response.statusCode == 200) {
-          Navigator.pop(context);
-          widget._refreshController.requestRefresh();
-        } else {
+      if (widget.online) {
+        try {
+          http.Response response = await http.post(
+              Uri.parse(dotenv.env['REST_API_URL']! +
+                  "/filemanager/directory/create"),
+              headers: {
+                "content-type": "application/json",
+                "accept": "application/json",
+                'Authorization': 'Bearer ' + widget.auth_token,
+              },
+              body: jsonEncode({
+                'filename': nameController.text,
+                'parent': widget.parent,
+              }));
+          if (response.statusCode == 200) {
+            Navigator.pop(context);
+            widget._refreshController.requestRefresh();
+          } else {
+            _showError();
+          }
+        } catch (e) {
+          print(e);
           _showError();
         }
-      } catch (e) {
-        print(e);
-        _showError();
+      } else {
+        await storage.ready;
+        widget.directories.list.add(new Directory(
+            uuid.v4(),
+            storage.getItem('id'),
+            widget.parent,
+            nameController.text,
+            DateTime.now().millisecond));
+        fileManagerStorage
+            .setItem("directories", widget.directories.toJSONEncodable())
+            .then((value) => {
+                  Navigator.pop(context),
+                  widget._refreshController.requestRefresh()
+                });
       }
     }
   }

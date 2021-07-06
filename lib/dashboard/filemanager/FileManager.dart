@@ -21,10 +21,20 @@ import 'package:uuid/uuid.dart';
 import 'package:file_saver/file_saver.dart';
 
 class Directory {
-  late String id, owner, parent, filename;
-  late int created;
+  String id, owner, parent, filename;
+  int created;
 
   Directory(this.id, this.owner, this.parent, this.filename, this.created);
+
+  Map toJson() {
+    return {
+      'id': id,
+      'owner': owner,
+      'parent': parent,
+      'filename': filename,
+      'created': created,
+    };
+  }
 }
 
 class Directories {
@@ -32,8 +42,21 @@ class Directories {
 
   Directories(this.list);
 
+  toJSONEncodable() {
+    return list.map((item) {
+      return item.toJson();
+    }).toList();
+  }
+
   Directories.fromJson(List<dynamic> json) {
     for (Map<String, dynamic> row in json) {
+      list.add(new Directory(row['id'], row['owner'], row['parent'],
+          row['filename'], row['created']));
+    }
+  }
+
+  Directories.fromOfflineJson(List<dynamic> json) {
+    for (Map<dynamic, dynamic> row in json) {
       list.add(new Directory(row['id'], row['owner'], row['parent'],
           row['filename'], row['created']));
     }
@@ -217,8 +240,14 @@ class _FileManagerState extends State<FileManager> {
                 direction: Axis.horizontal,
               ),
             ),
-            ActionButtons(widget.auth_token, currentDirectory,
-                _refreshController, offlineWhiteboards, offlineWhiteboardIds),
+            ActionButtons(
+                widget.auth_token,
+                currentDirectory,
+                _refreshController,
+                offlineWhiteboards,
+                offlineWhiteboardIds,
+                widget.online,
+                directories)
           ],
         ),
       ),
@@ -271,22 +300,30 @@ class _FileManagerState extends State<FileManager> {
                       ],
                     )),
                     PopupMenuButton(
-                      itemBuilder: (context) => [
-                        PopupMenuItem(child: Text("Rename Folder"), value: 0),
-                        PopupMenuItem(child: Text("Delete Folder"), value: 1),
-                      ],
+                      itemBuilder: (context) => widget.online
+                          ? [
+                              PopupMenuItem(
+                                  child: Text("Rename Folder"), value: 0),
+                              PopupMenuItem(
+                                  child: Text("Delete Folder"), value: 1),
+                            ]
+                          : [
+                              PopupMenuItem(
+                                  child: Text("Rename Folder"), value: 0),
+                            ],
                       onSelected: (value) {
                         switch (value) {
                           case 0:
                             Navigator.push(
                                 context,
                                 MaterialPageRoute<void>(
-                                  builder: (BuildContext context) => RenameFolder(
-                                      widget.auth_token,
-                                      directory.id,
-                                      currentDirectory,
-                                      directory.filename,
-                                      _refreshController),
+                                  builder: (BuildContext context) =>
+                                      RenameFolder(
+                                          widget.auth_token,
+                                          directory.id,
+                                          currentDirectory,
+                                          directory.filename,
+                                          _refreshController),
                                 ));
                             break;
                           case 1:
@@ -585,9 +622,15 @@ class _FileManagerState extends State<FileManager> {
                         }
                         break;
                       case 2:
-                        await FileSaver.instance.saveFile("FluffyBoard-"+ whiteboard.name, Uint8List.fromList(jsonEncode(whiteboard.toJSONEncodable()).codeUnits), "json");
+                        await FileSaver.instance.saveFile(
+                            "FluffyBoard-" + whiteboard.name,
+                            Uint8List.fromList(
+                                jsonEncode(whiteboard.toJSONEncodable())
+                                    .codeUnits),
+                            "json");
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text("Downloaded the Whiteboard to your Downloads folder"),
+                            content: Text(
+                                "Downloaded the Whiteboard to your Downloads folder"),
                             backgroundColor: Colors.green));
                         break;
                     }
@@ -627,6 +670,9 @@ class _FileManagerState extends State<FileManager> {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text("Trying to delete Folder"),
                     ));
+                    directories.list.remove(directory);
+                    await fileManagerStorage.setItem(
+                        "directories", directories.toJSONEncodable());
                     if (deleteResponse.statusCode != 200) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text("Error while deleting Folder!"),
@@ -813,9 +859,9 @@ class _FileManagerState extends State<FileManager> {
       fileManagerStorage.setItem("offline_whiteboard-" + whiteboard.uuid,
           whiteboard.toJSONEncodable());
       _refreshController.requestRefresh();
-    }else if (data is Directory) {
+    } else if (data is Directory) {
       Directory directory = data;
-      if(directory.id == directoryUuid) return;
+      if (directory.id == directoryUuid) return;
       http.Response response = await http.post(
           Uri.parse(
               dotenv.env['REST_API_URL']! + "/filemanager/directory/move"),
@@ -839,9 +885,10 @@ class _FileManagerState extends State<FileManager> {
 
   Future<void> _getDirectoriesAndWhiteboards() async {
     await _getOfflineWhiteboards();
+    Directories offlineDirectories = _getOfflineDirectories();
     if (!widget.online) {
       setState(() {
-        this.directories = new Directories([]);
+        this.directories = offlineDirectories;
         this.whiteboards = new Whiteboards([]);
         this.extWhiteboards = new ExtWhiteboards([]);
       });
@@ -884,10 +931,42 @@ class _FileManagerState extends State<FileManager> {
         }));
     Directories directories =
         Directories.fromJson(jsonDecode(utf8.decode((dirResponse.bodyBytes))));
+    List<String> directoryUuids = [];
+    for (Directory directory in directories.list) {
+      directoryUuids.add(directory.id);
+    }
+    List<Directory> removeOfflineDirectories = [];
+    for (Directory offlineDirectory in offlineDirectories.list) {
+      if (!directoryUuids.contains(offlineDirectory.id)) {
+        http.Response response = await http.post(
+            Uri.parse(
+                dotenv.env['REST_API_URL']! + "/filemanager/directory/create"),
+            headers: {
+              "content-type": "application/json",
+              "accept": "application/json",
+              'Authorization': 'Bearer ' + widget.auth_token,
+            },
+            body: jsonEncode({
+              'filename': offlineDirectory.filename,
+              'parent': offlineDirectory.parent,
+            }));
+        if (response.statusCode == 200) {
+          removeOfflineDirectories.add(offlineDirectory);
+          print("Removeeee");
+        }
+      }
+    }
+    for (Directory dir in removeOfflineDirectories) {
+      offlineDirectories.list.remove(dir);
+    }
+    await fileManagerStorage.setItem(
+        "directories", directories.toJSONEncodable());
+
     Whiteboards whiteboards =
         Whiteboards.fromJson(jsonDecode(utf8.decode((wbResponse.bodyBytes))));
     ExtWhiteboards extWhiteboards = ExtWhiteboards.fromJson(
         jsonDecode(utf8.decode((wbExtResponse.bodyBytes))));
+    fileManagerStorage.setItem("directories", directories.toJSONEncodable());
 
     setState(() {
       this.directories = directories;
@@ -906,9 +985,12 @@ class _FileManagerState extends State<FileManager> {
     await fileManagerStorageIndex.ready;
     await fileManagerStorage.ready;
     setState(() {
-      try{
-        this.offlineWhiteboardIds = Set.of(jsonDecode(fileManagerStorageIndex.getItem("indexes")).cast<String>() ?? []);
-      }catch (e){
+      try {
+        this.offlineWhiteboardIds = Set.of(
+            jsonDecode(fileManagerStorageIndex.getItem("indexes"))
+                    .cast<String>() ??
+                []);
+      } catch (e) {
         this.offlineWhiteboardIds = Set.of([]);
       }
       List<OfflineWhiteboard> offlineWhiteboards = List.empty(growable: true);
@@ -927,6 +1009,23 @@ class _FileManagerState extends State<FileManager> {
       }
       this.offlineWhiteboards = new OfflineWhiteboards(offlineWhiteboards);
     });
+  }
+
+  Directories _getOfflineDirectories() {
+    Directories directories =
+        Directories.fromOfflineJson(fileManagerStorage.getItem("directories"));
+    List<Directory> removeList = [];
+    for (Directory dir in directories.list) {
+      if ((currentDirectory.isEmpty &&
+          dir.parent == "00000000-0000-0000-0000-000000000000")) {
+      } else if (dir.parent != currentDirectory) {
+        removeList.add(dir);
+      }
+    }
+    for (Directory dir in removeList) {
+      directories.list.remove(dir);
+    }
+    return directories;
   }
 
   Future<Scribbles> _getScribbles(
