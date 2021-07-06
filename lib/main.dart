@@ -8,6 +8,7 @@ import 'account/Register.dart';
 import 'dashboard/Dashboard.dart';
 import 'dashboard/EditAccount.dart';
 import 'dashboard/filemanager/AddFolder.dart';
+import 'documentation/About.dart';
 import 'whiteboard/InfiniteCanvas.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -35,13 +36,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       routes: {
+        '/about': (context) => About(),
         '/intro': (context) => FileManagerIntroduction(),
         '/register': (context) => Register(),
         '/login': (context) => Login(),
         '/dashboard': (context) => Dashboard(),
         '/edit-account': (context) => EditAccount(),
       },
-      initialRoute: '/dashboard',
+      initialRoute: '/about',
     );
   }
 }
