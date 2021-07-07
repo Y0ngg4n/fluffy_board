@@ -23,7 +23,14 @@ class Dashboard extends StatefulWidget {
       appBar: AppBar(
         title: Text(name),
       ),
-      body: Center(child: CircularProgressIndicator()),
+      body: Center(child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Image.asset("assets/images/FluffyBoardIcon.png", height: 300,),
+            CircularProgressIndicator(),
+          ],
+        ),
+      )),
     ));
   }
 }
