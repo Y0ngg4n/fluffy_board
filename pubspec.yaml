@@ -32,43 +32,42 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  email_validator: ^2.0.1
-  flutter_pw_validator: ^1.2.1
-  http: ^0.13.3
-  flutter_dotenv: ^5.0.0
-  localstorage: ^4.0.0+1
+  email_validator: ^2.0.1 #NS
+  flutter_pw_validator: ^1.2.1 #NS
+  http: ^0.13.3 #NS
+  flutter_dotenv: ^5.0.0 #NS
+  localstorage: ^4.0.0+1 #NS
   # Dashboard
-  pull_to_refresh: ^2.0.0
-  flutter_breadcrumb: ^1.0.1
+  pull_to_refresh: ^2.0.0 #NS
+  flutter_breadcrumb: ^1.0.1 #NS
   # Share
-  mailto: ^2.0.0
-  url_launcher: ^6.0.6
+  mailto: ^2.0.0 #NS
+  url_launcher: ^6.0.6 #NS
   # Math
-  smoothie: ^0.3.0+1
-  smoothing: ^0.0.1
-  #calculess: ^1.0.2
+  smoothie: ^0.3.0+1 #NS
+  # smoothing: ^0.0.1 #No NS
+  # calculess: ^1.0.2
   # Toolbar
-  flex_color_picker: ^2.0.1
+  flex_color_picker: ^2.0.1 #NS
   # Canvas
-  vector_math: ^2.1.0
-  path_icon: ^0.7.0
+  vector_math: ^2.1.0 #NS
+  path_icon: ^0.7.0 #NS
   # Upload
-  file_picker_cross: ^4.4.2
-  printing: ^5.4.3
-  pdf: ^3.4.2
+  file_picker_cross: ^4.4.2 #NS
+  printing: ^5.4.3 #NS
+  pdf: ^3.4.2 #NS
   #Export:
-  file_saver: ^0.0.8
+  file_saver: ^0.0.8 #NS
   # Server Connection
-  uuid: ^3.0.4
-  web_socket_channel: ^2.1.0
+  uuid: ^3.0.4 #NS
+  web_socket_channel: ^2.1.0 #NS
   # Documentation
-  introduction_screen: ^2.1.0
-  flutter_gifimage: ^1.0.1
-  flutter_launcher_icons: ^0.9.0
+  introduction_screen: ^2.1.0 #NS
+  flutter_launcher_icons: ^0.9.0 #NS
   # About
-  animated_text_kit: ^4.2.1
+  animated_text_kit: ^4.2.1 #NS
   # Fonts
-  google_fonts: ^2.1.0
+  google_fonts: ^2.1.0 #NS
 
 #   App Icons
 flutter_icons:

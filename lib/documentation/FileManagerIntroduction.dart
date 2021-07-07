@@ -4,7 +4,6 @@ import 'package:flutter/scheduler.dart';
 import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:flutter_gifimage/flutter_gifimage.dart';
 
 class FileManagerIntroduction extends StatefulWidget {
   @override
@@ -17,13 +16,10 @@ class _FileManagerIntroductionState extends State<FileManagerIntroduction>
   final LocalStorage introStorage = new LocalStorage('intro');
   bool introStorageReady = false;
   List<PageViewModel> pages = List.empty();
-  late GifController controller;
 
   @override
   void initState() {
     super.initState();
-    controller = GifController(vsync: this);
-    controller.duration = Duration(seconds: 5);
     introStorage.ready.then((value) => setState(() {
           introStorageReady = true;
         }));

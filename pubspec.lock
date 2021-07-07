@@ -230,13 +230,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.0.0"
-  flutter_gifimage:
-    dependency: "direct dev"
-    description:
-      name: flutter_gifimage
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -310,13 +303,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.3"
-  linalg:
-    dependency: transitive
-    description:
-      name: linalg
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.2"
   localstorage:
     dependency: "direct dev"
     description:
@@ -574,13 +560,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.0+1"
-  smoothing:
-    dependency: "direct dev"
-    description:
-      name: smoothing
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.1"
   source_span:
     dependency: transitive
     description:
