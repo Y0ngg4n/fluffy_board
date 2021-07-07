@@ -57,9 +57,9 @@ class _EditAccountFormState extends State<EditAccountForm> {
                   if (snapshot.data == null) {
                     return Center(child: CircularProgressIndicator());
                   }
-                  String auth_token = accountStorage.getItem("auth_token");
-                  String email = accountStorage.getItem("email");
-                  String username = accountStorage.getItem("username");
+                  String auth_token = accountStorage.getItem("auth_token") ?? "";
+                  String email = accountStorage.getItem("email") ?? "";
+                  String username = accountStorage.getItem("username") ?? "";
                   usernameController.text = username;
                   return (
                       Column(

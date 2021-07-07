@@ -105,7 +105,7 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
       newScribble.bottomExtremity,
     ));
     if (widget.websocketConnection != null)
-      widget.websocketConnection!.channel.add("scribble-update#" + data);
+      widget.websocketConnection!.sendDataToChannel("scribble-update#", data);
   }
 
   sendScribbleDelete(Scribble newScribble) {
@@ -113,6 +113,6 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
       newScribble.uuid,
     ));
     if (widget.websocketConnection != null)
-      widget.websocketConnection!.channel.add("scribble-delete#" + data);
+      widget.websocketConnection!.sendDataToChannel("scribble-delete#", data);
   }
 }

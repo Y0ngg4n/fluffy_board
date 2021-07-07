@@ -68,6 +68,8 @@ dev_dependencies:
   animated_text_kit: ^4.2.1 #NS
   # Fonts
   google_fonts: ^2.1.0 #NS
+  # Cross Platform
+  universal_html: ^2.0.8
 
 #   App Icons
 flutter_icons:

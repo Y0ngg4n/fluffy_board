@@ -71,7 +71,6 @@ class _UploadSettingsState extends State<UploadSettings> {
       newUpload.uuid,
     ));
     if (widget.websocketConnection != null)
-    widget.websocketConnection!.channel
-        .add("upload-delete#" + data);
+      widget.websocketConnection!.sendDataToChannel("upload-delete#", data);
   }
 }

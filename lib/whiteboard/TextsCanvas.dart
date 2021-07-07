@@ -89,7 +89,8 @@ class _TextsCanvasState extends State<TextsCanvas> {
         textItem.text,
         textItem.offset.dx,
         textItem.offset.dy));
-    if (widget.websocketConnection != null)
-      widget.websocketConnection!.channel.add("textitem-update#" + data);
+    if (widget.websocketConnection != null){
+      widget.websocketConnection!.sendDataToChannel("textitem-update#", data);
+    }
   }
 }

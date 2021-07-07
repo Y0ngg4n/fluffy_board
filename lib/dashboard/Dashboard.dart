@@ -83,8 +83,8 @@ class _DashboardState extends State<Dashboard> {
   }
 
   _setStorageReady() {
-    auth_token = accountStorage.getItem("auth_token");
-    username = accountStorage.getItem("username");
+    auth_token = accountStorage.getItem("auth_token") ?? "";
+    username = accountStorage.getItem("username") ?? "";
     setState(() {
       this.storageReady = true;
       this.auth_token = auth_token;
@@ -101,7 +101,7 @@ class _DashboardState extends State<Dashboard> {
 
   Future _checkLoggedIn(String auth_token) async {
     print("Checking if logged in...");
-    if (auth_token == null) {
+    if (auth_token.isEmpty) {
       setState(() {
         checkedLogin = true;
         loggedIn = false;
@@ -114,6 +114,7 @@ class _DashboardState extends State<Dashboard> {
               "content-type": "application/json",
               "accept": "application/json",
               'Authorization': 'Bearer ' + auth_token,
+              'Access-Control-Allow-Origin': '*'
             });
         setState(() {
           checkedLogin = true;

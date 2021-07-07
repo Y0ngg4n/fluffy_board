@@ -28,7 +28,7 @@ class WSScribbleAdd {
   WSScribbleAdd.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'],
         selectedFigureTypeToolbar = json['selected_figure_type_toolbar'],
-        strokeWidth = json['stroke_width'],
+        strokeWidth = json['stroke_width'].toDouble(),
         strokeCap = json['stroke_cap'],
         color = json['color'],
         points = WSScribbleAdd.fromJsonList(json['points']),
@@ -70,15 +70,15 @@ class WSScribbleUpdate {
 
   WSScribbleUpdate.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'],
-        strokeWidth = json['stroke_width'],
+        strokeWidth = json['stroke_width'].toDouble(),
         strokeCap = json['stroke_cap'],
         color = json['color'],
         points = WSScribbleAdd.fromJsonList(json['points']),
         paintingStyle = json['painting_style'],
-        leftExtremity = json['left_extremity'],
-        rightExtremity = json['right_extremity'],
-        topExtremity = json['top_extremity'],
-        bottomExtremity = json['bottom_extremity'];
+        leftExtremity = json['left_extremity'].toDouble(),
+        rightExtremity = json['right_extremity'].toDouble(),
+        topExtremity = json['top_extremity'].toDouble(),
+        bottomExtremity = json['bottom_extremity'].toDouble();
 
   Map toJson() {
     return {
@@ -156,15 +156,15 @@ class DecodeGetScribble {
   DecodeGetScribble.fromJson(Map<String, dynamic> json)
       : uuid = json['id'],
         selectedFigureTypeToolbar = json['selected_figure_type_toolbar'],
-        strokeWidth = json['stroke_width'],
+        strokeWidth = json['stroke_width'].toDouble(),
         strokeCap = json['stroke_cap'],
         color = json['color'],
         points = WSScribbleAdd.fromJsonList(json['points']),
         paintingStyle = json['painting_style'],
-        leftExtremity = json['left_extremity'],
-        rightExtremity = json['right_extremity'],
-        topExtremity = json['top_extremity'],
-        bottomExtremity = json['bottom_extremity'];
+        leftExtremity = json['left_extremity'].toDouble(),
+        rightExtremity = json['right_extremity'].toDouble(),
+        topExtremity = json['top_extremity'].toDouble(),
+        bottomExtremity = json['bottom_extremity'].toDouble();
 }
 
 class DecodeGetScribbleList{
@@ -187,8 +187,8 @@ class WSUploadAdd {
   WSUploadAdd.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'],
         uploadType = json['upload_type'],
-        offset_dx = json['offset_dx'],
-        offset_dy = json['offset_dy'],
+        offset_dx = json['offset_dx'].toDouble(),
+        offset_dy = json['offset_dy'].toDouble(),
         imageData = json['image_data'].cast<int>();
 
   Map toJson() {
@@ -212,8 +212,8 @@ class WSUploadUpdate {
 
   WSUploadUpdate.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'],
-        offset_dx = json['offset_dx'],
-        offset_dy = json['offset_dy'];
+        offset_dx = json['offset_dx'].toDouble(),
+        offset_dy = json['offset_dy'].toDouble();
 
   Map toJson() {
     return {
@@ -252,8 +252,8 @@ class DecodeGetUpload {
   DecodeGetUpload.fromJson(Map<String, dynamic> json)
       : uuid = json['id'],
         uploadType = json['upload_type'],
-        offset_dx = json['offset_dx'],
-        offset_dy = json['offset_dy'],
+        offset_dx = json['offset_dx'].toDouble(),
+        offset_dy = json['offset_dy'].toDouble(),
         imageData = json['image_data'].cast<int>();
 }
 
@@ -279,13 +279,13 @@ class WSTextItemAdd {
 
   WSTextItemAdd.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'],
-        strokeWidth = json['stroke_width'],
+        strokeWidth = json['stroke_width'].toDouble(),
         maxWidth = json['max_width'],
         maxHeight = json['max_height'],
         color = json['color'],
         content_text = json['content_text'],
-        offset_dx = json['offset_dx'],
-        offset_dy = json['offset_dy'];
+        offset_dx = json['offset_dx'].toDouble(),
+        offset_dy = json['offset_dy'].toDouble();
 
   Map toJson() {
     return {
@@ -317,13 +317,13 @@ class WSTextItemUpdate {
 
   WSTextItemUpdate.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'],
-        strokeWidth = json['stroke_width'],
+        strokeWidth = json['stroke_width'].toDouble(),
         maxWidth = json['max_width'],
         maxHeight = json['max_height'],
         color = json['color'],
         content_text = json['content_text'],
-        offset_dx = json['offset_dx'],
-        offset_dy = json['offset_dy'];
+        offset_dx = json['offset_dx'].toDouble(),
+        offset_dy = json['offset_dy'].toDouble();
 
   Map toJson() {
     return {
@@ -354,13 +354,13 @@ class DecodeGetTextItem {
 
   DecodeGetTextItem.fromJson(Map<String, dynamic> json)
       : uuid = json['id'],
-        strokeWidth = json['stroke_width'],
+        strokeWidth = json['stroke_width'].toDouble(),
         maxHeight = json['max_height'],
         maxWidth = json['max_width'],
         color = json['color'],
         contentText = json['content_text'],
-        offset_dx = json['offset_dx'],
-        offset_dy = json['offset_dy'];
+        offset_dx = json['offset_dx'].toDouble(),
+        offset_dy = json['offset_dy'].toDouble();
 }
 
 class DecodeGetTextItemList{

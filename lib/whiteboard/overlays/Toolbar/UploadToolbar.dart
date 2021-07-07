@@ -73,12 +73,11 @@ class _UploadToolbarState extends State<UploadToolbar> {
                           uuid.v4(),
                           UploadType.Image,
                           result.toUint8List(),
-                          widget.offset +
                               new Offset(
                                   (ScreenUtils.getScreenWidth(context) / 2) -
                                       (image.width / 2),
                                   (ScreenUtils.getScreenHeight(context) / 2) -
-                                      (image.height / 2)),
+                                      (image.height / 2) ) - widget.offset,
                           image);
                       widget.uploads.add(upload);
                       String data = jsonEncode(WSUploadAdd(
@@ -88,9 +87,10 @@ class _UploadToolbarState extends State<UploadToolbar> {
                           upload.offset.dy,
                           // List.generate(10, (index) => 0)
                           upload.uint8List.toList()));
-                      if (widget.websocketConnection != null)
-                        widget.websocketConnection!.channel
-                            .add("upload-add#" + data);
+                      if (widget.websocketConnection != null) {
+                        widget.websocketConnection!
+                            .sendDataToChannel("upload-add#", data);
+                      }
                       widget.onSaveOfflineWhiteboard();
                     });
                   });
@@ -106,14 +106,14 @@ class _UploadToolbarState extends State<UploadToolbar> {
                     context,
                     MaterialPageRoute(builder: (context) => PDFImport()),
                   ) as ImportedPDF;
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text("Trying to import your PDF ...")));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Trying to import your PDF ...")));
                   for (int i = 0; i < result.images.length; i++) {
-                    Offset offset = widget.offset +
+                    Offset offset =
                         new Offset(
                             (ScreenUtils.getScreenWidth(context) / 2) -
                                 (result.images[i].width / 2),
-                            (result.images[i].height + result.spacing) * i);
+                            (result.images[i].height + result.spacing) * i) - widget.offset;
                     Upload upload = new Upload(uuid.v4(), UploadType.PDF,
                         result.imageData[i], offset, result.images[i]);
                     widget.uploads.add(upload);
@@ -125,8 +125,8 @@ class _UploadToolbarState extends State<UploadToolbar> {
                         // List.generate(10, (index) => 0)
                         upload.uint8List.toList()));
                     if (widget.websocketConnection != null)
-                      widget.websocketConnection!.channel
-                          .add("upload-add#" + data);
+                      widget.websocketConnection!
+                          .sendDataToChannel("upload-add#", data);
                     widget.onSaveOfflineWhiteboard();
                   }
                 },

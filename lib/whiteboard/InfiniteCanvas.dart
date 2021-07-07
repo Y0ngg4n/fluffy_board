@@ -515,8 +515,9 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         newScribble.color.toHex(),
         newScribble.points,
         newScribble.paintingStyle.index));
-    if (widget.websocketConnection != null)
-      widget.websocketConnection!.channel.add("scribble-add#" + data);
+    if (widget.websocketConnection != null){
+      widget.websocketConnection!.sendDataToChannel("scribble-add#", data);
+    }
   }
 
   sendScribbleUpdate(Scribble newScribble) {
@@ -532,15 +533,18 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
       newScribble.topExtremity,
       newScribble.bottomExtremity,
     ));
-    if (widget.websocketConnection != null)
-      widget.websocketConnection!.channel.add("scribble-update#" + data);
+    if (widget.websocketConnection != null){
+      widget.websocketConnection!.sendDataToChannel("scribble-update#", data);
+    }
   }
 
   sendScribbleDelete(Scribble deleteScribble) {
     String data = jsonEncode(WSScribbleDelete(
       deleteScribble.uuid,
     ));
-    widget.websocketConnection!.channel.add("scribble-delete#" + data);
+    if(widget.websocketConnection != null){
+      widget.websocketConnection!.sendDataToChannel("scribble-delete#", data);
+    }
   }
 
   sendUploadUpdate(Upload newUpload) {
@@ -550,7 +554,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
       newUpload.offset.dy,
     ));
     if (widget.websocketConnection != null)
-      widget.websocketConnection!.channel.add("upload-update#" + data);
+      widget.websocketConnection!.sendDataToChannel("upload-update#", data);
   }
 
   sendCreateTextItem(TextItem textItem) {
@@ -563,8 +567,9 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         textItem.text,
         textItem.offset.dx,
         textItem.offset.dy));
-    if (widget.websocketConnection != null)
-      widget.websocketConnection!.channel.add("textitem-add#" + data);
+    if (widget.websocketConnection != null){
+      widget.websocketConnection!.sendDataToChannel("textitem-add#", data);
+    }
   }
 
   sendUpdateTextItem(TextItem textItem) {
@@ -577,7 +582,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         textItem.text,
         textItem.offset.dx,
         textItem.offset.dy));
-    if (widget.websocketConnection != null)
-      widget.websocketConnection!.channel.add("textitem-update#" + data);
+    if (widget.websocketConnection != null){
+      widget.websocketConnection!.sendDataToChannel("textitem-update#", data);
+    }
   }
 }

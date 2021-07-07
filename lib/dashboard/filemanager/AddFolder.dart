@@ -157,7 +157,7 @@ class _AddFolderFormState extends State<AddFolderForm> {
         await storage.ready;
         widget.directories.list.add(new Directory(
             uuid.v4(),
-            storage.getItem('id'),
+            storage.getItem('id') ?? "",
             widget.parent,
             nameController.text,
             DateTime.now().millisecond));

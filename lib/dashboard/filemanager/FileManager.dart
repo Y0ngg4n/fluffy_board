@@ -996,7 +996,7 @@ class _FileManagerState extends State<FileManager> {
       List<OfflineWhiteboard> offlineWhiteboards = List.empty(growable: true);
       for (String id in offlineWhiteboardIds) {
         Map<String, dynamic>? json =
-            fileManagerStorage.getItem("offline_whiteboard-" + id);
+            fileManagerStorage.getItem("offline_whiteboard-" + id) ?? [];
         if (json != null) {
           OfflineWhiteboard offlineWhiteboard =
               OfflineWhiteboard.fromJson(json);
@@ -1012,8 +1012,12 @@ class _FileManagerState extends State<FileManager> {
   }
 
   Directories _getOfflineDirectories() {
-    Directories directories =
-        Directories.fromOfflineJson(fileManagerStorage.getItem("directories"));
+    Directories directories = new Directories([]);
+    try{
+        directories = Directories.fromOfflineJson(fileManagerStorage.getItem("directories"));
+    }catch(e){
+      directories = new Directories([]);
+    }
     List<Directory> removeList = [];
     for (Directory dir in directories.list) {
       if ((currentDirectory.isEmpty &&

@@ -103,7 +103,7 @@ class _TextItemSettingsState extends State<TextItemSettings> {
         textItem.offset.dx,
         textItem.offset.dy));
     if (widget.websocketConnection != null)
-    widget.websocketConnection!.channel.add("textitem-update#" + data);
+      widget.websocketConnection!.sendDataToChannel("textitem-update#" , data);
   }
 
   sendTextItemDelete(TextItem newTextItem) {
@@ -111,6 +111,6 @@ class _TextItemSettingsState extends State<TextItemSettings> {
       newTextItem.uuid,
     ));
     if (widget.websocketConnection != null)
-    widget.websocketConnection!.channel.add("text-item-delete#" + data);
+      widget.websocketConnection!.sendDataToChannel("text-item-delete#" , data);
   }
 }
