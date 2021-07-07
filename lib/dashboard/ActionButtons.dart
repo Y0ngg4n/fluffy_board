@@ -117,7 +117,7 @@ class _ActionButtonsState extends State<ActionButtons> {
 
   _importWhiteboard() async {
     FilePickerCross result = await FilePickerCross.importFromStorage(
-        type: FileTypeCross.any, fileExtension: 'json');
+        type: FileTypeCross.custom, fileExtension: 'json');
     await fileManagerStorage.ready;
     await fileManagerStorageIndex.ready;
     String json = new String.fromCharCodes(result.toUint8List());
