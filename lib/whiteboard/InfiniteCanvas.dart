@@ -367,7 +367,6 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                             selectedMultiScribblesOffsets[scribble]![i] + (newOffset - multiSelectMoveOffset)));
                       }
                       scribble.points = newPoints;
-                      sendScribbleUpdate(scribble);
                     }
                     widget.onScribblesChange(widget.scribbles);
                   }
@@ -425,15 +424,21 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 widget.toolbarOptions.settingsSelected ==
                     SettingsSelected.none) {
               for (Scribble scribble in widget.scribbles) {
-                for (DrawPoint drawPoint in scribble.points) {
-                  if (ScreenUtils.inRect(
-                      Rect.fromPoints(
-                          multiSelectStartPosition, multiSelectStopPosition),
-                      drawPoint)) {
-                    selectedMultiScribbles.add(scribble);
-                    selectedMultiScribblesOffsets[scribble] = scribble.points.map((e) => new DrawPoint(e.dx, e.dy)).toList();
-                    continue;
+                if(multiSelect && !multiSelectMove) {
+                  for (DrawPoint drawPoint in scribble.points) {
+                    if (ScreenUtils.inRect(
+                        Rect.fromPoints(
+                            multiSelectStartPosition, multiSelectStopPosition),
+                        drawPoint)) {
+                      selectedMultiScribbles.add(scribble);
+                      selectedMultiScribblesOffsets[scribble] =
+                          scribble.points.map((e) => new DrawPoint(e.dx, e.dy))
+                              .toList();
+                      continue;
+                    }
                   }
+                }if(multiSelectMove){
+                  sendScribbleUpdate(scribble);
                 }
               }
             }
