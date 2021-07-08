@@ -2,8 +2,9 @@ import 'dart:convert';
 
 import 'package:fluffy_board/dashboard/filemanager/AddFolder.dart';
 import 'package:fluffy_board/dashboard/filemanager/AddOfflineWhiteboard.dart';
+import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui';
+import 'dart:ui' as ui;
 import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -122,15 +123,14 @@ class _ActionButtonsState extends State<ActionButtons> {
     await fileManagerStorageIndex.ready;
     String json = new String.fromCharCodes(result.toUint8List());
     OfflineWhiteboard offlineWhiteboard =
-        OfflineWhiteboard.fromJson(jsonDecode(json));
+        await OfflineWhiteboard.fromJson(jsonDecode(json));
     fileManagerStorage.setItem("offline_whiteboard-" + offlineWhiteboard.uuid,
         offlineWhiteboard.toJSONEncodable());
     Set<String> offlineWhiteboardIds = Set.of([]);
     try {
       offlineWhiteboardIds = Set.of(
           jsonDecode(fileManagerStorageIndex.getItem("indexes"))
-                  .cast<String>() ??
-              []);
+                  .cast<String>() ?? []);
     } catch (ignore) {
       offlineWhiteboardIds = Set.of([]);
     }

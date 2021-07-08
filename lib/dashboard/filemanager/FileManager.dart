@@ -125,19 +125,21 @@ class OfflineWhiteboard {
     return m;
   }
 
-  OfflineWhiteboard.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'],
-        directory = json['directory'],
-        name = json['name'],
-        uploads = json['uploads'] != null
-            ? Uploads.fromJson(json['uploads'])
+  static Future<OfflineWhiteboard> fromJson(Map<String, dynamic> json) async
+  {
+    return new OfflineWhiteboard(json['uuid'],
+        json['directory'], json['name'], json['uploads'] != null
+            ? await Uploads.fromJson(json['uploads'])
             : new Uploads([]),
-        texts = json['texts'] != null
+        json['texts'] != null
             ? TextItems.fromJson(json['texts'])
             : new TextItems([]),
-        scribbles = json['scribbles'] != null
+        json['scribbles'] != null
             ? Scribbles.fromJson(json['scribbles'])
-            : new Scribbles([]);
+            : new Scribbles([]));
+  }
+
+
 
   OfflineWhiteboard(this.uuid, this.directory, this.name, this.uploads,
       this.texts, this.scribbles);
@@ -146,10 +148,12 @@ class OfflineWhiteboard {
 class OfflineWhiteboards {
   List<OfflineWhiteboard> list = [];
 
-  OfflineWhiteboards.fromJson(List<dynamic> json) {
+  static Future<OfflineWhiteboards> fromJson(List<dynamic> json) async{
+    OfflineWhiteboards offlineWhiteboards = new OfflineWhiteboards([]);
     for (dynamic entry in json) {
-      list.add(OfflineWhiteboard.fromJson(entry));
+      offlineWhiteboards.list.add(await OfflineWhiteboard.fromJson(entry));
     }
+    return offlineWhiteboards;
   }
 
   toJSONEncodable() {
@@ -952,7 +956,6 @@ class _FileManagerState extends State<FileManager> {
             }));
         if (response.statusCode == 200) {
           removeOfflineDirectories.add(offlineDirectory);
-          print("Removeeee");
         }
       }
     }
@@ -993,29 +996,36 @@ class _FileManagerState extends State<FileManager> {
       } catch (e) {
         this.offlineWhiteboardIds = Set.of([]);
       }
-      List<OfflineWhiteboard> offlineWhiteboards = List.empty(growable: true);
-      for (String id in offlineWhiteboardIds) {
-        Map<String, dynamic>? json =
-            fileManagerStorage.getItem("offline_whiteboard-" + id) ?? [];
-        if (json != null) {
-          OfflineWhiteboard offlineWhiteboard =
-              OfflineWhiteboard.fromJson(json);
-          if ((offlineWhiteboard.directory.isEmpty &&
-                  currentDirectory.isEmpty) ||
-              offlineWhiteboard.directory == currentDirectory) {
-            offlineWhiteboards.add(offlineWhiteboard);
-          }
+    });
+    List<OfflineWhiteboard> offlineWhiteboards = List.empty(growable: true);
+    for (String id in offlineWhiteboardIds) {
+      Map<String, dynamic>? json =
+          fileManagerStorage.getItem("offline_whiteboard-" + id) ?? [];
+      if (json != null) {
+        OfflineWhiteboard offlineWhiteboard = await OfflineWhiteboard.fromJson(json);
+        for (Upload upload in offlineWhiteboard.uploads.list) {
+          final ui.Codec codec = await PaintingBinding.instance!
+              .instantiateImageCodec(upload.uint8List);
+          final ui.FrameInfo frameInfo = await codec.getNextFrame();
+          upload.image = frameInfo.image;
+        }
+        if ((offlineWhiteboard.directory.isEmpty && currentDirectory.isEmpty) ||
+            offlineWhiteboard.directory == currentDirectory) {
+          offlineWhiteboards.add(offlineWhiteboard);
         }
       }
+    }
+    setState(() {
       this.offlineWhiteboards = new OfflineWhiteboards(offlineWhiteboards);
     });
   }
 
   Directories _getOfflineDirectories() {
     Directories directories = new Directories([]);
-    try{
-        directories = Directories.fromOfflineJson(fileManagerStorage.getItem("directories"));
-    }catch(e){
+    try {
+      directories = Directories.fromOfflineJson(
+          fileManagerStorage.getItem("directories"));
+    } catch (e) {
       directories = new Directories([]);
     }
     List<Directory> removeList = [];

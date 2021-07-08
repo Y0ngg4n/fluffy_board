@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
+import 'package:flutter/material.dart';
 
 import 'overlays/Toolbar/FigureToolbar.dart';
 import 'package:uuid/uuid.dart';
@@ -102,7 +103,8 @@ class DrawPoint extends ui.Offset {
 
   DrawPoint.of(ui.Offset offset) : super(offset.dx, offset.dy);
 
-  DrawPoint.fromJson(Map<String, dynamic> json) : super(json['dx'].toDouble(), json['dy'].toDouble());
+  DrawPoint.fromJson(Map<String, dynamic> json)
+      : super(json['dx'].toDouble(), json['dy'].toDouble());
 
   Map toJson() {
     return {
@@ -121,19 +123,25 @@ class Uploads {
   List<Upload> list = [];
 
   toJSONEncodable() {
+    print(list.map((item) {
+      return item.toJson();
+    }).toList());
     return list.map((item) {
       return item.toJson();
     }).toList();
   }
 
-  Uploads.fromJson(List<dynamic> json) {
+  static Future<Uploads> fromJson(List<dynamic> json) async {
+    Uploads uploads = new Uploads([]);
     for (dynamic entry in json) {
       Upload upload = Upload.fromJson(entry.cast<String, dynamic>());
-      ui.decodeImageFromList(upload.uint8List, (result) {
-        upload.image = result;
-        list.add(upload);
-      });
+      final ui.Codec codec = await PaintingBinding.instance!
+          .instantiateImageCodec(upload.uint8List);
+      final ui.FrameInfo frameInfo = await codec.getNextFrame();
+      upload.image = frameInfo.image;
+      uploads.list.add(upload);
     }
+    return uploads;
   }
 
   Uploads(this.list);
@@ -151,8 +159,7 @@ class Upload {
       : uuid = json['uuid'],
         uploadType = UploadType.values[json['upload_type']],
         offset = new ui.Offset(json['offset_dx'], json['offset_dy']),
-        uint8List =
-            Uint8List.fromList(json['uint8list'].cast<int>()),
+        uint8List = Uint8List.fromList(json['uint8list'].cast<int>()),
         image = null;
 
   Map toJson() {
