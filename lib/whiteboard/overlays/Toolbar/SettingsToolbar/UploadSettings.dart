@@ -79,7 +79,7 @@ class _UploadSettingsState extends State<UploadSettings> {
                       uploadSize = 1;
                     });
                   },
-                  min: 0.01,
+                  min: 0.1,
                   max: 2,
                 ),
               ),
