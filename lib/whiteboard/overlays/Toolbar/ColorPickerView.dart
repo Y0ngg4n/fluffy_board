@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketSend.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/DrawOptions.dart';
@@ -74,10 +75,10 @@ class _ColorPickerViewState extends State<ColorPickerView> {
                     if (drawOptions == null) {
                       if (widget.selectedSettingsScribble != null) {
                         widget.selectedSettingsScribble!.color = color;
-                        sendScribbleUpdate(widget.selectedSettingsScribble!);
+                        WebsocketSend.sendScribbleUpdate(widget.selectedSettingsScribble!, widget.websocketConnection);
                       } else if (widget.selectedTextItemScribble != null) {
                         widget.selectedTextItemScribble!.color = color;
-                        sendUpdateTextItem(widget.selectedTextItemScribble!);
+                        WebsocketSend.sendUpdateTextItem(widget.selectedTextItemScribble!, widget.websocketConnection);
                       }
                     } else {
                       drawOptions.colorPresets[drawOptions.currentColor] =
@@ -151,39 +152,6 @@ class _ColorPickerViewState extends State<ColorPickerView> {
         return widget.toolbarOptions.textOptions;
       default:
         return widget.toolbarOptions.pencilOptions;
-    }
-  }
-
-  sendScribbleUpdate(Scribble newScribble) {
-    String data = jsonEncode(WSScribbleUpdate(
-      newScribble.uuid,
-      newScribble.strokeWidth,
-      newScribble.strokeCap.index,
-      newScribble.color.toHex(),
-      newScribble.points,
-      newScribble.paintingStyle.index,
-      newScribble.leftExtremity,
-      newScribble.rightExtremity,
-      newScribble.topExtremity,
-      newScribble.bottomExtremity,
-    ));
-    if (widget.websocketConnection != null){
-      widget.websocketConnection!.sendDataToChannel("scribble-update#", data);
-    }
-  }
-
-  sendUpdateTextItem(TextItem textItem) {
-    String data = jsonEncode(WSTextItemUpdate(
-        textItem.uuid,
-        textItem.strokeWidth,
-        textItem.maxWidth,
-        textItem.maxHeight,
-        textItem.color.toHex(),
-        textItem.text,
-        textItem.offset.dx,
-        textItem.offset.dy));
-    if (widget.websocketConnection != null){
-      widget.websocketConnection!.sendDataToChannel("textitem-update#", data);
     }
   }
 }

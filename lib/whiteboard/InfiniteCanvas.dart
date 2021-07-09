@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketSend.dart';
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
@@ -105,7 +106,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 widget.toolbarOptions.selectedTool == SelectedTool.figure) {
               Scribble newScribble = _getScribble(newOffset);
               widget.scribbles.add(newScribble);
-              sendCreateScribble(newScribble);
+              WebsocketSend.sendCreateScribble(newScribble, widget.websocketConnection);
               widget.onScribblesChange(widget.scribbles);
               multiSelect = false;
             } else if (widget.toolbarOptions.selectedTool ==
@@ -121,7 +122,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   "",
                   newOffset);
               widget.texts.add(textItem);
-              sendCreateTextItem(textItem);
+              WebsocketSend.sendCreateTextItem(textItem, widget.websocketConnection);
               multiSelect = false;
             } else if (widget.toolbarOptions.selectedTool ==
                 SelectedTool.settings) {
@@ -284,7 +285,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                     }
                   }
                   if (removeIndex != -1) {
-                    sendScribbleDelete(currentScribble);
+                    WebsocketSend.sendScribbleDelete(currentScribble, widget.websocketConnection);
                     widget.scribbles.removeAt(removeIndex);
                     break;
                   }
@@ -310,7 +311,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                       lastScribble.points,
                       widget.toolbarOptions.straightLineOptions.strokeWidth +
                           10);
-                this.sendScribbleUpdate(lastScribble);
+                WebsocketSend.sendScribbleUpdate(lastScribble, widget.websocketConnection);
                 break;
               case SelectedTool.figure:
                 Scribble lastScribble = widget.scribbles.last;
@@ -319,7 +320,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   lastScribble.points.add(newDrawPoint);
                 else
                   lastScribble.points.last = newDrawPoint;
-                this.sendScribbleUpdate(lastScribble);
+                WebsocketSend.sendScribbleUpdate(lastScribble, widget.websocketConnection);
                 break;
               case SelectedTool.settings:
                 if (widget.toolbarOptions.settingsSelected ==
@@ -333,8 +334,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   }
                   widget.toolbarOptions.settingsSelectedScribble!.points =
                       newPoints;
-                  sendScribbleUpdate(
-                      widget.toolbarOptions.settingsSelectedScribble!);
+                  WebsocketSend.sendScribbleUpdate(widget.toolbarOptions.settingsSelectedScribble!, widget.websocketConnection);
                 } else if (widget.toolbarOptions.settingsSelected ==
                         SettingsSelected.image &&
                     widget.toolbarOptions.settingsSelectedUpload != null &&
@@ -342,8 +342,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   widget.toolbarOptions.settingsSelectedUpload!.offset =
                       (onSettingsMoveUploadOffset! +
                           (newOffset - onSettingsMove));
-                  sendUploadUpdate(
-                      widget.toolbarOptions.settingsSelectedUpload!);
+                  WebsocketSend.sendUploadUpdate(widget.toolbarOptions.settingsSelectedUpload!, widget.websocketConnection);
                 } else if (widget.toolbarOptions.settingsSelected ==
                         SettingsSelected.text &&
                     widget.toolbarOptions.settingsSelectedTextItem != null &&
@@ -351,8 +350,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   widget.toolbarOptions.settingsSelectedTextItem!.offset =
                       (onSettingsMoveTextItemOffset! +
                           (newOffset - onSettingsMove));
-                  sendUpdateTextItem(
-                      widget.toolbarOptions.settingsSelectedTextItem!);
+                  WebsocketSend.sendUpdateTextItem(widget.toolbarOptions.settingsSelectedTextItem!, widget.websocketConnection);
                 } else if (widget.toolbarOptions.settingsSelected ==
                     SettingsSelected.none) {}
                 {
@@ -377,7 +375,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 Scribble newScribble = widget.scribbles.last;
                 DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
                 newScribble.points.add(newDrawPoint);
-                this.sendScribbleUpdate(newScribble);
+                WebsocketSend.sendScribbleUpdate(newScribble, widget.websocketConnection);
             }
           });
         },
@@ -417,7 +415,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 }
               }
               widget.scribbles.last = newScribble;
-              sendScribbleUpdate(newScribble);
+              WebsocketSend.sendScribbleUpdate(newScribble, widget.websocketConnection);
               widget.onSaveOfflineWhiteboard();
             } else if (widget.toolbarOptions.selectedTool ==
                     SelectedTool.settings &&
@@ -438,7 +436,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                     }
                   }
                 }if(multiSelectMove){
-                  sendScribbleUpdate(scribble);
+                  WebsocketSend.sendScribbleUpdate(scribble, widget.websocketConnection);
                 }
               }
             }
@@ -574,86 +572,5 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
     // path.lineTo(point_x_3, point_y_3);
     // path.lineTo(point_x_1, point_y_1);
     // path.lineTo(point_x_1, point_y_1);
-  }
-
-  sendCreateScribble(Scribble newScribble) {
-    String data = jsonEncode(WSScribbleAdd(
-        newScribble.uuid,
-        newScribble.selectedFigureTypeToolbar.index,
-        newScribble.strokeWidth,
-        newScribble.strokeCap.index,
-        newScribble.color.toHex(),
-        newScribble.points,
-        newScribble.paintingStyle.index));
-    if (widget.websocketConnection != null) {
-      widget.websocketConnection!.sendDataToChannel("scribble-add#", data);
-    }
-  }
-
-  sendScribbleUpdate(Scribble newScribble) {
-    String data = jsonEncode(WSScribbleUpdate(
-      newScribble.uuid,
-      newScribble.strokeWidth,
-      newScribble.strokeCap.index,
-      newScribble.color.toHex(),
-      newScribble.points,
-      newScribble.paintingStyle.index,
-      newScribble.leftExtremity,
-      newScribble.rightExtremity,
-      newScribble.topExtremity,
-      newScribble.bottomExtremity,
-    ));
-    if (widget.websocketConnection != null) {
-      widget.websocketConnection!.sendDataToChannel("scribble-update#", data);
-    }
-  }
-
-  sendScribbleDelete(Scribble deleteScribble) {
-    String data = jsonEncode(WSScribbleDelete(
-      deleteScribble.uuid,
-    ));
-    if (widget.websocketConnection != null) {
-      widget.websocketConnection!.sendDataToChannel("scribble-delete#", data);
-    }
-  }
-
-  sendUploadUpdate(Upload newUpload) {
-    String data = jsonEncode(WSUploadUpdate(
-      newUpload.uuid,
-      newUpload.offset.dx,
-      newUpload.offset.dy,
-    ));
-    if (widget.websocketConnection != null)
-      widget.websocketConnection!.sendDataToChannel("upload-update#", data);
-  }
-
-  sendCreateTextItem(TextItem textItem) {
-    String data = jsonEncode(WSTextItemAdd(
-        textItem.uuid,
-        textItem.strokeWidth,
-        textItem.maxWidth,
-        textItem.maxHeight,
-        textItem.color.toHex(),
-        textItem.text,
-        textItem.offset.dx,
-        textItem.offset.dy));
-    if (widget.websocketConnection != null) {
-      widget.websocketConnection!.sendDataToChannel("textitem-add#", data);
-    }
-  }
-
-  sendUpdateTextItem(TextItem textItem) {
-    String data = jsonEncode(WSTextItemUpdate(
-        textItem.uuid,
-        textItem.strokeWidth,
-        textItem.maxWidth,
-        textItem.maxHeight,
-        textItem.color.toHex(),
-        textItem.text,
-        textItem.offset.dx,
-        textItem.offset.dy));
-    if (widget.websocketConnection != null) {
-      widget.websocketConnection!.sendDataToChannel("textitem-update#", data);
-    }
   }
 }

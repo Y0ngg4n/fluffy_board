@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketSend.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -55,7 +56,7 @@ class _TextItemSettingsState extends State<TextItemSettings> {
                     setState(() {
                       widget.selectedTextItem!.strokeWidth = value;
                       widget.onTextItemsChange(widget.texts);
-                      sendUpdateTextItem(widget.selectedTextItem!);
+                      WebsocketSend.sendUpdateTextItem(widget.selectedTextItem!, widget.websocketConnection);
                     });
                   },
                   min: 10,
@@ -77,7 +78,7 @@ class _TextItemSettingsState extends State<TextItemSettings> {
                   onPressed: () {
                     setState(() {
                       widget.texts.remove(widget.selectedTextItem!);
-                      sendTextItemDelete(widget.selectedTextItem!);
+                      WebsocketSend.sendTextItemDelete(widget.selectedTextItem!, widget.websocketConnection);
                       widget.onTextItemsChange(widget.texts);
                     });
                   },
@@ -90,27 +91,5 @@ class _TextItemSettingsState extends State<TextItemSettings> {
         ),
       ),
     );
-  }
-
-  sendUpdateTextItem(TextItem textItem) {
-    String data = jsonEncode(WSTextItemUpdate(
-        textItem.uuid,
-        textItem.strokeWidth,
-        textItem.maxWidth,
-        textItem.maxHeight,
-        textItem.color.toHex(),
-        textItem.text,
-        textItem.offset.dx,
-        textItem.offset.dy));
-    if (widget.websocketConnection != null)
-      widget.websocketConnection!.sendDataToChannel("textitem-update#" , data);
-  }
-
-  sendTextItemDelete(TextItem newTextItem) {
-    String data = jsonEncode(WSScribbleDelete(
-      newTextItem.uuid,
-    ));
-    if (widget.websocketConnection != null)
-      widget.websocketConnection!.sendDataToChannel("text-item-delete#" , data);
   }
 }

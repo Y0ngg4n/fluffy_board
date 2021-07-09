@@ -4,6 +4,7 @@ import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketSend.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/PDFImport.dart';
 import 'package:fluffy_board/whiteboard/overlays/Zoom.dart';
@@ -80,17 +81,7 @@ class _UploadToolbarState extends State<UploadToolbar> {
                                       (image.height / 2) ) - widget.offset,
                           image);
                       widget.uploads.add(upload);
-                      String data = jsonEncode(WSUploadAdd(
-                          upload.uuid,
-                          upload.uploadType.index,
-                          upload.offset.dx,
-                          upload.offset.dy,
-                          // List.generate(10, (index) => 0)
-                          upload.uint8List.toList()));
-                      if (widget.websocketConnection != null) {
-                        widget.websocketConnection!
-                            .sendDataToChannel("upload-add#", data);
-                      }
+                      WebsocketSend.sendUploadCreate(upload, widget.websocketConnection);
                       widget.onSaveOfflineWhiteboard();
                     });
                   });
@@ -117,16 +108,7 @@ class _UploadToolbarState extends State<UploadToolbar> {
                     Upload upload = new Upload(uuid.v4(), UploadType.PDF,
                         result.imageData[i], offset, result.images[i]);
                     widget.uploads.add(upload);
-                    String data = jsonEncode(WSUploadAdd(
-                        upload.uuid,
-                        upload.uploadType.index,
-                        upload.offset.dx,
-                        upload.offset.dy,
-                        // List.generate(10, (index) => 0)
-                        upload.uint8List.toList()));
-                    if (widget.websocketConnection != null)
-                      widget.websocketConnection!
-                          .sendDataToChannel("upload-add#", data);
+                    WebsocketSend.sendUploadCreate(upload, widget.websocketConnection);
                     widget.onSaveOfflineWhiteboard();
                   }
                 },

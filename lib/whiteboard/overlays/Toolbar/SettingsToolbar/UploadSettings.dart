@@ -4,10 +4,12 @@ import 'dart:typed_data';
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketSend.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'package:image/image.dart' as IMG;
+import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 import '../../../DrawPoint.dart';
 import '../../../WhiteboardView.dart';
@@ -37,6 +39,7 @@ class UploadSettings extends StatefulWidget {
 
 class _UploadSettingsState extends State<UploadSettings> {
   double uploadSize = 1;
+  double rotation = 0;
 
   @override
   @override
@@ -75,6 +78,7 @@ class _UploadSettingsState extends State<UploadSettings> {
                     widget.uploads[index] = widget.selectedUpload!;
                     widget.onUploadsChange(widget.uploads);
                     widget.onSaveOfflineWhiteboard();
+                    WebsocketSend.sendUploadImageDataUpdate(widget.selectedUpload!, widget.websocketConnection);
                     setState(() {
                       uploadSize = 1;
                     });
@@ -83,11 +87,46 @@ class _UploadSettingsState extends State<UploadSettings> {
                   max: 2,
                 ),
               ),
+              SleekCircularSlider(
+                appearance: CircularSliderAppearance(
+                    size: 50,
+                    startAngle: 270,
+                    angleRange: 360,
+                    infoProperties: InfoProperties(modifier: (double value) {
+                      final roundedValue = value.ceil().toInt().toString();
+                      return '$roundedValue °';
+                    })),
+                initialValue: rotation,
+                min: 0,
+                max: 360,
+                onChange: (value) {
+                  setState(() {
+                    rotation = value;
+                  });
+                },
+                onChangeEnd: (value) async {
+                  int index = widget.uploads.indexOf(widget.selectedUpload!);
+                  widget.selectedUpload!.uint8List =
+                      rotateImage(widget.selectedUpload!.uint8List, value);
+                  final ui.Codec codec = await PaintingBinding.instance!
+                      .instantiateImageCodec(widget.selectedUpload!.uint8List);
+                  final ui.FrameInfo frameInfo = await codec.getNextFrame();
+
+                  widget.selectedUpload!.image = frameInfo.image;
+                  widget.uploads[index] = widget.selectedUpload!;
+                  widget.onUploadsChange(widget.uploads);
+                  widget.onSaveOfflineWhiteboard();
+                  WebsocketSend.sendUploadImageDataUpdate(widget.selectedUpload!, widget.websocketConnection);
+                  setState(() {
+                    rotation = 0;
+                  });
+                },
+              ),
               OutlinedButton(
                   onPressed: () {
                     setState(() {
                       widget.uploads.remove(widget.selectedUpload!);
-                      sendUploadDelete(widget.selectedUpload!);
+                      WebsocketSend.sendUploadDelete(widget.selectedUpload!, widget.websocketConnection);
                       widget.onUploadsChange(widget.uploads);
                       widget.onSaveOfflineWhiteboard();
                     });
@@ -103,24 +142,20 @@ class _UploadSettingsState extends State<UploadSettings> {
     );
   }
 
-  sendUploadDelete(Upload newUpload) {
-    String data = jsonEncode(WSUploadDelete(
-      newUpload.uuid,
-    ));
-    if (widget.websocketConnection != null)
-      widget.websocketConnection!.sendDataToChannel("upload-delete#", data);
-  }
-
   Uint8List resizeImage(Uint8List data, double scaleFactor) {
     Uint8List resizedData = data;
     IMG.Image? img = IMG.decodeImage(data);
-    print(scaleFactor);
-    print(img!.width.toString());
-    print(img.height.toString());
-    print(img.height.toString() * scaleFactor.toInt());
-    IMG.Image resized = IMG.copyResize(img,
+    IMG.Image resized = IMG.copyResize(img!,
         width: (img.width * scaleFactor).toInt(),
         height: (img.height * scaleFactor).toInt());
+    resizedData = Uint8List.fromList(IMG.encodePng(resized));
+    return resizedData;
+  }
+
+  Uint8List rotateImage(Uint8List data, double rotateFactor) {
+    Uint8List resizedData = data;
+    IMG.Image? img = IMG.decodeImage(data);
+    IMG.Image resized = IMG.copyRotate(img!, rotateFactor);
     resizedData = Uint8List.fromList(IMG.encodePng(resized));
     return resizedData;
   }

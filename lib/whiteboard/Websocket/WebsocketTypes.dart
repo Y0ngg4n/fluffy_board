@@ -226,6 +226,24 @@ class WSUploadUpdate {
   WSUploadUpdate(this.uuid, this.offset_dx, this.offset_dy);
 }
 
+class WSUploadImageDataUpdate {
+  String uuid;
+  List<int> imageData;
+
+  WSUploadImageDataUpdate.fromJson(Map<String, dynamic> json)
+      : uuid = json['uuid'],
+        imageData = json['image_data'].cast<int>();
+
+  Map toJson() {
+    return {
+      'uuid': uuid,
+      'image_data': imageData,
+    };
+  }
+
+  WSUploadImageDataUpdate(this.uuid, this.imageData);
+}
+
 class WSUploadDelete {
   String uuid;
 

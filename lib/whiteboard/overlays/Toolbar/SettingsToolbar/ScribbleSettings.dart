@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketSend.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -54,7 +55,7 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
                   onChanged: (value) {
                     setState(() {
                       widget.selectedScribble!.strokeWidth = value;
-                      sendScribbleUpdate(widget.selectedScribble!);
+                      WebsocketSend.sendScribbleUpdate(widget.selectedScribble!, widget.websocketConnection);
                     });
                   },
                   min: 1,
@@ -76,7 +77,7 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
                   onPressed: () {
                     setState(() {
                       widget.scribbles.remove(widget.selectedScribble!);
-                      sendScribbleDelete(widget.selectedScribble!);
+                      WebsocketSend.sendScribbleDelete(widget.selectedScribble!, widget.websocketConnection);
                       widget.onScribblesChange(widget.scribbles);
                     });
                   },
@@ -89,30 +90,5 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
         ),
       ),
     );
-  }
-
-  sendScribbleUpdate(Scribble newScribble) {
-    String data = jsonEncode(WSScribbleUpdate(
-      newScribble.uuid,
-      newScribble.strokeWidth,
-      newScribble.strokeCap.index,
-      newScribble.color.toHex(),
-      newScribble.points,
-      newScribble.paintingStyle.index,
-      newScribble.leftExtremity,
-      newScribble.rightExtremity,
-      newScribble.topExtremity,
-      newScribble.bottomExtremity,
-    ));
-    if (widget.websocketConnection != null)
-      widget.websocketConnection!.sendDataToChannel("scribble-update#", data);
-  }
-
-  sendScribbleDelete(Scribble newScribble) {
-    String data = jsonEncode(WSScribbleDelete(
-      newScribble.uuid,
-    ));
-    if (widget.websocketConnection != null)
-      widget.websocketConnection!.sendDataToChannel("scribble-delete#", data);
   }
 }

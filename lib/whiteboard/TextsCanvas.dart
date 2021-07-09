@@ -6,6 +6,7 @@ import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'Websocket/WebsocketSend.dart';
 import 'Websocket/WebsocketTypes.dart';
 import 'overlays/Toolbar.dart' as Toolbar;
 
@@ -60,7 +61,7 @@ class _TextsCanvasState extends State<TextsCanvas> {
           minLines: 3,
           onChanged: (value) {
             textItem.text = value;
-            sendUpdateTextItem(textItem);
+            WebsocketSend.sendUpdateTextItem(textItem, widget.websocketConnection);
           },
           maxLines: null,
           keyboardType: TextInputType.multiline,
@@ -79,18 +80,5 @@ class _TextsCanvasState extends State<TextsCanvas> {
     );
   }
 
-  sendUpdateTextItem(TextItem textItem) {
-    String data = jsonEncode(WSTextItemUpdate(
-        textItem.uuid,
-        textItem.strokeWidth,
-        textItem.maxWidth,
-        textItem.maxHeight,
-        textItem.color.toHex(),
-        textItem.text,
-        textItem.offset.dx,
-        textItem.offset.dy));
-    if (widget.websocketConnection != null){
-      widget.websocketConnection!.sendDataToChannel("textitem-update#", data);
-    }
-  }
+
 }

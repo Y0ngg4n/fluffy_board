@@ -56,6 +56,7 @@ dev_dependencies:
   file_picker_cross: ^4.4.2 #NS
   printing: ^5.4.3 #NS
   pdf: ^3.4.2 #NS
+  sleek_circular_slider: ^2.0.1
   #Export:
   file_saver: ^0.0.8 #NS
   # Server Connection
