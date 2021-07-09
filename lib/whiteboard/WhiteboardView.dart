@@ -108,6 +108,18 @@ class _WhiteboardViewState extends State<WhiteboardView> {
               }
             });
           },
+          onUploadImageDataUpdate: (upload ) {
+            setState(() {
+              // Reverse Upload Search for better Performance
+              for (int i = uploads.length - 1; i >= 0; i--) {
+                if (uploads[i].uuid == upload.uuid) {
+                  uploads[i].uint8List = upload.uint8List;
+                  uploads[i].image = upload.image;
+                  break;
+                }
+              }
+            });
+          },
           onUploadDelete: (id) {
             setState(() {
               // Reverse Scribble Search for better Performance
@@ -134,7 +146,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                 }
               }
             });
-          });
+          }, );
       // WidgetsBinding.instance!
       //     .addPostFrameCallback((_) => _createToolbars(context));
     }

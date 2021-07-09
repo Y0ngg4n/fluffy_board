@@ -20,6 +20,7 @@ typedef OnScribbleDelete = Function(String);
 
 typedef OnUploadAdd = Function(Upload);
 typedef OnUploadUpdate = Function(Upload);
+typedef OnUploadImageDataUpdate = Function(Upload);
 typedef OnUploadDelete = Function(String);
 
 typedef OnTextItemAdd = Function(TextItem);
@@ -43,6 +44,7 @@ class WebsocketConnection {
 
   OnUploadAdd onUploadAdd;
   OnUploadUpdate onUploadUpdate;
+  OnUploadImageDataUpdate onUploadImageDataUpdate;
   OnUploadDelete onUploadDelete;
 
   OnTextItemAdd onTextItemAdd;
@@ -56,6 +58,7 @@ class WebsocketConnection {
     required this.onScribbleDelete,
     required this.onUploadAdd,
     required this.onUploadUpdate,
+    required this.onUploadImageDataUpdate,
     required this.onUploadDelete,
     required this.onTextItemAdd,
     required this.onTextItemUpdate,
@@ -69,6 +72,7 @@ class WebsocketConnection {
       required Function(String) onScribbleDelete,
       required Function(Upload) onUploadAdd,
       required Function(Upload) onUploadUpdate,
+      required Function(Upload) onUploadImageDataUpdate,
       required Function(String) onUploadDelete,
       required Function(TextItem) onTextItemAdd,
       required Function(TextItem) onTextItemUpdate}) {
@@ -81,6 +85,7 @@ class WebsocketConnection {
           onScribbleDelete: onScribbleDelete,
           onUploadAdd: onUploadAdd,
           onUploadUpdate: onUploadUpdate,
+          onUploadImageDataUpdate: onUploadImageDataUpdate,
           onUploadDelete: onUploadDelete,
           onTextItemAdd: onTextItemAdd,
           onTextItemUpdate: onTextItemUpdate);
@@ -158,6 +163,26 @@ class WebsocketConnection {
           UploadType.Image,
           Uint8List.fromList(List.empty()),
           new Offset(json.offset_dx, json.offset_dy),
+          null));
+    } else if (message.startsWith(r"upload-image-data-update#")) {
+      WSUploadImageDataUpdate json = WSUploadImageDataUpdate.fromJson(
+          jsonDecode(message.replaceFirst(r"upload-image-data-update#", ""))
+          as Map<String, dynamic>);
+      Uint8List uint8list = Uint8List.fromList(json.imageData);
+      ui.decodeImageFromList(uint8list, (image) {
+        Upload newUpload = Upload(
+            json.uuid,
+            UploadType.Image,
+            uint8list,
+            Offset.zero,
+            image);
+        onUploadImageDataUpdate(newUpload);
+      });
+      onUploadImageDataUpdate(new Upload(
+          json.uuid,
+          UploadType.Image,
+          Uint8List.fromList(List.empty()),
+          Offset.zero,
           null));
     } else if (message.startsWith(r"upload-delete#")) {
       WSUploadDelete json = WSUploadDelete.fromJson(
