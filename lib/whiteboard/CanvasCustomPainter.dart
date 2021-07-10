@@ -6,6 +6,7 @@ import 'package:fluffy_board/whiteboard/overlays/Toolbar/BackgroundToolbar.dart'
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:vector_math/vector_math.dart' as vectormath;
 
 import 'overlays/Toolbar.dart' as Toolbar;
 
@@ -126,9 +127,14 @@ class CanvasCustomPainter extends CustomPainter {
           screenSize.dx,
           screenSize.dy,
           scale)) continue;
-
+      canvas.save();
       Offset newOffset = textItem.offset + offset;
+      Offset middlePoint = new Offset(((newOffset.dx + textPainter.width) - newOffset.dx) / 2,
+          ((newOffset.dy + textPainter.height) - newOffset.dx) / 2);
+      canvas.translate(middlePoint.dx, middlePoint.dy);
+      canvas.rotate(vectormath.radians(textItem.rotation));
       textPainter.paint(canvas, newOffset);
+      canvas.restore();
     }
 
     //a single line is defined as a series of points followed by a null at the end

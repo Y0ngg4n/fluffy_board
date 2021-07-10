@@ -121,7 +121,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   widget.toolbarOptions.textOptions.colorPresets[
                       widget.toolbarOptions.textOptions.currentColor],
                   "",
-                  newOffset);
+                  newOffset,
+                  0);
               widget.texts.add(textItem);
               WebsocketSend.sendCreateTextItem(
                   textItem, widget.websocketConnection);
@@ -219,14 +220,12 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                       Rect.fromPoints(
                           multiSelectStartPosition, multiSelectStopPosition),
                       newOffset)) {
-                widget.toolbarOptions.settingsSelected =
-                    SettingsSelected.none;
+                widget.toolbarOptions.settingsSelected = SettingsSelected.none;
                 widget.onChangedToolbarOptions(widget.toolbarOptions);
                 multiSelectMoveOffset = newOffset;
                 multiSelectMove = true;
               } else {
-                widget.toolbarOptions.settingsSelected =
-                    SettingsSelected.none;
+                widget.toolbarOptions.settingsSelected = SettingsSelected.none;
                 widget.onChangedToolbarOptions(widget.toolbarOptions);
                 multiSelect = true;
                 multiSelectMove = false;

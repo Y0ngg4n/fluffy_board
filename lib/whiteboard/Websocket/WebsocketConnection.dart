@@ -95,23 +95,25 @@ class WebsocketConnection {
     return _singleton!;
   }
 
-  void initWebSocketConnection(String whiteboard, String auth_token) async{
-    websocketManager = new WebsocketManager((streamData) => messageHandler(streamData));
+  void initWebSocketConnection(String whiteboard, String auth_token) async {
+    websocketManager =
+        new WebsocketManager((streamData) => messageHandler(streamData));
     websocketManager.initializeConnection(whiteboard, auth_token);
     print("conecting...");
   }
+
   dispose() {
     websocketManager.disconnect = true;
     websocketManager.startDisconnect();
     _singleton = null;
   }
 
-  messageHandler(dynamic streamData){
+  messageHandler(dynamic streamData) {
     String message = streamData;
     if (message.startsWith(r"scribble-add#")) {
       WSScribbleAdd json = WSScribbleAdd.fromJson(
           jsonDecode(message.replaceFirst(r"scribble-add#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       Scribble newScribble = Scribble(
           json.uuid,
           json.strokeWidth,
@@ -124,7 +126,7 @@ class WebsocketConnection {
     } else if (message.startsWith(r"scribble-update#")) {
       WSScribbleUpdate json = WSScribbleUpdate.fromJson(
           jsonDecode(message.replaceFirst(r"scribble-update#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       Scribble newScribble = Scribble(
           json.uuid,
           json.strokeWidth,
@@ -137,27 +139,23 @@ class WebsocketConnection {
     } else if (message.startsWith(r"scribble-delete#")) {
       WSScribbleDelete json = WSScribbleDelete.fromJson(
           jsonDecode(message.replaceFirst(r"scribble-delete#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       onScribbleDelete(json.uuid);
     } else if (message.startsWith(r"upload-add#")) {
       print("Upload add");
       WSUploadAdd json = WSUploadAdd.fromJson(
           jsonDecode(message.replaceFirst(r"upload-add#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       Uint8List uint8list = Uint8List.fromList(json.imageData);
       ui.decodeImageFromList(uint8list, (image) {
-        Upload newUpload = Upload(
-            json.uuid,
-            UploadType.values[json.uploadType],
-            uint8list,
-            new Offset(json.offset_dx, json.offset_dy),
-            image);
+        Upload newUpload = Upload(json.uuid, UploadType.values[json.uploadType],
+            uint8list, new Offset(json.offset_dx, json.offset_dy), image);
         onUploadAdd(newUpload);
       });
     } else if (message.startsWith(r"upload-update#")) {
       WSUploadUpdate json = WSUploadUpdate.fromJson(
           jsonDecode(message.replaceFirst(r"upload-update#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       onUploadUpdate(new Upload(
           json.uuid,
           UploadType.Image,
@@ -167,32 +165,24 @@ class WebsocketConnection {
     } else if (message.startsWith(r"upload-image-data-update#")) {
       WSUploadImageDataUpdate json = WSUploadImageDataUpdate.fromJson(
           jsonDecode(message.replaceFirst(r"upload-image-data-update#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       Uint8List uint8list = Uint8List.fromList(json.imageData);
       ui.decodeImageFromList(uint8list, (image) {
-        Upload newUpload = Upload(
-            json.uuid,
-            UploadType.Image,
-            uint8list,
-            Offset.zero,
-            image);
+        Upload newUpload =
+            Upload(json.uuid, UploadType.Image, uint8list, Offset.zero, image);
         onUploadImageDataUpdate(newUpload);
       });
-      onUploadImageDataUpdate(new Upload(
-          json.uuid,
-          UploadType.Image,
-          Uint8List.fromList(List.empty()),
-          Offset.zero,
-          null));
+      onUploadImageDataUpdate(new Upload(json.uuid, UploadType.Image,
+          Uint8List.fromList(List.empty()), Offset.zero, null));
     } else if (message.startsWith(r"upload-delete#")) {
       WSUploadDelete json = WSUploadDelete.fromJson(
           jsonDecode(message.replaceFirst(r"upload-delete#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       onUploadDelete(json.uuid);
     } else if (message.startsWith(r"textitem-add#")) {
       WSTextItemAdd json = WSTextItemAdd.fromJson(
           jsonDecode(message.replaceFirst(r"textitem-add#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       onTextItemAdd(new TextItem(
           json.uuid,
           false,
@@ -201,11 +191,12 @@ class WebsocketConnection {
           json.maxHeight,
           HexColor.fromHex(json.color),
           json.content_text,
-          new Offset(json.offset_dx, json.offset_dy)));
+          new Offset(json.offset_dx, json.offset_dy),
+          json.rotation));
     } else if (message.startsWith(r"textitem-update#")) {
       WSTextItemUpdate json = WSTextItemUpdate.fromJson(
           jsonDecode(message.replaceFirst(r"textitem-update#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       onTextItemUpdate(new TextItem(
           json.uuid,
           false,
@@ -214,7 +205,8 @@ class WebsocketConnection {
           json.maxHeight,
           HexColor.fromHex(json.color),
           json.content_text,
-          new Offset(json.offset_dx, json.offset_dy)));
+          new Offset(json.offset_dx, json.offset_dy),
+          json.rotation));
     }
   }
 

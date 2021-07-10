@@ -9,6 +9,8 @@ import 'dart:ui';
 import 'Websocket/WebsocketSend.dart';
 import 'Websocket/WebsocketTypes.dart';
 import 'overlays/Toolbar.dart' as Toolbar;
+import 'dart:math';
+import 'package:vector_math/vector_math.dart';
 
 class TextsCanvas extends StatefulWidget {
   List<TextItem> texts;
@@ -53,18 +55,21 @@ class _TextsCanvasState extends State<TextsCanvas> {
       }
 
       texts.add(Positioned(
-        child: TextField(
-          controller: textEditingController,
-          style: TextStyle(fontSize: strokeWidth, color: color),
-          decoration: const InputDecoration(
-              border: OutlineInputBorder(), hintText: "Text"),
-          minLines: 3,
-          onChanged: (value) {
-            textItem.text = value;
-            WebsocketSend.sendUpdateTextItem(textItem, widget.websocketConnection);
-          },
-          maxLines: null,
-          keyboardType: TextInputType.multiline,
+        child: Transform.rotate(
+          angle: radians(textItem.rotation),
+          child: TextField(
+            controller: textEditingController,
+            style: TextStyle(fontSize: strokeWidth, color: color),
+            decoration: const InputDecoration(
+                border: OutlineInputBorder(), hintText: "Text"),
+            minLines: 3,
+            onChanged: (value) {
+              textItem.text = value;
+              WebsocketSend.sendUpdateTextItem(textItem, widget.websocketConnection);
+            },
+            maxLines: null,
+            keyboardType: TextInputType.multiline,
+          ),
         ),
         width: textItem.maxWidth.toDouble(),
         height: ScreenUtils.getScreenHeight(context) - textItem.offset.dy,

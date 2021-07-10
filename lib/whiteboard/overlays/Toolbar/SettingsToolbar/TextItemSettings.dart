@@ -11,6 +11,7 @@ import 'dart:ui';
 import '../../../DrawPoint.dart';
 import '../../../WhiteboardView.dart';
 import '../../Toolbar.dart' as Toolbar;
+import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 class TextItemSettings extends StatefulWidget {
   TextItem? selectedTextItem;
@@ -19,6 +20,7 @@ class TextItemSettings extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
   WebsocketConnection? websocketConnection;
+  OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
 
   TextItemSettings(
       {required this.selectedTextItem,
@@ -26,14 +28,15 @@ class TextItemSettings extends StatefulWidget {
       required this.onChangedToolbarOptions,
       required this.texts,
       required this.onTextItemsChange,
-      required this.websocketConnection});
+      required this.websocketConnection,
+      required this.onSaveOfflineWhiteboard});
 
   @override
   _TextItemSettingsState createState() => _TextItemSettingsState();
 }
 
 class _TextItemSettingsState extends State<TextItemSettings> {
-  @override
+
   @override
   Widget build(BuildContext context) {
     const _borderRadius = 50.0;
@@ -59,11 +62,38 @@ class _TextItemSettingsState extends State<TextItemSettings> {
                     });
                   },
                   onChangeEnd: (value) {
+                    widget.onSaveOfflineWhiteboard();
                       WebsocketSend.sendUpdateTextItem(widget.selectedTextItem!, widget.websocketConnection);
                   },
                   min: 10,
                   max: 250,
                 ),
+              ),
+              SleekCircularSlider(
+                appearance: CircularSliderAppearance(
+                    size: 50,
+                    startAngle: 270,
+                    angleRange: 360,
+                    infoProperties: InfoProperties(modifier: (double value) {
+                      final roundedValue = value.ceil().toInt().toString();
+                      return '$roundedValue °';
+                    })),
+                initialValue: widget.selectedTextItem!.rotation,
+                min: 0,
+                max: 360,
+                onChange: (value) {
+                  setState(() {
+                    widget.selectedTextItem!.rotation = value;
+                  });
+                },
+                onChangeEnd: (value) async {
+                  print(value);
+                  int index = widget.texts.indexOf(widget.selectedTextItem!);
+                  widget.texts[index] = widget.selectedTextItem!;
+                  widget.onTextItemsChange(widget.texts);
+                  widget.onSaveOfflineWhiteboard();
+                  WebsocketSend.sendUpdateTextItem(widget.selectedTextItem!, widget.websocketConnection);
+                },
               ),
               OutlinedButton(
                   onPressed: () {
@@ -80,8 +110,9 @@ class _TextItemSettingsState extends State<TextItemSettings> {
                   onPressed: () {
                     setState(() {
                       widget.texts.remove(widget.selectedTextItem!);
-                      WebsocketSend.sendTextItemDelete(widget.selectedTextItem!, widget.websocketConnection);
                       widget.onTextItemsChange(widget.texts);
+                      widget.onSaveOfflineWhiteboard();
+                      WebsocketSend.sendTextItemDelete(widget.selectedTextItem!, widget.websocketConnection);
                     });
                   },
                   child: Padding(

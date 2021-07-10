@@ -22,6 +22,7 @@ class ScribbleSettings extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
   WebsocketConnection? websocketConnection;
+  OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
 
   ScribbleSettings(
       {required this.selectedScribble,
@@ -29,7 +30,8 @@ class ScribbleSettings extends StatefulWidget {
       required this.onChangedToolbarOptions,
       required this.scribbles,
       required this.onScribblesChange,
-      required this.websocketConnection});
+      required this.websocketConnection,
+      required this.onSaveOfflineWhiteboard});
 
   @override
   _ScribbleSettingsState createState() => _ScribbleSettingsState();
@@ -65,6 +67,7 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
                         });
                       },
                       onChangeEnd: (value) {
+                        widget.onSaveOfflineWhiteboard();
                         WebsocketSend.sendScribbleUpdate(
                             widget.selectedScribble!,
                             widget.websocketConnection);
@@ -120,8 +123,9 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
                   widget.selectedScribble!.points = newPoints;
                   widget.scribbles[index] = widget.selectedScribble!;
                   widget.onScribblesChange(widget.scribbles);
-                  // WebsocketSend.sendUploadImageDataUpdate(
-                  //     widget.selectedUpload!, widget.websocketConnection);
+                  widget.onSaveOfflineWhiteboard();
+                  WebsocketSend.sendScribbleUpdate(
+                      widget.selectedScribble!, widget.websocketConnection);
                   setState(() {
                     rotation = 0;
                   });
@@ -142,6 +146,7 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
                   onPressed: () {
                     setState(() {
                       widget.scribbles.remove(widget.selectedScribble!);
+                      widget.onSaveOfflineWhiteboard();
                       WebsocketSend.sendScribbleDelete(
                           widget.selectedScribble!, widget.websocketConnection);
                       widget.onScribblesChange(widget.scribbles);

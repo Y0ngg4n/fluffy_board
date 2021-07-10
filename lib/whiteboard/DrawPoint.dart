@@ -203,6 +203,7 @@ class TextItem {
   ui.Color color;
   String text;
   ui.Offset offset;
+  double rotation;
 
   toJSONEncodable() {
     Map<String, dynamic> m = new Map();
@@ -214,6 +215,7 @@ class TextItem {
     m['text'] = text;
     m['offset_dx'] = offset.dx;
     m['offset_dy'] = offset.dy;
+    m['rotation'] = rotation;
 
     return m;
   }
@@ -226,8 +228,9 @@ class TextItem {
         maxHeight = json['max_height'],
         color = HexColor.fromHex(json['color']),
         text = json['text'],
-        offset = new ui.Offset(json['offset_dx'], json['offset_dy']);
+        offset = new ui.Offset(json['offset_dx'], json['offset_dy']),
+        rotation = json['rotation'];
 
   TextItem(this.uuid, this.editing, this.strokeWidth, this.maxWidth,
-      this.maxHeight, this.color, this.text, this.offset);
+      this.maxHeight, this.color, this.text, this.offset, this.rotation);
 }

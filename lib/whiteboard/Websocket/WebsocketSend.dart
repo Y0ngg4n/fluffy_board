@@ -6,8 +6,9 @@ import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
 import '../DrawPoint.dart';
 import 'WebsocketTypes.dart';
 
-class WebsocketSend{
-  static sendCreateScribble(Scribble newScribble, WebsocketConnection? websocketConnection) {
+class WebsocketSend {
+  static sendCreateScribble(
+      Scribble newScribble, WebsocketConnection? websocketConnection) {
     String data = jsonEncode(WSScribbleAdd(
         newScribble.uuid,
         newScribble.selectedFigureTypeToolbar.index,
@@ -21,7 +22,8 @@ class WebsocketSend{
     }
   }
 
-  static sendScribbleUpdate(Scribble newScribble, WebsocketConnection? websocketConnection) {
+  static sendScribbleUpdate(
+      Scribble newScribble, WebsocketConnection? websocketConnection) {
     String data = jsonEncode(WSScribbleUpdate(
       newScribble.uuid,
       newScribble.strokeWidth,
@@ -39,7 +41,8 @@ class WebsocketSend{
     }
   }
 
-  static sendScribbleDelete(Scribble deleteScribble, WebsocketConnection? websocketConnection) {
+  static sendScribbleDelete(
+      Scribble deleteScribble, WebsocketConnection? websocketConnection) {
     String data = jsonEncode(WSScribbleDelete(
       deleteScribble.uuid,
     ));
@@ -48,7 +51,8 @@ class WebsocketSend{
     }
   }
 
-  static sendUploadCreate(Upload upload, WebsocketConnection? websocketConnection){
+  static sendUploadCreate(
+      Upload upload, WebsocketConnection? websocketConnection) {
     String data = jsonEncode(WSUploadAdd(
         upload.uuid,
         upload.uploadType.index,
@@ -61,7 +65,8 @@ class WebsocketSend{
     }
   }
 
-  static sendUploadUpdate(Upload newUpload, WebsocketConnection? websocketConnection) {
+  static sendUploadUpdate(
+      Upload newUpload, WebsocketConnection? websocketConnection) {
     String data = jsonEncode(WSUploadUpdate(
       newUpload.uuid,
       newUpload.offset.dx,
@@ -71,16 +76,16 @@ class WebsocketSend{
       websocketConnection.sendDataToChannel("upload-update#", data);
   }
 
-  static sendUploadImageDataUpdate(Upload newUpload, WebsocketConnection? websocketConnection) {
-    String data = jsonEncode(WSUploadImageDataUpdate(
-        newUpload.uuid,
-        newUpload.uint8List
-    ));
+  static sendUploadImageDataUpdate(
+      Upload newUpload, WebsocketConnection? websocketConnection) {
+    String data = jsonEncode(
+        WSUploadImageDataUpdate(newUpload.uuid, newUpload.uint8List));
     if (websocketConnection != null)
       websocketConnection.sendDataToChannel("upload-image-data-update#", data);
   }
 
-  static sendUploadDelete(Upload newUpload, WebsocketConnection? websocketConnection) {
+  static sendUploadDelete(
+      Upload newUpload, WebsocketConnection? websocketConnection) {
     String data = jsonEncode(WSUploadDelete(
       newUpload.uuid,
     ));
@@ -88,7 +93,8 @@ class WebsocketSend{
       websocketConnection.sendDataToChannel("upload-delete#", data);
   }
 
-  static sendCreateTextItem(TextItem textItem, WebsocketConnection? websocketConnection) {
+  static sendCreateTextItem(
+      TextItem textItem, WebsocketConnection? websocketConnection) {
     String data = jsonEncode(WSTextItemAdd(
         textItem.uuid,
         textItem.strokeWidth,
@@ -97,13 +103,15 @@ class WebsocketSend{
         textItem.color.toHex(),
         textItem.text,
         textItem.offset.dx,
-        textItem.offset.dy));
+        textItem.offset.dy,
+        textItem.rotation));
     if (websocketConnection != null) {
       websocketConnection.sendDataToChannel("textitem-add#", data);
     }
   }
 
-  static sendUpdateTextItem(TextItem textItem, WebsocketConnection? websocketConnection) {
+  static sendUpdateTextItem(
+      TextItem textItem, WebsocketConnection? websocketConnection) {
     String data = jsonEncode(WSTextItemUpdate(
         textItem.uuid,
         textItem.strokeWidth,
@@ -112,19 +120,19 @@ class WebsocketSend{
         textItem.color.toHex(),
         textItem.text,
         textItem.offset.dx,
-        textItem.offset.dy));
+        textItem.offset.dy,
+        textItem.rotation));
     if (websocketConnection != null) {
       websocketConnection.sendDataToChannel("textitem-update#", data);
     }
   }
 
-  static sendTextItemDelete(TextItem newTextItem, WebsocketConnection? websocketConnection) {
+  static sendTextItemDelete(
+      TextItem newTextItem, WebsocketConnection? websocketConnection) {
     String data = jsonEncode(WSScribbleDelete(
       newTextItem.uuid,
     ));
     if (websocketConnection != null)
-      websocketConnection.sendDataToChannel("text-item-delete#" , data);
+      websocketConnection.sendDataToChannel("text-item-delete#", data);
   }
-
-
 }

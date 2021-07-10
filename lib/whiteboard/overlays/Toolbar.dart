@@ -269,6 +269,7 @@ class _ToolbarState extends State<Toolbar> {
         break;
       case SettingsSelected.scribble:
         return ScribbleSettings(
+          onSaveOfflineWhiteboard: () => widget.onSaveOfflineWhiteboard(),
           websocketConnection: widget.websocketConnection,
           toolbarOptions: widget.toolbarOptions,
           selectedScribble: widget.toolbarOptions.settingsSelectedScribble,
@@ -320,6 +321,7 @@ class _ToolbarState extends State<Toolbar> {
         break;
       case SettingsSelected.text:
         return TextItemSettings(
+          onSaveOfflineWhiteboard: () => widget.onSaveOfflineWhiteboard(),
           websocketConnection: widget.websocketConnection,
           selectedTextItem: widget.toolbarOptions.settingsSelectedTextItem,
           toolbarOptions: widget.toolbarOptions,

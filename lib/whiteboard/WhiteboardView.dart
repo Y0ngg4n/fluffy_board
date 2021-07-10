@@ -59,94 +59,95 @@ class _WhiteboardViewState extends State<WhiteboardView> {
     super.initState();
     if (widget.offlineWhiteboard == null) {
       websocketConnection = WebsocketConnection.getInstance(
-          whiteboard: widget.whiteboard == null
-              ? widget.extWhiteboard!.original
-              : widget.whiteboard!.id,
-          auth_token: widget.auth_token,
-          onScribbleAdd: (scribble) {
-            setState(() {
-              scribbles.add(scribble);
-            });
-          },
-          onScribbleUpdate: (scribble) {
-            setState(() {
-              // Reverse Scribble Search for better Performance
-              for (int i = scribbles.length - 1; i >= 0; i--) {
-                if (scribbles[i].uuid == scribble.uuid) {
-                  scribble.selectedFigureTypeToolbar =
-                      scribbles[i].selectedFigureTypeToolbar;
-                  scribbles[i] = scribble;
-                  break;
-                }
+        whiteboard: widget.whiteboard == null
+            ? widget.extWhiteboard!.original
+            : widget.whiteboard!.id,
+        auth_token: widget.auth_token,
+        onScribbleAdd: (scribble) {
+          setState(() {
+            scribbles.add(scribble);
+          });
+        },
+        onScribbleUpdate: (scribble) {
+          setState(() {
+            // Reverse Scribble Search for better Performance
+            for (int i = scribbles.length - 1; i >= 0; i--) {
+              if (scribbles[i].uuid == scribble.uuid) {
+                scribble.selectedFigureTypeToolbar =
+                    scribbles[i].selectedFigureTypeToolbar;
+                scribbles[i] = scribble;
+                break;
               }
-            });
-          },
-          onScribbleDelete: (id) {
-            setState(() {
-              // Reverse Scribble Search for better Performance
-              for (int i = scribbles.length - 1; i >= 0; i--) {
-                if (scribbles[i].uuid == id) {
-                  scribbles.removeAt(i);
-                  break;
-                }
+            }
+          });
+        },
+        onScribbleDelete: (id) {
+          setState(() {
+            // Reverse Scribble Search for better Performance
+            for (int i = scribbles.length - 1; i >= 0; i--) {
+              if (scribbles[i].uuid == id) {
+                scribbles.removeAt(i);
+                break;
               }
-            });
-          },
-          onUploadAdd: (upload) {
-            setState(() {
-              uploads.add(upload);
-            });
-          },
-          onUploadUpdate: (upload) {
-            setState(() {
-              // Reverse Upload Search for better Performance
-              for (int i = uploads.length - 1; i >= 0; i--) {
-                if (uploads[i].uuid == upload.uuid) {
-                  uploads[i].offset = upload.offset;
-                  break;
-                }
+            }
+          });
+        },
+        onUploadAdd: (upload) {
+          setState(() {
+            uploads.add(upload);
+          });
+        },
+        onUploadUpdate: (upload) {
+          setState(() {
+            // Reverse Upload Search for better Performance
+            for (int i = uploads.length - 1; i >= 0; i--) {
+              if (uploads[i].uuid == upload.uuid) {
+                uploads[i].offset = upload.offset;
+                break;
               }
-            });
-          },
-          onUploadImageDataUpdate: (upload ) {
-            setState(() {
-              // Reverse Upload Search for better Performance
-              for (int i = uploads.length - 1; i >= 0; i--) {
-                if (uploads[i].uuid == upload.uuid) {
-                  uploads[i].uint8List = upload.uint8List;
-                  uploads[i].image = upload.image;
-                  break;
-                }
+            }
+          });
+        },
+        onUploadImageDataUpdate: (upload) {
+          setState(() {
+            // Reverse Upload Search for better Performance
+            for (int i = uploads.length - 1; i >= 0; i--) {
+              if (uploads[i].uuid == upload.uuid) {
+                uploads[i].uint8List = upload.uint8List;
+                uploads[i].image = upload.image;
+                break;
               }
-            });
-          },
-          onUploadDelete: (id) {
-            setState(() {
-              // Reverse Scribble Search for better Performance
-              for (int i = uploads.length - 1; i >= 0; i--) {
-                if (uploads[i].uuid == id) {
-                  uploads.removeAt(i);
-                  break;
-                }
+            }
+          });
+        },
+        onUploadDelete: (id) {
+          setState(() {
+            // Reverse Scribble Search for better Performance
+            for (int i = uploads.length - 1; i >= 0; i--) {
+              if (uploads[i].uuid == id) {
+                uploads.removeAt(i);
+                break;
               }
-            });
-          },
-          onTextItemAdd: (textItem) {
-            setState(() {
-              texts.add(textItem);
-            });
-          },
-          onTextItemUpdate: (textItem) {
-            setState(() {
-              // Reverse TextItem Search for better Performance
-              for (int i = texts.length - 1; i >= 0; i--) {
-                if (texts[i].uuid == textItem.uuid) {
-                  texts[i] = textItem;
-                  break;
-                }
+            }
+          });
+        },
+        onTextItemAdd: (textItem) {
+          setState(() {
+            texts.add(textItem);
+          });
+        },
+        onTextItemUpdate: (textItem) {
+          setState(() {
+            // Reverse TextItem Search for better Performance
+            for (int i = texts.length - 1; i >= 0; i--) {
+              if (texts[i].uuid == textItem.uuid) {
+                texts[i] = textItem;
+                break;
               }
-            });
-          }, );
+            }
+          });
+        },
+      );
       // WidgetsBinding.instance!
       //     .addPostFrameCallback((_) => _createToolbars(context));
     }
@@ -713,7 +714,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
               HexColor.fromHex(decodeGetTextItem.color),
               decodeGetTextItem.contentText,
               new Offset(
-                  decodeGetTextItem.offset_dx, decodeGetTextItem.offset_dy)));
+                  decodeGetTextItem.offset_dx, decodeGetTextItem.offset_dy),
+              decodeGetTextItem.rotation));
         }
       });
     }

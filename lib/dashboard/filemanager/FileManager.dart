@@ -125,10 +125,12 @@ class OfflineWhiteboard {
     return m;
   }
 
-  static Future<OfflineWhiteboard> fromJson(Map<String, dynamic> json) async
-  {
-    return new OfflineWhiteboard(json['uuid'],
-        json['directory'], json['name'], json['uploads'] != null
+  static Future<OfflineWhiteboard> fromJson(Map<String, dynamic> json) async {
+    return new OfflineWhiteboard(
+        json['uuid'],
+        json['directory'],
+        json['name'],
+        json['uploads'] != null
             ? await Uploads.fromJson(json['uploads'])
             : new Uploads([]),
         json['texts'] != null
@@ -139,8 +141,6 @@ class OfflineWhiteboard {
             : new Scribbles([]));
   }
 
-
-
   OfflineWhiteboard(this.uuid, this.directory, this.name, this.uploads,
       this.texts, this.scribbles);
 }
@@ -148,7 +148,7 @@ class OfflineWhiteboard {
 class OfflineWhiteboards {
   List<OfflineWhiteboard> list = [];
 
-  static Future<OfflineWhiteboards> fromJson(List<dynamic> json) async{
+  static Future<OfflineWhiteboards> fromJson(List<dynamic> json) async {
     OfflineWhiteboards offlineWhiteboards = new OfflineWhiteboards([]);
     for (dynamic entry in json) {
       offlineWhiteboards.list.add(await OfflineWhiteboard.fromJson(entry));
@@ -1002,7 +1002,8 @@ class _FileManagerState extends State<FileManager> {
       Map<String, dynamic>? json =
           fileManagerStorage.getItem("offline_whiteboard-" + id) ?? [];
       if (json != null) {
-        OfflineWhiteboard offlineWhiteboard = await OfflineWhiteboard.fromJson(json);
+        OfflineWhiteboard offlineWhiteboard =
+            await OfflineWhiteboard.fromJson(json);
         for (Upload upload in offlineWhiteboard.uploads.list) {
           final ui.Codec codec = await PaintingBinding.instance!
               .instantiateImageCodec(upload.uint8List);
@@ -1138,7 +1139,8 @@ class _FileManagerState extends State<FileManager> {
               HexColor.fromHex(decodeGetTextItem.color),
               decodeGetTextItem.contentText,
               new Offset(
-                  decodeGetTextItem.offset_dx, decodeGetTextItem.offset_dy)));
+                  decodeGetTextItem.offset_dx, decodeGetTextItem.offset_dy),
+              decodeGetTextItem.rotation));
         }
       });
     }

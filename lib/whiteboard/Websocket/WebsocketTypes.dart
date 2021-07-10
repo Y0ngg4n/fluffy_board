@@ -95,16 +95,18 @@ class WSScribbleUpdate {
     };
   }
 
-  WSScribbleUpdate(this.uuid,
-      this.strokeWidth,
-      this.strokeCap,
-      this.color,
-      this.points,
-      this.paintingStyle,
-      this.leftExtremity,
-      this.rightExtremity,
-      this.topExtremity,
-      this.bottomExtremity,);
+  WSScribbleUpdate(
+    this.uuid,
+    this.strokeWidth,
+    this.strokeCap,
+    this.color,
+    this.points,
+    this.paintingStyle,
+    this.leftExtremity,
+    this.rightExtremity,
+    this.topExtremity,
+    this.bottomExtremity,
+  );
 }
 
 class WSScribbleDelete {
@@ -118,7 +120,9 @@ class WSScribbleDelete {
     };
   }
 
-  WSScribbleDelete(this.uuid,);
+  WSScribbleDelete(
+    this.uuid,
+  );
 }
 
 class DecodeGetScribble {
@@ -138,7 +142,6 @@ class DecodeGetScribble {
     }
     return points;
   }
-
 
   DecodeGetScribble(
       this.uuid,
@@ -167,7 +170,7 @@ class DecodeGetScribble {
         bottomExtremity = json['bottom_extremity'].toDouble();
 }
 
-class DecodeGetScribbleList{
+class DecodeGetScribbleList {
   static List<DecodeGetScribble> fromJsonList(List<dynamic> jsonList) {
     List<DecodeGetScribble> points = new List.empty(growable: true);
     for (Map<String, dynamic> json in jsonList) {
@@ -247,8 +250,7 @@ class WSUploadImageDataUpdate {
 class WSUploadDelete {
   String uuid;
 
-  WSUploadDelete.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'];
+  WSUploadDelete.fromJson(Map<String, dynamic> json) : uuid = json['uuid'];
 
   Map toJson() {
     return {
@@ -275,7 +277,7 @@ class DecodeGetUpload {
         imageData = json['image_data'].cast<int>();
 }
 
-class DecodeGetUploadList{
+class DecodeGetUploadList {
   static List<DecodeGetUpload> fromJsonList(List<dynamic> jsonList) {
     List<DecodeGetUpload> points = new List.empty(growable: true);
     for (Map<String, dynamic> json in jsonList) {
@@ -294,6 +296,7 @@ class WSTextItemAdd {
   String content_text;
   double offset_dx;
   double offset_dy;
+  double rotation;
 
   WSTextItemAdd.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'],
@@ -303,7 +306,8 @@ class WSTextItemAdd {
         color = json['color'],
         content_text = json['content_text'],
         offset_dx = json['offset_dx'].toDouble(),
-        offset_dy = json['offset_dy'].toDouble();
+        offset_dy = json['offset_dy'].toDouble(),
+        rotation = json['rotation'].toDouble();
 
   Map toJson() {
     return {
@@ -314,12 +318,21 @@ class WSTextItemAdd {
       'color': color,
       'content_text': content_text,
       'offset_dx': offset_dx,
-      'offset_dy': offset_dy
+      'offset_dy': offset_dy,
+      'rotation': rotation
     };
   }
 
-  WSTextItemAdd(this.uuid, this.strokeWidth, this.maxWidth, this.maxHeight,
-      this.color, this.content_text, this.offset_dx, this.offset_dy);
+  WSTextItemAdd(
+      this.uuid,
+      this.strokeWidth,
+      this.maxWidth,
+      this.maxHeight,
+      this.color,
+      this.content_text,
+      this.offset_dx,
+      this.offset_dy,
+      this.rotation);
 }
 
 class WSTextItemUpdate {
@@ -331,7 +344,7 @@ class WSTextItemUpdate {
   String content_text;
   double offset_dx;
   double offset_dy;
-
+  double rotation;
 
   WSTextItemUpdate.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'],
@@ -341,7 +354,8 @@ class WSTextItemUpdate {
         color = json['color'],
         content_text = json['content_text'],
         offset_dx = json['offset_dx'].toDouble(),
-        offset_dy = json['offset_dy'].toDouble();
+        offset_dy = json['offset_dy'].toDouble(),
+        rotation = json['rotation'].toDouble();
 
   Map toJson() {
     return {
@@ -352,12 +366,21 @@ class WSTextItemUpdate {
       'color': color,
       'content_text': content_text,
       'offset_dx': offset_dx,
-      'offset_dy': offset_dy
+      'offset_dy': offset_dy,
+      'rotation': rotation
     };
   }
 
-  WSTextItemUpdate(this.uuid, this.strokeWidth, this.maxWidth, this.maxHeight,
-      this.color, this.content_text, this.offset_dx, this.offset_dy);
+  WSTextItemUpdate(
+      this.uuid,
+      this.strokeWidth,
+      this.maxWidth,
+      this.maxHeight,
+      this.color,
+      this.content_text,
+      this.offset_dx,
+      this.offset_dy,
+      this.rotation);
 }
 
 class DecodeGetTextItem {
@@ -369,6 +392,7 @@ class DecodeGetTextItem {
   String contentText;
   double offset_dx;
   double offset_dy;
+  double rotation;
 
   DecodeGetTextItem.fromJson(Map<String, dynamic> json)
       : uuid = json['id'],
@@ -378,10 +402,11 @@ class DecodeGetTextItem {
         color = json['color'],
         contentText = json['content_text'],
         offset_dx = json['offset_dx'].toDouble(),
-        offset_dy = json['offset_dy'].toDouble();
+        offset_dy = json['offset_dy'].toDouble(),
+        rotation = json['rotation'].toDouble();
 }
 
-class DecodeGetTextItemList{
+class DecodeGetTextItemList {
   static List<DecodeGetTextItem> fromJsonList(List<dynamic> jsonList) {
     List<DecodeGetTextItem> points = new List.empty(growable: true);
     for (Map<String, dynamic> json in jsonList) {
