@@ -53,6 +53,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   Offset _sessionOffset = Offset.zero;
   WebsocketConnection? websocketConnection;
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
+  final LocalStorage settingsStorage = new LocalStorage('filemanager');
+  String toolbarLocation = "left";
 
   @override
   void initState() {
@@ -163,13 +165,42 @@ class _WhiteboardViewState extends State<WhiteboardView> {
 
   @override
   Widget build(BuildContext context) {
+    toolbarLocation = settingsStorage.getItem("toolbar-location") ?? "left";
     AppBar appBar = AppBar(
-      title: Text(widget.whiteboard == null
-          ? widget.extWhiteboard == null
-              ? widget.offlineWhiteboard!.name
-              : widget.extWhiteboard!.name
-          : widget.whiteboard!.name),
-    );
+        title: Text(
+          widget.whiteboard == null
+              ? widget.extWhiteboard == null
+                  ? widget.offlineWhiteboard!.name
+                  : widget.extWhiteboard!.name
+              : widget.whiteboard!.name,
+        ),
+        actions: [
+          PopupMenuButton(
+              onSelected: (value) => {
+                    setState(() {
+                      settingsStorage.setItem("toolbar-location", value);
+                      toolbarLocation = value.toString();
+                    })
+                  },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                    CheckedPopupMenuItem(
+                        child: const Text("Left Toolbar"),
+                        checked: toolbarLocation == "left" ? true : false,
+                        value: "left"),
+                    CheckedPopupMenuItem(
+                        child: const Text("Right Toolbar"),
+                        checked: toolbarLocation == "right" ? true : false,
+                        value: "right"),
+                    CheckedPopupMenuItem(
+                        child: const Text("Top Toolbar"),
+                        checked: toolbarLocation == "top" ? true : false,
+                        value: "top"),
+                    CheckedPopupMenuItem(
+                        child: const Text("Bottom Toolbar"),
+                        checked: toolbarLocation == "bottom" ? true : false,
+                        value: "bottom"),
+                  ])
+        ]);
 
     if (toolbarOptions == null) {
       return Dashboard.loading(widget.whiteboard == null
@@ -183,6 +214,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             (widget.extWhiteboard != null && widget.extWhiteboard!.edit) ||
             widget.offlineWhiteboard != null)
         ? (Toolbar.Toolbar(
+            toolbarLocation: toolbarLocation,
             onSaveOfflineWhiteboard: () => saveOfflineWhiteboard(),
             texts: texts,
             scribbles: scribbles,
@@ -261,6 +293,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           ),
           toolbar,
           ZoomView(
+            toolbarLocation: toolbarLocation,
             zoomOptions: zoomOptions,
             offset: offset,
             onChangedZoomOptions: (zoomOptions) {

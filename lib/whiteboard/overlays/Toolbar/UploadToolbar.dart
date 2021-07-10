@@ -27,6 +27,7 @@ class UploadToolbar extends StatefulWidget {
   ZoomOptions zoomOptions;
   WebsocketConnection? websocketConnection;
   OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
+  Axis axis;
 
   UploadToolbar(
       {required this.toolbarOptions,
@@ -36,7 +37,8 @@ class UploadToolbar extends StatefulWidget {
       required this.sessionOffset,
       required this.zoomOptions,
       required this.websocketConnection,
-      required this.onSaveOfflineWhiteboard});
+      required this.onSaveOfflineWhiteboard,
+      required this.axis});
 
   @override
   _UploadToolbarState createState() => _UploadToolbarState();
@@ -48,17 +50,10 @@ class _UploadToolbarState extends State<UploadToolbar> {
 
   @override
   Widget build(BuildContext context) {
-    const _borderRadius = 50.0;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 24, 0, 24),
-      child: Card(
-        elevation: 20,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_borderRadius),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
+    return Flex(
+      mainAxisSize: MainAxisSize.min,
+            direction: widget.axis,
             children: [
               OutlinedButton(
                 onPressed: () async {
@@ -118,9 +113,6 @@ class _UploadToolbarState extends State<UploadToolbar> {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
     );
   }
 }

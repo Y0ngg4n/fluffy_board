@@ -16,12 +16,14 @@ class ZoomView extends StatefulWidget {
   OnChangedZoomOptions onChangedZoomOptions;
   OnChangedOffset onChangedOffset;
   Offset offset;
+  String toolbarLocation;
 
   ZoomView(
       {required this.zoomOptions,
       required this.onChangedZoomOptions,
       required this.onChangedOffset,
-      required this.offset});
+      required this.offset,
+      required this.toolbarLocation});
 
   @override
   _ZoomViewState createState() => _ZoomViewState();
@@ -40,8 +42,19 @@ class _ZoomViewState extends State<ZoomView> {
           MaterialStateProperty.resolveWith((states) => Colors.white70),
     );
 
+    MainAxisAlignment mainAxisAlignmentRow;
+
+    switch (widget.toolbarLocation) {
+      case "right":
+        mainAxisAlignmentRow = MainAxisAlignment.start;
+        break;
+      default:
+        mainAxisAlignmentRow = MainAxisAlignment.end;
+        break;
+    }
+
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: mainAxisAlignmentRow,
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.end,

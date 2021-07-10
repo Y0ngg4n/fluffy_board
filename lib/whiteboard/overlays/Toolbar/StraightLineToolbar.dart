@@ -58,9 +58,9 @@ class DecodeStraightLineOptions{
 class StraightLineToolbar extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
-
+  Axis axis;
   StraightLineToolbar(
-      {required this.toolbarOptions, required this.onChangedToolbarOptions});
+      {required this.toolbarOptions, required this.onChangedToolbarOptions, required this.axis});
 
   @override
   _StraightLineToolbarState createState() => _StraightLineToolbarState();
@@ -81,20 +81,13 @@ class _StraightLineToolbarState extends State<StraightLineToolbar> {
 
   @override
   Widget build(BuildContext context) {
-    const _borderRadius = 50.0;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 24, 0, 24),
-      child: Card(
-        elevation: 20,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_borderRadius),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
+    return Flex(
+      mainAxisSize: MainAxisSize.min,
+            direction: widget.axis,
             children: [
               RotatedBox(
-                quarterTurns: -1,
+                quarterTurns: widget.axis == Axis.vertical ? -1: 0,
                 child: Slider.adaptive(
                   value: widget.toolbarOptions.straightLineOptions.strokeWidth,
                   onChanged: (value) {
@@ -113,7 +106,7 @@ class _StraightLineToolbarState extends State<StraightLineToolbar> {
               ),
               ToggleButtons(
                 isSelected: selectedCapList,
-                direction: Axis.vertical,
+                direction: widget.axis,
                 children: <Widget>[
                   Icon(Icons.remove),
                   Icon(Icons.arrow_forward),
@@ -170,7 +163,7 @@ class _StraightLineToolbarState extends State<StraightLineToolbar> {
                           widget.toolbarOptions.straightLineOptions);
                     });
                   },
-                  direction: Axis.vertical,
+                  direction: widget.axis,
                   isSelected: selectedColorList,
                   children: <Widget>[
                     Icon(OwnIcons.color_lens,
@@ -184,9 +177,6 @@ class _StraightLineToolbarState extends State<StraightLineToolbar> {
                             .colorPresets[2]),
                   ]),
             ],
-          ),
-        ),
-      ),
     );
   }
 }

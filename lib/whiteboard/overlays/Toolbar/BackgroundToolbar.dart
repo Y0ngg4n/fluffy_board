@@ -54,9 +54,9 @@ class DecodeBackgroundOptions {
 class BackgroundToolbar extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
-
+Axis axis;
   BackgroundToolbar(
-      {required this.toolbarOptions, required this.onChangedToolbarOptions});
+      {required this.toolbarOptions, required this.onChangedToolbarOptions, required this.axis});
 
   @override
   _BackgroundToolbarState createState() => _BackgroundToolbarState();
@@ -74,20 +74,13 @@ class _BackgroundToolbarState extends State<BackgroundToolbar> {
 
   @override
   Widget build(BuildContext context) {
-    const _borderRadius = 50.0;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 24, 0, 24),
-      child: Card(
-        elevation: 20,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_borderRadius),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
+    return Flex(
+      mainAxisSize: MainAxisSize.min,
+            direction: widget.axis,
             children: [
               RotatedBox(
-                quarterTurns: -1,
+                quarterTurns: widget.axis == Axis.vertical ? -1: 0,
                 child: Slider.adaptive(
                   value: widget.toolbarOptions.backgroundOptions.strokeWidth,
                   onChanged: (value) {
@@ -124,7 +117,7 @@ class _BackgroundToolbarState extends State<BackgroundToolbar> {
                           widget.toolbarOptions.backgroundOptions);
                     });
                   },
-                  direction: Axis.vertical,
+                  direction: widget.axis,
                   isSelected: selectedBackgroundTypeList,
                   children: <Widget>[
                     Icon(Icons.crop_3_2),
@@ -132,9 +125,6 @@ class _BackgroundToolbarState extends State<BackgroundToolbar> {
                     Icon(Icons.drag_handle),
                   ]),
             ],
-          ),
-        ),
-      ),
     );
   }
 }

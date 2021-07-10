@@ -41,9 +41,9 @@ class DecodeEraserOptions{
 class EraserToolbar extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
-
+  Axis axis;
   EraserToolbar(
-      {required this.toolbarOptions, required this.onChangedToolbarOptions});
+      {required this.toolbarOptions, required this.onChangedToolbarOptions, required this.axis});
 
   @override
   _EraserToolbarState createState() => _EraserToolbarState();
@@ -54,20 +54,13 @@ class _EraserToolbarState extends State<EraserToolbar> {
 
   @override
   Widget build(BuildContext context) {
-    const _borderRadius = 50.0;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 24, 0, 24),
-      child: Card(
-        elevation: 20,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_borderRadius),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
+    return Flex(
+      mainAxisSize: MainAxisSize.min,
+            direction: widget.axis,
             children: [
               RotatedBox(
-                quarterTurns: -1,
+                quarterTurns: widget.axis == Axis.vertical ? -1: 0,
                 child: Slider.adaptive(
                   value: widget.toolbarOptions.eraserOptions.strokeWidth,
                   onChanged: (value) {
@@ -84,9 +77,6 @@ class _EraserToolbarState extends State<EraserToolbar> {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
     );
   }
 }

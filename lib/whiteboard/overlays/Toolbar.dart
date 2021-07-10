@@ -83,6 +83,7 @@ class Toolbar extends StatefulWidget {
   WebsocketConnection? websocketConnection;
   List<TextItem> texts;
   OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
+  String toolbarLocation;
 
   Toolbar(
       {required this.toolbarOptions,
@@ -97,7 +98,8 @@ class Toolbar extends StatefulWidget {
       required this.websocketConnection,
       required this.texts,
       required this.onTextItemsChange,
-      required this.onSaveOfflineWhiteboard});
+      required this.onSaveOfflineWhiteboard,
+      required this.toolbarLocation});
 
   @override
   _ToolbarState createState() => _ToolbarState();
@@ -109,8 +111,41 @@ class _ToolbarState extends State<Toolbar> {
   @override
   Widget build(BuildContext context) {
     const _borderRadius = 50.0;
+    MainAxisAlignment mainAxisAlignment;
+    CrossAxisAlignment crossAxisAlignment;
+    Axis axis;
+    switch (widget.toolbarLocation) {
+      case "left":
+        mainAxisAlignment = MainAxisAlignment.start;
+        crossAxisAlignment = CrossAxisAlignment.center;
+        axis = Axis.vertical;
+        break;
+      case "right":
+        mainAxisAlignment = MainAxisAlignment.end;
+        crossAxisAlignment = CrossAxisAlignment.center;
+        axis = Axis.vertical;
+        break;
+      case "top":
+        mainAxisAlignment = MainAxisAlignment.start;
+        crossAxisAlignment = CrossAxisAlignment.center;
+        axis = Axis.horizontal;
+        break;
+      case "bottom":
+        mainAxisAlignment = MainAxisAlignment.start;
+        crossAxisAlignment = CrossAxisAlignment.center;
+        axis = Axis.horizontal;
+        break;
+      default:
+        mainAxisAlignment = MainAxisAlignment.start;
+        crossAxisAlignment = CrossAxisAlignment.center;
+        axis = Axis.vertical;
+        break;
+    }
 
-    return Row(
+    return Flex(
+      direction: axis == Axis.vertical ? Axis.horizontal : Axis.vertical,
+      mainAxisAlignment: mainAxisAlignment,
+      crossAxisAlignment: crossAxisAlignment,
       children: [
         Card(
           elevation: 20,
@@ -118,9 +153,9 @@ class _ToolbarState extends State<Toolbar> {
             borderRadius: BorderRadius.circular(_borderRadius),
           ),
           child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
+            scrollDirection: axis,
             child: (ToggleButtons(
-              direction: Axis.vertical,
+              direction: axis,
               borderRadius: BorderRadius.circular(_borderRadius),
               children: <Widget>[
                 Icon(OwnIcons.move),
@@ -158,19 +193,30 @@ class _ToolbarState extends State<Toolbar> {
             )),
           ),
         ),
-        _openSpecialToolbar(),
-        _openSettingsToolbar(),
+        Card(
+            elevation: 20,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(_borderRadius),
+            ),
+            child: SingleChildScrollView(child: _openSpecialToolbar(axis))),
+        Card(
+            elevation: 20,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(_borderRadius),
+            ),
+            child: SingleChildScrollView(child: _openSettingsToolbar(axis))),
         _openColorPicker(),
       ],
     );
   }
 
-  Widget _openSpecialToolbar() {
+  Widget _openSpecialToolbar(Axis axis) {
     switch (widget.toolbarOptions.selectedTool) {
       case SelectedTool.move:
         return Container();
       case SelectedTool.pencil:
         return PencilToolbar(
+          axis: axis,
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {
@@ -181,6 +227,7 @@ class _ToolbarState extends State<Toolbar> {
         );
       case SelectedTool.highlighter:
         return HighlighterToolbar(
+          axis: axis,
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {
@@ -191,6 +238,7 @@ class _ToolbarState extends State<Toolbar> {
         );
       case SelectedTool.straightLine:
         return StraightLineToolbar(
+          axis: axis,
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {
@@ -201,6 +249,7 @@ class _ToolbarState extends State<Toolbar> {
         );
       case SelectedTool.eraser:
         return EraserToolbar(
+          axis: axis,
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {
@@ -211,6 +260,7 @@ class _ToolbarState extends State<Toolbar> {
         );
       case SelectedTool.figure:
         return FigureToolbar(
+          axis: axis,
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {
@@ -221,6 +271,7 @@ class _ToolbarState extends State<Toolbar> {
         );
       case SelectedTool.upload:
         return UploadToolbar(
+          axis: axis,
           websocketConnection: widget.websocketConnection,
           uploads: widget.uploads,
           zoomOptions: widget.zoomOptions,
@@ -237,6 +288,7 @@ class _ToolbarState extends State<Toolbar> {
         );
       case SelectedTool.text:
         return TextToolbar(
+          axis: axis,
           websocketConnection: widget.websocketConnection,
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
@@ -250,6 +302,7 @@ class _ToolbarState extends State<Toolbar> {
         return Container();
       case SelectedTool.background:
         return BackgroundToolbar(
+            axis: axis,
             toolbarOptions: widget.toolbarOptions,
             onChangedToolbarOptions: (toolbarOptions) {
               setState(() {
@@ -262,13 +315,14 @@ class _ToolbarState extends State<Toolbar> {
     }
   }
 
-  Widget _openSettingsToolbar() {
+  Widget _openSettingsToolbar(Axis axis) {
     switch (widget.toolbarOptions.settingsSelected) {
       case SettingsSelected.none:
         return Container();
         break;
       case SettingsSelected.scribble:
         return ScribbleSettings(
+          axis: axis,
           onSaveOfflineWhiteboard: () => widget.onSaveOfflineWhiteboard(),
           websocketConnection: widget.websocketConnection,
           toolbarOptions: widget.toolbarOptions,
@@ -283,7 +337,8 @@ class _ToolbarState extends State<Toolbar> {
             setState(() {
               widget.scribbles = scribbles;
               widget.onScribblesChange(scribbles);
-              if(!scribbles.contains(widget.toolbarOptions.settingsSelectedScribble)){
+              if (!scribbles
+                  .contains(widget.toolbarOptions.settingsSelectedScribble)) {
                 widget.toolbarOptions.settingsSelectedScribble = null;
                 widget.toolbarOptions.settingsSelected = SettingsSelected.none;
                 widget.onChangedToolbarOptions(widget.toolbarOptions);
@@ -295,6 +350,7 @@ class _ToolbarState extends State<Toolbar> {
         break;
       case SettingsSelected.image:
         return UploadSettings(
+          axis: axis,
           onSaveOfflineWhiteboard: () => widget.onSaveOfflineWhiteboard(),
           websocketConnection: widget.websocketConnection,
           selectedUpload: widget.toolbarOptions.settingsSelectedUpload,
@@ -310,7 +366,8 @@ class _ToolbarState extends State<Toolbar> {
             setState(() {
               widget.uploads = uploads;
               widget.onUploadsChange(uploads);
-              if(!uploads.contains(widget.toolbarOptions.settingsSelectedUpload)){
+              if (!uploads
+                  .contains(widget.toolbarOptions.settingsSelectedUpload)) {
                 widget.toolbarOptions.settingsSelectedUpload = null;
                 widget.toolbarOptions.settingsSelected = SettingsSelected.none;
                 widget.onChangedToolbarOptions(widget.toolbarOptions);
@@ -321,6 +378,7 @@ class _ToolbarState extends State<Toolbar> {
         break;
       case SettingsSelected.text:
         return TextItemSettings(
+          axis: axis,
           onSaveOfflineWhiteboard: () => widget.onSaveOfflineWhiteboard(),
           websocketConnection: widget.websocketConnection,
           selectedTextItem: widget.toolbarOptions.settingsSelectedTextItem,
@@ -336,7 +394,8 @@ class _ToolbarState extends State<Toolbar> {
             setState(() {
               widget.texts = texts;
               widget.onTextItemsChange(texts);
-              if(!texts.contains(widget.toolbarOptions.settingsSelectedTextItem)){
+              if (!texts
+                  .contains(widget.toolbarOptions.settingsSelectedTextItem)) {
                 widget.toolbarOptions.settingsSelectedTextItem = null;
                 widget.toolbarOptions.settingsSelected = SettingsSelected.none;
                 widget.onChangedToolbarOptions(widget.toolbarOptions);
@@ -358,7 +417,8 @@ class _ToolbarState extends State<Toolbar> {
         onChangedToolbarOptions: (toolBarOptions) {
           widget.onChangedToolbarOptions(toolBarOptions);
         },
-        selectedTextItemScribble: widget.toolbarOptions.settingsSelectedTextItem,
+        selectedTextItemScribble:
+            widget.toolbarOptions.settingsSelectedTextItem,
       );
     else {
       return Container();

@@ -49,9 +49,9 @@ class DecodePencilOptions {
 class PencilToolbar extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
-
+  Axis axis;
   PencilToolbar(
-      {required this.toolbarOptions, required this.onChangedToolbarOptions});
+      {required this.toolbarOptions, required this.onChangedToolbarOptions, required this.axis});
 
   @override
   _PencilToolbarState createState() => _PencilToolbarState();
@@ -71,20 +71,13 @@ class _PencilToolbarState extends State<PencilToolbar> {
 
   @override
   Widget build(BuildContext context) {
-    const _borderRadius = 50.0;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 24, 0, 24),
-      child: Card(
-        elevation: 20,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_borderRadius),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
+    return Flex(
+            mainAxisSize: MainAxisSize.min,
+            direction: widget.axis,
             children: [
               RotatedBox(
-                quarterTurns: -1,
+                quarterTurns: widget.axis == Axis.vertical ? -1: 0,
                 child: Slider.adaptive(
                   value: widget.toolbarOptions.pencilOptions.strokeWidth,
                   onChanged: (value) {
@@ -136,7 +129,7 @@ class _PencilToolbarState extends State<PencilToolbar> {
                           widget.toolbarOptions.pencilOptions);
                     });
                   },
-                  direction: Axis.vertical,
+                  direction: widget.axis,
                   isSelected: selectedColorList,
                   children: <Widget>[
                     Icon(OwnIcons.color_lens,
@@ -150,9 +143,6 @@ class _PencilToolbarState extends State<PencilToolbar> {
                             .toolbarOptions.pencilOptions.colorPresets[2]),
                   ]),
             ],
-          ),
-        ),
-      ),
     );
   }
 }

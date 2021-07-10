@@ -62,9 +62,9 @@ class DecodeFigureptions{
 class FigureToolbar extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
-
+  Axis axis;
   FigureToolbar(
-      {required this.toolbarOptions, required this.onChangedToolbarOptions});
+      {required this.toolbarOptions, required this.onChangedToolbarOptions, required this.axis});
 
   @override
   _FigureToolbarState createState() => _FigureToolbarState();
@@ -87,20 +87,13 @@ class _FigureToolbarState extends State<FigureToolbar> {
 
   @override
   Widget build(BuildContext context) {
-    const _borderRadius = 50.0;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 24, 0, 24),
-      child: Card(
-        elevation: 20,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_borderRadius),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
+    return Flex(
+      mainAxisSize: MainAxisSize.min,
+            direction: widget.axis,
             children: [
               RotatedBox(
-                quarterTurns: -1,
+                quarterTurns: widget.axis == Axis.vertical ? -1: 0,
                 child: Slider.adaptive(
                   value: widget.toolbarOptions.figureOptions.strokeWidth,
                   onChanged: (value) {
@@ -151,7 +144,7 @@ class _FigureToolbarState extends State<FigureToolbar> {
                           widget.toolbarOptions.figureOptions);
                     });
                   },
-                  direction: Axis.vertical,
+                  direction: widget.axis,
                   isSelected: selectedColorList,
                   children: <Widget>[
                     Icon(OwnIcons.color_lens,
@@ -166,7 +159,7 @@ class _FigureToolbarState extends State<FigureToolbar> {
                   ]),
               ToggleButtons(
                 isSelected: selectedTypeList,
-                direction: Axis.vertical,
+                direction: widget.axis,
                 children: [
                   Icon(OwnIcons.check_box_outline_blank),
                   Icon(OwnIcons.change_history),
@@ -192,7 +185,7 @@ class _FigureToolbarState extends State<FigureToolbar> {
               ),
               ToggleButtons(
                 isSelected: selectedPaintingStyle,
-                direction: Axis.vertical,
+                direction: widget.axis,
                 children: [
                   Icon(OwnIcons.fill_drip),
                   Icon(OwnIcons.timeline),
@@ -216,9 +209,6 @@ class _FigureToolbarState extends State<FigureToolbar> {
                 },
               )
             ],
-          ),
-        ),
-      ),
     );
   }
 }

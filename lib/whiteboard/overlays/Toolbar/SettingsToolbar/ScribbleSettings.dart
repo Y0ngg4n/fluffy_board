@@ -23,7 +23,7 @@ class ScribbleSettings extends StatefulWidget {
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
   WebsocketConnection? websocketConnection;
   OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
-
+  Axis axis;
   ScribbleSettings(
       {required this.selectedScribble,
       required this.toolbarOptions,
@@ -31,7 +31,8 @@ class ScribbleSettings extends StatefulWidget {
       required this.scribbles,
       required this.onScribblesChange,
       required this.websocketConnection,
-      required this.onSaveOfflineWhiteboard});
+      required this.onSaveOfflineWhiteboard,
+      required this.axis});
 
   @override
   _ScribbleSettingsState createState() => _ScribbleSettingsState();
@@ -43,22 +44,15 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
   @override
   @override
   Widget build(BuildContext context) {
-    const _borderRadius = 50.0;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 24, 0, 24),
-      child: Card(
-        elevation: 20,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_borderRadius),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
+    return Flex(
+      mainAxisSize: MainAxisSize.min,
+            direction: widget.axis,
             children: [
               Row(
                 children: [
                   RotatedBox(
-                    quarterTurns: -1,
+                    quarterTurns: widget.axis == Axis.vertical ? -1: 0,
                     child: Slider.adaptive(
                       value: widget.selectedScribble!.strokeWidth,
                       onChanged: (value) {
@@ -157,9 +151,6 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
                     child: Icon(Icons.delete),
                   ))
             ],
-          ),
-        ),
-      ),
     );
   }
 }

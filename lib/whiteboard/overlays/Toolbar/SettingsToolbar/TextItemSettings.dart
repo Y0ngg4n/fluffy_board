@@ -21,7 +21,7 @@ class TextItemSettings extends StatefulWidget {
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
   WebsocketConnection? websocketConnection;
   OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
-
+  Axis axis;
   TextItemSettings(
       {required this.selectedTextItem,
       required this.toolbarOptions,
@@ -29,7 +29,8 @@ class TextItemSettings extends StatefulWidget {
       required this.texts,
       required this.onTextItemsChange,
       required this.websocketConnection,
-      required this.onSaveOfflineWhiteboard});
+      required this.onSaveOfflineWhiteboard,
+      required this.axis});
 
   @override
   _TextItemSettingsState createState() => _TextItemSettingsState();
@@ -39,20 +40,13 @@ class _TextItemSettingsState extends State<TextItemSettings> {
 
   @override
   Widget build(BuildContext context) {
-    const _borderRadius = 50.0;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 24, 0, 24),
-      child: Card(
-        elevation: 20,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_borderRadius),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
+    return Flex(
+      mainAxisSize: MainAxisSize.min,
+            direction: widget.axis,
             children: [
               RotatedBox(
-                quarterTurns: -1,
+                quarterTurns: widget.axis == Axis.vertical ? -1: 0,
                 child: Slider.adaptive(
                   value: widget.selectedTextItem!.strokeWidth,
                   onChanged: (value) {
@@ -120,9 +114,6 @@ class _TextItemSettingsState extends State<TextItemSettings> {
                     child: Icon(Icons.delete),
                   ))
             ],
-          ),
-        ),
-      ),
     );
   }
 }

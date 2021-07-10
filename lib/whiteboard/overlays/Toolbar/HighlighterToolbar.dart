@@ -8,16 +8,23 @@ import '../Toolbar.dart' as Toolbar;
 import 'DrawOptions.dart';
 
 class HighlighterOptions extends DrawOptions {
-  HighlighterOptions(List<Color> colors, double strokeWidth, StrokeCap strokeCap, int currentColor, dynamic Function(DrawOptions) onHighlighterChange)
-      : super(colors, strokeWidth, strokeCap, currentColor, onHighlighterChange);
+  HighlighterOptions(
+      List<Color> colors,
+      double strokeWidth,
+      StrokeCap strokeCap,
+      int currentColor,
+      dynamic Function(DrawOptions) onHighlighterChange)
+      : super(
+            colors, strokeWidth, strokeCap, currentColor, onHighlighterChange);
 }
 
-class EncodeHighlighterOptions{
+class EncodeHighlighterOptions {
   List<String> colorPresets;
   double strokeWidth;
   int selectedColor;
 
-  EncodeHighlighterOptions(this.colorPresets, this.strokeWidth, this.selectedColor);
+  EncodeHighlighterOptions(
+      this.colorPresets, this.strokeWidth, this.selectedColor);
 
   Map toJson() {
     return {
@@ -28,26 +35,29 @@ class EncodeHighlighterOptions{
   }
 }
 
-
-class DecodeHighlighterOptions{
+class DecodeHighlighterOptions {
   late List<dynamic> colorPresets;
   late double strokeWidth;
   int selectedColor;
 
+  DecodeHighlighterOptions(
+      this.colorPresets, this.strokeWidth, this.selectedColor);
 
-  DecodeHighlighterOptions(this.colorPresets, this.strokeWidth, this.selectedColor);
-
-  factory DecodeHighlighterOptions.fromJson(dynamic json){
-    return DecodeHighlighterOptions(json['color_presets'] as List<dynamic>, json['stroke_width'] as double, json['selected_color'] as int);
+  factory DecodeHighlighterOptions.fromJson(dynamic json) {
+    return DecodeHighlighterOptions(json['color_presets'] as List<dynamic>,
+        json['stroke_width'] as double, json['selected_color'] as int);
   }
 }
 
 class HighlighterToolbar extends StatefulWidget {
   Toolbar.ToolbarOptions toolbarOptions;
   Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
+  Axis axis;
 
   HighlighterToolbar(
-      {required this.toolbarOptions, required this.onChangedToolbarOptions});
+      {required this.toolbarOptions,
+      required this.onChangedToolbarOptions,
+      required this.axis});
 
   @override
   _HighlighterToolbarState createState() => _HighlighterToolbarState();
@@ -61,35 +71,35 @@ class _HighlighterToolbarState extends State<HighlighterToolbar> {
   @override
   void initState() {
     super.initState();
-    selectedColorList = List.generate(3, (i) => i == widget.toolbarOptions.highlighterOptions.currentColor ? true : false);
+    selectedColorList = List.generate(
+        3,
+        (i) => i == widget.toolbarOptions.highlighterOptions.currentColor
+            ? true
+            : false);
   }
 
   @override
   Widget build(BuildContext context) {
     const _borderRadius = 50.0;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 24, 0, 24),
-      child: Card(
-        elevation: 20,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_borderRadius),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
+    return Flex(
+      mainAxisSize: MainAxisSize.min,
+            direction: widget.axis,
             children: [
               RotatedBox(
-                quarterTurns: -1,
+                quarterTurns: widget.axis == Axis.vertical ? -1: 0,
                 child: Slider.adaptive(
                   value: widget.toolbarOptions.highlighterOptions.strokeWidth,
                   onChanged: (value) {
                     setState(() {
-                      widget.toolbarOptions.highlighterOptions.strokeWidth = value;
+                      widget.toolbarOptions.highlighterOptions.strokeWidth =
+                          value;
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
                     });
                   },
                   onChangeEnd: (value) {
-                    widget.toolbarOptions.highlighterOptions.onDrawOptionChange(widget.toolbarOptions.highlighterOptions);
+                    widget.toolbarOptions.highlighterOptions.onDrawOptionChange(
+                        widget.toolbarOptions.highlighterOptions);
                   },
                   min: 5,
                   max: 50,
@@ -127,11 +137,12 @@ class _HighlighterToolbarState extends State<HighlighterToolbar> {
                       realBeforeIndex = index;
 
                       widget.onChangedToolbarOptions(widget.toolbarOptions);
-                      widget.toolbarOptions.highlighterOptions.onDrawOptionChange(
-                          widget.toolbarOptions.highlighterOptions);
+                      widget.toolbarOptions.highlighterOptions
+                          .onDrawOptionChange(
+                              widget.toolbarOptions.highlighterOptions);
                     });
                   },
-                  direction: Axis.vertical,
+                  direction: widget.axis,
                   isSelected: selectedColorList,
                   children: <Widget>[
                     Icon(OwnIcons.color_lens,
@@ -145,9 +156,6 @@ class _HighlighterToolbarState extends State<HighlighterToolbar> {
                             .toolbarOptions.highlighterOptions.colorPresets[2]),
                   ]),
             ],
-          ),
-        ),
-      ),
     );
   }
 }
