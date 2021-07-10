@@ -26,8 +26,10 @@ class ScreenUtils {
   }
 
   static bool inRect(Rect rect, Offset location) {
-    if (location.dx >= rect.topLeft.dx && location.dx <= rect.topRight.dx
-    && location.dy >= rect.topCenter.dy && location.dy <= rect.bottomCenter.dy)
+    if (location.dx >= rect.topLeft.dx &&
+        location.dx <= rect.topRight.dx &&
+        location.dy >= rect.topCenter.dy &&
+        location.dy <= rect.bottomCenter.dy)
       return true;
     else
       return false;
@@ -133,7 +135,7 @@ class ScreenUtils {
         : false;
   }
 
-  static TextPainter getTextPainter(TextItem textItem){
+  static TextPainter getTextPainter(TextItem textItem) {
     final textStyle = TextStyle(
       color: textItem.color,
       fontSize: textItem.strokeWidth,
@@ -154,5 +156,29 @@ class ScreenUtils {
       maxWidth: 500,
     );
     return textPainter;
+  }
+
+  static calculateScribbleBounds(Scribble newScribble) {
+    for (int i = 0; i < newScribble.points.length; i++) {
+      DrawPoint drawPoint = newScribble.points[i];
+      if (i == 0) {
+        newScribble.leftExtremity = drawPoint.dx;
+        newScribble.rightExtremity = drawPoint.dx;
+        newScribble.topExtremity = drawPoint.dy;
+        newScribble.bottomExtremity = drawPoint.dy;
+      } else {
+        if (drawPoint.dx <= newScribble.leftExtremity)
+          newScribble.leftExtremity = newScribble.points[i].dx;
+        else if (drawPoint.dx > newScribble.rightExtremity) {
+          newScribble.rightExtremity = newScribble.points[i].dx;
+        }
+
+        if (drawPoint.dy > newScribble.bottomExtremity)
+          newScribble.bottomExtremity = drawPoint.dy;
+        else if (drawPoint.dy <= newScribble.topExtremity) {
+          newScribble.topExtremity = drawPoint.dy;
+        }
+      }
+    }
   }
 }

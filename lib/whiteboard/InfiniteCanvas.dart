@@ -106,7 +106,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 widget.toolbarOptions.selectedTool == SelectedTool.figure) {
               Scribble newScribble = _getScribble(newOffset);
               widget.scribbles.add(newScribble);
-              WebsocketSend.sendCreateScribble(newScribble, widget.websocketConnection);
+              WebsocketSend.sendCreateScribble(
+                  newScribble, widget.websocketConnection);
               widget.onScribblesChange(widget.scribbles);
               multiSelect = false;
             } else if (widget.toolbarOptions.selectedTool ==
@@ -122,12 +123,14 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   "",
                   newOffset);
               widget.texts.add(textItem);
-              WebsocketSend.sendCreateTextItem(textItem, widget.websocketConnection);
+              WebsocketSend.sendCreateTextItem(
+                  textItem, widget.websocketConnection);
               multiSelect = false;
             } else if (widget.toolbarOptions.selectedTool ==
                 SelectedTool.settings) {
               Offset calculatedOffset = _calculateOffset(widget.offset,
                   widget.sessionOffset, widget.zoomOptions.scale);
+              bool found = false;
               // Check Scribbles
               for (int i = 0; i < widget.scribbles.length; i++) {
                 // Check in viewport
@@ -152,6 +155,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                       newDrawPoint.y.toInt(),
                       newOffset.dy.toInt(),
                       10)) {
+                    found = true;
                     widget.toolbarOptions.settingsSelectedScribble =
                         currentScribble;
                     widget.toolbarOptions.settingsSelected =
@@ -163,6 +167,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   }
                 }
               }
+              if (found) return;
               // Check uploads
               for (Upload upload in widget.uploads) {
                 // Check if image
@@ -174,15 +179,18 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                           upload.image!.width.toDouble(),
                           upload.image!.height.toDouble()),
                       newOffset)) {
+                    found = true;
                     widget.toolbarOptions.settingsSelectedUpload = upload;
                     widget.toolbarOptions.settingsSelected =
                         SettingsSelected.image;
+                    widget.onChangedToolbarOptions(widget.toolbarOptions);
                     onSettingsMove = newOffset;
                     onSettingsMoveUploadOffset = upload.offset;
                     break;
                   }
                 }
               }
+              if (found) return;
               for (TextItem textItem in widget.texts) {
                 TextPainter textPainter = ScreenUtils.getTextPainter(textItem);
                 if (ScreenUtils.inRect(
@@ -194,30 +202,36 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                           textItem.uuid) {
                     textItem.editing = true;
                   }
+                  found = true;
                   widget.toolbarOptions.settingsSelectedTextItem = textItem;
                   widget.toolbarOptions.settingsSelected =
                       SettingsSelected.text;
+                  widget.onChangedToolbarOptions(widget.toolbarOptions);
                   onSettingsMove = newOffset;
                   onSettingsMoveTextItemOffset = textItem.offset;
                   break;
                 }
               }
-              if (widget.toolbarOptions.settingsSelected ==
-                  SettingsSelected.none) {
-                if (multiSelectStartPosition != Offset.zero &&
-                    multiSelectStopPosition != Offset.zero &&
-                    ScreenUtils.inRect(
-                        Rect.fromPoints(
-                            multiSelectStartPosition, multiSelectStopPosition),
-                        newOffset)) {
-                  multiSelectMoveOffset = newOffset;
-                  multiSelectMove = true;
-                } else {
-                  multiSelect = true;
-                  multiSelectMove = false;
-                  multiSelectStartPosition = newOffset;
-                  multiSelectStopPosition = newOffset;
-                }
+              if (found) return;
+              if (multiSelectStartPosition != Offset.zero &&
+                  multiSelectStopPosition != Offset.zero &&
+                  ScreenUtils.inRect(
+                      Rect.fromPoints(
+                          multiSelectStartPosition, multiSelectStopPosition),
+                      newOffset)) {
+                widget.toolbarOptions.settingsSelected =
+                    SettingsSelected.none;
+                widget.onChangedToolbarOptions(widget.toolbarOptions);
+                multiSelectMoveOffset = newOffset;
+                multiSelectMove = true;
+              } else {
+                widget.toolbarOptions.settingsSelected =
+                    SettingsSelected.none;
+                widget.onChangedToolbarOptions(widget.toolbarOptions);
+                multiSelect = true;
+                multiSelectMove = false;
+                multiSelectStartPosition = newOffset;
+                multiSelectStopPosition = newOffset;
               }
             } else {
               _initialFocalPoint = details.focalPoint;
@@ -285,7 +299,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                     }
                   }
                   if (removeIndex != -1) {
-                    WebsocketSend.sendScribbleDelete(currentScribble, widget.websocketConnection);
+                    WebsocketSend.sendScribbleDelete(
+                        currentScribble, widget.websocketConnection);
                     widget.scribbles.removeAt(removeIndex);
                     break;
                   }
@@ -311,7 +326,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                       lastScribble.points,
                       widget.toolbarOptions.straightLineOptions.strokeWidth +
                           10);
-                WebsocketSend.sendScribbleUpdate(lastScribble, widget.websocketConnection);
+                WebsocketSend.sendScribbleUpdate(
+                    lastScribble, widget.websocketConnection);
                 break;
               case SelectedTool.figure:
                 Scribble lastScribble = widget.scribbles.last;
@@ -320,7 +336,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   lastScribble.points.add(newDrawPoint);
                 else
                   lastScribble.points.last = newDrawPoint;
-                WebsocketSend.sendScribbleUpdate(lastScribble, widget.websocketConnection);
+                WebsocketSend.sendScribbleUpdate(
+                    lastScribble, widget.websocketConnection);
                 break;
               case SelectedTool.settings:
                 if (widget.toolbarOptions.settingsSelected ==
@@ -334,7 +351,11 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   }
                   widget.toolbarOptions.settingsSelectedScribble!.points =
                       newPoints;
-                  WebsocketSend.sendScribbleUpdate(widget.toolbarOptions.settingsSelectedScribble!, widget.websocketConnection);
+                  ScreenUtils.calculateScribbleBounds(
+                      widget.toolbarOptions.settingsSelectedScribble!);
+                  WebsocketSend.sendScribbleUpdate(
+                      widget.toolbarOptions.settingsSelectedScribble!,
+                      widget.websocketConnection);
                 } else if (widget.toolbarOptions.settingsSelected ==
                         SettingsSelected.image &&
                     widget.toolbarOptions.settingsSelectedUpload != null &&
@@ -342,7 +363,9 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   widget.toolbarOptions.settingsSelectedUpload!.offset =
                       (onSettingsMoveUploadOffset! +
                           (newOffset - onSettingsMove));
-                  WebsocketSend.sendUploadUpdate(widget.toolbarOptions.settingsSelectedUpload!, widget.websocketConnection);
+                  WebsocketSend.sendUploadUpdate(
+                      widget.toolbarOptions.settingsSelectedUpload!,
+                      widget.websocketConnection);
                 } else if (widget.toolbarOptions.settingsSelected ==
                         SettingsSelected.text &&
                     widget.toolbarOptions.settingsSelectedTextItem != null &&
@@ -350,7 +373,9 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   widget.toolbarOptions.settingsSelectedTextItem!.offset =
                       (onSettingsMoveTextItemOffset! +
                           (newOffset - onSettingsMove));
-                  WebsocketSend.sendUpdateTextItem(widget.toolbarOptions.settingsSelectedTextItem!, widget.websocketConnection);
+                  WebsocketSend.sendUpdateTextItem(
+                      widget.toolbarOptions.settingsSelectedTextItem!,
+                      widget.websocketConnection);
                 } else if (widget.toolbarOptions.settingsSelected ==
                     SettingsSelected.none) {}
                 {
@@ -360,9 +385,10 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   if (multiSelectMove) {
                     for (Scribble scribble in selectedMultiScribbles) {
                       List<DrawPoint> newPoints = List.empty(growable: true);
-                      for(int i = 0; i < scribble.points.length; i++){
+                      for (int i = 0; i < scribble.points.length; i++) {
                         newPoints.add(new DrawPoint.of(
-                            selectedMultiScribblesOffsets[scribble]![i] + (newOffset - multiSelectMoveOffset)));
+                            selectedMultiScribblesOffsets[scribble]![i] +
+                                (newOffset - multiSelectMoveOffset)));
                       }
                       scribble.points = newPoints;
                     }
@@ -375,7 +401,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 Scribble newScribble = widget.scribbles.last;
                 DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
                 newScribble.points.add(newDrawPoint);
-                WebsocketSend.sendScribbleUpdate(newScribble, widget.websocketConnection);
+                WebsocketSend.sendScribbleUpdate(
+                    newScribble, widget.websocketConnection);
             }
           });
         },
@@ -393,50 +420,34 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 widget.toolbarOptions.selectedTool ==
                     SelectedTool.straightLine) {
               Scribble newScribble = widget.scribbles.last;
-              for (int i = 0; i < newScribble.points.length; i++) {
-                DrawPoint drawPoint = newScribble.points[i];
-                if (i == 0) {
-                  newScribble.leftExtremity = drawPoint.dx;
-                  newScribble.rightExtremity = drawPoint.dx;
-                  newScribble.topExtremity = drawPoint.dy;
-                  newScribble.bottomExtremity = drawPoint.dy;
-                } else {
-                  if (drawPoint.dx <= newScribble.leftExtremity)
-                    newScribble.leftExtremity = newScribble.points[i].dx;
-                  else if (drawPoint.dx > newScribble.rightExtremity) {
-                    newScribble.rightExtremity = newScribble.points[i].dx;
-                  }
-
-                  if (drawPoint.dy > newScribble.bottomExtremity)
-                    newScribble.bottomExtremity = drawPoint.dy;
-                  else if (drawPoint.dy <= newScribble.topExtremity) {
-                    newScribble.topExtremity = drawPoint.dy;
-                  }
-                }
-              }
+              ScreenUtils.calculateScribbleBounds(newScribble);
               widget.scribbles.last = newScribble;
-              WebsocketSend.sendScribbleUpdate(newScribble, widget.websocketConnection);
+              WebsocketSend.sendScribbleUpdate(
+                  newScribble, widget.websocketConnection);
               widget.onSaveOfflineWhiteboard();
             } else if (widget.toolbarOptions.selectedTool ==
                     SelectedTool.settings &&
                 widget.toolbarOptions.settingsSelected ==
                     SettingsSelected.none) {
               for (Scribble scribble in widget.scribbles) {
-                if(multiSelect && !multiSelectMove) {
+                if (multiSelect && !multiSelectMove) {
                   for (DrawPoint drawPoint in scribble.points) {
                     if (ScreenUtils.inRect(
                         Rect.fromPoints(
                             multiSelectStartPosition, multiSelectStopPosition),
                         drawPoint)) {
                       selectedMultiScribbles.add(scribble);
-                      selectedMultiScribblesOffsets[scribble] =
-                          scribble.points.map((e) => new DrawPoint(e.dx, e.dy))
-                              .toList();
+                      selectedMultiScribblesOffsets[scribble] = scribble.points
+                          .map((e) => new DrawPoint(e.dx, e.dy))
+                          .toList();
                       continue;
                     }
                   }
-                }if(multiSelectMove){
-                  WebsocketSend.sendScribbleUpdate(scribble, widget.websocketConnection);
+                }
+                if (multiSelectMove) {
+                  ScreenUtils.calculateScribbleBounds(scribble);
+                  WebsocketSend.sendScribbleUpdate(
+                      scribble, widget.websocketConnection);
                 }
               }
             }

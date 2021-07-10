@@ -56,8 +56,10 @@ class _TextItemSettingsState extends State<TextItemSettings> {
                     setState(() {
                       widget.selectedTextItem!.strokeWidth = value;
                       widget.onTextItemsChange(widget.texts);
-                      WebsocketSend.sendUpdateTextItem(widget.selectedTextItem!, widget.websocketConnection);
                     });
+                  },
+                  onChangeEnd: (value) {
+                      WebsocketSend.sendUpdateTextItem(widget.selectedTextItem!, widget.websocketConnection);
                   },
                   min: 10,
                   max: 250,
