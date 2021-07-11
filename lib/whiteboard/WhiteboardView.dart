@@ -7,6 +7,7 @@ import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
 import 'package:fluffy_board/whiteboard/TextsCanvas.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
+import 'package:fluffy_board/whiteboard/appbar/ConnectedUsers.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/BackgroundToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/DrawOptions.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/EraserToolbar.dart';
@@ -35,9 +36,10 @@ class WhiteboardView extends StatefulWidget {
   ExtWhiteboard? extWhiteboard;
   OfflineWhiteboard? offlineWhiteboard;
   String auth_token;
+  String id;
 
   WhiteboardView(this.whiteboard, this.extWhiteboard, this.offlineWhiteboard,
-      this.auth_token);
+      this.auth_token, this.id);
 
   @override
   _WhiteboardViewState createState() => _WhiteboardViewState();
@@ -53,8 +55,10 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   Offset _sessionOffset = Offset.zero;
   WebsocketConnection? websocketConnection;
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
-  final LocalStorage settingsStorage = new LocalStorage('filemanager');
+  final LocalStorage settingsStorage = new LocalStorage('settings');
   String toolbarLocation = "left";
+  Set<ConnectedUser> connectedUsers = Set.of([]);
+  ConnectedUser? followingUser;
 
   @override
   void initState() {
@@ -149,6 +153,26 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             }
           });
         },
+        onUserJoin: (connectedUser) {
+          setState(() {
+            bool exists = false;
+            for (ConnectedUser cu in connectedUsers) {
+              if (cu.uuid == connectedUser.uuid) {
+                exists = true;
+                break;
+              }
+            }
+            if (!exists) connectedUsers.add(connectedUser);
+          });
+        },
+        onUserMove: (connectedUserMove) {
+          setState(() {
+            if (followingUser != null &&
+                followingUser!.uuid == connectedUserMove.uuid) {
+              this.offset = connectedUserMove.offset;
+            }
+          });
+        },
       );
       // WidgetsBinding.instance!
       //     .addPostFrameCallback((_) => _createToolbars(context));
@@ -175,6 +199,14 @@ class _WhiteboardViewState extends State<WhiteboardView> {
               : widget.whiteboard!.name,
         ),
         actions: [
+          ConnectedUsers(
+            connectedUsers: connectedUsers,
+            onTeleport: (offset) {
+              setState(() {
+                  offset = offset;
+              });
+            },
+          ),
           PopupMenuButton(
               onSelected: (value) => {
                     setState(() {
@@ -251,6 +283,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
         appBar: (appBar),
         body: Stack(children: [
           InfiniteCanvasPage(
+            id: widget.id,
             onSaveOfflineWhiteboard: () => saveOfflineWhiteboard(),
             auth_token: widget.auth_token,
             websocketConnection: websocketConnection,
@@ -284,6 +317,15 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             },
             scribbles: scribbles,
           ),
+          followingUser != null
+              ? Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        border:
+                            Border.all(color: followingUser!.color, width: 10)),
+                  ),
+                )
+              : Container(),
           TextsCanvas(
             websocketConnection: websocketConnection,
             sessionOffset: _sessionOffset,

@@ -50,6 +50,9 @@ class WebsocketManagerHtml implements WebsocketManager {
   @override
   startListener(String whiteboard, String auth_token) {
     print("starting listeners ...");
+    channel.onOpen.listen((event) {
+      sendDataToChannel("connected-users#", "");
+    });
     channel.onMessage.listen((event) {
       onWebsocketMessage(event.data);
     });

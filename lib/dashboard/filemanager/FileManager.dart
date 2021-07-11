@@ -177,9 +177,10 @@ class CreateWhiteboardResponse {
 class FileManager extends StatefulWidget {
   String auth_token;
   String username;
+  String id;
   bool online;
 
-  FileManager(this.auth_token, this.username, this.online);
+  FileManager(this.auth_token, this.username, this.id, this.online);
 
   @override
   _FileManagerState createState() => _FileManagerState();
@@ -407,7 +408,7 @@ class _FileManagerState extends State<FileManager> {
                               MaterialPageRoute<void>(
                                   builder: (BuildContext context) =>
                                       WhiteboardView(whiteboard, null, null,
-                                          widget.auth_token)));
+                                          widget.id, widget.auth_token)));
                         },
                       ),
                       Text(
@@ -514,7 +515,7 @@ class _FileManagerState extends State<FileManager> {
                               MaterialPageRoute<void>(
                                   builder: (BuildContext context) =>
                                       WhiteboardView(null, whiteboard, null,
-                                          widget.auth_token)));
+                                          widget.id, widget.auth_token)));
                         },
                       ),
                       Text(
@@ -567,7 +568,7 @@ class _FileManagerState extends State<FileManager> {
                               MaterialPageRoute<void>(
                                   builder: (BuildContext context) =>
                                       WhiteboardView(null, null, whiteboard,
-                                          widget.auth_token)));
+                                          widget.id, widget.auth_token)));
                         },
                       ),
                       Text(whiteboard.name

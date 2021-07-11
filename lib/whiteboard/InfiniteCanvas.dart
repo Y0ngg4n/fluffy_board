@@ -42,24 +42,25 @@ class InfiniteCanvasPage extends StatefulWidget {
   OnScribblesChange onScribblesChange;
   WebsocketConnection? websocketConnection;
   String auth_token;
+  String id;
   OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
 
-  InfiniteCanvasPage(
-      {required this.toolbarOptions,
-      required this.zoomOptions,
-      required this.onChangedZoomOptions,
-      required this.appBarHeight,
-      required this.uploads,
-      required this.offset,
-      required this.sessionOffset,
-      required this.onOffsetChange,
-      required this.onChangedToolbarOptions,
-      required this.texts,
-      required this.scribbles,
-      required this.onScribblesChange,
-      required this.websocketConnection,
-      required this.auth_token,
-      required this.onSaveOfflineWhiteboard});
+  InfiniteCanvasPage({required this.toolbarOptions,
+    required this.zoomOptions,
+    required this.onChangedZoomOptions,
+    required this.appBarHeight,
+    required this.uploads,
+    required this.offset,
+    required this.sessionOffset,
+    required this.onOffsetChange,
+    required this.onChangedToolbarOptions,
+    required this.texts,
+    required this.scribbles,
+    required this.onScribblesChange,
+    required this.websocketConnection,
+    required this.auth_token,
+    required this.id,
+    required this.onSaveOfflineWhiteboard});
 
   @override
   _InfiniteCanvasPageState createState() => _InfiniteCanvasPageState();
@@ -119,7 +120,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   ScreenUtils.getScreenWidth(context).toInt(),
                   ScreenUtils.getScreenHeight(context).toInt(),
                   widget.toolbarOptions.textOptions.colorPresets[
-                      widget.toolbarOptions.textOptions.currentColor],
+                  widget.toolbarOptions.textOptions.currentColor],
                   "",
                   newOffset,
                   0);
@@ -254,7 +255,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
             widget.onChangedZoomOptions(widget.zoomOptions);
             switch (widget.toolbarOptions.selectedTool) {
               case SelectedTool.move:
-                // TODO: Test on mobile
+              // TODO: Test on mobile
                 if (details.pointerCount == 2) {
                   widget.sessionOffset =
                       details.focalPoint * 3 - _initialFocalPoint;
@@ -263,6 +264,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                       details.focalPoint - _initialFocalPoint;
                 }
                 widget.onOffsetChange(widget.offset, widget.sessionOffset);
+                WebsocketSend.sendUserMove(
+                    newOffset, widget.id, widget.websocketConnection);
                 break;
               case SelectedTool.background:
                 break;
@@ -315,7 +318,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                       .removeRange(2, lastScribble.points.length);
                 lastScribble.points.last = newDrawPoint;
                 if (SelectedStraightLineCapToolbar.values[widget
-                        .toolbarOptions.straightLineOptions.selectedCap] ==
+                    .toolbarOptions.straightLineOptions.selectedCap] ==
                     SelectedStraightLineCapToolbar.Arrow)
                   fillArrow(
                       lastScribble.points.first.dx,
@@ -340,7 +343,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 break;
               case SelectedTool.settings:
                 if (widget.toolbarOptions.settingsSelected ==
-                        SettingsSelected.scribble &&
+                    SettingsSelected.scribble &&
                     widget.toolbarOptions.settingsSelectedScribble != null &&
                     onSettingsMovePoints.isNotEmpty) {
                   List<DrawPoint> newPoints = List.empty(growable: true);
@@ -356,22 +359,22 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                       widget.toolbarOptions.settingsSelectedScribble!,
                       widget.websocketConnection);
                 } else if (widget.toolbarOptions.settingsSelected ==
-                        SettingsSelected.image &&
+                    SettingsSelected.image &&
                     widget.toolbarOptions.settingsSelectedUpload != null &&
                     onSettingsMoveUploadOffset != null) {
                   widget.toolbarOptions.settingsSelectedUpload!.offset =
-                      (onSettingsMoveUploadOffset! +
-                          (newOffset - onSettingsMove));
+                  (onSettingsMoveUploadOffset! +
+                      (newOffset - onSettingsMove));
                   WebsocketSend.sendUploadUpdate(
                       widget.toolbarOptions.settingsSelectedUpload!,
                       widget.websocketConnection);
                 } else if (widget.toolbarOptions.settingsSelected ==
-                        SettingsSelected.text &&
+                    SettingsSelected.text &&
                     widget.toolbarOptions.settingsSelectedTextItem != null &&
                     onSettingsMoveTextItemOffset != null) {
                   widget.toolbarOptions.settingsSelectedTextItem!.offset =
-                      (onSettingsMoveTextItemOffset! +
-                          (newOffset - onSettingsMove));
+                  (onSettingsMoveTextItemOffset! +
+                      (newOffset - onSettingsMove));
                   WebsocketSend.sendUpdateTextItem(
                       widget.toolbarOptions.settingsSelectedTextItem!,
                       widget.websocketConnection);
@@ -425,7 +428,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   newScribble, widget.websocketConnection);
               widget.onSaveOfflineWhiteboard();
             } else if (widget.toolbarOptions.selectedTool ==
-                    SelectedTool.settings &&
+                SelectedTool.settings &&
                 widget.toolbarOptions.settingsSelected ==
                     SettingsSelected.none) {
               for (Scribble scribble in widget.scribbles) {
@@ -459,7 +462,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 cursorRadius = _initcursorRadius;
               });
             },
-            onHover: (event) => {
+            onHover: (event) =>
+            {
               this.setState(() {
                 cursorPosition = event.localPosition / widget.zoomOptions.scale;
               })
@@ -500,7 +504,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
 
   _getScribble(Offset newOffset) {
     List<DrawPoint> drawPoints =
-        new List.filled(1, new DrawPoint.of(newOffset), growable: true);
+    new List.filled(1, new DrawPoint.of(newOffset), growable: true);
     Color color = Colors.black;
     StrokeCap strokeCap = StrokeCap.round;
     double strokeWidth = 1;
@@ -535,8 +539,14 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
           .values[widget.toolbarOptions.figureOptions.selectedFill];
     }
 
-    return new Scribble(uuid.v4(), strokeWidth, strokeCap, color, drawPoints,
-        selectedFigureTypeToolbar, paintingStyle);
+    return new Scribble(
+        uuid.v4(),
+        strokeWidth,
+        strokeCap,
+        color,
+        drawPoints,
+        selectedFigureTypeToolbar,
+        paintingStyle);
   }
 
   double _getCursorRadius() {

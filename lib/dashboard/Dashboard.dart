@@ -45,6 +45,7 @@ class _DashboardState extends State<Dashboard> {
   bool loggedIn = false;
   late String auth_token;
   late String username;
+  late String id;
 
   @override
   void initState() {
@@ -77,7 +78,7 @@ class _DashboardState extends State<Dashboard> {
     return (Scaffold(
       appBar: AppBar(title: Text(name), actions: [AvatarIcon(online)]),
       body: Container(
-        child: FileManager(auth_token, username, online),
+        child: FileManager(auth_token, username, id,  online),
       ),
     ));
   }
@@ -85,6 +86,7 @@ class _DashboardState extends State<Dashboard> {
   _setStorageReady() {
     auth_token = accountStorage.getItem("auth_token") ?? "";
     username = accountStorage.getItem("username") ?? "";
+    id = accountStorage.getItem("id") ?? "";
     setState(() {
       this.storageReady = true;
       this.auth_token = auth_token;

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui' as ui;
 
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
@@ -134,5 +135,16 @@ class WebsocketSend {
     ));
     if (websocketConnection != null)
       websocketConnection.sendDataToChannel("text-item-delete#", data);
+  }
+
+  static sendUserMove(
+      ui.Offset offset, String id,  WebsocketConnection? websocketConnection) {
+    String data = jsonEncode(WSUserMove(
+      id,
+      offset.dx,
+      offset.dy,
+    ));
+    if (websocketConnection != null)
+      websocketConnection.sendDataToChannel("user-move#", data);
   }
 }

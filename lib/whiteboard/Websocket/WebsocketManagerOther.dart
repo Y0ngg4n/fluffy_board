@@ -48,6 +48,7 @@ class WebsocketManagerOther implements WebsocketManager {
   @override
   startListener(String whiteboard, String auth_token) {
     print("starting listeners ...");
+    sendDataToChannel("connected-users#", "");
     this.channel.listen((streamData) {
       onWebsocketMessage(streamData);
     }, onDone: () {
