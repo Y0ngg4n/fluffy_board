@@ -150,6 +150,8 @@ class _ColorPickerViewState extends State<ColorPickerView> {
         return widget.toolbarOptions.straightLineOptions;
       case Toolbar.SelectedTool.text:
         return widget.toolbarOptions.textOptions;
+      case Toolbar.SelectedTool.figure:
+        return widget.toolbarOptions.figureOptions;
       default:
         return widget.toolbarOptions.pencilOptions;
     }

@@ -8,6 +8,7 @@ import 'package:fluffy_board/whiteboard/TextsCanvas.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketSend.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
+import 'package:fluffy_board/whiteboard/api/GetToolbarOptions.dart';
 import 'package:fluffy_board/whiteboard/appbar/ConnectedUsers.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/BackgroundToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/DrawOptions.dart';
@@ -38,9 +39,10 @@ class WhiteboardView extends StatefulWidget {
   OfflineWhiteboard? offlineWhiteboard;
   String auth_token;
   String id;
+  bool online;
 
   WhiteboardView(this.whiteboard, this.extWhiteboard, this.offlineWhiteboard,
-      this.auth_token, this.id);
+      this.auth_token, this.id, this.online);
 
   @override
   _WhiteboardViewState createState() => _WhiteboardViewState();
@@ -64,7 +66,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   @override
   void initState() {
     super.initState();
-    if (widget.offlineWhiteboard == null) {
+    if (widget.offlineWhiteboard == null && !widget.online) {
       try {
         websocketConnection = WebsocketConnection.getInstance(
           whiteboard: widget.whiteboard == null
@@ -170,9 +172,6 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           onUserMove: (connectedUserMove) {
             setState(() {
               for (int i = 0; i < connectedUsers.length; i++) {
-                print(connectedUsers.elementAt(i).uuid);
-                print(connectedUserMove.uuid);
-                print("#");
                 if (connectedUsers.elementAt(i).uuid ==
                     connectedUserMove.uuid) {
                   connectedUsers.elementAt(i).offset = connectedUserMove.offset;
@@ -192,8 +191,12 @@ class _WhiteboardViewState extends State<WhiteboardView> {
       // WidgetsBinding.instance!
       //     .addPostFrameCallback((_) => _createToolbars(context));
     }
+    settingsStorage.ready.then((value) => setState(() {
+          toolbarLocation =
+              settingsStorage.getItem("toolbar-location") ?? "left";
+          _getToolBarOptions();
+        }));
     _getWhiteboardData();
-    _getToolBarOptions();
   }
 
   @override
@@ -204,7 +207,9 @@ class _WhiteboardViewState extends State<WhiteboardView> {
 
   @override
   Widget build(BuildContext context) {
-    toolbarLocation = settingsStorage.getItem("toolbar-location") ?? "left";
+    setState(() {
+      toolbarLocation = settingsStorage.getItem("toolbar-location") ?? "left";
+    });
     AppBar appBar = AppBar(
         title: Text(
           widget.whiteboard == null
@@ -380,12 +385,21 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   }
 
   Future _getToolBarOptions() async {
-    PencilOptions pencilOptions = await _getPencilOptions();
-    HighlighterOptions highlighterOptions = await _getHighlighterOptions();
-    EraserOptions eraserOptions = await _getEraserOptions();
-    StraightLineOptions straightLineOptions = await _getStraightLineOptions();
-    FigureOptions figureOptions = await _getFigureOptions();
-    BackgroundOptions backgroundOptions = await _getBackgroundOptions();
+    PencilOptions pencilOptions = await GetToolbarOptions.getPencilOptions(
+        widget.auth_token, widget.online);
+    HighlighterOptions highlighterOptions =
+        await GetToolbarOptions.getHighlighterOptions(
+            widget.auth_token, widget.online);
+    EraserOptions eraserOptions = await GetToolbarOptions.getEraserOptions(
+        widget.auth_token, widget.online);
+    StraightLineOptions straightLineOptions =
+        await GetToolbarOptions.getStraightLineOptions(
+            widget.auth_token, widget.online);
+    FigureOptions figureOptions = await GetToolbarOptions.getFigureOptions(
+        widget.auth_token, widget.online);
+    BackgroundOptions backgroundOptions =
+        await GetToolbarOptions.getBackgroundOptions(
+            widget.auth_token, widget.online);
     setState(() {
       toolbarOptions = new Toolbar.ToolbarOptions(
           Toolbar.SelectedTool.move,
@@ -403,315 +417,18 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   }
 
   Future _getWhiteboardData() async {
-    if (websocketConnection != null) {
+    if (websocketConnection != null && widget.online) {
       await _getScribbles();
       await _getUploads();
       await _getTextItems();
     }
-    if (widget.offlineWhiteboard != null) {
+    if (widget.offlineWhiteboard != null && !widget.online) {
       setState(() {
         scribbles = widget.offlineWhiteboard!.scribbles.list;
         uploads = widget.offlineWhiteboard!.uploads.list;
         texts = widget.offlineWhiteboard!.texts.list;
       });
     }
-  }
-
-  Future<PencilOptions> _getPencilOptions() async {
-    http.Response pencilResponse = await http.get(
-        Uri.parse(dotenv.env['REST_API_URL']! + "/toolbar-options/pencil/get"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        });
-
-    PencilOptions pencilOptions;
-    if (pencilResponse.statusCode == 200) {
-      DecodePencilOptions decodePencilOptions =
-          DecodePencilOptions.fromJson(jsonDecode(pencilResponse.body));
-      pencilOptions = new PencilOptions(
-          decodePencilOptions.colorPresets
-              .map((e) => HexColor.fromHex(e))
-              .toList(),
-          decodePencilOptions.strokeWidth,
-          StrokeCap.round,
-          decodePencilOptions.selectedColor,
-          (drawOptions) => _sendPencilToolbarOptions(drawOptions));
-    } else {
-      pencilOptions = PencilOptions(
-          List.from({Colors.black, Colors.blue, Colors.red}),
-          1,
-          StrokeCap.round,
-          0,
-          (drawOptions) => _sendPencilToolbarOptions(drawOptions));
-    }
-    return pencilOptions;
-  }
-
-  Future<HighlighterOptions> _getHighlighterOptions() async {
-    http.Response highlighterResponse = await http.get(
-        Uri.parse(
-            dotenv.env['REST_API_URL']! + "/toolbar-options/highlighter/get"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        });
-
-    HighlighterOptions highlighterOptions;
-    if (highlighterResponse.statusCode == 200) {
-      DecodeHighlighterOptions decodeHighlighterOptions =
-          DecodeHighlighterOptions.fromJson(
-              jsonDecode(highlighterResponse.body));
-      highlighterOptions = new HighlighterOptions(
-          decodeHighlighterOptions.colorPresets
-              .map((e) => HexColor.fromHex(e))
-              .toList(),
-          decodeHighlighterOptions.strokeWidth,
-          StrokeCap.square,
-          decodeHighlighterOptions.selectedColor,
-          (drawOptions) => _sendHighlighterToolbarOptions(drawOptions));
-    } else {
-      highlighterOptions = HighlighterOptions(
-          List.from({
-            Colors.limeAccent,
-            Colors.lightGreenAccent,
-            Colors.lightBlueAccent
-          }),
-          5,
-          StrokeCap.square,
-          0,
-          (drawOptions) => _sendHighlighterToolbarOptions(drawOptions));
-    }
-    return highlighterOptions;
-  }
-
-  Future<EraserOptions> _getEraserOptions() async {
-    http.Response highlighterResponse = await http.get(
-        Uri.parse(dotenv.env['REST_API_URL']! + "/toolbar-options/eraser/get"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        });
-
-    EraserOptions eraserOptions;
-    if (highlighterResponse.statusCode == 200) {
-      DecodeEraserOptions decodeEraserOptions =
-          DecodeEraserOptions.fromJson(jsonDecode(highlighterResponse.body));
-      eraserOptions = new EraserOptions(
-          List.empty(),
-          decodeEraserOptions.strokeWidth,
-          StrokeCap.square,
-          0,
-          (drawOptions) => _sendEraserToolbarOptions(drawOptions));
-    } else {
-      eraserOptions = EraserOptions(List.empty(), 50, StrokeCap.square, 0,
-          (drawOptions) => _sendEraserToolbarOptions(drawOptions));
-    }
-    return eraserOptions;
-  }
-
-  Future<StraightLineOptions> _getStraightLineOptions() async {
-    http.Response straightLineResponse = await http.get(
-        Uri.parse(
-            dotenv.env['REST_API_URL']! + "/toolbar-options/straight-line/get"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        });
-
-    StraightLineOptions straightLineOptions;
-    if (straightLineResponse.statusCode == 200) {
-      DecodeStraightLineOptions decodeStraightLineOptions =
-          DecodeStraightLineOptions.fromJson(
-              jsonDecode(straightLineResponse.body));
-      straightLineOptions = new StraightLineOptions(
-          decodeStraightLineOptions.selectedCap,
-          decodeStraightLineOptions.colorPresets
-              .map((e) => HexColor.fromHex(e))
-              .toList(),
-          decodeStraightLineOptions.strokeWidth,
-          StrokeCap.square,
-          decodeStraightLineOptions.selectedColor,
-          (drawOptions) => _sendStraightLineToolbarOptions(drawOptions));
-    } else {
-      straightLineOptions = StraightLineOptions(
-          0,
-          List.from({Colors.black, Colors.blue, Colors.red}),
-          5,
-          StrokeCap.square,
-          0,
-          (drawOptions) => _sendStraightLineToolbarOptions(drawOptions));
-    }
-    return straightLineOptions;
-  }
-
-  Future<FigureOptions> _getFigureOptions() async {
-    http.Response straightLineResponse = await http.get(
-        Uri.parse(dotenv.env['REST_API_URL']! + "/toolbar-options/figure/get"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        });
-
-    FigureOptions figureOptions;
-    if (straightLineResponse.statusCode == 200) {
-      DecodeFigureptions decodeFigureptions =
-          DecodeFigureptions.fromJson(jsonDecode(straightLineResponse.body));
-      figureOptions = new FigureOptions(
-          decodeFigureptions.selectedFigure,
-          decodeFigureptions.selectedFill,
-          decodeFigureptions.colorPresets
-              .map((e) => HexColor.fromHex(e))
-              .toList(),
-          decodeFigureptions.strokeWidth,
-          StrokeCap.round,
-          decodeFigureptions.selectedColor,
-          (drawOptions) => _sendFigureToolbarOptions(drawOptions));
-    } else {
-      figureOptions = FigureOptions(
-          1,
-          1,
-          List.from({Colors.black, Colors.blue, Colors.red}),
-          1,
-          StrokeCap.round,
-          0,
-          (drawOptions) => _sendFigureToolbarOptions(drawOptions));
-    }
-    return figureOptions;
-  }
-
-  Future<BackgroundOptions> _getBackgroundOptions() async {
-    http.Response backgroundResponse = await http.get(
-        Uri.parse(
-            dotenv.env['REST_API_URL']! + "/toolbar-options/background/get"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        });
-
-    BackgroundOptions backgroundOptions;
-    if (backgroundResponse.statusCode == 200) {
-      DecodeBackgroundOptions decodeBackgroundOptions =
-          DecodeBackgroundOptions.fromJson(jsonDecode(backgroundResponse.body));
-      backgroundOptions = new BackgroundOptions(
-          decodeBackgroundOptions.selectedBackground,
-          List.empty(),
-          decodeBackgroundOptions.strokeWidth,
-          StrokeCap.round,
-          0,
-          (drawOptions) => _sendBackgroundToolbarOptions(drawOptions));
-    } else {
-      backgroundOptions = BackgroundOptions(
-          0,
-          List.empty(),
-          50,
-          StrokeCap.round,
-          0,
-          (drawOptions) => _sendBackgroundToolbarOptions(drawOptions));
-    }
-    return backgroundOptions;
-  }
-
-  _sendPencilToolbarOptions(DrawOptions drawOptions) async {
-    PencilOptions pencilOptions = drawOptions as PencilOptions;
-    await http.post(
-        Uri.parse(
-            dotenv.env['REST_API_URL']! + "/toolbar-options/pencil/update"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        },
-        body: jsonEncode(new EncodePencilOptions(
-            pencilOptions.colorPresets.map((e) => e.toHex()).toList(),
-            pencilOptions.strokeWidth,
-            pencilOptions.currentColor)));
-  }
-
-  _sendHighlighterToolbarOptions(DrawOptions drawOptions) async {
-    HighlighterOptions highlighterOptions = drawOptions as HighlighterOptions;
-    await http.post(
-        Uri.parse(dotenv.env['REST_API_URL']! +
-            "/toolbar-options/highlighter/update"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        },
-        body: jsonEncode(new EncodeHighlighterOptions(
-            highlighterOptions.colorPresets.map((e) => e.toHex()).toList(),
-            highlighterOptions.strokeWidth,
-            highlighterOptions.currentColor)));
-  }
-
-  _sendEraserToolbarOptions(DrawOptions drawOptions) async {
-    EraserOptions eraserOptions = drawOptions as EraserOptions;
-    await http.post(
-        Uri.parse(
-            dotenv.env['REST_API_URL']! + "/toolbar-options/eraser/update"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        },
-        body: jsonEncode(new EncodeEraserOptions(eraserOptions.strokeWidth)));
-  }
-
-  _sendStraightLineToolbarOptions(DrawOptions drawOptions) async {
-    StraightLineOptions straightLineOptions =
-        drawOptions as StraightLineOptions;
-    await http.post(
-        Uri.parse(dotenv.env['REST_API_URL']! +
-            "/toolbar-options/straight-line/update"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        },
-        body: jsonEncode(new EncodeStraightLineOptions(
-            straightLineOptions.colorPresets.map((e) => e.toHex()).toList(),
-            straightLineOptions.strokeWidth,
-            straightLineOptions.currentColor,
-            straightLineOptions.selectedCap)));
-  }
-
-  _sendFigureToolbarOptions(DrawOptions drawOptions) async {
-    FigureOptions figureOptions = drawOptions as FigureOptions;
-    await http.post(
-        Uri.parse(
-            dotenv.env['REST_API_URL']! + "/toolbar-options/figure/update"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        },
-        body: jsonEncode(new EncodeFigureOptions(
-            figureOptions.colorPresets.map((e) => e.toHex()).toList(),
-            figureOptions.strokeWidth,
-            figureOptions.currentColor,
-            figureOptions.selectedFigure,
-            figureOptions.selectedFill)));
-  }
-
-  _sendBackgroundToolbarOptions(DrawOptions drawOptions) async {
-    BackgroundOptions backgroundOptions = drawOptions as BackgroundOptions;
-    await http.post(
-        Uri.parse(
-            dotenv.env['REST_API_URL']! + "/toolbar-options/background/update"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        },
-        body: jsonEncode(new EncodeBackgroundOptions(
-            backgroundOptions.strokeWidth,
-            backgroundOptions.selectedBackground)));
   }
 
   Future _getScribbles() async {
