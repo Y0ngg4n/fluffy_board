@@ -6,6 +6,7 @@ import 'package:fluffy_board/dashboard/filemanager/FileManager.dart';
 import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
 import 'package:fluffy_board/whiteboard/TextsCanvas.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
+import 'package:fluffy_board/whiteboard/Websocket/WebsocketSend.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:fluffy_board/whiteboard/appbar/ConnectedUsers.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/BackgroundToolbar.dart';
@@ -64,116 +65,130 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   void initState() {
     super.initState();
     if (widget.offlineWhiteboard == null) {
-      websocketConnection = WebsocketConnection.getInstance(
-        whiteboard: widget.whiteboard == null
-            ? widget.extWhiteboard!.original
-            : widget.whiteboard!.id,
-        auth_token: widget.auth_token,
-        onScribbleAdd: (scribble) {
-          setState(() {
-            scribbles.add(scribble);
-          });
-        },
-        onScribbleUpdate: (scribble) {
-          setState(() {
-            // Reverse Scribble Search for better Performance
-            for (int i = scribbles.length - 1; i >= 0; i--) {
-              if (scribbles[i].uuid == scribble.uuid) {
-                scribble.selectedFigureTypeToolbar =
-                    scribbles[i].selectedFigureTypeToolbar;
-                scribbles[i] = scribble;
-                break;
+      try {
+        websocketConnection = WebsocketConnection.getInstance(
+          whiteboard: widget.whiteboard == null
+              ? widget.extWhiteboard!.original
+              : widget.whiteboard!.id,
+          auth_token: widget.auth_token,
+          onScribbleAdd: (scribble) {
+            setState(() {
+              scribbles.add(scribble);
+            });
+          },
+          onScribbleUpdate: (scribble) {
+            setState(() {
+              // Reverse Scribble Search for better Performance
+              for (int i = scribbles.length - 1; i >= 0; i--) {
+                if (scribbles[i].uuid == scribble.uuid) {
+                  scribble.selectedFigureTypeToolbar =
+                      scribbles[i].selectedFigureTypeToolbar;
+                  scribbles[i] = scribble;
+                  break;
+                }
               }
-            }
-          });
-        },
-        onScribbleDelete: (id) {
-          setState(() {
-            // Reverse Scribble Search for better Performance
-            for (int i = scribbles.length - 1; i >= 0; i--) {
-              if (scribbles[i].uuid == id) {
-                scribbles.removeAt(i);
-                break;
+            });
+          },
+          onScribbleDelete: (id) {
+            setState(() {
+              // Reverse Scribble Search for better Performance
+              for (int i = scribbles.length - 1; i >= 0; i--) {
+                if (scribbles[i].uuid == id) {
+                  scribbles.removeAt(i);
+                  break;
+                }
               }
-            }
-          });
-        },
-        onUploadAdd: (upload) {
-          setState(() {
-            uploads.add(upload);
-          });
-        },
-        onUploadUpdate: (upload) {
-          setState(() {
-            // Reverse Upload Search for better Performance
-            for (int i = uploads.length - 1; i >= 0; i--) {
-              if (uploads[i].uuid == upload.uuid) {
-                uploads[i].offset = upload.offset;
-                break;
+            });
+          },
+          onUploadAdd: (upload) {
+            setState(() {
+              uploads.add(upload);
+            });
+          },
+          onUploadUpdate: (upload) {
+            setState(() {
+              // Reverse Upload Search for better Performance
+              for (int i = uploads.length - 1; i >= 0; i--) {
+                if (uploads[i].uuid == upload.uuid) {
+                  uploads[i].offset = upload.offset;
+                  break;
+                }
               }
-            }
-          });
-        },
-        onUploadImageDataUpdate: (upload) {
-          setState(() {
-            // Reverse Upload Search for better Performance
-            for (int i = uploads.length - 1; i >= 0; i--) {
-              if (uploads[i].uuid == upload.uuid) {
-                uploads[i].uint8List = upload.uint8List;
-                uploads[i].image = upload.image;
-                break;
+            });
+          },
+          onUploadImageDataUpdate: (upload) {
+            setState(() {
+              // Reverse Upload Search for better Performance
+              for (int i = uploads.length - 1; i >= 0; i--) {
+                if (uploads[i].uuid == upload.uuid) {
+                  uploads[i].uint8List = upload.uint8List;
+                  uploads[i].image = upload.image;
+                  break;
+                }
               }
-            }
-          });
-        },
-        onUploadDelete: (id) {
-          setState(() {
-            // Reverse Scribble Search for better Performance
-            for (int i = uploads.length - 1; i >= 0; i--) {
-              if (uploads[i].uuid == id) {
-                uploads.removeAt(i);
-                break;
+            });
+          },
+          onUploadDelete: (id) {
+            setState(() {
+              // Reverse Scribble Search for better Performance
+              for (int i = uploads.length - 1; i >= 0; i--) {
+                if (uploads[i].uuid == id) {
+                  uploads.removeAt(i);
+                  break;
+                }
               }
-            }
-          });
-        },
-        onTextItemAdd: (textItem) {
-          setState(() {
-            texts.add(textItem);
-          });
-        },
-        onTextItemUpdate: (textItem) {
-          setState(() {
-            // Reverse TextItem Search for better Performance
-            for (int i = texts.length - 1; i >= 0; i--) {
-              if (texts[i].uuid == textItem.uuid) {
-                texts[i] = textItem;
-                break;
+            });
+          },
+          onTextItemAdd: (textItem) {
+            setState(() {
+              texts.add(textItem);
+            });
+          },
+          onTextItemUpdate: (textItem) {
+            setState(() {
+              // Reverse TextItem Search for better Performance
+              for (int i = texts.length - 1; i >= 0; i--) {
+                if (texts[i].uuid == textItem.uuid) {
+                  texts[i] = textItem;
+                  break;
+                }
               }
-            }
-          });
-        },
-        onUserJoin: (connectedUser) {
-          setState(() {
-            bool exists = false;
-            for (ConnectedUser cu in connectedUsers) {
-              if (cu.uuid == connectedUser.uuid) {
-                exists = true;
-                break;
+            });
+          },
+          onUserJoin: (connectedUser) {
+            setState(() {
+              bool exists = false;
+              for (ConnectedUser cu in connectedUsers) {
+                if (cu.uuid == connectedUser.uuid) {
+                  exists = true;
+                  break;
+                }
               }
-            }
-            if (!exists) connectedUsers.add(connectedUser);
-          });
-        },
-        onUserMove: (connectedUserMove) {
-          setState(() {
-            if (followingUser != null &&
-                followingUser!.uuid == connectedUserMove.uuid) {
-              this.offset = connectedUserMove.offset;
-            }
-          });
-        },
-      );
+              if (!exists) connectedUsers.add(connectedUser);
+            });
+          },
+          onUserMove: (connectedUserMove) {
+            setState(() {
+              for (int i = 0; i < connectedUsers.length; i++) {
+                print(connectedUsers.elementAt(i).uuid);
+                print(connectedUserMove.uuid);
+                print("#");
+                if (connectedUsers.elementAt(i).uuid ==
+                    connectedUserMove.uuid) {
+                  connectedUsers.elementAt(i).offset = connectedUserMove.offset;
+                  break;
+                }
+              }
+              if (followingUser != null) {
+                this.offset = followingUser!.offset;
+                this.zoomOptions.scale = followingUser!.scale;
+              }
+            });
+          },
+        );
+      } catch (e) {
+        Navigator.pop(context);
+      }
       // WidgetsBinding.instance!
       //     .addPostFrameCallback((_) => _createToolbars(context));
     }
@@ -200,10 +215,18 @@ class _WhiteboardViewState extends State<WhiteboardView> {
         ),
         actions: [
           ConnectedUsers(
+            scale: zoomOptions.scale,
+            offset: offset,
             connectedUsers: connectedUsers,
-            onTeleport: (offset) {
+            onTeleport: (offset, scale) {
               setState(() {
-                  offset = offset;
+                this.offset = offset;
+                this.zoomOptions.scale = scale;
+              });
+            },
+            onFollowing: (connectedUser) {
+              setState(() {
+                followingUser = connectedUser;
               });
             },
           ),
@@ -282,50 +305,52 @@ class _WhiteboardViewState extends State<WhiteboardView> {
     return Scaffold(
         appBar: (appBar),
         body: Stack(children: [
-          InfiniteCanvasPage(
-            id: widget.id,
-            onSaveOfflineWhiteboard: () => saveOfflineWhiteboard(),
-            auth_token: widget.auth_token,
-            websocketConnection: websocketConnection,
-            toolbarOptions: toolbarOptions!,
-            zoomOptions: zoomOptions,
-            appBarHeight: appBar.preferredSize.height,
-            onScribblesChange: (scribbles) {
-              setState(() {
-                this.scribbles = scribbles;
-              });
-            },
-            onChangedZoomOptions: (zoomOptions) {
-              setState(() {
-                this.zoomOptions = zoomOptions;
-              });
-            },
-            offset: offset,
-            texts: texts,
-            sessionOffset: _sessionOffset,
-            onOffsetChange: (offset, sessionOffset) => {
-              setState(() {
-                this.offset = offset;
-                this._sessionOffset = sessionOffset;
-              })
-            },
-            uploads: uploads,
-            onChangedToolbarOptions: (toolBarOptions) {
-              setState(() {
-                this.toolbarOptions = toolBarOptions;
-              });
-            },
-            scribbles: scribbles,
+          Container(
+            decoration: followingUser == null
+                ? BoxDecoration()
+                : BoxDecoration(
+                    border: Border.all(color: followingUser!.color, width: 10)),
+            child: InfiniteCanvasPage(
+              id: widget.id,
+              onSaveOfflineWhiteboard: () => saveOfflineWhiteboard(),
+              auth_token: widget.auth_token,
+              websocketConnection: websocketConnection,
+              toolbarOptions: toolbarOptions!,
+              zoomOptions: zoomOptions,
+              appBarHeight: appBar.preferredSize.height,
+              onScribblesChange: (scribbles) {
+                setState(() {
+                  this.scribbles = scribbles;
+                });
+              },
+              onChangedZoomOptions: (zoomOptions) {
+                setState(() {
+                  this.zoomOptions = zoomOptions;
+                });
+              },
+              offset: offset,
+              texts: texts,
+              sessionOffset: _sessionOffset,
+              onOffsetChange: (offset, sessionOffset) => {
+                setState(() {
+                  this.offset = offset;
+                  this._sessionOffset = sessionOffset;
+                })
+              },
+              uploads: uploads,
+              onChangedToolbarOptions: (toolBarOptions) {
+                setState(() {
+                  this.toolbarOptions = toolBarOptions;
+                });
+              },
+              scribbles: scribbles,
+              onDontFollow: () {
+                setState(() {
+                  this.followingUser = null;
+                });
+              },
+            ),
           ),
-          followingUser != null
-              ? Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border:
-                            Border.all(color: followingUser!.color, width: 10)),
-                  ),
-                )
-              : Container(),
           TextsCanvas(
             websocketConnection: websocketConnection,
             sessionOffset: _sessionOffset,
@@ -346,6 +371,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             onChangedOffset: (offset) {
               setState(() {
                 this.offset = offset;
+                WebsocketSend.sendUserMove(
+                    offset, widget.id, zoomOptions.scale, websocketConnection);
               });
             },
           )

@@ -60,6 +60,7 @@ class CanvasCustomPainter extends CustomPainter {
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
 
+    // TODO: Fix Scaled Scrolling
     // Draw Background
     if (SelectedBackgroundTypeToolbar
                 .values[toolbarOptions.backgroundOptions.selectedBackground] ==
@@ -97,10 +98,14 @@ class CanvasCustomPainter extends CustomPainter {
                 (toolbarOptions.backgroundOptions.strokeWidth * i) +
                     offset.dx / scale,
                 0),
+            // new Offset(
+            //     (toolbarOptions.backgroundOptions.strokeWidth * i) +
+            //         offset.dx / scale,
+            //     screenSize.dx / scale,
             new Offset(
               (toolbarOptions.backgroundOptions.strokeWidth * i) +
                   offset.dx / scale,
-              screenSize.dx / scale,
+              screenSize.dy / scale,
             ),
             backgroundPaint);
       }

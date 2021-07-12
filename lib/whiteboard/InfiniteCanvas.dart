@@ -26,6 +26,7 @@ typedef OnScribblesChange = Function(List<Scribble>);
 typedef OnUploadsChange = Function(List<Upload>);
 typedef OnTextItemsChange = Function(List<TextItem>);
 typedef OnChangedToolbarOptions<T> = Function(Toolbar.ToolbarOptions);
+typedef OnDontFollow = Function();
 
 class InfiniteCanvasPage extends StatefulWidget {
   Zoom.OnChangedZoomOptions onChangedZoomOptions;
@@ -44,6 +45,7 @@ class InfiniteCanvasPage extends StatefulWidget {
   String auth_token;
   String id;
   OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
+  OnDontFollow onDontFollow;
 
   InfiniteCanvasPage({required this.toolbarOptions,
     required this.zoomOptions,
@@ -60,7 +62,8 @@ class InfiniteCanvasPage extends StatefulWidget {
     required this.websocketConnection,
     required this.auth_token,
     required this.id,
-    required this.onSaveOfflineWhiteboard});
+    required this.onSaveOfflineWhiteboard,
+  required this.onDontFollow});
 
   @override
   _InfiniteCanvasPageState createState() => _InfiniteCanvasPageState();
@@ -265,7 +268,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 }
                 widget.onOffsetChange(widget.offset, widget.sessionOffset);
                 WebsocketSend.sendUserMove(
-                    newOffset, widget.id, widget.websocketConnection);
+                    _calculateOffset(widget.offset, widget.sessionOffset, widget.zoomOptions.scale), widget.id, widget.zoomOptions.scale, widget.websocketConnection);
+                widget.onDontFollow();
                 break;
               case SelectedTool.background:
                 break;

@@ -138,11 +138,12 @@ class WebsocketSend {
   }
 
   static sendUserMove(
-      ui.Offset offset, String id,  WebsocketConnection? websocketConnection) {
+      ui.Offset offset, String id, double scale, WebsocketConnection? websocketConnection) {
     String data = jsonEncode(WSUserMove(
       id,
       offset.dx,
       offset.dy,
+      scale
     ));
     if (websocketConnection != null)
       websocketConnection.sendDataToChannel("user-move#", data);

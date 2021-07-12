@@ -228,12 +228,12 @@ class WebsocketConnection {
     } else if (message.startsWith(r"user-join#")) {
       String newMessage = message.replaceFirst(r"user-join#", "");
       List<String> arguments = newMessage.split("#");
-      onUserJoin(new ConnectedUser(arguments[0], arguments[1], _randomColor.randomColor(), Offset.zero));
+      onUserJoin(new ConnectedUser(arguments[0], arguments[1], _randomColor.randomColor(), Offset.zero, 1));
     }else if (message.startsWith(r"user-move#")) {
       WSUserMove json = WSUserMove.fromJson(
           jsonDecode(message.replaceFirst(r"user-move#", ""))
           as Map<String, dynamic>);
-      onUserMove(new ConnectedUserMove(json.uuid, new Offset(json.offset_dx, json.offset_dy)));
+      onUserMove(new ConnectedUserMove(json.uuid, new Offset(json.offset_dx, json.offset_dy), json.scale));
     }
   }
 

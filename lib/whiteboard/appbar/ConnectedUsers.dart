@@ -5,25 +5,35 @@ class ConnectedUser {
   String username;
   Color color;
   Offset offset;
+  double scale;
 
-  ConnectedUser(this.uuid, this.username, this.color, this.offset);
+  ConnectedUser(this.uuid, this.username, this.color, this.offset, this.scale);
 }
 
 class ConnectedUserMove {
   String uuid;
   Offset offset;
+  double scale;
 
-  ConnectedUserMove(this.uuid, this.offset);
+  ConnectedUserMove(this.uuid, this.offset, this.scale);
 }
 
-
-typedef OnTeleport = Function(Offset);
+typedef OnTeleport = Function(Offset, double);
+typedef OnFollowing = Function(ConnectedUser);
 
 class ConnectedUsers extends StatefulWidget {
   Set<ConnectedUser> connectedUsers;
   OnTeleport onTeleport;
+  OnFollowing onFollowing;
+  Offset offset;
+  double scale;
 
-  ConnectedUsers({required this.connectedUsers, required this.onTeleport});
+  ConnectedUsers(
+      {required this.connectedUsers,
+      required this.onTeleport,
+      required this.onFollowing,
+      required this.offset,
+      required this.scale});
 
   @override
   _ConnectedUsersState createState() => _ConnectedUsersState();
@@ -31,6 +41,7 @@ class ConnectedUsers extends StatefulWidget {
 
 class _ConnectedUsersState extends State<ConnectedUsers> {
   Offset? offsetBeforeTeleport;
+  double? scaleBeforeTeleport;
 
   @override
   Widget build(BuildContext context) {
@@ -44,18 +55,27 @@ class _ConnectedUsersState extends State<ConnectedUsers> {
         itemBuilder: (context) => [
           offsetBeforeTeleport == null
               ? PopupMenuItem(child: Text("Teleport"), value: 0)
-              : PopupMenuItem(child: Text("Teleport back"), value: 0),
+              : PopupMenuItem(child: Text("Teleport back"), value: 1),
           PopupMenuItem(child: Text("Follow"), value: 2),
         ],
         onSelected: (value) {
           switch (value) {
             case 0:
-              widget.onTeleport(connectedUser.offset);
+              setState(() {
+                offsetBeforeTeleport =
+                    new Offset(widget.offset.dx, widget.offset.dy);
+                scaleBeforeTeleport = widget.scale;
+              });
+              widget.onTeleport(connectedUser.offset, connectedUser.scale);
               break;
             case 1:
-              widget.onTeleport(offsetBeforeTeleport!);
+              widget.onTeleport(
+                offsetBeforeTeleport!,
+                scaleBeforeTeleport!
+              );
               break;
             case 2:
+              widget.onFollowing(connectedUser);
               break;
           }
         },

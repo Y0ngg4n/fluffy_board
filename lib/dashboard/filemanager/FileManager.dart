@@ -408,7 +408,7 @@ class _FileManagerState extends State<FileManager> {
                               MaterialPageRoute<void>(
                                   builder: (BuildContext context) =>
                                       WhiteboardView(whiteboard, null, null,
-                                          widget.id, widget.auth_token)));
+                                          widget.auth_token, widget.id)));
                         },
                       ),
                       Text(
@@ -515,7 +515,7 @@ class _FileManagerState extends State<FileManager> {
                               MaterialPageRoute<void>(
                                   builder: (BuildContext context) =>
                                       WhiteboardView(null, whiteboard, null,
-                                          widget.id, widget.auth_token)));
+                                          widget.auth_token, widget.id)));
                         },
                       ),
                       Text(
@@ -568,7 +568,7 @@ class _FileManagerState extends State<FileManager> {
                               MaterialPageRoute<void>(
                                   builder: (BuildContext context) =>
                                       WhiteboardView(null, null, whiteboard,
-                                          widget.id, widget.auth_token)));
+                                          widget.auth_token, widget.id)));
                         },
                       ),
                       Text(whiteboard.name
