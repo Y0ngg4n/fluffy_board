@@ -41,14 +41,18 @@ class _BookmarkManagerState extends State<BookmarkManager> {
     List<Widget> bookmarkWidgets = [];
     for (Bookmark bookmark in widget.bookmarks) {
       bookmarkWidgets.add(ListTile(
-          title: Text(bookmark.name),
-          onTap: () {
-            widget.onBookMarkTeleport(bookmark.offset, bookmark.scale);
-            Navigator.pop(context);
+        title: Text(bookmark.name),
+        onTap: () {
+          widget.onBookMarkTeleport(bookmark.offset, bookmark.scale);
+          Navigator.pop(context);
+        },
+        trailing: IconButton(
+          icon: Icon(Icons.delete),
+          onPressed: () {
+            WebsocketSend.sendBookmarkDelete(
+                bookmark, widget.websocketConnection);
           },
-        trailing: IconButton(icon: Icon(Icons.delete), onPressed: () {
-          WebsocketSend.sendBookmarkDelete(bookmark, widget.websocketConnection);
-        },),
+        ),
       ));
     }
     return Scaffold(
@@ -81,7 +85,8 @@ class _BookmarkManagerState extends State<BookmarkManager> {
                 enablePullDown: true,
                 enablePullUp: false,
                 controller: refreshController,
-                onRefresh: () => {widget.onBookMarkRefresh(refreshController)},
+                onRefresh: () async =>
+                    {await widget.onBookMarkRefresh(refreshController)},
                 child: ListView(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,

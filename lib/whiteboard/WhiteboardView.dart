@@ -247,8 +247,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => BookmarkManager(
-                                  onBookMarkRefresh: (refreshController) {
-                                    getBookmark(refreshController);
+                                  onBookMarkRefresh: (refreshController) async{
+                                    await getBookmark(refreshController);
                                   },
                                   auth_token: widget.auth_token,
                                   online: widget.online,
