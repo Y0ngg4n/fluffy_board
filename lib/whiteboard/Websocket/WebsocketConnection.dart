@@ -32,6 +32,8 @@ typedef OnTextItemUpdate = Function(TextItem);
 typedef OnUserJoin = Function(ConnectedUser);
 typedef OnUserMove = Function(ConnectedUserMove);
 
+typedef OnBookmarkAdd = Function(Bookmark);
+
 class WebsocketConnection {
   static WebsocketConnection? _singleton = null;
 
@@ -59,6 +61,8 @@ class WebsocketConnection {
   OnUserJoin onUserJoin;
   OnUserMove onUserMove;
 
+  OnBookmarkAdd onBookmarkAdd;
+
   final RandomColor _randomColor = RandomColor();
 
   WebsocketConnection({
@@ -74,7 +78,8 @@ class WebsocketConnection {
     required this.onTextItemAdd,
     required this.onTextItemUpdate,
     required this.onUserJoin,
-    required this.onUserMove
+    required this.onUserMove,
+    required this.onBookmarkAdd
   });
 
   static WebsocketConnection getInstance({required String whiteboard,
@@ -89,7 +94,8 @@ class WebsocketConnection {
     required Function(TextItem) onTextItemAdd,
     required Function(TextItem) onTextItemUpdate,
     required Function(ConnectedUser) onUserJoin,
-    required Function(ConnectedUserMove) onUserMove
+    required Function(ConnectedUserMove) onUserMove,
+    required Function(Bookmark) onBookmarkAdd
   }) {
     if (_singleton == null) {
       _singleton = new WebsocketConnection(
@@ -105,11 +111,11 @@ class WebsocketConnection {
           onTextItemAdd: onTextItemAdd,
           onTextItemUpdate: onTextItemUpdate,
           onUserJoin: onUserJoin,
-        onUserMove: onUserMove
+        onUserMove: onUserMove,
+        onBookmarkAdd: onBookmarkAdd
       );
       _singleton!.initWebSocketConnection(whiteboard, auth_token);
     }
-    ;
     return _singleton!;
   }
 
@@ -234,6 +240,17 @@ class WebsocketConnection {
           jsonDecode(message.replaceFirst(r"user-move#", ""))
           as Map<String, dynamic>);
       onUserMove(new ConnectedUserMove(json.uuid, new Offset(json.offset_dx, json.offset_dy), json.scale));
+    } else if (message.startsWith(r"upload-add#")) {
+      print("Bookmark add");
+      WSUploadAdd json = WSUploadAdd.fromJson(
+          jsonDecode(message.replaceFirst(r"bookmark-add#", ""))
+          as Map<String, dynamic>);
+      Uint8List uint8list = Uint8List.fromList(json.imageData);
+      ui.decodeImageFromList(uint8list, (image) {
+        Upload newUpload = Upload(json.uuid, UploadType.values[json.uploadType],
+            uint8list, new Offset(json.offset_dx, json.offset_dy), image);
+        onUploadAdd(newUpload);
+      });
     }
   }
 

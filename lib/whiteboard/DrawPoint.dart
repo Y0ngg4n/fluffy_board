@@ -234,3 +234,31 @@ class TextItem {
   TextItem(this.uuid, this.editing, this.strokeWidth, this.maxWidth,
       this.maxHeight, this.color, this.text, this.offset, this.rotation);
 }
+
+class Bookmark {
+  String uuid;
+  String name;
+  ui.Offset offset;
+  double scale;
+
+  toJSONEncodable() {
+    Map<String, dynamic> m = new Map();
+    m['uuid'] = uuid;
+    m['name'] = name;
+    m['offset_dx'] = offset.dx;
+    m['offset_dy'] = offset.dy;
+    m['scale'] = scale;
+
+    return m;
+  }
+
+  Bookmark.fromJson(Map<String, dynamic> json)
+      : uuid = json['uuid'],
+        name = json['name'],
+        offset = new ui.Offset(json['offset_dx'], json['offset_dy']),
+        scale = json['name'];
+
+  Bookmark(this.uuid, this.name, this.offset, this.scale);
+
+}
+

@@ -137,15 +137,27 @@ class WebsocketSend {
       websocketConnection.sendDataToChannel("text-item-delete#", data);
   }
 
-  static sendUserMove(
-      ui.Offset offset, String id, double scale, WebsocketConnection? websocketConnection) {
-    String data = jsonEncode(WSUserMove(
-      id,
-      offset.dx,
-      offset.dy,
-      scale
-    ));
+  static sendUserMove(ui.Offset offset, String id, double scale,
+      WebsocketConnection? websocketConnection) {
+    String data = jsonEncode(WSUserMove(id, offset.dx, offset.dy, scale));
     if (websocketConnection != null)
       websocketConnection.sendDataToChannel("user-move#", data);
+  }
+
+  static sendBookmarkAdd(
+      Bookmark newBookmark, WebsocketConnection? websocketConnection) {
+    if (websocketConnection != null) {
+      websocketConnection.sendDataToChannel(
+          "bookmark-add#", jsonEncode(newBookmark.toJSONEncodable()));
+    }
+  }
+
+  static sendBookmarkDelete(
+      Bookmark newBookmark, WebsocketConnection? websocketConnection) {
+    String data = jsonEncode(WSBookmarkDelete(
+      newBookmark.uuid,
+    ));
+    if (websocketConnection != null)
+      websocketConnection.sendDataToChannel("bookmark-delete#", data);
   }
 }
