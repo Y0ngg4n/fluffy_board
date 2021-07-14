@@ -140,7 +140,7 @@ class _AddBookmarkFormState extends State<AddBookmarkForm> {
         widget.refreshController.requestRefresh();
         Navigator.pop(context);
       } else {
-        await storage.ready;
+        // await storage.ready;
         //   widget.directories.list.add(new Directory(
         //       uuid.v4(),
         //       storage.getItem('id') ?? "",
