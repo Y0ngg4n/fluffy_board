@@ -190,6 +190,28 @@ class _WhiteboardViewState extends State<WhiteboardView> {
               bookmarks.add(bookmark);
             });
           },
+          onBookmarkUpdate: (bookmark) {
+            setState(() {
+              // Reverse TextItem Search for better Performance
+              for (int i = bookmarks.length - 1; i >= 0; i--) {
+                if (bookmarks[i].uuid == bookmark.uuid) {
+                  bookmarks[i] = bookmark;
+                  break;
+                }
+              }
+            });
+          },
+          onBookmarkDelete: (uuid) {
+            setState(() {
+              // Reverse Scribble Search for better Performance
+              for (int i = bookmarks.length - 1; i >= 0; i--) {
+                if (bookmarks[i].uuid == uuid) {
+                  bookmarks.removeAt(i);
+                  break;
+                }
+              }
+            });
+          },
         );
       } catch (e) {
         Navigator.pop(context);
@@ -578,7 +600,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
         bookmarks = widget.offlineWhiteboard!.bookmarks.list;
       });
       if (refreshController != null) refreshController.refreshCompleted();
-    }else {
+    } else {
       List<Bookmark> localBookmarks = [];
       http.Response bookmarkResponse = await http.post(
           Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/bookmark/get"),
@@ -597,7 +619,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           }));
       if (bookmarkResponse.statusCode == 200) {
         List<DecodeGetBookmark> decodeBookmarks =
-        DecodeGetBookmarkList.fromJsonList(jsonDecode(bookmarkResponse.body));
+            DecodeGetBookmarkList.fromJsonList(
+                jsonDecode(bookmarkResponse.body));
         setState(() {
           for (DecodeGetBookmark decodeGetBookmark in decodeBookmarks) {
             localBookmarks.add(new Bookmark(

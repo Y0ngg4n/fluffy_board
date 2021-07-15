@@ -33,6 +33,8 @@ typedef OnUserJoin = Function(ConnectedUser);
 typedef OnUserMove = Function(ConnectedUserMove);
 
 typedef OnBookmarkAdd = Function(Bookmark);
+typedef OnBookmarkUpdate= Function(Bookmark);
+typedef OnBookmarkDelete= Function(String);
 
 class WebsocketConnection {
   static WebsocketConnection? _singleton = null;
@@ -62,6 +64,8 @@ class WebsocketConnection {
   OnUserMove onUserMove;
 
   OnBookmarkAdd onBookmarkAdd;
+  OnBookmarkUpdate onBookmarkUpdate;
+  OnBookmarkDelete onBookmarkDelete;
 
   final RandomColor _randomColor = RandomColor();
 
@@ -79,7 +83,9 @@ class WebsocketConnection {
     required this.onTextItemUpdate,
     required this.onUserJoin,
     required this.onUserMove,
-    required this.onBookmarkAdd
+    required this.onBookmarkAdd,
+    required this.onBookmarkUpdate,
+    required this.onBookmarkDelete
   });
 
   static WebsocketConnection getInstance({required String whiteboard,
@@ -95,7 +101,9 @@ class WebsocketConnection {
     required Function(TextItem) onTextItemUpdate,
     required Function(ConnectedUser) onUserJoin,
     required Function(ConnectedUserMove) onUserMove,
-    required Function(Bookmark) onBookmarkAdd
+    required Function(Bookmark) onBookmarkAdd,
+    required Function(Bookmark) onBookmarkUpdate,
+    required Function(String) onBookmarkDelete
   }) {
     if (_singleton == null) {
       _singleton = new WebsocketConnection(
@@ -112,7 +120,9 @@ class WebsocketConnection {
           onTextItemUpdate: onTextItemUpdate,
           onUserJoin: onUserJoin,
         onUserMove: onUserMove,
-        onBookmarkAdd: onBookmarkAdd
+        onBookmarkAdd: onBookmarkAdd,
+        onBookmarkUpdate: onBookmarkUpdate,
+        onBookmarkDelete: onBookmarkDelete
       );
       _singleton!.initWebSocketConnection(whiteboard, auth_token);
     }
@@ -240,17 +250,22 @@ class WebsocketConnection {
           jsonDecode(message.replaceFirst(r"user-move#", ""))
           as Map<String, dynamic>);
       onUserMove(new ConnectedUserMove(json.uuid, new Offset(json.offset_dx, json.offset_dy), json.scale));
-    } else if (message.startsWith(r"upload-add#")) {
-      print("Bookmark add");
-      WSUploadAdd json = WSUploadAdd.fromJson(
+    } else if (message.startsWith(r"bookmark-add#")) {
+      print("On r bookmark add");
+      WSBookmarkAdd json = WSBookmarkAdd.fromJson(
           jsonDecode(message.replaceFirst(r"bookmark-add#", ""))
           as Map<String, dynamic>);
-      Uint8List uint8list = Uint8List.fromList(json.imageData);
-      ui.decodeImageFromList(uint8list, (image) {
-        Upload newUpload = Upload(json.uuid, UploadType.values[json.uploadType],
-            uint8list, new Offset(json.offset_dx, json.offset_dy), image);
-        onUploadAdd(newUpload);
-      });
+      onBookmarkAdd(new Bookmark(json.uuid, json.name, new Offset(json.offset_dx, json.offset_dy), json.scale));
+    }else if (message.startsWith(r"bookmark-update#")) {
+      WSBookmarkUpdate json = WSBookmarkUpdate.fromJson(
+          jsonDecode(message.replaceFirst(r"bookmark-update#", ""))
+          as Map<String, dynamic>);
+      onBookmarkUpdate(new Bookmark(json.uuid, json.name, new Offset(json.offset_dx, json.offset_dy), json.scale));
+    }else if (message.startsWith(r"bookmark-delete#")) {
+      WSBookmarkDelete json = WSBookmarkDelete.fromJson(
+          jsonDecode(message.replaceFirst(r"bookmark-delete#", ""))
+          as Map<String, dynamic>);
+      onBookmarkDelete(json.uuid);
     }
   }
 

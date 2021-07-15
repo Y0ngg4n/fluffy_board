@@ -476,7 +476,7 @@ class WSBookmarkAdd {
         name = json['name'],
         offset_dx = json['offset_dx'].toDouble(),
         offset_dy = json['offset_dy'].toDouble(),
-        scale = json['scale'].cast<int>();
+        scale = json['scale'].toDouble();
 
   Map toJson() {
     return {
@@ -489,6 +489,34 @@ class WSBookmarkAdd {
   }
 
   WSBookmarkAdd(
+      this.uuid, this.name, this.offset_dx, this.offset_dy, this.scale);
+}
+
+class WSBookmarkUpdate {
+  String uuid;
+  String name;
+  double offset_dx;
+  double offset_dy;
+  double scale;
+
+  WSBookmarkUpdate.fromJson(Map<String, dynamic> json)
+      : uuid = json['uuid'],
+        name = json['name'],
+        offset_dx = json['offset_dx'].toDouble(),
+        offset_dy = json['offset_dy'].toDouble(),
+        scale = json['scale'].toDouble();
+
+  Map toJson() {
+    return {
+      'uuid': uuid,
+      'name': name,
+      'offset_dx': offset_dx,
+      'offset_dy': offset_dy,
+      'scale': scale,
+    };
+  }
+
+  WSBookmarkUpdate(
       this.uuid, this.name, this.offset_dx, this.offset_dy, this.scale);
 }
 
