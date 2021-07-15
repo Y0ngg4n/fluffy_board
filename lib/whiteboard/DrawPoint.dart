@@ -235,6 +235,24 @@ class TextItem {
       this.maxHeight, this.color, this.text, this.offset, this.rotation);
 }
 
+class Bookmarks {
+  List<Bookmark> list = [];
+
+  toJSONEncodable() {
+    return list.map((item) {
+      return item.toJSONEncodable();
+    }).toList();
+  }
+
+  Bookmarks.fromJson(List<dynamic> json) {
+    for (dynamic entry in json) {
+      list.add(Bookmark.fromJson(entry));
+    }
+  }
+
+  Bookmarks(this.list);
+}
+
 class Bookmark {
   String uuid;
   String name;
@@ -255,8 +273,8 @@ class Bookmark {
   Bookmark.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'],
         name = json['name'],
-        offset = new ui.Offset(json['offset_dx'], json['offset_dy']),
-        scale = json['name'];
+        offset = new ui.Offset(json['offset_dx'].toDouble(), json['offset_dy'].toDouble()),
+        scale = json['scale'].toDouble();
 
   Bookmark(this.uuid, this.name, this.offset, this.scale);
 

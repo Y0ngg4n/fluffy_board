@@ -112,6 +112,7 @@ class OfflineWhiteboard {
   Uploads uploads;
   TextItems texts;
   Scribbles scribbles;
+  Bookmarks bookmarks;
 
   toJSONEncodable() {
     Map<String, dynamic> m = new Map();
@@ -122,6 +123,7 @@ class OfflineWhiteboard {
     m['uploads'] = uploads.toJSONEncodable();
     m['texts'] = texts.toJSONEncodable();
     m['scribbles'] = scribbles.toJSONEncodable();
+    m['bookmarks'] = bookmarks.toJSONEncodable();
     return m;
   }
 
@@ -138,11 +140,15 @@ class OfflineWhiteboard {
             : new TextItems([]),
         json['scribbles'] != null
             ? Scribbles.fromJson(json['scribbles'])
-            : new Scribbles([]));
+            : new Scribbles([]),
+        json['bookmarks'] != null
+    ? Bookmarks.fromJson(json['bookmarks'])
+        : new Bookmarks([])
+    );
   }
 
   OfflineWhiteboard(this.uuid, this.directory, this.name, this.uploads,
-      this.texts, this.scribbles);
+      this.texts, this.scribbles, this.bookmarks);
 }
 
 class OfflineWhiteboards {
@@ -470,8 +476,10 @@ class _FileManagerState extends State<FileManager> {
                                 await _getTextItems(
                                     whiteboard.id, whiteboard.edit_id),
                                 await _getScribbles(
-                                    whiteboard.id, whiteboard.edit_id));
+                                    whiteboard.id, whiteboard.edit_id),
+                            await _getBookmarks(whiteboard.id, whiteboard.edit_id));
                         offlineWhiteboards.list.add(offlineWhiteboard);
+                        print(offlineWhiteboard.toJSONEncodable().toString());
                         fileManagerStorage.setItem(
                             "offline_whiteboard-" + offlineWhiteboard.uuid,
                             offlineWhiteboard.toJSONEncodable());
@@ -1147,4 +1155,33 @@ class _FileManagerState extends State<FileManager> {
     }
     return new TextItems(texts);
   }
+
+  Future<Bookmarks> _getBookmarks(
+      String whiteboard, String permissionId) async {
+    http.Response textItemResponse = await http.post(
+        Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/bookmark/get"),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json",
+          'Authorization': 'Bearer ' + widget.auth_token,
+        },
+        body: jsonEncode(
+            {"whiteboard": whiteboard, "permission_id": permissionId}));
+    List<Bookmark> bookmarks = new List.empty(growable: true);
+    if (textItemResponse.statusCode == 200) {
+      List<DecodeGetBookmark> decodeBookmarks =
+      DecodeGetBookmarkList.fromJsonList(jsonDecode(textItemResponse.body));
+      setState(() {
+        for (DecodeGetBookmark decodeGetBookmark in decodeBookmarks) {
+          bookmarks.add(new Bookmark(
+              decodeGetBookmark.uuid,
+              decodeGetBookmark.name,
+              new Offset(decodeGetBookmark.offset_dx, decodeGetBookmark.offset_dy),
+              decodeGetBookmark.scale));
+        }
+      });
+    }
+    return new Bookmarks(bookmarks);
+  }
+
 }

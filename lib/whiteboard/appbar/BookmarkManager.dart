@@ -5,6 +5,8 @@ import 'package:fluffy_board/whiteboard/appbar/AddBookMark.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import 'RenameBookMark.dart';
+
 typedef OnBookMarkTeleport = Function(Offset, double);
 typedef OnBookMarkRefresh = Function(RefreshController);
 
@@ -38,23 +40,6 @@ class _BookmarkManagerState extends State<BookmarkManager> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> bookmarkWidgets = [];
-    for (Bookmark bookmark in widget.bookmarks) {
-      bookmarkWidgets.add(ListTile(
-        title: Text(bookmark.name),
-        onTap: () {
-          widget.onBookMarkTeleport(bookmark.offset, bookmark.scale);
-          Navigator.pop(context);
-        },
-        trailing: IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: () {
-            WebsocketSend.sendBookmarkDelete(
-                bookmark, widget.websocketConnection);
-          },
-        ),
-      ));
-    }
     return Scaffold(
         appBar: AppBar(title: Text("Bookmarks")),
         body: Container(
@@ -87,10 +72,51 @@ class _BookmarkManagerState extends State<BookmarkManager> {
                 controller: refreshController,
                 onRefresh: () async =>
                     {await widget.onBookMarkRefresh(refreshController)},
-                child: ListView(
+                child: ListView.separated(
+                  itemCount: widget.bookmarks.length,
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  children: bookmarkWidgets,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(widget.bookmarks[index].name),
+                      onTap: () {
+                        widget.onBookMarkTeleport(
+                            widget.bookmarks[index].offset,
+                            widget.bookmarks[index].scale);
+                        Navigator.pop(context);
+                      },
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => RenameBookmark(
+                                          widget.auth_token,
+                                          widget.online,
+                                          widget.websocketConnection,
+                                          refreshController,
+                                          widget.bookmarks[index])));
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              WebsocketSend.sendBookmarkDelete(
+                                  widget.bookmarks[index],
+                                  widget.websocketConnection);
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return Divider();
+                  },
                 )),
           ),
         ])));

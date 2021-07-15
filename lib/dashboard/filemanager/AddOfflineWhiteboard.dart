@@ -11,7 +11,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'FileManager.dart';
 import 'package:uuid/uuid.dart';
 
-
 class AddOfflineWhiteboard extends StatefulWidget {
   String auth_token;
   String directory;
@@ -19,7 +18,8 @@ class AddOfflineWhiteboard extends StatefulWidget {
   Set<String> offlineWhiteboardIds = Set.of([]);
   RefreshController _refreshController;
 
-  AddOfflineWhiteboard(this.auth_token, this.directory, this._refreshController, this.offlineWhiteboards, this.offlineWhiteboardIds);
+  AddOfflineWhiteboard(this.auth_token, this.directory, this._refreshController,
+      this.offlineWhiteboards, this.offlineWhiteboardIds);
 
   @override
   _AddOfflineWhiteboardState createState() => _AddOfflineWhiteboardState();
@@ -39,11 +39,20 @@ class _AddOfflineWhiteboardState extends State<AddOfflineWhiteboard> {
               builder: (BuildContext context, BoxConstraints constraints) {
                 if (constraints.maxWidth > 600) {
                   return (FractionallySizedBox(
-                      widthFactor: 0.5, child: AddOfflineWhiteboardForm(widget.auth_token,
-                      widget.directory, widget._refreshController, widget.offlineWhiteboards, widget.offlineWhiteboardIds)));
+                      widthFactor: 0.5,
+                      child: AddOfflineWhiteboardForm(
+                          widget.auth_token,
+                          widget.directory,
+                          widget._refreshController,
+                          widget.offlineWhiteboards,
+                          widget.offlineWhiteboardIds)));
                 } else {
-                  return (AddOfflineWhiteboardForm(widget.auth_token,
-                  widget.directory,widget._refreshController, widget.offlineWhiteboards, widget.offlineWhiteboardIds));
+                  return (AddOfflineWhiteboardForm(
+                      widget.auth_token,
+                      widget.directory,
+                      widget._refreshController,
+                      widget.offlineWhiteboards,
+                      widget.offlineWhiteboardIds));
                 }
               },
             ),
@@ -59,25 +68,31 @@ class AddOfflineWhiteboardForm extends StatefulWidget {
   OfflineWhiteboards offlineWhiteboards;
   Set<String> offlineWhiteboardIds = Set.of([]);
 
-  AddOfflineWhiteboardForm(this.auth_token, this.directory, this._refreshController, this.offlineWhiteboards, this.offlineWhiteboardIds);
+  AddOfflineWhiteboardForm(
+      this.auth_token,
+      this.directory,
+      this._refreshController,
+      this.offlineWhiteboards,
+      this.offlineWhiteboardIds);
 
   @override
-  _AddOfflineWhiteboardFormState createState() => _AddOfflineWhiteboardFormState();
+  _AddOfflineWhiteboardFormState createState() =>
+      _AddOfflineWhiteboardFormState();
 }
 
 class _AddOfflineWhiteboardFormState extends State<AddOfflineWhiteboardForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController nameController =
-  new TextEditingController();
+  final TextEditingController nameController = new TextEditingController();
   var uuid = Uuid();
   final LocalStorage fileManagerStorageIndex =
-  new LocalStorage('filemanager-index');
+      new LocalStorage('filemanager-index');
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
 
   _showError() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Error while adding Offline Whiteboard! Please try an other Name."),
+        content: Text(
+            "Error while adding Offline Whiteboard! Please try an other Name."),
         backgroundColor: Colors.red));
   }
 
@@ -87,53 +102,52 @@ class _AddOfflineWhiteboardFormState extends State<AddOfflineWhiteboardForm> {
       key: _formKey,
       child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              TextFormField(
-                onFieldSubmitted: (value) => _addOfflineWhiteboard(),
-                controller: nameController,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    icon: Icon(Icons.email_outlined),
-                    hintText: "Enter your Whiteboard Name",
-                    labelText: "Name"),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a Name';
-                  }else if(value.length > 50){
-                    return 'Please enter a Name smaller than 50';
-                  }
-                  return null;
-                },
-              ),
-              Padding(
-                  padding: const EdgeInsets.all(16),
-                       child: ElevatedButton(
-                            onPressed: () => _addOfflineWhiteboard(),
-                            child: Text("Create Offline Whiteboard")))
-                      ])),
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+            TextFormField(
+              onFieldSubmitted: (value) => _addOfflineWhiteboard(),
+              controller: nameController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  icon: Icon(Icons.email_outlined),
+                  hintText: "Enter your Whiteboard Name",
+                  labelText: "Name"),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a Name';
+                } else if (value.length > 50) {
+                  return 'Please enter a Name smaller than 50';
+                }
+                return null;
+              },
+            ),
+            Padding(
+                padding: const EdgeInsets.all(16),
+                child: ElevatedButton(
+                    onPressed: () => _addOfflineWhiteboard(),
+                    child: Text("Create Offline Whiteboard")))
+          ])),
     );
   }
 
-  _addOfflineWhiteboard() async{
+  _addOfflineWhiteboard() async {
     // Validate returns true if the form is valid, or false otherwise.
     if (_formKey.currentState!.validate()) {
       // If the form is valid, display a snackbar. In the real world,
       // you'd often call a server or save the information in a database.
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Trying to create your Offline Whiteboard ...')));
-      OfflineWhiteboard offlineWhiteboard =
-      new OfflineWhiteboard(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Trying to create your Offline Whiteboard ...')));
+      OfflineWhiteboard offlineWhiteboard = new OfflineWhiteboard(
           uuid.v4(),
           widget.directory,
           nameController.text,
           new Uploads([]),
           new TextItems([]),
-          new Scribbles([]));
+          new Scribbles([]),
+          new Bookmarks([]));
 
       widget.offlineWhiteboards.list.add(offlineWhiteboard);
-      fileManagerStorage.setItem(
-          "offline_whiteboard-" + offlineWhiteboard.uuid,
+      fileManagerStorage.setItem("offline_whiteboard-" + offlineWhiteboard.uuid,
           offlineWhiteboard.toJSONEncodable());
       for (OfflineWhiteboard offWhi in widget.offlineWhiteboards.list) {
         widget.offlineWhiteboardIds.add(offWhi.uuid);

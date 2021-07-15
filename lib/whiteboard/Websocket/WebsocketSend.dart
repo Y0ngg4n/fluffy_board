@@ -152,6 +152,15 @@ class WebsocketSend {
     }
   }
 
+  static sendBookmarkUpdate(
+      Bookmark newBookmark, WebsocketConnection? websocketConnection) {
+    if (websocketConnection != null) {
+      websocketConnection.sendDataToChannel(
+          "bookmark-update#", jsonEncode(newBookmark.toJSONEncodable()));
+    }
+  }
+
+
   static sendBookmarkDelete(
       Bookmark newBookmark, WebsocketConnection? websocketConnection) {
     String data = jsonEncode(WSBookmarkDelete(

@@ -247,13 +247,13 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => BookmarkManager(
-                                  onBookMarkRefresh: (refreshController) async{
+                                  onBookMarkRefresh: (refreshController) async {
                                     await getBookmark(refreshController);
                                   },
                                   auth_token: widget.auth_token,
                                   online: widget.online,
                                   onBookMarkTeleport: (offset, scale) => {
-                                    setState((){
+                                    setState(() {
                                       this.offset = offset;
                                       this.zoomOptions.scale = scale;
                                     })
@@ -447,18 +447,18 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   }
 
   Future _getWhiteboardData() async {
-    if (websocketConnection != null && widget.online) {
-      print("Getting online Whiteboard Data");
+    if (websocketConnection != null) {
       await _getScribbles();
       await _getUploads();
       await _getTextItems();
       await getBookmark(null);
     }
-    if (widget.offlineWhiteboard != null && !widget.online) {
+    if (widget.offlineWhiteboard != null) {
       setState(() {
         scribbles = widget.offlineWhiteboard!.scribbles.list;
         uploads = widget.offlineWhiteboard!.uploads.list;
         texts = widget.offlineWhiteboard!.texts.list;
+        bookmarks = widget.offlineWhiteboard!.bookmarks.list;
       });
     }
   }
@@ -573,39 +573,46 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   }
 
   Future getBookmark(RefreshController? refreshController) async {
-    List<Bookmark> bookmarks = [];
-    http.Response bookmarkResponse = await http.post(
-        Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/bookmark/get"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        },
-        body: jsonEncode({
-          "whiteboard": widget.whiteboard == null
-              ? widget.extWhiteboard!.original
-              : widget.whiteboard!.id,
-          "permission_id": widget.whiteboard == null
-              ? widget.extWhiteboard!.permissionId
-              : widget.whiteboard!.edit_id
-        }));
-    if (bookmarkResponse.statusCode == 200) {
-      List<DecodeGetBookmark> decodeBookmarks =
-          DecodeGetBookmarkList.fromJsonList(jsonDecode(bookmarkResponse.body));
+    if (widget.offlineWhiteboard != null) {
       setState(() {
-        for (DecodeGetBookmark decodeGetBookmark in decodeBookmarks) {
-          bookmarks.add(new Bookmark(
-              decodeGetBookmark.uuid,
-              decodeGetBookmark.name,
-              new Offset(
-                  decodeGetBookmark.offset_dx, decodeGetBookmark.offset_dy),
-              decodeGetBookmark.scale));
-        }
-        this.bookmarks = bookmarks;
-        if (refreshController != null) refreshController.refreshCompleted();
+        bookmarks = widget.offlineWhiteboard!.bookmarks.list;
       });
-    } else {
-      if (refreshController != null) refreshController.refreshFailed();
+      if (refreshController != null) refreshController.refreshCompleted();
+    }else {
+      List<Bookmark> localBookmarks = [];
+      http.Response bookmarkResponse = await http.post(
+          Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/bookmark/get"),
+          headers: {
+            "content-type": "application/json",
+            "accept": "application/json",
+            'Authorization': 'Bearer ' + widget.auth_token,
+          },
+          body: jsonEncode({
+            "whiteboard": widget.whiteboard == null
+                ? widget.extWhiteboard!.original
+                : widget.whiteboard!.id,
+            "permission_id": widget.whiteboard == null
+                ? widget.extWhiteboard!.permissionId
+                : widget.whiteboard!.edit_id
+          }));
+      if (bookmarkResponse.statusCode == 200) {
+        List<DecodeGetBookmark> decodeBookmarks =
+        DecodeGetBookmarkList.fromJsonList(jsonDecode(bookmarkResponse.body));
+        setState(() {
+          for (DecodeGetBookmark decodeGetBookmark in decodeBookmarks) {
+            localBookmarks.add(new Bookmark(
+                decodeGetBookmark.uuid,
+                decodeGetBookmark.name,
+                new Offset(
+                    decodeGetBookmark.offset_dx, decodeGetBookmark.offset_dy),
+                decodeGetBookmark.scale));
+          }
+          this.bookmarks = localBookmarks;
+          if (refreshController != null) refreshController.refreshCompleted();
+        });
+      } else {
+        if (refreshController != null) refreshController.refreshFailed();
+      }
     }
   }
 
@@ -620,7 +627,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                 widget.offlineWhiteboard!.name,
                 new Uploads(uploads),
                 new TextItems(texts),
-                new Scribbles(scribbles))
+                new Scribbles(scribbles),
+                new Bookmarks(bookmarks))
             .toJSONEncodable());
   }
 }

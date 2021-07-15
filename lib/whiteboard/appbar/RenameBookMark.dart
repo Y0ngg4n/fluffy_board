@@ -9,27 +9,26 @@ import 'package:localstorage/localstorage.dart';
 import 'package:uuid/uuid.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class AddBookmark extends StatefulWidget {
+class RenameBookmark extends StatefulWidget {
   String auth_token;
   bool online;
   WebsocketConnection? websocketConnection;
-  Offset offset;
-  double scale;
   RefreshController refreshController;
+  Bookmark bookmark;
 
-  AddBookmark(this.auth_token, this.online, this.websocketConnection,
-      this.offset, this.scale, this.refreshController);
+  RenameBookmark(this.auth_token, this.online, this.websocketConnection,
+      this.refreshController, this.bookmark);
 
   @override
-  _AddBookmarkState createState() => _AddBookmarkState();
+  _RenameBookmarkState createState() => _RenameBookmarkState();
 }
 
-class _AddBookmarkState extends State<AddBookmark> {
+class _RenameBookmarkState extends State<RenameBookmark> {
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
         appBar: AppBar(
-          title: Text("Add Bookmark"),
+          title: Text("Rename Bookmark"),
         ),
         body: Center(
           child: Padding(
@@ -39,21 +38,17 @@ class _AddBookmarkState extends State<AddBookmark> {
                 if (constraints.maxWidth > 600) {
                   return (FractionallySizedBox(
                       widthFactor: 0.5,
-                      child: AddBookmarkForm(
+                      child: RenameBookmarkForm(
                           widget.auth_token,
                           widget.online,
                           widget.websocketConnection,
-                          widget.offset,
-                          widget.scale,
-                          widget.refreshController)));
+                          widget.refreshController, widget.bookmark)));
                 } else {
-                  return (AddBookmarkForm(
+                  return (RenameBookmarkForm(
                       widget.auth_token,
                       widget.online,
                       widget.websocketConnection,
-                      widget.offset,
-                      widget.scale,
-                      widget.refreshController));
+                      widget.refreshController, widget.bookmark));
                 }
               },
             ),
@@ -62,27 +57,27 @@ class _AddBookmarkState extends State<AddBookmark> {
   }
 }
 
-class AddBookmarkForm extends StatefulWidget {
+class RenameBookmarkForm extends StatefulWidget {
   String auth_token;
   bool online;
   WebsocketConnection? websocketConnection;
-  Offset offset;
-  double scale;
   RefreshController refreshController;
+  Bookmark bookmark;
 
-  AddBookmarkForm(this.auth_token, this.online, this.websocketConnection,
-      this.offset, this.scale, this.refreshController);
+  RenameBookmarkForm(this.auth_token, this.online, this.websocketConnection,
+      this.refreshController, this.bookmark);
 
   @override
-  _AddBookmarkFormState createState() => _AddBookmarkFormState();
+  _RenameBookmarkFormState createState() => _RenameBookmarkFormState();
 }
 
-class _AddBookmarkFormState extends State<AddBookmarkForm> {
+class _RenameBookmarkFormState extends State<RenameBookmarkForm> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController nameController = new TextEditingController();
   final LocalStorage storage = new LocalStorage('account');
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
+  var uuid = Uuid();
 
   _showError() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -90,7 +85,10 @@ class _AddBookmarkFormState extends State<AddBookmarkForm> {
         backgroundColor: Colors.red));
   }
 
-  var uuid = Uuid();
+  @override
+  void initState() {
+    nameController.text = widget.bookmark.name;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +99,7 @@ class _AddBookmarkFormState extends State<AddBookmarkForm> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
             TextFormField(
-              onFieldSubmitted: (value) => _addBookmark(),
+              onFieldSubmitted: (value) => _renameBookmark(widget.bookmark),
               controller: nameController,
               decoration: const InputDecoration(
                   border: OutlineInputBorder(),
@@ -120,13 +118,13 @@ class _AddBookmarkFormState extends State<AddBookmarkForm> {
             Padding(
                 padding: const EdgeInsets.all(16),
                 child: ElevatedButton(
-                    onPressed: () => _addBookmark(),
-                    child: Text("Create Bookmark")))
+                    onPressed: () => _renameBookmark(widget.bookmark),
+                    child: Text("Rename Bookmark")))
           ])),
     );
   }
 
-  _addBookmark() async {
+  _renameBookmark(Bookmark bookmark) async {
     // Validate returns true if the form is valid, or false otherwise.
     if (_formKey.currentState!.validate()) {
       // If the form is valid, display a snackbar. In the real world,
@@ -134,11 +132,10 @@ class _AddBookmarkFormState extends State<AddBookmarkForm> {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Trying to create bookmark ...')));
       if (widget.online && widget.websocketConnection != null) {
-        Bookmark bookmark = new Bookmark(
-            uuid.v4(), nameController.text, widget.offset, widget.scale);
-        WebsocketSend.sendBookmarkAdd(bookmark, widget.websocketConnection);
-        widget.refreshController.requestRefresh();
+        bookmark.name = nameController.text;
+        WebsocketSend.sendBookmarkUpdate(bookmark, widget.websocketConnection);
         Navigator.pop(context);
+        widget.refreshController.requestRefresh();
       }
     }
   }
