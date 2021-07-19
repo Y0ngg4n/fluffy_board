@@ -15,11 +15,6 @@ jobs:
           name: windows-release
           path: |
             build/windows/runner/release/*
-  release:
-    name: "Release"
-    runs-on: "ubuntu-latest"
-
-    steps:
       - uses: actions/download-artifact@v2
         with:
           name: windows-release
