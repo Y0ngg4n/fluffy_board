@@ -13,11 +13,11 @@ jobs:
       - uses: papeloto/action-zip@v1
         with:
           files: build/windows/runner/Release/*
-          dest: Fluffyboard-windows.zip
+          dest: release.zip
       - uses: actions/upload-artifact@v2
         with:
           name: Fluffyboard-windows
-          path: Fluffyboard-windows.zip
+          path: release.zip
 
   release:
     runs-on: ubuntu-latest
@@ -26,12 +26,11 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: Fluffyboard-windows
-          path: Fluffyboard-windows.zip
-
+          path: windows/Fluffyboard-windows.zip
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
           title: "Release Build"
           files: |
-            Fluffyboard-windows.zip
+          windows/Fluffyboard-windows.zip
