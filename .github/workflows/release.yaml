@@ -67,11 +67,11 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: Fluffyboard-linux
-          path: web/Fluffyboard-linux.zip
+          path: linux/Fluffyboard-linux.zip
       - uses: actions/download-artifact@v2
         with:
           name: Fluffyboard-web
-          path: linux/Fluffyboard-web.zip
+          path: web/Fluffyboard-web.zip
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
