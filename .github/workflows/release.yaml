@@ -12,7 +12,7 @@ jobs:
       - run: flutter build windows
       - uses: papeloto/action-zip@v1
         with:
-          files: build/windows
+          files: build/windows/runner/Release
           dest: Fluffyboard-windows.zip
       - uses: actions/upload-artifact@v2
         with:
