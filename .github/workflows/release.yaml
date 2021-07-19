@@ -1,7 +1,7 @@
-name: Windows Release
+name: Platform Releases
 on: [ push ]
 jobs:
-  build:
+  windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,11 +13,25 @@ jobs:
       - uses: papeloto/action-zip@v1
         with:
           files: build/windows/runner/Release/*
-          dest: release.zip
+          dest: Fluffyboard-windows.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Fluffyboard-windows
+          path: Fluffyboard-windows.zip
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [windows]
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: Fluffyboard-windows
+          path: Fluffyboard-windows.zip
+
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
           title: "Release Build"
           files: |
-            release.zip
+          release.zip
