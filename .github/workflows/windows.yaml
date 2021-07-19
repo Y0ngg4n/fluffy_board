@@ -12,7 +12,7 @@ jobs:
       - run: flutter build windows
       - uses: papeloto/action-zip@v1
         with:
-          files: build/windows/runner/release/*
+          files: build/windows
           dest: release.zip
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
