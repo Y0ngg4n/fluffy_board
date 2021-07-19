@@ -10,18 +10,9 @@ jobs:
           channel: beta
       - run: flutter config --enable-windows-desktop
       - run: flutter build windows
-      - uses: actions/upload-artifact@v2
-        with:
-          name: windows-release
-          path: |
-            build/windows/runner/release/*
-      - uses: actions/download-artifact@v2
-        with:
-          name: windows-release
-          path: windows-release/
       - uses: papeloto/action-zip@v1
         with:
-          files: windows-release/*
+          files: build/windows/runner/release/*
           dest: release.zip
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
