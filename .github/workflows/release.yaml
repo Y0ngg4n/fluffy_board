@@ -123,3 +123,4 @@ jobs:
             linux/Fluffyboard-linux.zip
             web/Fluffyboard-web.zip
             android/Fluffyboard-android.apk
+            mac/Fluffyboard-mac.zip
