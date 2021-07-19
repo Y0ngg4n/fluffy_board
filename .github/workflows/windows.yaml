@@ -24,6 +24,10 @@ jobs:
         with:
           name: windows-release
           path: .
+      - uses: papeloto/action-zip@v1
+        with:
+          files: .
+          dest: release.zip
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -31,4 +35,4 @@ jobs:
           prerelease: true
           title: "Release Build"
           files: |
-          .*
+            release.zip
