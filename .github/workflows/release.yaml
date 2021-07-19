@@ -63,8 +63,6 @@ jobs:
         with:
           java-version: '12.x'
       - uses: subosito/flutter-action@v1
-        with:
-          flutter-version: '2.0.5'
       - run: flutter pub get
       - run: flutter build apk
 #      - run: flutter build appbundle
