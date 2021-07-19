@@ -1,7 +1,7 @@
 name: Windows Release
 on: [ push ]
 jobs:
-  windows:
+  build:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -10,3 +10,26 @@ jobs:
           channel: beta
       - run: flutter config --enable-windows-desktop
       - run: flutter build windows
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-release
+          path: |
+            build/windows/runner/release/*
+  release:
+    name: "Release"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Release Build"
+          files: |
+            LICENSE.txt
+            *.jar
+      - uses: actions/download-artifact@v2
+          with:
+            name: agileconfig-ui
+            path: AgileConfig.Server.Apisite/wwwroot/ui
