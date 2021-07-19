@@ -33,4 +33,4 @@ jobs:
           automatic_release_tag: "latest"
           title: "Release Build"
           files: |
-          windows/Fluffyboard-windows.zip
+            windows/Fluffyboard-windows.zip
