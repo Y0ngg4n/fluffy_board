@@ -38,10 +38,28 @@ jobs:
         with:
           name: Fluffyboard-linux
           path: Fluffyboard-linux.zip
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '2.0.5'
+      - run: flutter pub get
+      - run: flutter test
+      - run: flutter build web
+      - uses: papeloto/action-zip@v1
+        with:
+          files: build/web
+          dest: Fluffyboard-web.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Fluffyboard-web
+          path: Fluffyboard-web.zip
 
   release:
     runs-on: ubuntu-latest
-    needs: [windows, linux]
+    needs: [windows, linux, web]
     steps:
       - uses: actions/download-artifact@v2
         with:
@@ -50,7 +68,11 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: Fluffyboard-linux
-          path: linux/Fluffyboard-linux.zip
+          path: web/Fluffyboard-linux.zip
+      - uses: actions/download-artifact@v2
+        with:
+          name: Fluffyboard-web
+          path: linux/Fluffyboard-web.zip
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -59,3 +81,4 @@ jobs:
           files: |
             windows/Fluffyboard-windows.zip
             linux/Fluffyboard-linux.zip
+            web/Fluffyboard-web.zip
