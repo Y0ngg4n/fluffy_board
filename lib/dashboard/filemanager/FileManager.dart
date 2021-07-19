@@ -142,9 +142,8 @@ class OfflineWhiteboard {
             ? Scribbles.fromJson(json['scribbles'])
             : new Scribbles([]),
         json['bookmarks'] != null
-    ? Bookmarks.fromJson(json['bookmarks'])
-        : new Bookmarks([])
-    );
+            ? Bookmarks.fromJson(json['bookmarks'])
+            : new Bookmarks([]));
   }
 
   OfflineWhiteboard(this.uuid, this.directory, this.name, this.uploads,
@@ -413,8 +412,13 @@ class _FileManagerState extends State<FileManager> {
                               context,
                               MaterialPageRoute<void>(
                                   builder: (BuildContext context) =>
-                                      WhiteboardView(whiteboard, null, null,
-                                          widget.auth_token, widget.id, widget.online)));
+                                      WhiteboardView(
+                                          whiteboard,
+                                          null,
+                                          null,
+                                          widget.auth_token,
+                                          widget.id,
+                                          widget.online)));
                         },
                       ),
                       Text(
@@ -477,7 +481,8 @@ class _FileManagerState extends State<FileManager> {
                                     whiteboard.id, whiteboard.edit_id),
                                 await _getScribbles(
                                     whiteboard.id, whiteboard.edit_id),
-                            await _getBookmarks(whiteboard.id, whiteboard.edit_id));
+                                await _getBookmarks(
+                                    whiteboard.id, whiteboard.edit_id));
                         offlineWhiteboards.list.add(offlineWhiteboard);
                         print(offlineWhiteboard.toJSONEncodable().toString());
                         fileManagerStorage.setItem(
@@ -522,8 +527,13 @@ class _FileManagerState extends State<FileManager> {
                               context,
                               MaterialPageRoute<void>(
                                   builder: (BuildContext context) =>
-                                      WhiteboardView(null, whiteboard, null,
-                                          widget.auth_token, widget.id, widget.online)));
+                                      WhiteboardView(
+                                          null,
+                                          whiteboard,
+                                          null,
+                                          widget.auth_token,
+                                          widget.id,
+                                          widget.online)));
                         },
                       ),
                       Text(
@@ -536,11 +546,39 @@ class _FileManagerState extends State<FileManager> {
                 PopupMenuButton(
                   itemBuilder: (context) => [
                     PopupMenuItem(child: Text("Delete Whiteboard"), value: 0),
+                    PopupMenuItem(child: Text("Download Whiteboard"), value: 1)
                   ],
-                  onSelected: (value) {
+                  onSelected: (value) async {
                     switch (value) {
                       case 0:
                         _deleteExtWhiteboardDialog(context, whiteboard);
+                        break;
+                      case 1:
+                        OfflineWhiteboard offlineWhiteboard =
+                            new OfflineWhiteboard(
+                                uuid.v4(),
+                                currentDirectory,
+                                whiteboard.name,
+                                await _getUploads(
+                                    whiteboard.original, whiteboard.permissionId),
+                                await _getTextItems(
+                                    whiteboard.original, whiteboard.permissionId),
+                                await _getScribbles(
+                                    whiteboard.original, whiteboard.permissionId),
+                                await _getBookmarks(
+                                    whiteboard.original, whiteboard.permissionId));
+                        offlineWhiteboards.list.add(offlineWhiteboard);
+                        print(offlineWhiteboard.toJSONEncodable().toString());
+                        fileManagerStorage.setItem(
+                            "offline_whiteboard-" + offlineWhiteboard.uuid,
+                            offlineWhiteboard.toJSONEncodable());
+                        for (OfflineWhiteboard offWhi
+                            in offlineWhiteboards.list) {
+                          offlineWhiteboardIds.add(offWhi.uuid);
+                        }
+                        fileManagerStorageIndex.setItem("indexes",
+                            jsonEncode(offlineWhiteboardIds.toList()));
+                        _refreshController.requestRefresh();
                         break;
                     }
                   },
@@ -575,8 +613,13 @@ class _FileManagerState extends State<FileManager> {
                               context,
                               MaterialPageRoute<void>(
                                   builder: (BuildContext context) =>
-                                      WhiteboardView(null, null, whiteboard,
-                                          widget.auth_token, widget.id, widget.online)));
+                                      WhiteboardView(
+                                          null,
+                                          null,
+                                          whiteboard,
+                                          widget.auth_token,
+                                          widget.id,
+                                          widget.online)));
                         },
                       ),
                       Text(whiteboard.name
@@ -1170,18 +1213,18 @@ class _FileManagerState extends State<FileManager> {
     List<Bookmark> bookmarks = new List.empty(growable: true);
     if (textItemResponse.statusCode == 200) {
       List<DecodeGetBookmark> decodeBookmarks =
-      DecodeGetBookmarkList.fromJsonList(jsonDecode(textItemResponse.body));
+          DecodeGetBookmarkList.fromJsonList(jsonDecode(textItemResponse.body));
       setState(() {
         for (DecodeGetBookmark decodeGetBookmark in decodeBookmarks) {
           bookmarks.add(new Bookmark(
               decodeGetBookmark.uuid,
               decodeGetBookmark.name,
-              new Offset(decodeGetBookmark.offset_dx, decodeGetBookmark.offset_dy),
+              new Offset(
+                  decodeGetBookmark.offset_dx, decodeGetBookmark.offset_dy),
               decodeGetBookmark.scale));
         }
       });
     }
     return new Bookmarks(bookmarks);
   }
-
 }
