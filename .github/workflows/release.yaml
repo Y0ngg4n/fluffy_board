@@ -33,7 +33,7 @@ jobs:
       - uses: papeloto/action-zip@v1
         with:
           files: build/linux/x64/release/bundle
-          dest: Fluffyboard-windows.zip
+          dest: Fluffyboard-linux.zip
       - uses: actions/upload-artifact@v2
         with:
           name: Fluffyboard-linux
