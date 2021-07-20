@@ -14,6 +14,19 @@ class Login extends StatelessWidget {
     return (Scaffold(
         appBar: AppBar(
           title: Text("Login"),
+          actions: [PopupMenuButton(
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(child: Text("Change server"), value: 0)
+              ];
+            },
+            onSelected: (value) {
+              switch (value){
+                case 0:
+                  Navigator.pushNamed(context, "/server-settings");
+              }
+            },
+          )],
         ),
         body: Center(
           child: Padding(
@@ -42,6 +55,7 @@ class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = new TextEditingController();
   final TextEditingController passwordController = new TextEditingController();
+  final LocalStorage settingsStorage = new LocalStorage('settings');
   final LocalStorage storage = new LocalStorage('account');
 
   _showError() {
@@ -129,7 +143,7 @@ class _LoginFormState extends State<LoginForm> {
           .showSnackBar(SnackBar(content: Text('Trying to login ...')));
       try {
         http.Response response = await http.post(
-            Uri.parse(dotenv.env['REST_API_URL']! + "/account/login"),
+            Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/account/login"),
             headers: {
               "content-type": "application/json",
               "accept": "application/json",
@@ -147,6 +161,7 @@ class _LoginFormState extends State<LoginForm> {
           await storage.setItem("username", body['name']);
           Navigator.pushReplacementNamed(context, '/dashboard');
         } else {
+          print(response.body);
           _showError();
         }
       } catch (e) {

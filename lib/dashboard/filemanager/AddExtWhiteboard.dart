@@ -59,7 +59,7 @@ class AddExtWhiteboardForm extends StatefulWidget {
 
 class _AddExtWhiteboardFormState extends State<AddExtWhiteboardForm> {
   final _formKey = GlobalKey<FormState>();
-
+  final LocalStorage settingsStorage = new LocalStorage('settings');
   final TextEditingController nameController =
   new TextEditingController();
 
@@ -122,7 +122,7 @@ class _AddExtWhiteboardFormState extends State<AddExtWhiteboardForm> {
         String inviteId = nameController.text;
         List splitInviteId = inviteId.split("#");
         http.Response response = await http.post(
-            Uri.parse(dotenv.env['REST_API_URL']! +
+            Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
                 "/filemanager-ext/whiteboard/create"),
             headers: {
               "content-type": "application/json",

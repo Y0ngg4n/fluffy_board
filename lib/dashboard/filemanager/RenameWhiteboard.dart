@@ -72,7 +72,7 @@ class RenameWhiteboardForm extends StatefulWidget {
 
 class _RenameWhiteboardFormState extends State<RenameWhiteboardForm> {
   final _formKey = GlobalKey<FormState>();
-
+  final LocalStorage settingsStorage = new LocalStorage('settings');
   final TextEditingController nameController = new TextEditingController();
 
   _showError() {
@@ -126,7 +126,7 @@ class _RenameWhiteboardFormState extends State<RenameWhiteboardForm> {
           content: Text('Trying to rename whiteboard ...')));
       try {
         http.Response response = await http.post(
-            Uri.parse(dotenv.env['REST_API_URL']! +
+            Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
                 "/filemanager/whiteboard/rename"),
             headers: {
               "content-type": "application/json",

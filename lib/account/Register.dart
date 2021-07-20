@@ -16,6 +16,19 @@ class Register extends StatelessWidget {
     return (Scaffold(
         appBar: AppBar(
           title: Text("Register"),
+          actions: [PopupMenuButton(
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(child: Text("Change server"), value: 0)
+              ];
+            },
+            onSelected: (value) {
+              switch (value){
+                case 0:
+                  Navigator.pushNamed(context, "/server-settings");
+              }
+            },
+          )],
         ),
         body: Center(
           child: Padding(
@@ -51,6 +64,7 @@ class _RegisterFormState extends State<RegisterForm> {
   final TextEditingController passwordController =
   new TextEditingController();
   final LocalStorage storage = new LocalStorage('account');
+  final LocalStorage settingsStorage = new LocalStorage('settings');
 
   _showError() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -205,7 +219,7 @@ class _RegisterFormState extends State<RegisterForm> {
           content: Text('Creating your Account ...')));
       try {
         http.Response response = await http.post(
-            Uri.parse(dotenv.env['REST_API_URL']! +
+            Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
                 "/account/register"),
             headers: {
               "content-type": "application/json",
@@ -228,6 +242,7 @@ class _RegisterFormState extends State<RegisterForm> {
           Navigator.pushReplacementNamed(
               context, '/dashboard');
         } else {
+          print(response.body);
           _showError();
         }
       } catch (e) {

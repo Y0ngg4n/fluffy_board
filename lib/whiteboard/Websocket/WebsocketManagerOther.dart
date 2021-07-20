@@ -3,9 +3,11 @@ import 'dart:typed_data';
 import 'WebsocketManager.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:io';
+import 'package:localstorage/localstorage.dart';
 
 class WebsocketManagerOther implements WebsocketManager {
   OnWebsocketMessage onWebsocketMessage;
+  final LocalStorage settingsStorage = new LocalStorage('settings');
 
   late WebSocket channel;
 
@@ -23,7 +25,7 @@ class WebsocketManagerOther implements WebsocketManager {
   @override
   connectWs(String whiteboard, String auth_token) async {
     WebSocket webSocket = await WebSocket.connect(
-        dotenv.env['WS_API_URL']! + "/$whiteboard/$auth_token");
+        (settingsStorage.getItem("WS_API_URL") ?? dotenv.env['WS_API_URL']!) + "/$whiteboard/$auth_token");
     return webSocket;
   }
 

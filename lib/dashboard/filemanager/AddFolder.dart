@@ -78,6 +78,7 @@ class _AddFolderFormState extends State<AddFolderForm> {
 
   final TextEditingController nameController = new TextEditingController();
   final LocalStorage storage = new LocalStorage('account');
+  final LocalStorage settingsStorage = new LocalStorage('settings');
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
 
   _showError() {
@@ -132,7 +133,7 @@ class _AddFolderFormState extends State<AddFolderForm> {
       if (widget.online) {
         try {
           http.Response response = await http.post(
-              Uri.parse(dotenv.env['REST_API_URL']! +
+              Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
                   "/filemanager/directory/create"),
               headers: {
                 "content-type": "application/json",

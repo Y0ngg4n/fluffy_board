@@ -7,6 +7,7 @@ import 'account/Login.dart';
 import 'account/Register.dart';
 import 'dashboard/Dashboard.dart';
 import 'dashboard/EditAccount.dart';
+import 'dashboard/ServerSettings.dart';
 import 'dashboard/filemanager/AddFolder.dart';
 import 'documentation/About.dart';
 import 'whiteboard/InfiniteCanvas.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future main() async{
   await dotenv.load(fileName: ".env");
+  print(dotenv.env['REST_API_URL']);
   runApp(MyApp());
 }
 
@@ -42,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => Login(),
         '/dashboard': (context) => Dashboard(),
         '/edit-account': (context) => EditAccount(),
+        '/server-settings': (context) => ServerSettings(),
       },
       initialRoute: '/about',
     );

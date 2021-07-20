@@ -38,6 +38,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   final LocalStorage accountStorage = new LocalStorage('account');
   final LocalStorage introStorage = new LocalStorage('intro');
+  final LocalStorage settingsStorage = new LocalStorage('settings');
   bool storageReady = false;
   bool introStorageReady = false;
   bool checkedLogin = false;
@@ -111,7 +112,7 @@ class _DashboardState extends State<Dashboard> {
     } else {
       try {
         http.Response response = await http.get(
-            Uri.parse(dotenv.env['REST_API_URL']! + "/account/check"),
+            Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/account/check"),
             headers: {
               "content-type": "application/json",
               "accept": "application/json",
