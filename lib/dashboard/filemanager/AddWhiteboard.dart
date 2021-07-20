@@ -58,6 +58,7 @@ class AddWhiteboardForm extends StatefulWidget {
 
 class _AddWhiteboardFormState extends State<AddWhiteboardForm> {
   final _formKey = GlobalKey<FormState>();
+  final LocalStorage settingsStorage = new LocalStorage('settings');
 
   final TextEditingController nameController =
   new TextEditingController();
@@ -111,7 +112,7 @@ class _AddWhiteboardFormState extends State<AddWhiteboardForm> {
           SnackBar(content: Text('Trying to create your Whiteboard ...')));
       try {
         http.Response response = await http.post(
-            Uri.parse(dotenv.env['REST_API_URL']! +
+            Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
                 "/filemanager/whiteboard/create"),
             headers: {
               "content-type": "application/json",

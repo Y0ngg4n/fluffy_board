@@ -207,6 +207,7 @@ class _FileManagerState extends State<FileManager> {
       new LocalStorage('filemanager-index');
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
   var uuid = Uuid();
+  final LocalStorage settingsStorage = new LocalStorage('settings');
 
   _showUploadError() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -641,7 +642,7 @@ class _FileManagerState extends State<FileManager> {
                         break;
                       case 1:
                         http.Response response = await http.post(
-                            Uri.parse(dotenv.env['REST_API_URL']! +
+                            Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
                                 "/filemanager/whiteboard/create"),
                             headers: {
                               "content-type": "application/json",
@@ -659,7 +660,7 @@ class _FileManagerState extends State<FileManager> {
                         if (response.statusCode == 200) {
                           whiteboard.uuid = createWhiteboardResponse.id;
                           http.Response response = await http.post(
-                              Uri.parse(dotenv.env['REST_API_URL']! +
+                              Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
                                   "/offline-whiteboard/import"),
                               headers: {
                                 "content-type": "application/json",
@@ -712,7 +713,7 @@ class _FileManagerState extends State<FileManager> {
                   onPressed: () async {
                     Navigator.of(context).pop();
                     http.Response deleteResponse = await http.post(
-                        Uri.parse(dotenv.env['REST_API_URL']! +
+                        Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
                             "/filemanager/directory/delete"),
                         headers: {
                           "content-type": "application/json",
@@ -759,7 +760,7 @@ class _FileManagerState extends State<FileManager> {
                   onPressed: () async {
                     Navigator.of(context).pop();
                     http.Response deleteResponse = await http.post(
-                        Uri.parse(dotenv.env['REST_API_URL']! +
+                        Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
                             "/filemanager/whiteboard/delete"),
                         headers: {
                           "content-type": "application/json",
@@ -803,7 +804,7 @@ class _FileManagerState extends State<FileManager> {
                   onPressed: () async {
                     Navigator.of(context).pop();
                     http.Response deleteResponse = await http.post(
-                        Uri.parse(dotenv.env['REST_API_URL']! +
+                        Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
                             "/filemanager-ext/whiteboard/delete"),
                         headers: {
                           "content-type": "application/json",
@@ -874,7 +875,7 @@ class _FileManagerState extends State<FileManager> {
       whiteboard.parent = directoryUuid;
       http.Response response = await http.post(
           Uri.parse(
-              dotenv.env['REST_API_URL']! + "/filemanager/whiteboard/move"),
+              (settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/filemanager/whiteboard/move"),
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
@@ -894,7 +895,7 @@ class _FileManagerState extends State<FileManager> {
       whiteboard.directory = directoryUuid;
       http.Response response = await http.post(
           Uri.parse(
-              dotenv.env['REST_API_URL']! + "/filemanager-ext/whiteboard/move"),
+              (settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/filemanager-ext/whiteboard/move"),
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
@@ -920,7 +921,7 @@ class _FileManagerState extends State<FileManager> {
       if (directory.id == directoryUuid) return;
       http.Response response = await http.post(
           Uri.parse(
-              dotenv.env['REST_API_URL']! + "/filemanager/directory/move"),
+              (settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/filemanager/directory/move"),
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
@@ -952,7 +953,7 @@ class _FileManagerState extends State<FileManager> {
       return;
     }
     http.Response dirResponse = await http.post(
-        Uri.parse(dotenv.env['REST_API_URL']! + "/filemanager/directory/get"),
+        Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/filemanager/directory/get"),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
@@ -963,7 +964,7 @@ class _FileManagerState extends State<FileManager> {
           "parent": currentDirectory,
         }));
     http.Response wbResponse = await http.post(
-        Uri.parse(dotenv.env['REST_API_URL']! + "/filemanager/whiteboard/get"),
+        Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/filemanager/whiteboard/get"),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
@@ -975,7 +976,7 @@ class _FileManagerState extends State<FileManager> {
         }));
     http.Response wbExtResponse = await http.post(
         Uri.parse(
-            dotenv.env['REST_API_URL']! + "/filemanager-ext/whiteboard/get"),
+            (settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/filemanager-ext/whiteboard/get"),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
@@ -996,7 +997,7 @@ class _FileManagerState extends State<FileManager> {
       if (!directoryUuids.contains(offlineDirectory.id)) {
         http.Response response = await http.post(
             Uri.parse(
-                dotenv.env['REST_API_URL']! + "/filemanager/directory/create"),
+                (settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/filemanager/directory/create"),
             headers: {
               "content-type": "application/json",
               "accept": "application/json",
@@ -1098,7 +1099,7 @@ class _FileManagerState extends State<FileManager> {
   Future<Scribbles> _getScribbles(
       String whiteboard, String permissionId) async {
     http.Response scribbleResponse = await http.post(
-        Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/scribble/get"),
+        Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/whiteboard/scribble/get"),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
@@ -1129,7 +1130,7 @@ class _FileManagerState extends State<FileManager> {
 
   Future<Uploads> _getUploads(String whiteboard, String permissionId) async {
     http.Response uploadResponse = await http.post(
-        Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/upload/get"),
+        Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/whiteboard/upload/get"),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
@@ -1168,7 +1169,7 @@ class _FileManagerState extends State<FileManager> {
   Future<TextItems> _getTextItems(
       String whiteboard, String permissionId) async {
     http.Response textItemResponse = await http.post(
-        Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/textitem/get"),
+        Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/whiteboard/textitem/get"),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
@@ -1202,7 +1203,7 @@ class _FileManagerState extends State<FileManager> {
   Future<Bookmarks> _getBookmarks(
       String whiteboard, String permissionId) async {
     http.Response textItemResponse = await http.post(
-        Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/bookmark/get"),
+        Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/whiteboard/bookmark/get"),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",

@@ -36,6 +36,7 @@ class EditAccountForm extends StatefulWidget {
 
 class _EditAccountFormState extends State<EditAccountForm> {
   final LocalStorage accountStorage = new LocalStorage('account');
+  final LocalStorage settingsStorage = new LocalStorage('settings');
   final _formKey = GlobalKey<FormState>();
   final TextEditingController usernameController = new TextEditingController();
 
@@ -89,7 +90,7 @@ class _EditAccountFormState extends State<EditAccountForm> {
                                           http.Response response = await http
                                               .post(
                                               Uri.parse(
-                                                  dotenv.env['REST_API_URL']! +
+                                                  (settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
                                                       "/account/update/username"),
                                               headers: {
                                                 "content-type": "application/json",

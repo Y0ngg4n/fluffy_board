@@ -29,7 +29,7 @@ class GetToolbarOptions {
     if (online) {
       http.Response pencilResponse = await http.get(
           Uri.parse(
-              dotenv.env['REST_API_URL']! + "/toolbar-options/pencil/get"),
+              (settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/toolbar-options/pencil/get"),
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
@@ -89,7 +89,7 @@ class GetToolbarOptions {
     if (online) {
       http.Response highlighterResponse = await http.get(
           Uri.parse(
-              dotenv.env['REST_API_URL']! + "/toolbar-options/highlighter/get"),
+              (settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/toolbar-options/highlighter/get"),
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
@@ -146,7 +146,7 @@ class GetToolbarOptions {
     if (online) {
       http.Response highlighterResponse = await http.get(
           Uri.parse(
-              dotenv.env['REST_API_URL']! + "/toolbar-options/eraser/get"),
+              (settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/toolbar-options/eraser/get"),
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
@@ -197,7 +197,7 @@ class GetToolbarOptions {
 
     if (online) {
       http.Response straightLineResponse = await http.get(
-          Uri.parse(dotenv.env['REST_API_URL']! +
+          Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
               "/toolbar-options/straight-line/get"),
           headers: {
             "content-type": "application/json",
@@ -258,7 +258,7 @@ class GetToolbarOptions {
     if (online) {
       http.Response straightLineResponse = await http.get(
           Uri.parse(
-              dotenv.env['REST_API_URL']! + "/toolbar-options/figure/get"),
+              (settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/toolbar-options/figure/get"),
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
@@ -315,7 +315,7 @@ class GetToolbarOptions {
     if (online) {
       http.Response backgroundResponse = await http.get(
           Uri.parse(
-              dotenv.env['REST_API_URL']! + "/toolbar-options/background/get"),
+              (settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/toolbar-options/background/get"),
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
@@ -360,7 +360,7 @@ class GetToolbarOptions {
     if (online) {
       await http.post(
           Uri.parse(
-              dotenv.env['REST_API_URL']! + "/toolbar-options/pencil/update"),
+              (settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/toolbar-options/pencil/update"),
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
@@ -385,7 +385,7 @@ class GetToolbarOptions {
     HighlighterOptions highlighterOptions = drawOptions as HighlighterOptions;
     if (online) {
       await http.post(
-          Uri.parse(dotenv.env['REST_API_URL']! +
+          Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
               "/toolbar-options/highlighter/update"),
           headers: {
             "content-type": "application/json",
@@ -412,7 +412,7 @@ class GetToolbarOptions {
     if (online) {
       await http.post(
           Uri.parse(
-              dotenv.env['REST_API_URL']! + "/toolbar-options/eraser/update"),
+              (settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/toolbar-options/eraser/update"),
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
@@ -431,7 +431,7 @@ class GetToolbarOptions {
     drawOptions as StraightLineOptions;
     if (online) {
       await http.post(
-          Uri.parse(dotenv.env['REST_API_URL']! +
+          Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
               "/toolbar-options/straight-line/update"),
           headers: {
             "content-type": "application/json",
@@ -460,7 +460,7 @@ class GetToolbarOptions {
     if (online) {
       await http.post(
           Uri.parse(
-              dotenv.env['REST_API_URL']! + "/toolbar-options/figure/update"),
+              (settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/toolbar-options/figure/update"),
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
@@ -490,7 +490,7 @@ class GetToolbarOptions {
     if (online) {
       await http.post(
           Uri.parse(
-              dotenv.env['REST_API_URL']! +
+              (settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
                   "/toolbar-options/background/update"),
           headers: {
             "content-type": "application/json",

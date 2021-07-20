@@ -24,6 +24,7 @@ class _AvatarIconState extends State<AvatarIcon> {
           itemBuilder: (context) => [
             PopupMenuItem(child: Text("Edit Account"), value: "/edit-account"),
             PopupMenuItem(child: Text("Logout"), value: "/login"),
+            PopupMenuItem(child: Text("Change Server"), value: "/server-settings"),
           ],
           onSelected: (route) async {
             switch (route){
@@ -33,6 +34,9 @@ class _AvatarIconState extends State<AvatarIcon> {
               case "/login":
                 await accountStorage.ready;
                 accountStorage.clear();
+                Navigator.pushReplacementNamed(context, route.toString());
+                break;
+              case "/server-settings":
                 Navigator.pushReplacementNamed(context, route.toString());
                 break;
             }

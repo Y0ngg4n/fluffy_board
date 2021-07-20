@@ -487,7 +487,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
 
   Future _getScribbles() async {
     http.Response scribbleResponse = await http.post(
-        Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/scribble/get"),
+        Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/whiteboard/scribble/get"),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
@@ -523,7 +523,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
 
   Future _getUploads() async {
     http.Response uploadResponse = await http.post(
-        Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/upload/get"),
+        Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/whiteboard/upload/get"),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
@@ -559,7 +559,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
 
   Future _getTextItems() async {
     http.Response textItemResponse = await http.post(
-        Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/textitem/get"),
+        Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/whiteboard/textitem/get"),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
@@ -603,7 +603,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
     } else {
       List<Bookmark> localBookmarks = [];
       http.Response bookmarkResponse = await http.post(
-          Uri.parse(dotenv.env['REST_API_URL']! + "/whiteboard/bookmark/get"),
+          Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/whiteboard/bookmark/get"),
           headers: {
             "content-type": "application/json",
             "accept": "application/json",

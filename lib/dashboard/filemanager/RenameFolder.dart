@@ -72,6 +72,7 @@ class RenameFolderForm extends StatefulWidget {
 
 class _RenameFolderFormState extends State<RenameFolderForm> {
   final _formKey = GlobalKey<FormState>();
+  final LocalStorage settingsStorage = new LocalStorage('settings');
 
   final TextEditingController nameController = new TextEditingController();
 
@@ -126,7 +127,7 @@ class _RenameFolderFormState extends State<RenameFolderForm> {
           content: Text('Trying to rename folder ...')));
       try {
         http.Response response = await http.post(
-            Uri.parse(dotenv.env['REST_API_URL']! +
+            Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
                 "/filemanager/directory/rename"),
             headers: {
               "content-type": "application/json",
