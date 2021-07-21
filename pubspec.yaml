@@ -49,7 +49,7 @@ dev_dependencies:
   # smoothing: ^0.0.1 #No NS
   # calculess: ^1.0.2
   # Toolbar
-  flex_color_picker: ^2.0.1 #NS
+  flex_color_picker: ^2.0.2 #NS
   # Canvas
   vector_math: ^2.1.0 #NS
   path_icon: ^0.7.0 #NS
@@ -59,7 +59,7 @@ dev_dependencies:
   pdf: ^3.4.2 #NS
   sleek_circular_slider: ^2.0.1
   #Export:
-  file_saver: ^0.0.8 #NS
+  file_saver: ^0.0.9 #NS
   # Server Connection
   uuid: ^3.0.4 #NS
   web_socket_channel: ^2.1.0 #NS
