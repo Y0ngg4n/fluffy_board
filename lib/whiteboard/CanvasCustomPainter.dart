@@ -24,6 +24,7 @@ class CanvasCustomPainter extends CustomPainter {
   bool multiSelectMove;
   Offset multiSelectStartPosition;
   Offset multiSelectStopPosition;
+  Offset? hoverPosition;
 
   CanvasCustomPainter(
       {required this.scribbles,
@@ -38,7 +39,8 @@ class CanvasCustomPainter extends CustomPainter {
       required this.multiSelect,
       required this.multiSelectMove,
       required this.multiSelectStartPosition,
-      required this.multiSelectStopPosition});
+      required this.multiSelectStopPosition,
+      required this.hoverPosition});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -222,6 +224,17 @@ class CanvasCustomPainter extends CustomPainter {
           multiselectPaint);
     }
 
+    //   // Draw Cursor Hover
+    // if(hoverPosition != null){
+    //   Paint hoverPaint = Paint()
+    //     ..strokeCap = StrokeCap.round
+    //     ..isAntiAlias = true
+    //     ..color = Colors.blueGrey
+    //     ..strokeWidth = 1
+    //     ..style = PaintingStyle.stroke;
+    //   canvas.drawCircle(hoverPosition!, 3, hoverPaint);
+    // }
+
     // Draw Cursor radius
     Paint cursorPaint = Paint()
       ..strokeCap = StrokeCap.round
@@ -230,6 +243,8 @@ class CanvasCustomPainter extends CustomPainter {
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
     canvas.drawCircle(cursorPosition, cursorRadius, cursorPaint);
+
+
   }
 
   @override
