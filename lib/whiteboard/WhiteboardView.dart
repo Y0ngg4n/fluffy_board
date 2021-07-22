@@ -63,6 +63,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   String toolbarLocation = "left";
   Set<ConnectedUser> connectedUsers = Set.of([]);
   ConnectedUser? followingUser;
+  bool stylusOnly = false;
 
   @override
   void initState() {
@@ -237,6 +238,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   Widget build(BuildContext context) {
     setState(() {
       toolbarLocation = settingsStorage.getItem("toolbar-location") ?? "left";
+      stylusOnly = settingsStorage.getItem("stylus-only") ?? false;
     });
     AppBar appBar = AppBar(
         title: Text(
@@ -290,27 +292,38 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           PopupMenuButton(
               onSelected: (value) => {
                     setState(() {
-                      settingsStorage.setItem("toolbar-location", value);
-                      toolbarLocation = value.toString();
+                      if (value.toString().startsWith("location-")) {
+                        value = value.toString().replaceFirst("location-", "");
+                        settingsStorage.setItem("toolbar-location", value);
+                        toolbarLocation = value.toString();
+                      } else if (value.toString() == "stylus-only") {
+                        settingsStorage.setItem("stylus-only",
+                            !(settingsStorage.getItem("stylus-only") ?? false));
+                      }
                     })
                   },
               itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                     CheckedPopupMenuItem(
                         child: const Text("Left Toolbar"),
                         checked: toolbarLocation == "left" ? true : false,
-                        value: "left"),
+                        value: "location-left"),
                     CheckedPopupMenuItem(
                         child: const Text("Right Toolbar"),
                         checked: toolbarLocation == "right" ? true : false,
-                        value: "right"),
+                        value: "location-right"),
                     CheckedPopupMenuItem(
                         child: const Text("Top Toolbar"),
                         checked: toolbarLocation == "top" ? true : false,
-                        value: "top"),
+                        value: "location-top"),
                     CheckedPopupMenuItem(
                         child: const Text("Bottom Toolbar"),
                         checked: toolbarLocation == "bottom" ? true : false,
-                        value: "bottom"),
+                        value: "location-bottom"),
+                    PopupMenuDivider(),
+                    CheckedPopupMenuItem(
+                        child: const Text("Stylus only"),
+                        checked: stylusOnly,
+                        value: "stylus-only")
                   ])
         ]);
 
@@ -368,6 +381,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                 : BoxDecoration(
                     border: Border.all(color: followingUser!.color, width: 10)),
             child: InfiniteCanvasPage(
+              stylusOnly: stylusOnly,
               id: widget.id,
               onSaveOfflineWhiteboard: () => saveOfflineWhiteboard(),
               auth_token: widget.auth_token,
@@ -487,7 +501,9 @@ class _WhiteboardViewState extends State<WhiteboardView> {
 
   Future _getScribbles() async {
     http.Response scribbleResponse = await http.post(
-        Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/whiteboard/scribble/get"),
+        Uri.parse((settingsStorage.getItem("REST_API_URL") ??
+                dotenv.env['REST_API_URL']!) +
+            "/whiteboard/scribble/get"),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
@@ -523,7 +539,9 @@ class _WhiteboardViewState extends State<WhiteboardView> {
 
   Future _getUploads() async {
     http.Response uploadResponse = await http.post(
-        Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/whiteboard/upload/get"),
+        Uri.parse((settingsStorage.getItem("REST_API_URL") ??
+                dotenv.env['REST_API_URL']!) +
+            "/whiteboard/upload/get"),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
@@ -559,7 +577,9 @@ class _WhiteboardViewState extends State<WhiteboardView> {
 
   Future _getTextItems() async {
     http.Response textItemResponse = await http.post(
-        Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/whiteboard/textitem/get"),
+        Uri.parse((settingsStorage.getItem("REST_API_URL") ??
+                dotenv.env['REST_API_URL']!) +
+            "/whiteboard/textitem/get"),
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
@@ -603,7 +623,9 @@ class _WhiteboardViewState extends State<WhiteboardView> {
     } else {
       List<Bookmark> localBookmarks = [];
       http.Response bookmarkResponse = await http.post(
-          Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/whiteboard/bookmark/get"),
+          Uri.parse((settingsStorage.getItem("REST_API_URL") ??
+                  dotenv.env['REST_API_URL']!) +
+              "/whiteboard/bookmark/get"),
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
