@@ -5,7 +5,7 @@ import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/BackgroundToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui';
+import 'dart:ui' as ui;
 import 'package:vector_math/vector_math.dart' as vectormath;
 
 import 'overlays/Toolbar.dart' as Toolbar;
