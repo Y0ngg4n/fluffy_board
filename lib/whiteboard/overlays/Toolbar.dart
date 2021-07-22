@@ -131,7 +131,7 @@ class _ToolbarState extends State<Toolbar> {
         axis = Axis.horizontal;
         break;
       case "bottom":
-        mainAxisAlignment = MainAxisAlignment.start;
+        mainAxisAlignment = MainAxisAlignment.end;
         crossAxisAlignment = CrossAxisAlignment.center;
         axis = Axis.horizontal;
         break;
