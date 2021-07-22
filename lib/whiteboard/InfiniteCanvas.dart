@@ -153,6 +153,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
               },
               child: ClipRRect(
                 child: CustomPaint(
+                  isComplex: true,
+                  willChange: true,
                   painter: CanvasCustomPainter(
                       texts: widget.texts,
                       uploads: widget.uploads,
