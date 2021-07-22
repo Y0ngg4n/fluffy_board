@@ -8,8 +8,8 @@ import '../DrawPoint.dart';
 import 'WebsocketTypes.dart';
 
 class WebsocketSend {
-  static sendCreateScribble(
-      Scribble newScribble, WebsocketConnection? websocketConnection) {
+  static Future sendCreateScribble(
+      Scribble newScribble, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(WSScribbleAdd(
         newScribble.uuid,
         newScribble.selectedFigureTypeToolbar.index,
@@ -23,8 +23,8 @@ class WebsocketSend {
     }
   }
 
-  static sendScribbleUpdate(
-      Scribble newScribble, WebsocketConnection? websocketConnection) {
+  static Future sendScribbleUpdate(
+      Scribble newScribble, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(WSScribbleUpdate(
       newScribble.uuid,
       newScribble.strokeWidth,
@@ -42,8 +42,8 @@ class WebsocketSend {
     }
   }
 
-  static sendScribbleDelete(
-      Scribble deleteScribble, WebsocketConnection? websocketConnection) {
+  static Future sendScribbleDelete(
+      Scribble deleteScribble, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(WSScribbleDelete(
       deleteScribble.uuid,
     ));
@@ -52,8 +52,8 @@ class WebsocketSend {
     }
   }
 
-  static sendUploadCreate(
-      Upload upload, WebsocketConnection? websocketConnection) {
+  static Future sendUploadCreate(
+      Upload upload, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(WSUploadAdd(
         upload.uuid,
         upload.uploadType.index,
@@ -66,8 +66,8 @@ class WebsocketSend {
     }
   }
 
-  static sendUploadUpdate(
-      Upload newUpload, WebsocketConnection? websocketConnection) {
+  static Future sendUploadUpdate(
+      Upload newUpload, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(WSUploadUpdate(
       newUpload.uuid,
       newUpload.offset.dx,
@@ -77,16 +77,16 @@ class WebsocketSend {
       websocketConnection.sendDataToChannel("upload-update#", data);
   }
 
-  static sendUploadImageDataUpdate(
-      Upload newUpload, WebsocketConnection? websocketConnection) {
+  static Future sendUploadImageDataUpdate(
+      Upload newUpload, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(
         WSUploadImageDataUpdate(newUpload.uuid, newUpload.uint8List));
     if (websocketConnection != null)
       websocketConnection.sendDataToChannel("upload-image-data-update#", data);
   }
 
-  static sendUploadDelete(
-      Upload newUpload, WebsocketConnection? websocketConnection) {
+  static Future sendUploadDelete(
+      Upload newUpload, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(WSUploadDelete(
       newUpload.uuid,
     ));
@@ -94,8 +94,8 @@ class WebsocketSend {
       websocketConnection.sendDataToChannel("upload-delete#", data);
   }
 
-  static sendCreateTextItem(
-      TextItem textItem, WebsocketConnection? websocketConnection) {
+  static Future sendCreateTextItem(
+      TextItem textItem, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(WSTextItemAdd(
         textItem.uuid,
         textItem.strokeWidth,
@@ -111,8 +111,8 @@ class WebsocketSend {
     }
   }
 
-  static sendUpdateTextItem(
-      TextItem textItem, WebsocketConnection? websocketConnection) {
+  static Future sendUpdateTextItem(
+      TextItem textItem, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(WSTextItemUpdate(
         textItem.uuid,
         textItem.strokeWidth,
@@ -128,8 +128,8 @@ class WebsocketSend {
     }
   }
 
-  static sendTextItemDelete(
-      TextItem newTextItem, WebsocketConnection? websocketConnection) {
+  static Future sendTextItemDelete(
+      TextItem newTextItem, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(WSScribbleDelete(
       newTextItem.uuid,
     ));
@@ -137,23 +137,23 @@ class WebsocketSend {
       websocketConnection.sendDataToChannel("text-item-delete#", data);
   }
 
-  static sendUserMove(ui.Offset offset, String id, double scale,
-      WebsocketConnection? websocketConnection) {
+  static Future sendUserMove(ui.Offset offset, String id, double scale,
+      WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(WSUserMove(id, offset.dx, offset.dy, scale));
     if (websocketConnection != null)
       websocketConnection.sendDataToChannel("user-move#", data);
   }
 
-  static sendBookmarkAdd(
-      Bookmark newBookmark, WebsocketConnection? websocketConnection) {
+  static Future sendBookmarkAdd(
+      Bookmark newBookmark, WebsocketConnection? websocketConnection) async{
     if (websocketConnection != null) {
       websocketConnection.sendDataToChannel(
           "bookmark-add#", jsonEncode(newBookmark.toJSONEncodable()));
     }
   }
 
-  static sendBookmarkUpdate(
-      Bookmark newBookmark, WebsocketConnection? websocketConnection) {
+  static Future sendBookmarkUpdate(
+      Bookmark newBookmark, WebsocketConnection? websocketConnection) async{
     if (websocketConnection != null) {
       websocketConnection.sendDataToChannel(
           "bookmark-update#", jsonEncode(newBookmark.toJSONEncodable()));
@@ -161,8 +161,8 @@ class WebsocketSend {
   }
 
 
-  static sendBookmarkDelete(
-      Bookmark newBookmark, WebsocketConnection? websocketConnection) {
+  static Future sendBookmarkDelete(
+      Bookmark newBookmark, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(WSBookmarkDelete(
       newBookmark.uuid,
     ));

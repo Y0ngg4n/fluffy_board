@@ -42,25 +42,44 @@ class CanvasCustomPainter extends CustomPainter {
       required this.multiSelectStopPosition,
       required this.hoverPosition});
 
+  //define canvas background color
+  Paint background = Paint()..color = Colors.white;
+
+  // Draw Background
+  Paint backgroundPaint = Paint()
+    ..strokeCap = StrokeCap.round
+    ..isAntiAlias = true
+    ..color = Colors.blueGrey
+    ..strokeWidth = 1
+    ..style = PaintingStyle.stroke;
+
+  // Images
+  Paint imagePaint = new Paint();
+
+  // Draw Multiselect
+  Paint multiselectPaint = Paint()
+    ..strokeCap = StrokeCap.round
+    ..isAntiAlias = true
+    ..color = Color.fromARGB(50, 31, 133, 222)
+    ..strokeWidth = 1
+    ..style = PaintingStyle.fill;
+
+  // Draw Cursor radius
+  Paint cursorPaint = Paint()
+    ..strokeCap = StrokeCap.round
+    ..isAntiAlias = true
+    ..color = Colors.blueGrey
+    ..strokeWidth = 1
+    ..style = PaintingStyle.stroke;
+
   @override
   void paint(Canvas canvas, Size size) {
-    //define canvas background color
-    Paint background = Paint()..color = Colors.white;
-
     //define canvas size
     Rect rect = Rect.fromLTWH(0, 0, size.width, size.height);
 
     canvas.drawRect(rect, background);
     canvas.clipRect(rect);
     canvas.scale(scale);
-
-    // Draw Background
-    Paint backgroundPaint = Paint()
-      ..strokeCap = StrokeCap.round
-      ..isAntiAlias = true
-      ..color = Colors.blueGrey
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
 
     // TODO: Fix Scaled Scrolling
     // Draw Background
@@ -113,8 +132,6 @@ class CanvasCustomPainter extends CustomPainter {
       }
     }
 
-    // Images
-    Paint imagePaint = new Paint();
     for (Upload upload in uploads) {
       if (ScreenUtils.checkUploadIfNotInScreen(
           upload, offset, screenSize.dx, screenSize.dy, scale)) continue;
@@ -136,7 +153,8 @@ class CanvasCustomPainter extends CustomPainter {
           scale)) continue;
       canvas.save();
       Offset newOffset = textItem.offset + offset;
-      Offset middlePoint = new Offset(((newOffset.dx + textPainter.width) - newOffset.dx) / 2,
+      Offset middlePoint = new Offset(
+          ((newOffset.dx + textPainter.width) - newOffset.dx) / 2,
           ((newOffset.dy + textPainter.height) - newOffset.dx) / 2);
       canvas.translate(middlePoint.dx, middlePoint.dy);
       canvas.rotate(vectormath.radians(textItem.rotation));
@@ -209,14 +227,6 @@ class CanvasCustomPainter extends CustomPainter {
       }
     }
 
-    // Draw Multiselect
-    Paint multiselectPaint = Paint()
-      ..strokeCap = StrokeCap.round
-      ..isAntiAlias = true
-      ..color = Color.fromARGB(50, 31, 133, 222)
-      ..strokeWidth = 1
-      ..style = PaintingStyle.fill;
-
     if (multiSelect && !multiSelectMove) {
       canvas.drawRect(
           Rect.fromPoints(multiSelectStartPosition + offset,
@@ -235,16 +245,7 @@ class CanvasCustomPainter extends CustomPainter {
     //   canvas.drawCircle(hoverPosition!, 3, hoverPaint);
     // }
 
-    // Draw Cursor radius
-    Paint cursorPaint = Paint()
-      ..strokeCap = StrokeCap.round
-      ..isAntiAlias = true
-      ..color = Colors.blueGrey
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
     canvas.drawCircle(cursorPosition, cursorRadius, cursorPaint);
-
-
   }
 
   @override
