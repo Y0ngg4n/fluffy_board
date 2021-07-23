@@ -161,21 +161,93 @@ class CanvasCustomPainter extends CustomPainter {
       textPainter.paint(canvas, newOffset);
       canvas.restore();
     }
-
     //a single line is defined as a series of points followed by a null at the end
     for (Scribble scribble in scribbles) {
       if (ScreenUtils.checkScribbleIfNotInScreen(
           scribble, offset, screenSize.dx, screenSize.dy, scale)) {
         continue;
       }
+      PainterUtils.paintScribble(scribble, canvas, scale, offset);
+    }
 
-      Paint drawingPaint = Paint()
-        ..strokeCap = scribble.strokeCap
-        ..isAntiAlias = true
-        ..color = scribble.color
-        ..strokeWidth = scribble.strokeWidth;
+    if (multiSelect && !multiSelectMove) {
+      canvas.drawRect(
+          Rect.fromPoints(multiSelectStartPosition + offset,
+              multiSelectStopPosition + offset),
+          multiselectPaint);
+    }
 
-      Paint figurePaint = drawingPaint..style = scribble.paintingStyle;
+    //   // Draw Cursor Hover
+    // if(hoverPosition != null){
+    //   Paint hoverPaint = Paint()
+    //     ..strokeCap = StrokeCap.round
+    //     ..isAntiAlias = true
+    //     ..color = Colors.blueGrey
+    //     ..strokeWidth = 1
+    //     ..style = PaintingStyle.stroke;
+    //   canvas.drawCircle(hoverPosition!, 3, hoverPaint);
+    // }
+
+    canvas.drawCircle(cursorPosition, cursorRadius, cursorPaint);
+  }
+
+  @override
+  bool shouldRepaint(CanvasCustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class ScribbleBakePainter extends CustomPainter {
+  double scale;
+  List<Scribble> scribbles;
+
+  ScribbleBakePainter(this.scale, this.scribbles);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Rect rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    canvas.clipRect(rect);
+    canvas.scale(scale);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class PainterUtils {
+  static paintScribble(
+      Scribble scribble, Canvas canvas, double scale, Offset offset) {
+    Paint drawingPaint = Paint()
+      ..strokeCap = scribble.strokeCap
+      ..isAntiAlias = true
+      ..color = scribble.color
+      ..strokeWidth = scribble.strokeWidth;
+
+    Paint extremityPaint = Paint()
+      ..strokeCap = StrokeCap.round
+      ..isAntiAlias = true
+      ..color = Colors.red
+      ..strokeWidth = 1
+      ..style = PaintingStyle.fill;
+
+    Paint extremityBacked = Paint()
+      ..strokeCap = StrokeCap.round
+      ..isAntiAlias = true
+      ..color = Colors.green
+      ..strokeWidth = 1
+      ..style = PaintingStyle.fill;
+
+    Paint imagePaint = Paint()
+      ..strokeCap = StrokeCap.round
+      ..isAntiAlias = true
+      ..color = Colors.green
+      ..strokeWidth = 1
+      ..style = PaintingStyle.fill;
+
+    Paint figurePaint = drawingPaint..style = scribble.paintingStyle;
+    if (scribble.backedScribble == null) {
       switch (scribble.selectedFigureTypeToolbar) {
         case SelectedFigureTypeToolbar.rect:
           canvas.drawRect(
@@ -217,6 +289,16 @@ class CanvasCustomPainter extends CustomPainter {
               canvas.drawLine(scribble.points[x] + offset,
                   scribble.points[x + 1] + offset, drawingPaint);
             }
+            canvas.drawCircle(
+                new Offset(scribble.leftExtremity, scribble.topExtremity) +
+                    offset,
+                3,
+                extremityPaint);
+            canvas.drawCircle(
+                new Offset(scribble.rightExtremity, scribble.bottomExtremity) +
+                    offset,
+                3,
+                extremityPaint);
             //if next point is null, means the line ends here
             // else if (!scribble.points[x].empty && scribble.points[x + 1].empty) {
             //   canvas.drawPoints(
@@ -225,31 +307,26 @@ class CanvasCustomPainter extends CustomPainter {
           }
           break;
       }
+    } else {
+      canvas.drawCircle(
+          new Offset(scribble.leftExtremity - scribble.strokeWidth,
+                  scribble.topExtremity - scribble.strokeWidth) +
+              offset,
+          3,
+          extremityBacked);
+      canvas.drawCircle(
+          new Offset(scribble.rightExtremity + scribble.strokeWidth,
+                  scribble.bottomExtremity + scribble.strokeWidth) +
+              offset,
+          3,
+          extremityBacked);
+      canvas.drawImage(
+          scribble.backedScribble!,
+          new Offset(scribble.leftExtremity - scribble.strokeWidth,
+                  scribble.topExtremity - scribble.strokeWidth) +
+              offset,
+          imagePaint);
+      print("Drawed Backed Scribble");
     }
-
-    if (multiSelect && !multiSelectMove) {
-      canvas.drawRect(
-          Rect.fromPoints(multiSelectStartPosition + offset,
-              multiSelectStopPosition + offset),
-          multiselectPaint);
-    }
-
-    //   // Draw Cursor Hover
-    // if(hoverPosition != null){
-    //   Paint hoverPaint = Paint()
-    //     ..strokeCap = StrokeCap.round
-    //     ..isAntiAlias = true
-    //     ..color = Colors.blueGrey
-    //     ..strokeWidth = 1
-    //     ..style = PaintingStyle.stroke;
-    //   canvas.drawCircle(hoverPosition!, 3, hoverPaint);
-    // }
-
-    canvas.drawCircle(cursorPosition, cursorRadius, cursorPaint);
-  }
-
-  @override
-  bool shouldRepaint(CanvasCustomPainter oldDelegate) {
-    return true;
   }
 }

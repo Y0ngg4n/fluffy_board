@@ -322,6 +322,8 @@ class _ToolbarState extends State<Toolbar> {
         break;
       case SettingsSelected.scribble:
         return ScribbleSettings(
+          offset: widget.offset,
+          zoomOptions: widget.zoomOptions,
           axis: axis,
           onSaveOfflineWhiteboard: () => widget.onSaveOfflineWhiteboard(),
           websocketConnection: widget.websocketConnection,
