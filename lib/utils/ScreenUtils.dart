@@ -183,19 +183,23 @@ class ScreenUtils {
     }
   }
 
-  static bakeScribble(Scribble scribble, double scale, Offset offset) async {
+  static bakeScribble(Scribble scribble, double scale) async {
     ui.PictureRecorder recorder = ui.PictureRecorder();
     ui.Canvas canvas = ui.Canvas(recorder);
     double scribbleWidth = (scribble.rightExtremity - scribble.leftExtremity);
     double scribbleHeight = (scribble.bottomExtremity - scribble.topExtremity);
-    canvas.save();
-    PainterUtils.paintScribble(scribble, canvas, scale,
-        new Offset(-scribble.leftExtremity + scribble.strokeWidth, -scribble.topExtremity + scribble.strokeWidth));
+    PainterUtils.paintScribble(
+        scribble,
+        canvas,
+        scale,
+        new Offset(-scribble.leftExtremity + scribble.strokeWidth,
+            -scribble.topExtremity + scribble.strokeWidth));
     // Finally render the image, this can take about 8 to 25 milliseconds.
     var picture = recorder.endRecording();
+    print(((scribbleWidth * scale) + scribble.strokeWidth * 2).ceil());
     var newImage = await picture.toImage(
-      ((scribbleWidth * scale) + scribble.strokeWidth * 2).ceil(),
-      ((scribbleHeight * scale) + scribble.strokeWidth * 2).ceil(),
+      ((scribbleWidth + scribble.strokeWidth * 2) * (1 + (1 - scale))).ceil(),
+      ((scribbleHeight + scribble.strokeWidth * 2) * (1 + (1 - scale))).ceil(),
     );
     scribble.backedScribble = newImage;
   }

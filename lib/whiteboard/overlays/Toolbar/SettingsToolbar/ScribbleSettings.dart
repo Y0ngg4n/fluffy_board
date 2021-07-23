@@ -101,7 +101,7 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
                   List<DrawPoint> newPoints = [];
                   ScreenUtils.calculateScribbleBounds(widget.selectedScribble!);
                   ScreenUtils.bakeScribble(
-                      widget.selectedScribble!, widget.zoomOptions.scale, widget.offset);
+                      widget.selectedScribble!, widget.zoomOptions.scale);
                   Offset middlePoint = new Offset(
                       (widget.selectedScribble!.rightExtremity -
                               widget.selectedScribble!.leftExtremity) /
