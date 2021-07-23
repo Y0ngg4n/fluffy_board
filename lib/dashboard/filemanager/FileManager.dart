@@ -1060,7 +1060,7 @@ class _FileManagerState extends State<FileManager> {
             await OfflineWhiteboard.fromJson(json);
         for (Scribble scribble in offlineWhiteboard.scribbles.list){
           ScreenUtils.calculateScribbleBounds(scribble);
-          ScreenUtils.bakeScribble(scribble, 1, Offset.zero);
+          ScreenUtils.bakeScribble(scribble, 1);
         }
         for (Upload upload in offlineWhiteboard.uploads.list) {
           final ui.Codec codec = await PaintingBinding.instance!
@@ -1118,7 +1118,7 @@ class _FileManagerState extends State<FileManager> {
           DecodeGetScribbleList.fromJsonList(jsonDecode(scribbleResponse.body));
       setState(() {
         for (DecodeGetScribble decodeGetScribble in decodedScribbles) {
-          scribbles.add(new Scribble(
+          Scribble newScribble = new Scribble(
               decodeGetScribble.uuid,
               decodeGetScribble.strokeWidth,
               StrokeCap.values[decodeGetScribble.strokeCap],
@@ -1126,7 +1126,9 @@ class _FileManagerState extends State<FileManager> {
               decodeGetScribble.points,
               SelectedFigureTypeToolbar
                   .values[decodeGetScribble.selectedFigureTypeToolbar],
-              PaintingStyle.values[decodeGetScribble.paintingStyle]));
+              PaintingStyle.values[decodeGetScribble.paintingStyle]);
+            ScreenUtils.calculateScribbleBounds(newScribble);
+            ScreenUtils.bakeScribble(newScribble, 1);
         }
       });
     }

@@ -535,7 +535,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
               PaintingStyle.values[decodeGetScribble.paintingStyle]);
           scribbles.add(newScribble);
           ScreenUtils.calculateScribbleBounds(newScribble);
-          ScreenUtils.bakeScribble(newScribble, zoomOptions.scale, offset);
+          ScreenUtils.bakeScribble(newScribble, zoomOptions.scale);
         }
       });
     }

@@ -435,8 +435,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 widget.toolbarOptions.settingsSelectedScribble!);
             ScreenUtils.bakeScribble(
                 widget.toolbarOptions.settingsSelectedScribble!,
-                widget.zoomOptions.scale,
-                widget.offset);
+                widget.zoomOptions.scale);
             WebsocketSend.sendScribbleUpdate(
                 widget.toolbarOptions.settingsSelectedScribble!,
                 widget.websocketConnection);
@@ -504,7 +503,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         Scribble newScribble = widget.scribbles.last;
         ScreenUtils.calculateScribbleBounds(newScribble);
         ScreenUtils.bakeScribble(
-            newScribble, widget.zoomOptions.scale, widget.offset);
+            newScribble, widget.zoomOptions.scale);
         WebsocketSend.sendScribbleUpdate(
             newScribble, widget.websocketConnection);
         widget.onSaveOfflineWhiteboard();
@@ -528,7 +527,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
           if (multiSelectMove) {
             ScreenUtils.calculateScribbleBounds(scribble);
             ScreenUtils.bakeScribble(
-                scribble, widget.zoomOptions.scale, widget.offset);
+                scribble, widget.zoomOptions.scale);
             WebsocketSend.sendScribbleUpdate(
                 scribble, widget.websocketConnection);
           }
