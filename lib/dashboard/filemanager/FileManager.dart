@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:fluffy_board/dashboard/filemanager/RenameFolder.dart';
 import 'package:fluffy_board/dashboard/filemanager/RenameWhiteboard.dart';
 import 'package:fluffy_board/dashboard/filemanager/ShareWhiteboard.dart';
+import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
@@ -1057,6 +1058,10 @@ class _FileManagerState extends State<FileManager> {
       if (json != null) {
         OfflineWhiteboard offlineWhiteboard =
             await OfflineWhiteboard.fromJson(json);
+        for (Scribble scribble in offlineWhiteboard.scribbles.list){
+          ScreenUtils.calculateScribbleBounds(scribble);
+          ScreenUtils.bakeScribble(scribble, 1, Offset.zero);
+        }
         for (Upload upload in offlineWhiteboard.uploads.list) {
           final ui.Codec codec = await PaintingBinding.instance!
               .instantiateImageCodec(upload.uint8List);
