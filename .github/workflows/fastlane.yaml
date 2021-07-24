@@ -40,6 +40,13 @@ jobs:
           base64 -d -i play_config.json.b64 > play_config.json
         env:
           PLAY_CONFIG_JSON: ${{ secrets.PLAY_CONFIG_JSON }}
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+        - uses: subosito/flutter-action@v1
+        - run: flutter doctor -v
+        - run: flutter pub get
+        - run: flutter build appbundle
       - name: Distribute app to Beta track 🚀
         run: |
           cd android
