@@ -16,9 +16,9 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '2.7.2'
-      - uses: maierj/fastlane-action@v2.0.1
-        with:
-          lane: 'beta'
+      - name: Install Fastlane
+        run: |
+          gem install fastlane
       - name: Configure Keystore
         run: |
           echo "$ANDROID_KEYSTORE_FILE" > keystore.jks.b64
