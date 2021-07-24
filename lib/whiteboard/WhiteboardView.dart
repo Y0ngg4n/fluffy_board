@@ -79,6 +79,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           onScribbleAdd: (scribble) {
             setState(() {
               scribbles.add(scribble);
+              ScreenUtils.calculateScribbleBounds(scribble);
+              ScreenUtils.bakeScribble(scribble, zoomOptions.scale);
             });
           },
           onScribbleUpdate: (scribble) {
@@ -89,6 +91,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                   scribble.selectedFigureTypeToolbar =
                       scribbles[i].selectedFigureTypeToolbar;
                   scribbles[i] = scribble;
+                  ScreenUtils.calculateScribbleBounds(scribble);
+                  ScreenUtils.bakeScribble(scribble, zoomOptions.scale);
                   break;
                 }
               }
