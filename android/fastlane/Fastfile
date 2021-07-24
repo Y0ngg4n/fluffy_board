@@ -25,6 +25,8 @@ platform :android do
   lane :beta do
 #     gradle(task: "clean assembleRelease")
     crashlytics
+    changelog_from_git_commits
+    upload_to_play_store(track: 'beta')
   
     # sh "your_script.sh"
     # You can also use other beta testing services here
