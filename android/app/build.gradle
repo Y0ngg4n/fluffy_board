@@ -43,7 +43,6 @@ android {
         applicationId "pro.oblivioncoding.fluffy_board"
         minSdkVersion 19
         // TODO: Update to 31 when bug in file_picker_cross is fixed
-        compileSdkVersion 30
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
