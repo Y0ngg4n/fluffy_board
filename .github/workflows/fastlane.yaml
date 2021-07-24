@@ -42,6 +42,6 @@ jobs:
       - run: flutter doctor -v
       - run: flutter pub get
       - run: flutter build appbundle
-      - uses: maierj/fastlane-action@v2.0.1
-        with:
-          lane: 'beta'
+      - name: Distribute Android Beta App
+        working-directory: ${{ github.workspace }}/android
+        run: bundle exec fastlane beta
