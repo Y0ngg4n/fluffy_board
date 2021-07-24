@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:fluffy_board/dashboard/filemanager/RenameFolder.dart';
 import 'package:fluffy_board/dashboard/filemanager/RenameWhiteboard.dart';
 import 'package:fluffy_board/dashboard/filemanager/ShareWhiteboard.dart';
+import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
@@ -1057,6 +1058,10 @@ class _FileManagerState extends State<FileManager> {
       if (json != null) {
         OfflineWhiteboard offlineWhiteboard =
             await OfflineWhiteboard.fromJson(json);
+        for (Scribble scribble in offlineWhiteboard.scribbles.list){
+          ScreenUtils.calculateScribbleBounds(scribble);
+          ScreenUtils.bakeScribble(scribble, 1);
+        }
         for (Upload upload in offlineWhiteboard.uploads.list) {
           final ui.Codec codec = await PaintingBinding.instance!
               .instantiateImageCodec(upload.uint8List);
@@ -1113,7 +1118,7 @@ class _FileManagerState extends State<FileManager> {
           DecodeGetScribbleList.fromJsonList(jsonDecode(scribbleResponse.body));
       setState(() {
         for (DecodeGetScribble decodeGetScribble in decodedScribbles) {
-          scribbles.add(new Scribble(
+          Scribble newScribble = new Scribble(
               decodeGetScribble.uuid,
               decodeGetScribble.strokeWidth,
               StrokeCap.values[decodeGetScribble.strokeCap],
@@ -1121,7 +1126,9 @@ class _FileManagerState extends State<FileManager> {
               decodeGetScribble.points,
               SelectedFigureTypeToolbar
                   .values[decodeGetScribble.selectedFigureTypeToolbar],
-              PaintingStyle.values[decodeGetScribble.paintingStyle]));
+              PaintingStyle.values[decodeGetScribble.paintingStyle]);
+            ScreenUtils.calculateScribbleBounds(newScribble);
+            ScreenUtils.bakeScribble(newScribble, 1);
         }
       });
     }

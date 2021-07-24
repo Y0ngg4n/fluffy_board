@@ -6,6 +6,7 @@ import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketSend.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
+import 'package:fluffy_board/whiteboard/overlays/Zoom.dart';
 import 'package:flutter/material.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'dart:ui';
@@ -24,6 +25,8 @@ class ScribbleSettings extends StatefulWidget {
   WebsocketConnection? websocketConnection;
   OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
   Axis axis;
+  ZoomOptions zoomOptions;
+  Offset offset;
   ScribbleSettings(
       {required this.selectedScribble,
       required this.toolbarOptions,
@@ -32,7 +35,10 @@ class ScribbleSettings extends StatefulWidget {
       required this.onScribblesChange,
       required this.websocketConnection,
       required this.onSaveOfflineWhiteboard,
-      required this.axis});
+      required this.axis,
+        required this.zoomOptions,
+        required this.offset
+      });
 
   @override
   _ScribbleSettingsState createState() => _ScribbleSettingsState();
@@ -94,6 +100,8 @@ class _ScribbleSettingsState extends State<ScribbleSettings> {
                       widget.scribbles.indexOf(widget.selectedScribble!);
                   List<DrawPoint> newPoints = [];
                   ScreenUtils.calculateScribbleBounds(widget.selectedScribble!);
+                  ScreenUtils.bakeScribble(
+                      widget.selectedScribble!, widget.zoomOptions.scale);
                   Offset middlePoint = new Offset(
                       (widget.selectedScribble!.rightExtremity -
                               widget.selectedScribble!.leftExtremity) /

@@ -1,6 +1,7 @@
+import 'package:fluffy_board/whiteboard/CanvasCustomPainter.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 class ScreenUtils {
   static double getScreenWidth(BuildContext context) {
@@ -180,5 +181,26 @@ class ScreenUtils {
         }
       }
     }
+  }
+
+  static bakeScribble(Scribble scribble, double scale) async {
+    ui.PictureRecorder recorder = ui.PictureRecorder();
+    ui.Canvas canvas = ui.Canvas(recorder);
+    double scribbleWidth = (scribble.rightExtremity - scribble.leftExtremity);
+    double scribbleHeight = (scribble.bottomExtremity - scribble.topExtremity);
+    PainterUtils.paintScribble(
+        scribble,
+        canvas,
+        scale,
+        new Offset(-scribble.leftExtremity + scribble.strokeWidth,
+            -scribble.topExtremity + scribble.strokeWidth));
+    // Finally render the image, this can take about 8 to 25 milliseconds.
+    var picture = recorder.endRecording();
+    print(((scribbleWidth * scale) + scribble.strokeWidth * 2).ceil());
+    var newImage = await picture.toImage(
+      ((scribbleWidth + scribble.strokeWidth * 2) * (1 + (1 - scale))).ceil(),
+      ((scribbleHeight + scribble.strokeWidth * 2) * (1 + (1 - scale))).ceil(),
+    );
+    scribble.backedScribble = newImage;
   }
 }

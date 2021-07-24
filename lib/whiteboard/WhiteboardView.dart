@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:fluffy_board/dashboard/Dashboard.dart';
 import 'package:fluffy_board/dashboard/filemanager/FileManager.dart';
+import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
 import 'package:fluffy_board/whiteboard/TextsCanvas.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
@@ -78,6 +79,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           onScribbleAdd: (scribble) {
             setState(() {
               scribbles.add(scribble);
+              ScreenUtils.calculateScribbleBounds(scribble);
+              ScreenUtils.bakeScribble(scribble, zoomOptions.scale);
             });
           },
           onScribbleUpdate: (scribble) {
@@ -88,6 +91,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                   scribble.selectedFigureTypeToolbar =
                       scribbles[i].selectedFigureTypeToolbar;
                   scribbles[i] = scribble;
+                  ScreenUtils.calculateScribbleBounds(scribble);
+                  ScreenUtils.bakeScribble(scribble, zoomOptions.scale);
                   break;
                 }
               }
@@ -523,7 +528,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           DecodeGetScribbleList.fromJsonList(jsonDecode(scribbleResponse.body));
       setState(() {
         for (DecodeGetScribble decodeGetScribble in decodedScribbles) {
-          scribbles.add(new Scribble(
+          Scribble newScribble = new Scribble(
               decodeGetScribble.uuid,
               decodeGetScribble.strokeWidth,
               StrokeCap.values[decodeGetScribble.strokeCap],
@@ -531,7 +536,10 @@ class _WhiteboardViewState extends State<WhiteboardView> {
               decodeGetScribble.points,
               SelectedFigureTypeToolbar
                   .values[decodeGetScribble.selectedFigureTypeToolbar],
-              PaintingStyle.values[decodeGetScribble.paintingStyle]));
+              PaintingStyle.values[decodeGetScribble.paintingStyle]);
+          scribbles.add(newScribble);
+          ScreenUtils.calculateScribbleBounds(newScribble);
+          ScreenUtils.bakeScribble(newScribble, zoomOptions.scale);
         }
       });
     }

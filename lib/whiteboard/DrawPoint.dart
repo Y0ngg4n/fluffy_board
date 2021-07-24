@@ -38,6 +38,7 @@ class Scribble {
       topExtremity = 0,
       rightExtremity = 0,
       bottomExtremity = 0;
+  ui.Image? backedScribble;
 
   toJSONEncodable() {
     Map<String, dynamic> m = new Map();
