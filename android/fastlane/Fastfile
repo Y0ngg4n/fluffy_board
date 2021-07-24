@@ -21,6 +21,48 @@ platform :android do
     gradle(task: "test")
   end
 
+  lane :bump_major do
+    flutter_version_manager(
+      arguments: "-major",
+      yml: "./version.yml",
+      pubspec: "./example_pubspec.yaml")
+  end
+  lane :bump_minor do
+     flutter_version_manager(
+      arguments: "-minor",
+      yml: "./version.yml",
+      pubspec: "./example_pubspec.yaml")
+    end
+
+  lane :bump_patch do
+    flutter_version_manager(
+      arguments: "-patch",
+      yml: "./version.yml",
+      pubspec: "./example_pubspec.yaml")
+  end
+
+  lane :read_version do
+    flutter_version_manager(
+      arguments: "-version",
+      yml: "./version.yml",
+      pubspec: "./example_pubspec.yaml")
+  end
+
+  lane :read_code do
+    flutter_version_manager(
+      arguments: "-code",
+      yml: "./version.yml",
+      pubspec: "./example_pubspec.yaml")
+  end
+
+  lane :apply_new_version do
+    flutter_version_manager(
+      arguments: "-apply",
+      yml: "./version.yml",
+      pubspec: "./example_pubspec.yaml")
+  end
+
+
   desc "Submit a new Beta Build to Crashlytics Beta"
   lane :beta do
 #     gradle(task: "clean assembleRelease")
