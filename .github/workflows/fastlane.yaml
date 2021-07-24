@@ -23,7 +23,7 @@ jobs:
         run: |
           echo "$ANDROID_KEYSTORE_FILE" > keystore.jks.b64
           base64 -d -i keystore.jks.b64 > android/key.jks
-          echo "storeFile=key.jks" >> android/key.properties
+          echo "storeFile=../key.jks" >> android/key.properties
           echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> android/key.properties
           echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> android/key.properties
           echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> android/key.properties
