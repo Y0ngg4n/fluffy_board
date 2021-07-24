@@ -21,13 +21,13 @@ jobs:
           gem install fastlane
       - name: Configure Keystore
         run: |
-          ls
           echo "$ANDROID_KEYSTORE_FILE" > keystore.jks.b64
           base64 -d -i keystore.jks.b64 > android/key.jks
           echo "storeFile=key.jks" >> android/key.properties
           echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> android/key.properties
           echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> android/key.properties
           echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> android/key.properties
+          ls android
         env:
           ANDROID_KEYSTORE_FILE: ${{ secrets.ANDROID_KEYSTORE_FILE }}
           KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
