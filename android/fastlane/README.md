@@ -21,6 +21,36 @@ or alternatively using `brew install fastlane`
 fastlane android test
 ```
 Runs all the tests
+### android bump_major
+```
+fastlane android bump_major
+```
+
+### android bump_minor
+```
+fastlane android bump_minor
+```
+
+### android bump_patch
+```
+fastlane android bump_patch
+```
+
+### android read_version
+```
+fastlane android read_version
+```
+
+### android read_code
+```
+fastlane android read_code
+```
+
+### android apply_new_version
+```
+fastlane android apply_new_version
+```
+
 ### android beta
 ```
 fastlane android beta
