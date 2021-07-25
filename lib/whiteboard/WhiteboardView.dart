@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:fluffy_board/dashboard/Dashboard.dart';
 import 'package:fluffy_board/dashboard/filemanager/FileManager.dart';
+import 'package:fluffy_board/utils/ExportUtils.dart';
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
 import 'package:fluffy_board/whiteboard/TextsCanvas.dart';
@@ -13,14 +14,12 @@ import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:fluffy_board/whiteboard/api/GetToolbarOptions.dart';
 import 'package:fluffy_board/whiteboard/appbar/ConnectedUsers.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/BackgroundToolbar.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/DrawOptions.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/EraserToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/HighlighterToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/PencilToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/TextToolbar.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/UploadToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Zoom.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -227,7 +226,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
       // WidgetsBinding.instance!
       //     .addPostFrameCallback((_) => _createToolbars(context));
     }
-    autoSaveTimer = Timer.periodic(Duration(seconds: 30), (timer) => saveOfflineWhiteboard());
+    autoSaveTimer = Timer.periodic(
+        Duration(seconds: 30), (timer) => saveOfflineWhiteboard());
     settingsStorage.ready.then((value) => setState(() {
           toolbarLocation =
               settingsStorage.getItem("toolbar-location") ?? "left";
@@ -274,6 +274,55 @@ class _WhiteboardViewState extends State<WhiteboardView> {
               });
             },
           ),
+          PopupMenuButton(
+              onSelected: (value) => {
+                    setState(() {
+                      switch (value) {
+                        case 0:
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Trying to export Image ...")));
+                          ExportUtils.exportPNG(
+                              scribbles,
+                              uploads,
+                              texts,
+                              toolbarOptions!,
+                              new Offset(ScreenUtils.getScreenWidth(context),
+                                  ScreenUtils.getScreenHeight(context)),
+                              offset,
+                              zoomOptions.scale);
+                          break;
+                        case 1:
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Trying to export PDF ...")));
+                          ExportUtils.exportPDF(
+                              scribbles,
+                              uploads,
+                              texts,
+                              toolbarOptions!,
+                              new Offset(ScreenUtils.getScreenWidth(context),
+                                  ScreenUtils.getScreenHeight(context)),
+                              offset,
+                              zoomOptions.scale);
+                          break;
+                        case 2:
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Trying to export screen size Image ...")));
+                          ExportUtils.exportScreenSizePNG(
+                              scribbles,
+                              uploads,
+                              texts,
+                              toolbarOptions!,
+                              new Offset(ScreenUtils.getScreenWidth(context),
+                                  ScreenUtils.getScreenHeight(context)),
+                              offset,
+                              zoomOptions.scale);
+                          break;
+                      }
+                    })
+                  },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                    PopupMenuItem(child: const Text("Export Image"), value: 0),
+                    PopupMenuItem(child: const Text("Export PDF"), value: 1),
+                    PopupMenuItem(child: const Text("Export screen size Image"), value: 2),
+                  ],
+              child: Icon(Icons.import_export)),
           IconButton(
               onPressed: () => {
                     Navigator.push(
@@ -313,7 +362,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                             "points-simplify",
                             !(settingsStorage.getItem("points-simplify") ??
                                 true));
-                      }else if (value.toString() == "points-to-image") {
+                      } else if (value.toString() == "points-to-image") {
                         settingsStorage.setItem(
                             "points-to-image",
                             !(settingsStorage.getItem("points-to-image") ??
@@ -347,12 +396,14 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                     CheckedPopupMenuItem(
                         child:
                             const Text("Optimize Points (Off may cause lag)"),
-                        checked: settingsStorage.getItem("points-simplify") ?? true,
+                        checked:
+                            settingsStorage.getItem("points-simplify") ?? true,
                         value: "points-simplify"),
                     CheckedPopupMenuItem(
                         child:
                             const Text("Points to images (Off may cause lag)"),
-                        checked: settingsStorage.getItem("points-to-image") ?? true,
+                        checked:
+                            settingsStorage.getItem("points-to-image") ?? true,
                         value: "points-to-image")
                   ])
         ]);
