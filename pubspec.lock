@@ -338,6 +338,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.10"
+  merge_images:
+    dependency: "direct dev"
+    description:
+      name: merge_images
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0-nullsafety"
   meta:
     dependency: transitive
     description:

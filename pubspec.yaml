@@ -73,6 +73,7 @@ dev_dependencies:
   google_fonts: ^2.1.0 #NS
   # Cross Platform
   universal_html: ^2.0.8 #NS
+  merge_images: ^2.0.0-nullsafety #NS
 
 #   App Icons
 flutter_icons:
