@@ -21,6 +21,7 @@ import 'overlays/Toolbar.dart' as Toolbar;
 import 'overlays/Zoom.dart' as Zoom;
 import 'package:uuid/uuid.dart';
 
+
 typedef OnOffsetChange = Function(Offset offset, Offset sessionOffset);
 typedef OnScribblesChange = Function(List<Scribble>);
 typedef OnUploadsChange = Function(List<Upload>);
@@ -115,11 +116,6 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 widget.onChangedToolbarOptions(widget.toolbarOptions);
               }
             });
-          }
-        },
-        onPointerUp: (event) {
-          if (event.kind == PointerDeviceKind.stylus) {
-            stylus = false;
           }
         },
         child: GestureDetector(
@@ -230,7 +226,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 newOffset.dx.toInt(),
                 newDrawPoint.y.toInt(),
                 newOffset.dy.toInt(),
-                10)) {
+                20)) {
               found = true;
               widget.toolbarOptions.settingsSelectedScribble = currentScribble;
               widget.toolbarOptions.settingsSelected =
@@ -502,6 +498,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
           widget.toolbarOptions.selectedTool == SelectedTool.straightLine) {
         Scribble newScribble = widget.scribbles.last;
         ScreenUtils.calculateScribbleBounds(newScribble);
+        ScreenUtils.simplifyScribble(newScribble);
         ScreenUtils.bakeScribble(
             newScribble, widget.zoomOptions.scale);
         WebsocketSend.sendScribbleUpdate(
@@ -533,7 +530,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
           }
         }
       }
-      if (beforeStylus == SelectedTool.move) {
+      if (stylus == true && beforeStylus == SelectedTool.move) {
+        stylus = false;
         widget.toolbarOptions.selectedTool = SelectedTool.move;
         widget.onChangedToolbarOptions(widget.toolbarOptions);
       }
@@ -590,6 +588,9 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
     switch (widget.toolbarOptions.selectedTool) {
       case SelectedTool.pencil:
         cursorRadius = widget.toolbarOptions.pencilOptions.strokeWidth;
+        break;
+      case SelectedTool.settings:
+        cursorRadius = 20;
         break;
       case SelectedTool.highlighter:
         cursorRadius = widget.toolbarOptions.highlighterOptions.strokeWidth;
