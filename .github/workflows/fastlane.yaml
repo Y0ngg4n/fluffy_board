@@ -42,7 +42,9 @@ jobs:
       - run: flutter doctor -v
       - run: flutter pub get
       - run: flutter build appbundle
-      - run: cd android
-      - run: bundle install
-      - run: bundle exec fastlane update_plugins
-      - run: bundle exec fastlane beta
+      - name: Deployment with Fastlane
+      - run: |
+          cd android
+          bundle install
+          bundle exec fastlane update_plugins
+          bundle exec fastlane beta
