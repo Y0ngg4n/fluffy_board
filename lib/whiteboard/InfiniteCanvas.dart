@@ -110,9 +110,14 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
             setState(() {
               stylus = true;
               beforeStylus = widget.toolbarOptions.selectedTool;
-              if (widget.toolbarOptions.selectedTool == SelectedTool.move) {
-                widget.toolbarOptions.selectedTool = SelectedTool.pencil;
+              if (event.buttons == kSecondaryStylusButton) {
+                widget.toolbarOptions.selectedTool = SelectedTool.eraser;
                 widget.onChangedToolbarOptions(widget.toolbarOptions);
+              } else {
+                if (widget.toolbarOptions.selectedTool == SelectedTool.move) {
+                  widget.toolbarOptions.selectedTool = SelectedTool.pencil;
+                  widget.onChangedToolbarOptions(widget.toolbarOptions);
+                }
               }
             });
           }
@@ -318,8 +323,9 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         (details.localFocalPoint - widget.offset) / widget.zoomOptions.scale;
     this.setState(() {
       cursorPosition = details.localFocalPoint / widget.zoomOptions.scale;
-      if (details.pointerCount == 2) {
+      if (details.pointerCount == 2 && details.scale * _initialScale > 0.1) {
         widget.zoomOptions.scale = details.scale * _initialScale;
+        print(details.scale * _initialScale);
       }
       widget.onChangedZoomOptions(widget.zoomOptions);
       switch (widget.toolbarOptions.selectedTool) {
@@ -475,6 +481,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
           break;
         default:
           if (widget.stylusOnly && !stylus) return;
+          if (details.pointerCount > 1) return;
           Scribble newScribble = widget.scribbles.last;
           DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
           newScribble.points.add(newDrawPoint);
@@ -495,13 +502,16 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
       widget.onOffsetChange(widget.offset, widget.sessionOffset);
       onSettingsMove = Offset.zero;
       onSettingsMovePoints = [];
+      print(widget.zoomOptions.scale);
       widget.onChangedToolbarOptions(widget.toolbarOptions);
       if (widget.toolbarOptions.selectedTool == SelectedTool.pencil ||
           widget.toolbarOptions.selectedTool == SelectedTool.highlighter ||
           widget.toolbarOptions.selectedTool == SelectedTool.straightLine) {
         Scribble newScribble = widget.scribbles.last;
         ScreenUtils.calculateScribbleBounds(newScribble);
-        ScreenUtils.simplifyScribble(newScribble);
+        if (newScribble.selectedFigureTypeToolbar ==
+            SelectedFigureTypeToolbar.none)
+          ScreenUtils.simplifyScribble(newScribble);
         ScreenUtils.bakeScribble(newScribble, widget.zoomOptions.scale);
         WebsocketSend.sendScribbleUpdate(
             newScribble, widget.websocketConnection);
