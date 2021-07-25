@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:fluffy_board/whiteboard/CanvasCustomPainter.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
+import 'package:simplify/simplify.dart';
 
 class ScreenUtils {
   static double getScreenWidth(BuildContext context) {
@@ -196,11 +199,18 @@ class ScreenUtils {
             -scribble.topExtremity + scribble.strokeWidth));
     // Finally render the image, this can take about 8 to 25 milliseconds.
     var picture = recorder.endRecording();
-    print(((scribbleWidth * scale) + scribble.strokeWidth * 2).ceil());
     var newImage = await picture.toImage(
       ((scribbleWidth + scribble.strokeWidth * 2) * (1 + (1 - scale))).ceil(),
       ((scribbleHeight + scribble.strokeWidth * 2) * (1 + (1 - scale))).ceil(),
     );
     scribble.backedScribble = newImage;
+  }
+
+  static simplifyScribble(Scribble scribble){
+    List<Point> points = scribble.points.map((e) => Point(e.dx, e.dy)).toList();
+    print(points.length);
+    points = simplify(points, highestQuality: true);
+    print(points.length);
+    scribble.points = points.map((e) => DrawPoint(e.x.toDouble(), e.y.toDouble())).toList();
   }
 }

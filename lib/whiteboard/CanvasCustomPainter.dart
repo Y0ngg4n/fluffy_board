@@ -326,7 +326,6 @@ class PainterUtils {
                   scribble.topExtremity - scribble.strokeWidth) +
               offset,
           imagePaint);
-      print("Drawed Backed Scribble");
     }
   }
 }
