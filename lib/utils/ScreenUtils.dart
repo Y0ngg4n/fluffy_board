@@ -5,8 +5,11 @@ import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'package:simplify/simplify.dart';
+import 'package:localstorage/localstorage.dart';
 
 class ScreenUtils {
+  static final LocalStorage settingsStorage = new LocalStorage('settings');
+
   static double getScreenWidth(BuildContext context) {
     return MediaQuery.of(context).size.width;
   }
@@ -206,11 +209,13 @@ class ScreenUtils {
     scribble.backedScribble = newImage;
   }
 
-  static simplifyScribble(Scribble scribble){
-    List<Point> points = scribble.points.map((e) => Point(e.dx, e.dy)).toList();
-    print(points.length);
-    points = simplify(points, highestQuality: true);
-    print(points.length);
-    scribble.points = points.map((e) => DrawPoint(e.x.toDouble(), e.y.toDouble())).toList();
+  static simplifyScribble(Scribble scribble) {
+    if (settingsStorage.getItem("points-simplify") ?? true != false) {
+      List<Point> points =
+          scribble.points.map((e) => Point(e.dx, e.dy)).toList();
+      points = simplify(points, highestQuality: true);
+      scribble.points =
+          points.map((e) => DrawPoint(e.x.toDouble(), e.y.toDouble())).toList();
+    }
   }
 }

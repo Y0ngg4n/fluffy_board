@@ -304,6 +304,16 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                       } else if (value.toString() == "stylus-only") {
                         settingsStorage.setItem("stylus-only",
                             !(settingsStorage.getItem("stylus-only") ?? false));
+                      } else if (value.toString() == "points-simplify") {
+                        settingsStorage.setItem(
+                            "points-simplify",
+                            !(settingsStorage.getItem("points-simplify") ??
+                                true));
+                      }else if (value.toString() == "points-to-image") {
+                        settingsStorage.setItem(
+                            "points-to-image",
+                            !(settingsStorage.getItem("points-to-image") ??
+                                true));
                       }
                     })
                   },
@@ -328,7 +338,18 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                     CheckedPopupMenuItem(
                         child: const Text("Stylus only"),
                         checked: stylusOnly,
-                        value: "stylus-only")
+                        value: "stylus-only"),
+                    PopupMenuDivider(),
+                    CheckedPopupMenuItem(
+                        child:
+                            const Text("Optimize Points (Off may cause lag)"),
+                        checked: settingsStorage.getItem("points-simplify") ?? true,
+                        value: "points-simplify"),
+                    CheckedPopupMenuItem(
+                        child:
+                            const Text("Points to images (Off may cause lag)"),
+                        checked: settingsStorage.getItem("points-to-image") ?? true,
+                        value: "points-to-image")
                   ])
         ]);
 

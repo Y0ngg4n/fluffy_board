@@ -6,11 +6,13 @@ import 'package:fluffy_board/whiteboard/overlays/Toolbar/BackgroundToolbar.dart'
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
+import 'package:localstorage/localstorage.dart';
 import 'package:vector_math/vector_math.dart' as vectormath;
 
 import 'overlays/Toolbar.dart' as Toolbar;
 
 class CanvasCustomPainter extends CustomPainter {
+
   Toolbar.ToolbarOptions toolbarOptions;
   List<Scribble> scribbles;
   Offset offset;
@@ -186,26 +188,10 @@ class CanvasCustomPainter extends CustomPainter {
   }
 }
 
-class ScribbleBakePainter extends CustomPainter {
-  double scale;
-  List<Scribble> scribbles;
-
-  ScribbleBakePainter(this.scale, this.scribbles);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Rect rect = Rect.fromLTWH(0, 0, size.width, size.height);
-    canvas.clipRect(rect);
-    canvas.scale(scale);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
-  }
-}
-
 class PainterUtils {
+
+  static final LocalStorage settingsStorage = new LocalStorage('settings');
+
   static paintScribble(
       Scribble scribble, Canvas canvas, double scale, Offset offset) {
     Paint drawingPaint = Paint()
@@ -222,7 +208,7 @@ class PainterUtils {
       ..style = PaintingStyle.fill;
 
     Paint figurePaint = drawingPaint..style = scribble.paintingStyle;
-    if (scribble.backedScribble == null) {
+    if (scribble.backedScribble == null || !(settingsStorage.getItem("points-to-image") ?? true)) {
       switch (scribble.selectedFigureTypeToolbar) {
         case SelectedFigureTypeToolbar.rect:
           canvas.drawRect(
