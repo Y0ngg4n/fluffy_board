@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -65,6 +66,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   Set<ConnectedUser> connectedUsers = Set.of([]);
   ConnectedUser? followingUser;
   bool stylusOnly = false;
+  late Timer autoSaveTimer;
 
   @override
   void initState() {
@@ -225,6 +227,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
       // WidgetsBinding.instance!
       //     .addPostFrameCallback((_) => _createToolbars(context));
     }
+    autoSaveTimer = Timer.periodic(Duration(seconds: 30), (timer) => saveOfflineWhiteboard());
     settingsStorage.ready.then((value) => setState(() {
           toolbarLocation =
               settingsStorage.getItem("toolbar-location") ?? "left";
@@ -236,6 +239,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   @override
   void dispose() {
     super.dispose();
+    autoSaveTimer.cancel();
     if (websocketConnection != null) websocketConnection!.dispose();
   }
 
@@ -691,7 +695,6 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   }
 
   saveOfflineWhiteboard() {
-    print("save");
     if (widget.offlineWhiteboard == null) return;
     fileManagerStorage.setItem(
         "offline_whiteboard-" + widget.offlineWhiteboard!.uuid,
