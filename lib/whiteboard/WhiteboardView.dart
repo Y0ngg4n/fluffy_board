@@ -716,6 +716,11 @@ extension HexColor on Color {
     return Color(int.parse(buffer.toString(), radix: 16));
   }
 
+  /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
+  static Color fromHexWithOpacity(Color color, double opacity) {
+    return Color.fromRGBO(color.red, color.green, color.blue, opacity);
+  }
+
   /// Prefixes a hash sign if [leadingHashSign] is set to `true` (default is `true`).
   String toHex({bool leadingHashSign = true}) => '${leadingHashSign ? '#' : ''}'
       '${alpha.toRadixString(16).padLeft(2, '0')}'
