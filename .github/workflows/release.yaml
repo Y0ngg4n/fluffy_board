@@ -76,7 +76,6 @@ jobs:
       - run: flutter doctor -v
       - run: flutter pub get
       - run: flutter build apk
-#      - run: flutter build appbundle
       - uses: actions/upload-artifact@v2
         with:
           name: Fluffyboard-android
