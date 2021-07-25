@@ -69,7 +69,9 @@ platform :android do
     apply_new_version
     version_code = read_code
     upload_to_play_store(
-    track: 'beta', skip_upload_changelogs: true
+    track: 'beta',
+    skip_upload_changelogs: true,
+    aab: "build/app/outputs/bundle/release/app.aab"
     )
   
     # sh "your_script.sh"
