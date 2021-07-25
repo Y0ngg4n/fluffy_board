@@ -24,50 +24,53 @@ platform :android do
   lane :bump_major do
     flutter_version_manager(
       arguments: "-major",
-      yml: "../version.yml",
-      pubspec: "../pubspec.yaml")
+      yml: "version.yml",
+      pubspec: "pubspec.yaml")
   end
   lane :bump_minor do
      flutter_version_manager(
       arguments: "-minor",
-      yml: "../version.yml",
-      pubspec: ",./pubspec.yaml")
+      yml: "version.yml",
+      pubspec: "pubspec.yaml")
     end
 
   lane :bump_patch do
     flutter_version_manager(
       arguments: "-patch",
-      yml: "../version.yml",
-      pubspec: "../pubspec.yaml")
+      yml: "version.yml",
+      pubspec: "pubspec.yaml")
   end
 
   lane :read_version do
     flutter_version_manager(
       arguments: "-version",
-      yml: "../version.yml",
-      pubspec: "../pubspec.yaml")
+      yml: "version.yml",
+      pubspec: "pubspec.yaml")
   end
 
   lane :read_code do
     flutter_version_manager(
       arguments: "-code",
-      yml: "../version.yml",
-      pubspec: "../example_pubspec.yaml")
+      yml: "version.yml",
+      pubspec: "pubspec.yaml")
   end
 
   lane :apply_new_version do
     flutter_version_manager(
       arguments: "-apply",
-      yml: "../version.yml",
-      pubspec: "../pubspec.yaml")
+      yml: "version.yml",
+      pubspec: "pubspec.yaml")
   end
 
 
   desc "Submit a new Beta Build to Crashlytics Beta"
   lane :beta do
 #     gradle(task: "clean assembleRelease")
-    changelog_from_git_commits
-    upload_to_play_store(track: 'beta')
+    apply_new_version
+    version_code = read_code
+    upload_to_play_store(
+    track: 'beta', skip_upload_changelogs: true
+    )
   
     # sh "your_script.sh"
     # You can also use other beta testing services here

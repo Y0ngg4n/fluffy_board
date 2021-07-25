@@ -44,7 +44,6 @@ jobs:
       - run: flutter build appbundle
       - name: Deployment with Fastlane
         run: |
-          cd android
           bundle install
           bundle exec fastlane update_plugins
           bundle exec fastlane beta

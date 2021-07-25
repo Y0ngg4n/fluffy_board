@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fastlane.lanes">
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000519133">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="1: Switch to android apply_new_version lane" time="0.000222376">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="2: flutter_version_manager" time="0.016878127">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="3: Switch to android read_code lane" time="0.00012306">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="4: flutter_version_manager" time="0.015457968">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="5: Switch to android read_version lane" time="0.000135214">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="6: flutter_version_manager" time="0.001043852">
+        
+      </testcase>
+    
+  </testsuite>
+</testsuites>
