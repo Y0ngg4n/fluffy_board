@@ -59,7 +59,11 @@ class _BookmarkManagerState extends State<BookmarkManager> {
                                   widget.websocketConnection,
                                   widget.offset,
                                   widget.scale,
-                                  refreshController)));
+                                  refreshController,
+                                  (bookmark){
+                                    widget.bookmarks.add(bookmark);
+                                  }
+                              )));
                     },
                     child: Text("Create Bookmark"))
               ],
