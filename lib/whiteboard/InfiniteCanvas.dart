@@ -21,7 +21,6 @@ import 'overlays/Toolbar.dart' as Toolbar;
 import 'overlays/Zoom.dart' as Zoom;
 import 'package:uuid/uuid.dart';
 
-
 typedef OnOffsetChange = Function(Offset offset, Offset sessionOffset);
 typedef OnScribblesChange = Function(List<Scribble>);
 typedef OnUploadsChange = Function(List<Upload>);
@@ -479,6 +478,10 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
           Scribble newScribble = widget.scribbles.last;
           DrawPoint newDrawPoint = new DrawPoint.of(newOffset);
           newScribble.points.add(newDrawPoint);
+          // Simplify on every 25th point
+          if (newScribble.points.length % 25 == 0) {
+            ScreenUtils.simplifyScribble(newScribble);
+          }
           WebsocketSend.sendScribbleUpdate(
               newScribble, widget.websocketConnection);
       }
@@ -499,8 +502,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         Scribble newScribble = widget.scribbles.last;
         ScreenUtils.calculateScribbleBounds(newScribble);
         ScreenUtils.simplifyScribble(newScribble);
-        ScreenUtils.bakeScribble(
-            newScribble, widget.zoomOptions.scale);
+        ScreenUtils.bakeScribble(newScribble, widget.zoomOptions.scale);
         WebsocketSend.sendScribbleUpdate(
             newScribble, widget.websocketConnection);
         widget.onSaveOfflineWhiteboard();
@@ -523,8 +525,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
           }
           if (multiSelectMove) {
             ScreenUtils.calculateScribbleBounds(scribble);
-            ScreenUtils.bakeScribble(
-                scribble, widget.zoomOptions.scale);
+            ScreenUtils.bakeScribble(scribble, widget.zoomOptions.scale);
             WebsocketSend.sendScribbleUpdate(
                 scribble, widget.websocketConnection);
           }
