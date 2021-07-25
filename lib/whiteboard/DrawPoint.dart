@@ -39,6 +39,7 @@ class Scribble {
       rightExtremity = 0,
       bottomExtremity = 0;
   ui.Image? backedScribble;
+  List<DrawPoint> backupPoints = [];
 
   toJSONEncodable() {
     Map<String, dynamic> m = new Map();

@@ -1,15 +1,27 @@
+import 'dart:math';
+
 import 'package:fluffy_board/whiteboard/CanvasCustomPainter.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
+import 'package:simplify/simplify.dart';
+import 'package:localstorage/localstorage.dart';
 
 class ScreenUtils {
+  static final LocalStorage settingsStorage = new LocalStorage('settings');
+
   static double getScreenWidth(BuildContext context) {
-    return MediaQuery.of(context).size.width;
+    return MediaQuery
+        .of(context)
+        .size
+        .width;
   }
 
   static double getScreenHeight(BuildContext context) {
-    return MediaQuery.of(context).size.height;
+    return MediaQuery
+        .of(context)
+        .size
+        .height;
   }
 
   static bool inCircle(int x, int centerX, int y, int centerY, int radius) {
@@ -36,8 +48,7 @@ class ScreenUtils {
       return false;
   }
 
-  static bool checkScribbleIfNotInScreen(
-      Scribble currentScribble,
+  static bool checkScribbleIfNotInScreen(Scribble currentScribble,
       Offset calculatedOffset,
       double screenWidth,
       double screenHeight,
@@ -48,29 +59,28 @@ class ScreenUtils {
         currentScribble.bottomExtremity == 0)) return false;
 
     return (currentScribble.leftExtremity + calculatedOffset.dx < 0 &&
-                currentScribble.rightExtremity + calculatedOffset.dx < 0)
-            // Check Right
-            ||
-            (currentScribble.rightExtremity + calculatedOffset.dx >
-                    (screenWidth / scale) &&
-                currentScribble.leftExtremity + calculatedOffset.dx >
-                    (screenWidth / scale))
-            // Check Top
-            ||
-            (currentScribble.topExtremity + calculatedOffset.dy < 0 &&
-                currentScribble.bottomExtremity + calculatedOffset.dy < 0)
-            //    Check Bottom
-            ||
-            (currentScribble.bottomExtremity + calculatedOffset.dy >
-                    (screenHeight) / scale &&
-                currentScribble.topExtremity + calculatedOffset.dy >
-                    (screenHeight) / scale)
+        currentScribble.rightExtremity + calculatedOffset.dx < 0)
+        // Check Right
+        ||
+        (currentScribble.rightExtremity + calculatedOffset.dx >
+            (screenWidth / scale) &&
+            currentScribble.leftExtremity + calculatedOffset.dx >
+                (screenWidth / scale))
+        // Check Top
+        ||
+        (currentScribble.topExtremity + calculatedOffset.dy < 0 &&
+            currentScribble.bottomExtremity + calculatedOffset.dy < 0)
+        //    Check Bottom
+        ||
+        (currentScribble.bottomExtremity + calculatedOffset.dy >
+            (screenHeight) / scale &&
+            currentScribble.topExtremity + calculatedOffset.dy >
+                (screenHeight) / scale)
         ? true
         : false;
   }
 
-  static bool checkUploadIfNotInScreen(
-      Upload currentUpload,
+  static bool checkUploadIfNotInScreen(Upload currentUpload,
       Offset calculatedOffset,
       double screenWidth,
       double screenHeight,
@@ -78,60 +88,59 @@ class ScreenUtils {
     if (currentUpload.image == null) return false;
 
     return (currentUpload.offset.dx + calculatedOffset.dx < 0 &&
-                currentUpload.offset.dx +
-                        currentUpload.image!.width +
-                        calculatedOffset.dx <
-                    0)
-            // Check Right
-            ||
-            (currentUpload.offset.dx +
-                        currentUpload.image!.width +
-                        calculatedOffset.dx >
-                    (screenWidth / scale) &&
-                currentUpload.offset.dx + calculatedOffset.dx >
-                    (screenWidth / scale))
-            // Check Top
-            ||
-            (currentUpload.offset.dy + calculatedOffset.dy < 0 &&
-                currentUpload.offset.dy +
-                        currentUpload.image!.height +
-                        calculatedOffset.dy <
-                    0)
-            //    Check Bottom
-            ||
-            (currentUpload.offset.dy +
-                        currentUpload.image!.height +
-                        calculatedOffset.dy >
-                    (screenHeight) / scale &&
-                currentUpload.offset.dy + calculatedOffset.dy >
-                    (screenHeight) / scale)
+        currentUpload.offset.dx +
+            currentUpload.image!.width +
+            calculatedOffset.dx <
+            0)
+        // Check Right
+        ||
+        (currentUpload.offset.dx +
+            currentUpload.image!.width +
+            calculatedOffset.dx >
+            (screenWidth / scale) &&
+            currentUpload.offset.dx + calculatedOffset.dx >
+                (screenWidth / scale))
+        // Check Top
+        ||
+        (currentUpload.offset.dy + calculatedOffset.dy < 0 &&
+            currentUpload.offset.dy +
+                currentUpload.image!.height +
+                calculatedOffset.dy <
+                0)
+        //    Check Bottom
+        ||
+        (currentUpload.offset.dy +
+            currentUpload.image!.height +
+            calculatedOffset.dy >
+            (screenHeight) / scale &&
+            currentUpload.offset.dy + calculatedOffset.dy >
+                (screenHeight) / scale)
         ? true
         : false;
   }
 
-  static bool checkTextPainterIfNotInScreen(
-      TextPainter currentTextPainter,
+  static bool checkTextPainterIfNotInScreen(TextPainter currentTextPainter,
       Offset offset,
       Offset calculatedOffset,
       double screenWidth,
       double screenHeight,
       double scale) {
     return (offset.dx + calculatedOffset.dx < 0 &&
-                offset.dx + currentTextPainter.width + calculatedOffset.dx < 0)
-            // Check Right
-            ||
-            (offset.dx + currentTextPainter.width + calculatedOffset.dx >
-                    (screenWidth / scale) &&
-                offset.dx + calculatedOffset.dx > (screenWidth / scale))
-            // Check Top
-            ||
-            (offset.dy + calculatedOffset.dy < 0 &&
-                offset.dy + currentTextPainter.height + calculatedOffset.dy < 0)
-            //    Check Bottom
-            ||
-            (offset.dy + currentTextPainter.height + calculatedOffset.dy >
-                    (screenHeight) / scale &&
-                offset.dy + calculatedOffset.dy > (screenHeight) / scale)
+        offset.dx + currentTextPainter.width + calculatedOffset.dx < 0)
+        // Check Right
+        ||
+        (offset.dx + currentTextPainter.width + calculatedOffset.dx >
+            (screenWidth / scale) &&
+            offset.dx + calculatedOffset.dx > (screenWidth / scale))
+        // Check Top
+        ||
+        (offset.dy + calculatedOffset.dy < 0 &&
+            offset.dy + currentTextPainter.height + calculatedOffset.dy < 0)
+        //    Check Bottom
+        ||
+        (offset.dy + currentTextPainter.height + calculatedOffset.dy >
+            (screenHeight) / scale &&
+            offset.dy + calculatedOffset.dy > (screenHeight) / scale)
         ? true
         : false;
   }
@@ -196,11 +205,30 @@ class ScreenUtils {
             -scribble.topExtremity + scribble.strokeWidth));
     // Finally render the image, this can take about 8 to 25 milliseconds.
     var picture = recorder.endRecording();
-    print(((scribbleWidth * scale) + scribble.strokeWidth * 2).ceil());
-    var newImage = await picture.toImage(
-      ((scribbleWidth + scribble.strokeWidth * 2) * (1 + (1 - scale))).ceil(),
-      ((scribbleHeight + scribble.strokeWidth * 2) * (1 + (1 - scale))).ceil(),
-    );
-    scribble.backedScribble = newImage;
+    // TODO: Check if cuts are right and make less pixelated
+    double imageWidth = (scribbleWidth + scribble.strokeWidth * 2) *
+        (scale < 1 ? (1 + (1 - scale)) : scale);
+    double imageHeight = (scribbleHeight + scribble.strokeWidth * 2) *
+        (scale < 1 ? (1 + (1 - scale)) : scale);
+    try {
+      var newImage = await picture.toImage(
+          (imageWidth).ceil(),
+          (imageHeight).ceil());
+      scribble.backedScribble = newImage;
+    } catch (e) {
+      print(e);
+      print(imageWidth);
+      print(imageHeight);
+    }
+  }
+
+  static simplifyScribble(Scribble scribble) {
+    if (settingsStorage.getItem("points-simplify") ?? true != false) {
+      List<Point> points =
+      scribble.points.map((e) => Point(e.dx, e.dy)).toList();
+      points = simplify(points, highestQuality: true);
+      scribble.points =
+          points.map((e) => DrawPoint(e.x.toDouble(), e.y.toDouble())).toList();
+    }
   }
 }

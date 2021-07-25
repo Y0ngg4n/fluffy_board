@@ -9,6 +9,8 @@ import 'package:localstorage/localstorage.dart';
 import 'package:uuid/uuid.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+typedef OnOfflineBookMarkAdd = Function(Bookmark);
+
 class AddBookmark extends StatefulWidget {
   String auth_token;
   bool online;
@@ -16,9 +18,10 @@ class AddBookmark extends StatefulWidget {
   Offset offset;
   double scale;
   RefreshController refreshController;
+  OnOfflineBookMarkAdd offlineBookMarkAdd;
 
   AddBookmark(this.auth_token, this.online, this.websocketConnection,
-      this.offset, this.scale, this.refreshController);
+      this.offset, this.scale, this.refreshController, this.offlineBookMarkAdd);
 
   @override
   _AddBookmarkState createState() => _AddBookmarkState();
@@ -45,7 +48,8 @@ class _AddBookmarkState extends State<AddBookmark> {
                           widget.websocketConnection,
                           widget.offset,
                           widget.scale,
-                          widget.refreshController)));
+                          widget.refreshController,
+                          widget.offlineBookMarkAdd)));
                 } else {
                   return (AddBookmarkForm(
                       widget.auth_token,
@@ -53,7 +57,8 @@ class _AddBookmarkState extends State<AddBookmark> {
                       widget.websocketConnection,
                       widget.offset,
                       widget.scale,
-                      widget.refreshController));
+                      widget.refreshController,
+                      widget.offlineBookMarkAdd));
                 }
               },
             ),
@@ -69,9 +74,11 @@ class AddBookmarkForm extends StatefulWidget {
   Offset offset;
   double scale;
   RefreshController refreshController;
+  OnOfflineBookMarkAdd onOfflineBookMarkAdd;
 
   AddBookmarkForm(this.auth_token, this.online, this.websocketConnection,
-      this.offset, this.scale, this.refreshController);
+      this.offset, this.scale, this.refreshController,
+      this.onOfflineBookMarkAdd);
 
   @override
   _AddBookmarkFormState createState() => _AddBookmarkFormState();
@@ -100,29 +107,29 @@ class _AddBookmarkFormState extends State<AddBookmarkForm> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-            TextFormField(
-              onFieldSubmitted: (value) => _addBookmark(),
-              controller: nameController,
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  icon: Icon(Icons.email_outlined),
-                  hintText: "Enter your Bookmark Name",
-                  labelText: "Name"),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a Name';
-                } else if (value.length > 50) {
-                  return 'Please enter a Name smaller than 50';
-                }
-                return null;
-              },
-            ),
-            Padding(
-                padding: const EdgeInsets.all(16),
-                child: ElevatedButton(
-                    onPressed: () => _addBookmark(),
-                    child: Text("Create Bookmark")))
-          ])),
+                TextFormField(
+                  onFieldSubmitted: (value) => _addBookmark(),
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      icon: Icon(Icons.email_outlined),
+                      hintText: "Enter your Bookmark Name",
+                      labelText: "Name"),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a Name';
+                    } else if (value.length > 50) {
+                      return 'Please enter a Name smaller than 50';
+                    }
+                    return null;
+                  },
+                ),
+                Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: ElevatedButton(
+                        onPressed: () => _addBookmark(),
+                        child: Text("Create Bookmark")))
+              ])),
     );
   }
 
@@ -133,13 +140,15 @@ class _AddBookmarkFormState extends State<AddBookmarkForm> {
       // you'd often call a server or save the information in a database.
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Trying to create bookmark ...')));
+      Bookmark bookmark = new Bookmark(
+          uuid.v4(), nameController.text, widget.offset, widget.scale);
       if (widget.online && widget.websocketConnection != null) {
-        Bookmark bookmark = new Bookmark(
-            uuid.v4(), nameController.text, widget.offset, widget.scale);
         WebsocketSend.sendBookmarkAdd(bookmark, widget.websocketConnection);
+      } else {
+        widget.onOfflineBookMarkAdd(bookmark);
+      }
         widget.refreshController.requestRefresh();
         Navigator.pop(context);
-      }
     }
   }
 }

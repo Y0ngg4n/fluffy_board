@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -65,6 +66,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   Set<ConnectedUser> connectedUsers = Set.of([]);
   ConnectedUser? followingUser;
   bool stylusOnly = false;
+  late Timer autoSaveTimer;
 
   @override
   void initState() {
@@ -225,6 +227,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
       // WidgetsBinding.instance!
       //     .addPostFrameCallback((_) => _createToolbars(context));
     }
+    autoSaveTimer = Timer.periodic(Duration(seconds: 30), (timer) => saveOfflineWhiteboard());
     settingsStorage.ready.then((value) => setState(() {
           toolbarLocation =
               settingsStorage.getItem("toolbar-location") ?? "left";
@@ -236,6 +239,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   @override
   void dispose() {
     super.dispose();
+    autoSaveTimer.cancel();
     if (websocketConnection != null) websocketConnection!.dispose();
   }
 
@@ -304,6 +308,16 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                       } else if (value.toString() == "stylus-only") {
                         settingsStorage.setItem("stylus-only",
                             !(settingsStorage.getItem("stylus-only") ?? false));
+                      } else if (value.toString() == "points-simplify") {
+                        settingsStorage.setItem(
+                            "points-simplify",
+                            !(settingsStorage.getItem("points-simplify") ??
+                                true));
+                      }else if (value.toString() == "points-to-image") {
+                        settingsStorage.setItem(
+                            "points-to-image",
+                            !(settingsStorage.getItem("points-to-image") ??
+                                true));
                       }
                     })
                   },
@@ -328,7 +342,18 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                     CheckedPopupMenuItem(
                         child: const Text("Stylus only"),
                         checked: stylusOnly,
-                        value: "stylus-only")
+                        value: "stylus-only"),
+                    PopupMenuDivider(),
+                    CheckedPopupMenuItem(
+                        child:
+                            const Text("Optimize Points (Off may cause lag)"),
+                        checked: settingsStorage.getItem("points-simplify") ?? true,
+                        value: "points-simplify"),
+                    CheckedPopupMenuItem(
+                        child:
+                            const Text("Points to images (Off may cause lag)"),
+                        checked: settingsStorage.getItem("points-to-image") ?? true,
+                        value: "points-to-image")
                   ])
         ]);
 
@@ -670,7 +695,6 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   }
 
   saveOfflineWhiteboard() {
-    print("save");
     if (widget.offlineWhiteboard == null) return;
     fileManagerStorage.setItem(
         "offline_whiteboard-" + widget.offlineWhiteboard!.uuid,
@@ -693,6 +717,11 @@ extension HexColor on Color {
     if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
     buffer.write(hexString.replaceFirst('#', ''));
     return Color(int.parse(buffer.toString(), radix: 16));
+  }
+
+  /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
+  static Color fromHexWithOpacity(Color color, double opacity) {
+    return Color.fromRGBO(color.red, color.green, color.blue, opacity);
   }
 
   /// Prefixes a hash sign if [leadingHashSign] is set to `true` (default is `true`).

@@ -6,11 +6,13 @@ import 'package:fluffy_board/whiteboard/overlays/Toolbar/BackgroundToolbar.dart'
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
+import 'package:localstorage/localstorage.dart';
 import 'package:vector_math/vector_math.dart' as vectormath;
 
 import 'overlays/Toolbar.dart' as Toolbar;
 
 class CanvasCustomPainter extends CustomPainter {
+
   Toolbar.ToolbarOptions toolbarOptions;
   List<Scribble> scribbles;
   Offset offset;
@@ -177,17 +179,6 @@ class CanvasCustomPainter extends CustomPainter {
           multiselectPaint);
     }
 
-    //   // Draw Cursor Hover
-    // if(hoverPosition != null){
-    //   Paint hoverPaint = Paint()
-    //     ..strokeCap = StrokeCap.round
-    //     ..isAntiAlias = true
-    //     ..color = Colors.blueGrey
-    //     ..strokeWidth = 1
-    //     ..style = PaintingStyle.stroke;
-    //   canvas.drawCircle(hoverPosition!, 3, hoverPaint);
-    // }
-
     canvas.drawCircle(cursorPosition, cursorRadius, cursorPaint);
   }
 
@@ -197,26 +188,10 @@ class CanvasCustomPainter extends CustomPainter {
   }
 }
 
-class ScribbleBakePainter extends CustomPainter {
-  double scale;
-  List<Scribble> scribbles;
-
-  ScribbleBakePainter(this.scale, this.scribbles);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Rect rect = Rect.fromLTWH(0, 0, size.width, size.height);
-    canvas.clipRect(rect);
-    canvas.scale(scale);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
-  }
-}
-
 class PainterUtils {
+
+  static final LocalStorage settingsStorage = new LocalStorage('settings');
+
   static paintScribble(
       Scribble scribble, Canvas canvas, double scale, Offset offset) {
     Paint drawingPaint = Paint()
@@ -224,20 +199,6 @@ class PainterUtils {
       ..isAntiAlias = true
       ..color = scribble.color
       ..strokeWidth = scribble.strokeWidth;
-
-    Paint extremityPaint = Paint()
-      ..strokeCap = StrokeCap.round
-      ..isAntiAlias = true
-      ..color = Colors.red
-      ..strokeWidth = 1
-      ..style = PaintingStyle.fill;
-
-    Paint extremityBacked = Paint()
-      ..strokeCap = StrokeCap.round
-      ..isAntiAlias = true
-      ..color = Colors.green
-      ..strokeWidth = 1
-      ..style = PaintingStyle.fill;
 
     Paint imagePaint = Paint()
       ..strokeCap = StrokeCap.round
@@ -247,7 +208,7 @@ class PainterUtils {
       ..style = PaintingStyle.fill;
 
     Paint figurePaint = drawingPaint..style = scribble.paintingStyle;
-    if (scribble.backedScribble == null) {
+    if (scribble.backedScribble == null || !(settingsStorage.getItem("points-to-image") ?? true)) {
       switch (scribble.selectedFigureTypeToolbar) {
         case SelectedFigureTypeToolbar.rect:
           canvas.drawRect(
@@ -289,16 +250,6 @@ class PainterUtils {
               canvas.drawLine(scribble.points[x] + offset,
                   scribble.points[x + 1] + offset, drawingPaint);
             }
-            canvas.drawCircle(
-                new Offset(scribble.leftExtremity, scribble.topExtremity) +
-                    offset,
-                3,
-                extremityPaint);
-            canvas.drawCircle(
-                new Offset(scribble.rightExtremity, scribble.bottomExtremity) +
-                    offset,
-                3,
-                extremityPaint);
             //if next point is null, means the line ends here
             // else if (!scribble.points[x].empty && scribble.points[x + 1].empty) {
             //   canvas.drawPoints(
@@ -308,25 +259,12 @@ class PainterUtils {
           break;
       }
     } else {
-      canvas.drawCircle(
-          new Offset(scribble.leftExtremity - scribble.strokeWidth,
-                  scribble.topExtremity - scribble.strokeWidth) +
-              offset,
-          3,
-          extremityBacked);
-      canvas.drawCircle(
-          new Offset(scribble.rightExtremity + scribble.strokeWidth,
-                  scribble.bottomExtremity + scribble.strokeWidth) +
-              offset,
-          3,
-          extremityBacked);
       canvas.drawImage(
           scribble.backedScribble!,
           new Offset(scribble.leftExtremity - scribble.strokeWidth,
                   scribble.topExtremity - scribble.strokeWidth) +
               offset,
           imagePaint);
-      print("Drawed Backed Scribble");
     }
   }
 }
