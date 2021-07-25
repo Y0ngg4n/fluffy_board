@@ -71,7 +71,7 @@ platform :android do
     upload_to_play_store(
     track: 'beta',
     skip_upload_changelogs: true,
-    aab: "build/app/outputs/bundle/release/app.aab"
+    aab: "build/app/outputs/bundle/release/app-release.aab"
     )
   
     # sh "your_script.sh"
