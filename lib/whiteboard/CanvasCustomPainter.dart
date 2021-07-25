@@ -177,17 +177,6 @@ class CanvasCustomPainter extends CustomPainter {
           multiselectPaint);
     }
 
-    //   // Draw Cursor Hover
-    // if(hoverPosition != null){
-    //   Paint hoverPaint = Paint()
-    //     ..strokeCap = StrokeCap.round
-    //     ..isAntiAlias = true
-    //     ..color = Colors.blueGrey
-    //     ..strokeWidth = 1
-    //     ..style = PaintingStyle.stroke;
-    //   canvas.drawCircle(hoverPosition!, 3, hoverPaint);
-    // }
-
     canvas.drawCircle(cursorPosition, cursorRadius, cursorPaint);
   }
 
@@ -224,20 +213,6 @@ class PainterUtils {
       ..isAntiAlias = true
       ..color = scribble.color
       ..strokeWidth = scribble.strokeWidth;
-
-    Paint extremityPaint = Paint()
-      ..strokeCap = StrokeCap.round
-      ..isAntiAlias = true
-      ..color = Colors.red
-      ..strokeWidth = 1
-      ..style = PaintingStyle.fill;
-
-    Paint extremityBacked = Paint()
-      ..strokeCap = StrokeCap.round
-      ..isAntiAlias = true
-      ..color = Colors.green
-      ..strokeWidth = 1
-      ..style = PaintingStyle.fill;
 
     Paint imagePaint = Paint()
       ..strokeCap = StrokeCap.round
@@ -289,16 +264,6 @@ class PainterUtils {
               canvas.drawLine(scribble.points[x] + offset,
                   scribble.points[x + 1] + offset, drawingPaint);
             }
-            canvas.drawCircle(
-                new Offset(scribble.leftExtremity, scribble.topExtremity) +
-                    offset,
-                3,
-                extremityPaint);
-            canvas.drawCircle(
-                new Offset(scribble.rightExtremity, scribble.bottomExtremity) +
-                    offset,
-                3,
-                extremityPaint);
             //if next point is null, means the line ends here
             // else if (!scribble.points[x].empty && scribble.points[x + 1].empty) {
             //   canvas.drawPoints(
@@ -308,18 +273,6 @@ class PainterUtils {
           break;
       }
     } else {
-      canvas.drawCircle(
-          new Offset(scribble.leftExtremity - scribble.strokeWidth,
-                  scribble.topExtremity - scribble.strokeWidth) +
-              offset,
-          3,
-          extremityBacked);
-      canvas.drawCircle(
-          new Offset(scribble.rightExtremity + scribble.strokeWidth,
-                  scribble.bottomExtremity + scribble.strokeWidth) +
-              offset,
-          3,
-          extremityBacked);
       canvas.drawImage(
           scribble.backedScribble!,
           new Offset(scribble.leftExtremity - scribble.strokeWidth,
