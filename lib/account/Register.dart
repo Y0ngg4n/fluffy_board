@@ -8,6 +8,7 @@ import 'package:flutter_pw_validator/flutter_pw_validator.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Register extends StatelessWidget {
 
@@ -162,6 +163,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             print('Terms of Service"');
+                            launch("https://www.app-privacy-policy.com/live.php?token=R3OKXP0yWoKDwrnbBxRu6izDQKXZOpIB");
                           }),
                     TextSpan(text: ' and agree that you have read our '),
                     TextSpan(
@@ -170,6 +172,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             print('Privacy Policy"');
+                            launch("https://www.app-privacy-policy.com/live.php?token=5xqgiUqBX8rTmLGwsGUjUW5tIZ1Cc38T");
                           }),
                   ],
                 ),
