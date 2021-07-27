@@ -9,6 +9,14 @@ on:
       - master
       - 'releases/**'
 jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/upload-artifact@v2
+        with:
+          name: version
+          path: version.yaml
   windows:
     runs-on: windows-latest
     steps:
@@ -103,8 +111,12 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: [windows, linux, web, mac]
+    needs: [version, windows, linux, web, mac]
     steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: version
+          path: version.yaml
       - uses: actions/download-artifact@v2
         with:
           name: Fluffyboard-windows
