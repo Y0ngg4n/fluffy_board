@@ -138,7 +138,7 @@ jobs:
           name: Fluffyboard-mac
           path: mac/Fluffyboard-mac.zip
       - run: |
-          ls version.yml
+          ls version/
           version_number=$(cat version/version.yml | sed 's/\(---\|major: \|minor: \|patch: \|\)//g' | sed -z 's/\n/./g;s/,$/\n/' | sed 's/^\.//g')
           echo "${version_number}"
           echo "${version_number}" >> $GITHUB_ENV
