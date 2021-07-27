@@ -47,6 +47,7 @@ Checkout the Github Project: https://github.com/Y0ngg4n/fluffy_board/projects/2
 ## Installation
 ### Web
 You can find the Web Version on Dockerhub [yonggan/fluffy_board-web](https://hub.docker.com/repository/docker/yonggan/fluffy_board-web/)
+
 You can use the https://github.com/Y0ngg4n/fluffy_rest_api Repository to set up your own instance.
 
 ### Windows
