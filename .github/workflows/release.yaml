@@ -146,8 +146,8 @@ jobs:
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "${{ env.action_state }}"
-          title: "Release ${{ env.action_state }}"
+          automatic_release_tag: "${{ env.version_number }}"
+          title: "Release ${{ env.version_number }}"
           files: |
             windows/Fluffyboard-windows.zip
             linux/Fluffyboard-linux.zip
