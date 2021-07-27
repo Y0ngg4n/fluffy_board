@@ -141,7 +141,7 @@ jobs:
           ls version/
           version_number=$(cat version/version.yml | sed 's/\(---\|major: \|minor: \|patch: \|\)//g' | sed -z 's/\n/./g;s/,$/\n/' | sed 's/^\.//g')
           echo "${version_number}"
-          echo "${version_number}" >> $GITHUB_ENV
+          echo "version_number=${version_number}" >> $GITHUB_ENV
           echo "${{ env.version_number }}"
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
