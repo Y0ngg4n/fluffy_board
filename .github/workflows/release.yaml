@@ -16,7 +16,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: version
-          path: version.yaml
+          path: version.yml
   windows:
     runs-on: windows-latest
     steps:
@@ -116,7 +116,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: version
-          path: version/version.yaml
+          path: version/version.yml
       - uses: actions/download-artifact@v2
         with:
           name: Fluffyboard-windows
