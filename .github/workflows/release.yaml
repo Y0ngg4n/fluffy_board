@@ -117,10 +117,10 @@ jobs:
         with:
           name: Fluffyboard-web
           path: web/Fluffyboard-web.zip
-      - uses: actions/download-artifact@v2
-        with:
-          name: Fluffyboard-android
-          path: android/Fluffyboard-android.apk
+#      - uses: actions/download-artifact@v2
+#        with:
+#          name: Fluffyboard-android
+#          path: android/Fluffyboard-android.apk
       - uses: actions/download-artifact@v2
         with:
           name: Fluffyboard-mac
@@ -136,5 +136,5 @@ jobs:
             windows/Fluffyboard-windows.zip
             linux/Fluffyboard-linux.zip
             web/Fluffyboard-web.zip
-            android/Fluffyboard-android.apk
+#            android/Fluffyboard-android.apk
             mac/Fluffyboard-mac.zip
