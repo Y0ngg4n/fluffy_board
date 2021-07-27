@@ -45,10 +45,35 @@ Checkout the Github Project: https://github.com/Y0ngg4n/fluffy_board/projects/2
 - Adding bookmarks
 - Changing Toolbar location
 ## Installation
+### Web
+You can find the Web Version on Dockerhub [yonggan/fluffy_board-web](https://hub.docker.com/repository/docker/yonggan/fluffy_board-web/)
+You can use the https://github.com/Y0ngg4n/fluffy_rest_api Repository to set up your own instance.
 
-Currently only Web build is available.
-Other clients are working but we don´t have a CI Pipeline currently.
-But you can build your own version of the Client via Flutter and the Code
+### Windows
+- Download the zip Files from [Releases](https://github.com/Y0ngg4n/fluffy_board/releases).
+- Extract it
+- Execute the `.exe` File
+
+### Linux
+- Download the zip Files from [Releases](https://github.com/Y0ngg4n/fluffy_board/releases).
+- Extract it
+- Give it the Permission to get executed: `chmod 755 fluffy_board`
+- Execute it
+
+### Android
+You can donload the App from [Google Play Store](https://play.google.com/store/apps/details?id=pro.oblivioncoding.fluffy_board).
+Apk Builds are currently not working.
+I am working on an Fdroid Release.
+
+### MacOS
+- Download the zip Files from [Releases](https://github.com/Y0ngg4n/fluffy_board/releases).
+- Extract it
+- Give it the Permission to get executed: `chmod 755 fluffy_board.app`
+- Double click in Finder
+
+### IOS 
+Coming soon
+
 ## Contributing
 
 Contributions are always welcome!
