@@ -125,13 +125,16 @@ jobs:
         with:
           name: Fluffyboard-mac
           path: mac/Fluffyboard-mac.zip
-      - id: get_version
-        uses: battila7/get-version-action@v2
+      - run: |
+          version_number=$(cat version.yml | sed 's/\(---\|major: \|minor: \|patch: \|\)//g' | sed -z 's/\n/./g;s/,$/\n/' | sed 's/^\.//g')
+          echo "${version_number}"
+          echo "${version_number}" >> $GITHUB_ENV
+          echo "${{ env.version_number }}"
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "${{ steps.get_version.outputs.version-without-v }}"
-          title: "Release ${{ steps.get_version.outputs.version-without-v }}"
+          automatic_release_tag: "${{ env.action_state }}"
+          title: "Release ${{ env.action_state }}"
           files: |
             windows/Fluffyboard-windows.zip
             linux/Fluffyboard-linux.zip
