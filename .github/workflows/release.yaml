@@ -75,7 +75,7 @@ jobs:
       - uses: subosito/flutter-action@v1
       - run: flutter doctor -v
       - run: flutter pub get
-      - run: flutter build appbundle
+      - run: flutter build apk
       - uses: actions/upload-artifact@v2
         with:
           name: Fluffyboard-android
