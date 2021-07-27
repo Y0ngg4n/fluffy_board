@@ -102,7 +102,7 @@ jobs:
       - run: flutter build macos --release
       - uses: papeloto/action-zip@v1
         with:
-          files: build/macos
+          files: build/macos/Release/Product
           dest: Fluffyboard-mac.zip
       - uses: actions/upload-artifact@v2
         with:
@@ -137,6 +137,8 @@ jobs:
         with:
           name: Fluffyboard-mac
           path: mac/Fluffyboard-mac.zip
+      - run: |
+          chmod 755 mac/Fluffyboard-mac.zip
       - run: |
           ls version/
           version_number=$(cat version/version.yml | sed 's/\(---\|major: \|minor: \|patch: \|\)//g' | sed -z 's/\n/./g;s/,$/\n/' | sed 's/^\.//g')
