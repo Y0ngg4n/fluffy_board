@@ -85,7 +85,6 @@ platform :android do
   end
 # Tagging a commit
   lane :tag_commit do
-      apply_new_version
       add_git_tag(
         tag: "v" + flutter_version(pubspec_location: './pubspec.yaml')["version_name"] + "-" + flutter_version(pubspec_location: './pubspec.yaml')["version_code"]
       )
