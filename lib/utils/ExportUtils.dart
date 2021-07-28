@@ -13,7 +13,7 @@ import 'package:pdf/widgets.dart' as pw;
 class ExportUtils {
   static exportPNG(List<Scribble> scribbles, List<Upload> uploads, List<TextItem> texts, ToolbarOptions toolbarOptions, ui.Offset screenSize, ui.Offset offset,
       double scale) async {
-    ui.Rect rect = getBounds(scribbles);
+    ui.Rect rect = getBounds(scribbles, uploads, texts);
     ui.PictureRecorder recorder = ui.PictureRecorder();
     ui.Canvas canvas = getCanvas(scribbles, uploads, texts, offset, screenSize, scale, rect, recorder);
 
@@ -33,7 +33,7 @@ class ExportUtils {
 
   static exportPDF(List<Scribble> scribbles, List<Upload> uploads, List<TextItem> texts, ToolbarOptions toolbarOptions, ui.Offset screenSize, ui.Offset offset,
       double scale) async{
-    ui.Rect rect = getBounds(scribbles);
+    ui.Rect rect = getBounds(scribbles, uploads, texts);
     ui.PictureRecorder recorder = ui.PictureRecorder();
     ui.Canvas canvas = getCanvas(scribbles, uploads, texts, offset, screenSize, scale, rect, recorder);
 
@@ -107,7 +107,7 @@ class ExportUtils {
     return canvas;
   }
 
-  static ui.Rect getBounds(List<Scribble> scribbles) {
+  static ui.Rect getBounds(List<Scribble> scribbles, List<Upload> uploads, List<TextItem> texts) {
     double left = 0,
         right = 0,
         top = 0,
@@ -122,6 +122,29 @@ class ExportUtils {
       if (scribble.bottomExtremity > bottom)
         bottom = scribble.bottomExtremity;
     }
+
+    for (Upload upload in uploads) {
+      if (upload.offset.dx < left)
+        left = upload.offset.dx;
+      if (upload.offset.dx + upload.image!.width > right)
+        right = upload.offset.dx + upload.image!.width;
+      if (upload.offset.dy < top)
+        top = upload.offset.dy;
+      if (upload.offset.dy + upload.image!.height > bottom)
+        bottom = upload.offset.dy + upload.image!.height;
+    }
+
+    for (TextItem text in texts) {
+      if (text.offset.dx < left)
+        left = text.offset.dx;
+      if (text.offset.dx + text.maxWidth > right)
+        right = text.offset.dx + text.maxWidth;
+      if (text.offset.dy < top)
+        top = text.offset.dy;
+      if (text.offset.dy + text.maxHeight > bottom)
+        bottom = text.offset.dy + text.maxHeight;
+    }
+
     left -= 25;
     right += 25;
     top -= 25;
