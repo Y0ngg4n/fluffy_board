@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -18,14 +20,18 @@ class _AboutState extends State<About> {
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance!.addPostFrameCallback((_) => {
-      accountStorage.ready.then((value) async => {
-        Future.delayed(const Duration(milliseconds: 1000), () {
-          if (accountStorage.getItem("auth_token") != null)
-            Navigator.of(context).pushReplacementNamed('/dashboard');
-        })
-      }),
-    });
+    try {
+      SchedulerBinding.instance!.addPostFrameCallback((_) => {
+            accountStorage.ready.then((value) async => {
+                  Future.delayed(const Duration(seconds: 1), () {
+                    if (accountStorage.getItem("auth_token") != null)
+                      Navigator.of(context).pushReplacementNamed('/dashboard');
+                  })
+                }),
+          });
+    } catch (e) {
+      stderr.writeln("[About] Could not check Authentication in About");
+    }
   }
 
   @override
@@ -65,9 +71,11 @@ class _AboutState extends State<About> {
         child: Container(
           child: Column(children: [
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text(
-                "FluffyBoard",
-                style: GoogleFonts.fredokaOne(fontSize: 150 * sizeFactor),
+              Flexible(
+                child: Text(
+                  "FluffyBoard",
+                  style: GoogleFonts.fredokaOne(fontSize: 150 * sizeFactor),
+                ),
               )
             ]),
             Row(
@@ -85,20 +93,20 @@ class _AboutState extends State<About> {
                 SizedBox(width: 20.0 * sizeFactor, height: 350.0 * sizeFactor),
                 Expanded(
                   flex: 1,
-                  child: Row(
+                  child: Wrap(
                     children: [
                       AnimatedTextKit(
                         repeatForever: true,
                         animatedTexts: [
                           RotateAnimatedText('Drawings',
                               textStyle: animatedHeadingTextStyle),
-                          RotateAnimatedText('Brainstorming',
+                          RotateAnimatedText('Thinking',
                               textStyle: animatedHeadingTextStyle),
                           RotateAnimatedText('Mindmaps',
                               textStyle: animatedHeadingTextStyle),
                           RotateAnimatedText('Collages',
                               textStyle: animatedHeadingTextStyle),
-                          RotateAnimatedText('Collaborations',
+                          RotateAnimatedText('Collabs',
                               textStyle: animatedHeadingTextStyle),
                         ],
                       )
@@ -147,9 +155,11 @@ class _AboutState extends State<About> {
                         mainAxisSize: MainAxisSize.max,
                         children: [
                           Text("Open Source", style: cardHeadingTextStyle),
-                          Text(
-                            "This project is fully open source, \nyou can view the source code \nand make requests to it, \nor just create a pull request \nso your coded changes \nwill be in the next release",
-                            style: cardTextStyle,
+                          Flexible(
+                            child: Text(
+                              "This project is fully open source, \nyou can view the source code \nand make requests to it, \nor just create a pull request \nso your coded changes \nwill be in the next release",
+                              style: cardTextStyle,
+                            ),
                           )
                         ],
                       ),
@@ -165,10 +175,14 @@ class _AboutState extends State<About> {
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Text("Infinite Canvas", style: cardHeadingTextStyle),
-                          Text(
-                            "Infinite space to give you \ninfinite possibilities to get creative",
-                            style: cardTextStyle,
+                          Flexible(
+                              child: Text("Infinite Canvas",
+                                  style: cardHeadingTextStyle)),
+                          Flexible(
+                            child: Text(
+                              "Infinite space to give you \ninfinite possibilities to get creative",
+                              style: cardTextStyle,
+                            ),
                           )
                         ],
                       ),
@@ -184,10 +198,14 @@ class _AboutState extends State<About> {
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Text("Collaboration", style: cardHeadingTextStyle),
-                          Text(
-                            "Work together with your team and \ncollaborate to achieve your goals.",
-                            style: cardTextStyle,
+                          Flexible(
+                              child: Text("Collaboration",
+                                  style: cardHeadingTextStyle)),
+                          Flexible(
+                            child: Text(
+                              "Work together with your team and \ncollaborate to achieve your goals.",
+                              style: cardTextStyle,
+                            ),
                           )
                         ],
                       ),
@@ -203,10 +221,14 @@ class _AboutState extends State<About> {
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Text("Import/Export", style: cardHeadingTextStyle),
-                          Text(
-                            "You can import and export \nWhiteboards to transfer \nthem to other accounts.",
-                            style: cardTextStyle,
+                          Flexible(
+                              child: Text("Import/Export",
+                                  style: cardHeadingTextStyle)),
+                          Flexible(
+                            child: Text(
+                              "You can import and export \nWhiteboards to transfer \nthem to other accounts.",
+                              style: cardTextStyle,
+                            ),
                           )
                         ],
                       ),
@@ -222,10 +244,14 @@ class _AboutState extends State<About> {
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Text("Offline use", style: cardHeadingTextStyle),
-                          Text(
-                            "You can download your \nWhiteboards and use them offline.\n And if you have internet again\n you can upload them back.",
-                            style: cardTextStyle,
+                          Flexible(
+                              child: Text("Offline use",
+                                  style: cardHeadingTextStyle)),
+                          Flexible(
+                            child: Text(
+                              "You can download your \nWhiteboards and use them offline.\n And if you have internet again\n you can upload them back.",
+                              style: cardTextStyle,
+                            ),
                           )
                         ],
                       ),
@@ -241,10 +267,14 @@ class _AboutState extends State<About> {
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Text("Import Media", style: cardHeadingTextStyle),
-                          Text(
-                            "You can import images and PDF \nfiles to share your files with your Team",
-                            style: cardTextStyle,
+                          Flexible(
+                              child: Text("Import Media",
+                                  style: cardHeadingTextStyle)),
+                          Flexible(
+                            child: Text(
+                              "You can import images and PDF \nfiles to share your files with your Team",
+                              style: cardTextStyle,
+                            ),
                           )
                         ],
                       ),
@@ -260,10 +290,14 @@ class _AboutState extends State<About> {
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Text("View only invites", style: cardHeadingTextStyle),
-                          Text(
-                            "Sharing is posible with view only rights. \nSo you can just present your whiteboard \nwithout giving others the permission to edit them",
-                            style: cardTextStyle,
+                          Flexible(
+                              child: Text("View only invites",
+                                  style: cardHeadingTextStyle)),
+                          Flexible(
+                            child: Text(
+                              "Sharing is posible with view only rights. \nSo you can just present your whiteboard \nwithout giving others the permission to edit them",
+                              style: cardTextStyle,
+                            ),
                           )
                         ],
                       ),
@@ -279,10 +313,14 @@ class _AboutState extends State<About> {
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Text("Self hosted", style: cardHeadingTextStyle),
-                          Text(
-                            "Because this project is open source you can self host it and have full control over your data.",
-                            style: cardTextStyle,
+                          Flexible(
+                              child: Text("Self hosted",
+                                  style: cardHeadingTextStyle)),
+                          Flexible(
+                            child: Text(
+                              "Because this project is open source you can self host it and have full control over your data.",
+                              style: cardTextStyle,
+                            ),
                           )
                         ],
                       ),
@@ -298,10 +336,14 @@ class _AboutState extends State<About> {
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Text("No tracking", style: cardHeadingTextStyle),
-                          Text(
-                            "No tracking. No spying. No unnecessary data will be collected. Have full controll over your data.",
-                            style: cardTextStyle,
+                          Flexible(
+                              child: Text("No tracking",
+                                  style: cardHeadingTextStyle)),
+                          Flexible(
+                            child: Text(
+                              "No tracking. No spying. No unnecessary data will be collected. Have full controll over your data.",
+                              style: cardTextStyle,
+                            ),
                           )
                         ],
                       ),
