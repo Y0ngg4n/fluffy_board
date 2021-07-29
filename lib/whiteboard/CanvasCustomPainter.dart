@@ -12,7 +12,6 @@ import 'package:vector_math/vector_math.dart' as vectormath;
 import 'overlays/Toolbar.dart' as Toolbar;
 
 class CanvasCustomPainter extends CustomPainter {
-
   Toolbar.ToolbarOptions toolbarOptions;
   List<Scribble> scribbles;
   Offset offset;
@@ -72,10 +71,12 @@ class CanvasCustomPainter extends CustomPainter {
     canvas.clipRect(rect);
     canvas.scale(scale);
 
-    PainterUtils.paintBackground(canvas, toolbarOptions, screenSize, offset, scale);
+    PainterUtils.paintBackground(
+        canvas, toolbarOptions, screenSize, offset, scale);
     PainterUtils.paintUploads(canvas, uploads, screenSize, scale, offset, true);
     PainterUtils.paintTextItems(canvas, texts, offset, screenSize, scale, true);
-    PainterUtils.paintScribbles(canvas, scribbles, offset, screenSize, scale, true);
+    PainterUtils.paintScribbles(
+        canvas, scribbles, offset, screenSize, scale, true);
 
     if (multiSelect && !multiSelectMove) {
       canvas.drawRect(
@@ -94,22 +95,23 @@ class CanvasCustomPainter extends CustomPainter {
 }
 
 class PainterUtils {
-
   static final LocalStorage settingsStorage = new LocalStorage('settings');
 
-  static paintScribbles(Canvas canvas, List<Scribble> scribbles, Offset offset, Offset screenSize, double scale, bool checkView){
+  static paintScribbles(Canvas canvas, List<Scribble> scribbles, Offset offset,
+      Offset screenSize, double scale, bool checkView) {
     //a single line is defined as a series of points followed by a null at the end
     for (Scribble scribble in scribbles) {
-      if (checkView && ScreenUtils.checkScribbleIfNotInScreen(
-          scribble, offset, screenSize.dx, screenSize.dy, scale)) {
+      if (checkView &&
+          ScreenUtils.checkScribbleIfNotInScreen(
+              scribble, offset, screenSize.dx, screenSize.dy, scale)) {
         continue;
       }
       PainterUtils.paintScribble(scribble, canvas, scale, offset, checkView);
     }
   }
 
-  static paintScribble(
-      Scribble scribble, Canvas canvas, double scale, Offset offset, bool checkView) {
+  static paintScribble(Scribble scribble, Canvas canvas, double scale,
+      Offset offset, bool checkView) {
     Paint drawingPaint = Paint()
       ..strokeCap = scribble.strokeCap
       ..isAntiAlias = true
@@ -124,7 +126,8 @@ class PainterUtils {
       ..style = PaintingStyle.fill;
 
     Paint figurePaint = drawingPaint..style = scribble.paintingStyle;
-    if (scribble.backedScribble == null || !(settingsStorage.getItem("points-to-image") ?? true)) {
+    if (scribble.backedScribble == null ||
+        !(settingsStorage.getItem("points-to-image") ?? true)) {
       switch (scribble.selectedFigureTypeToolbar) {
         case SelectedFigureTypeToolbar.rect:
           canvas.drawRect(
@@ -175,16 +178,33 @@ class PainterUtils {
           break;
       }
     } else {
-      canvas.drawImage(
-          scribble.backedScribble!,
-          new Offset(scribble.leftExtremity - scribble.strokeWidth,
-                  scribble.topExtremity - scribble.strokeWidth) +
-              offset,
-          imagePaint);
+      paintImage(
+          canvas: canvas,
+          rect: Rect.fromPoints(
+            new Offset(scribble.leftExtremity - scribble.strokeWidth,
+                    scribble.topExtremity - scribble.strokeWidth) +
+                offset,
+            new Offset(scribble.rightExtremity + scribble.strokeWidth,
+                    scribble.bottomExtremity + scribble.strokeWidth) +
+                offset,
+          ),
+          filterQuality: FilterQuality.high,
+          isAntiAlias: true,
+          image: scribble.backedScribble!,
+          // Can be increased if to pixelated
+          // scale: 1
+      );
+      // canvas.drawImage(
+      //     scribble.backedScribble!,
+      //     new Offset(scribble.leftExtremity - scribble.strokeWidth,
+      //             scribble.topExtremity - scribble.strokeWidth) +
+      //         offset,
+      //     imagePaint);
     }
   }
 
-  static paintBackground(Canvas canvas, Toolbar.ToolbarOptions toolbarOptions, Offset screenSize, Offset offset, double scale){
+  static paintBackground(Canvas canvas, Toolbar.ToolbarOptions toolbarOptions,
+      Offset screenSize, Offset offset, double scale) {
     // Draw Background
     Paint backgroundPaint = Paint()
       ..strokeCap = StrokeCap.round
@@ -196,16 +216,16 @@ class PainterUtils {
     // TODO: Fix Scaled Scrolling
     // Draw Background
     if (SelectedBackgroundTypeToolbar
-        .values[toolbarOptions.backgroundOptions.selectedBackground] ==
-        SelectedBackgroundTypeToolbar.Lines ||
+                .values[toolbarOptions.backgroundOptions.selectedBackground] ==
+            SelectedBackgroundTypeToolbar.Lines ||
         SelectedBackgroundTypeToolbar
-            .values[toolbarOptions.backgroundOptions.selectedBackground] ==
+                .values[toolbarOptions.backgroundOptions.selectedBackground] ==
             SelectedBackgroundTypeToolbar.Grid) {
       for (int i = -offset.dy.toInt().abs();
-      i <
-          (((screenSize.dy - offset.dy) / scale) /
-              toolbarOptions.backgroundOptions.strokeWidth);
-      i++) {
+          i <
+              (((screenSize.dy - offset.dy) / scale) /
+                  toolbarOptions.backgroundOptions.strokeWidth);
+          i++) {
         canvas.drawLine(
             new Offset(
                 0,
@@ -219,13 +239,13 @@ class PainterUtils {
       }
     }
     if (SelectedBackgroundTypeToolbar
-        .values[toolbarOptions.backgroundOptions.selectedBackground] ==
+            .values[toolbarOptions.backgroundOptions.selectedBackground] ==
         SelectedBackgroundTypeToolbar.Grid) {
       for (int i = -offset.dx.toInt().abs();
-      i <
-          (((screenSize.dx - offset.dx) / scale) /
-              toolbarOptions.backgroundOptions.strokeWidth);
-      i++) {
+          i <
+              (((screenSize.dx - offset.dx) / scale) /
+                  toolbarOptions.backgroundOptions.strokeWidth);
+          i++) {
         canvas.drawLine(
             new Offset(
                 (toolbarOptions.backgroundOptions.strokeWidth * i) +
@@ -245,31 +265,40 @@ class PainterUtils {
     }
   }
 
-  static paintUploads(Canvas canvas, List<Upload> uploads, Offset screenSize, double scale, Offset offset, bool checkView){
+  static paintUploads(Canvas canvas, List<Upload> uploads, Offset screenSize,
+      double scale, Offset offset, bool checkView) {
     // Images
     Paint imagePaint = new Paint();
 
     for (Upload upload in uploads) {
       if (ScreenUtils.checkUploadIfNotInScreen(
-          upload, offset, screenSize.dx, screenSize.dy, scale) && checkView) continue;
+              upload, offset, screenSize.dx, screenSize.dy, scale) &&
+          checkView) continue;
       if (upload.image == null) continue;
-      canvas.drawImage(upload.image!, upload.offset + offset, imagePaint);
+      paintImage(
+          canvas: canvas,
+          rect: Rect.fromLTWH(
+              upload.offset.dx + offset.dx,
+              upload.offset.dy + offset.dy,
+              upload.image!.width.toDouble(),
+              upload.image!.height.toDouble()),
+          filterQuality: FilterQuality.high,
+          isAntiAlias: true,
+          image: upload.image!);
+      // canvas.drawImage(upload.image!, upload.offset + offset, imagePaint);
     }
   }
 
-  static paintTextItems(Canvas canvas, List<TextItem> texts, Offset offset, Offset screenSize, double scale, bool checkView){
+  static paintTextItems(Canvas canvas, List<TextItem> texts, Offset offset,
+      Offset screenSize, double scale, bool checkView) {
     // TextItems
     for (TextItem textItem in texts) {
       if (textItem.editing) continue;
 
       TextPainter textPainter = ScreenUtils.getTextPainter(textItem);
-      if (ScreenUtils.checkTextPainterIfNotInScreen(
-          textPainter,
-          textItem.offset,
-          offset,
-          screenSize.dx,
-          screenSize.dy,
-          scale) && checkView) continue;
+      if (ScreenUtils.checkTextPainterIfNotInScreen(textPainter,
+              textItem.offset, offset, screenSize.dx, screenSize.dy, scale) &&
+          checkView) continue;
       canvas.save();
       Offset newOffset = textItem.offset + offset;
       Offset middlePoint = new Offset(

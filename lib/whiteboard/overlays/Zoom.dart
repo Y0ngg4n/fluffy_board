@@ -30,7 +30,7 @@ class ZoomView extends StatefulWidget {
 }
 
 class _ZoomViewState extends State<ZoomView> {
-  double zoomFactor = 0.2;
+  double zoomFactor = 0.1;
 
   @override
   Widget build(BuildContext context) {
@@ -139,6 +139,7 @@ class _ZoomViewState extends State<ZoomView> {
                           OutlinedButton(
                               style: buttonStyle,
                               onPressed: () {
+                                if(widget.zoomOptions.scale + zoomFactor >= 5) return;
                                 widget.zoomOptions.scale =
                                     widget.zoomOptions.scale + zoomFactor;
                                 widget.onChangedZoomOptions(widget.zoomOptions);

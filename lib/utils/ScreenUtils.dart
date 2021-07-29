@@ -195,6 +195,9 @@ class ScreenUtils {
   static bakeScribble(Scribble scribble, double scale) async {
     ui.PictureRecorder recorder = ui.PictureRecorder();
     ui.Canvas canvas = ui.Canvas(recorder);
+    // Can be increased if to pixelated scribbles
+    final int betterPixelScale = 1;
+    canvas.scale(betterPixelScale.toDouble());
     double scribbleWidth = (scribble.rightExtremity - scribble.leftExtremity);
     double scribbleHeight = (scribble.bottomExtremity - scribble.topExtremity);
     PainterUtils.paintScribble(
@@ -206,10 +209,10 @@ class ScreenUtils {
     // Finally render the image, this can take about 8 to 25 milliseconds.
     var picture = recorder.endRecording();
     // TODO: Check if cuts are right and make less pixelated
-    double imageWidth = (scribbleWidth + scribble.strokeWidth * 2) *
-        (scale < 1 ? (1 + (1 - scale)) : scale);
-    double imageHeight = (scribbleHeight + scribble.strokeWidth * 2) *
-        (scale < 1 ? (1 + (1 - scale)) : scale);
+    double imageWidth = ((scribbleWidth + scribble.strokeWidth * 2) *
+        (scale < 1 ? (1 + (1 - scale)) : scale)) * betterPixelScale;
+    double imageHeight = ((scribbleHeight + scribble.strokeWidth * 2) *
+        (scale < 1 ? (1 + (1 - scale)) : scale)) * betterPixelScale;
     try {
       var newImage = await picture.toImage(
           (imageWidth).ceil(),
