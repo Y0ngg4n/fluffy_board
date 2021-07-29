@@ -1,0 +1,24 @@
+name: Push to Dockerhub
+on:
+  push:
+    branches: [ master ]
+jobs:
+  push-to-dockerhub:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - uses: actions/checkout@v2
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./web.Dockerfile
+          push: true
+          tags: yonggan/fluffy_board-web:latest
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
