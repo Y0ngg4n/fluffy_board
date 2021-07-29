@@ -11,6 +11,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'FileManager.dart';
 import 'package:uuid/uuid.dart';
 
+import 'FileManagerTypes.dart';
+
 class AddOfflineWhiteboard extends StatefulWidget {
   String auth_token;
   String directory;

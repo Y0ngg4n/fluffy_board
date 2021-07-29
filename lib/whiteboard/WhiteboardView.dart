@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:fluffy_board/dashboard/Dashboard.dart';
 import 'package:fluffy_board/dashboard/filemanager/FileManager.dart';
+import 'package:fluffy_board/dashboard/filemanager/FileManagerTypes.dart';
 import 'package:fluffy_board/utils/ExportUtils.dart';
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';

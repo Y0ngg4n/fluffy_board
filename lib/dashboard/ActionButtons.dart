@@ -13,6 +13,7 @@ import 'package:file_picker_cross/file_picker_cross.dart';
 import 'filemanager/AddExtWhiteboard.dart';
 import 'filemanager/AddWhiteboard.dart';
 import 'filemanager/FileManager.dart';
+import 'filemanager/FileManagerTypes.dart';
 
 class ActionButtons extends StatefulWidget {
   String auth_token, parent;

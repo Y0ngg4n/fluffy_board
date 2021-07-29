@@ -8,6 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:uuid/uuid.dart';
 import 'FileManager.dart';
+import 'FileManagerTypes.dart';
 
 class AddFolder extends StatefulWidget {
   String auth_token;
