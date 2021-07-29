@@ -28,6 +28,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:localstorage/localstorage.dart';
 import 'DrawPoint.dart';
+import 'WhiteboardViewDataManager.dart';
 import 'appbar/BookmarkManager.dart';
 import 'overlays/Toolbar.dart' as Toolbar;
 import 'dart:ui' as ui;
@@ -280,7 +281,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                     setState(() {
                       switch (value) {
                         case 0:
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Trying to export Image ...")));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("Trying to export Image ...")));
                           ExportUtils.exportPNG(
                               scribbles,
                               uploads,
@@ -292,7 +294,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                               zoomOptions.scale);
                           break;
                         case 1:
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Trying to export PDF ...")));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("Trying to export PDF ...")));
                           ExportUtils.exportPDF(
                               scribbles,
                               uploads,
@@ -304,7 +307,9 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                               zoomOptions.scale);
                           break;
                         case 2:
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Trying to export screen size Image ...")));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                  "Trying to export screen size Image ...")));
                           ExportUtils.exportScreenSizePNG(
                               scribbles,
                               uploads,
@@ -321,7 +326,9 @@ class _WhiteboardViewState extends State<WhiteboardView> {
               itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                     PopupMenuItem(child: const Text("Export Image"), value: 0),
                     PopupMenuItem(child: const Text("Export PDF"), value: 1),
-                    PopupMenuItem(child: const Text("Export screen size Image"), value: 2),
+                    PopupMenuItem(
+                        child: const Text("Export screen size Image"),
+                        value: 2),
                   ],
               child: Icon(Icons.import_export)),
           IconButton(
@@ -331,7 +338,18 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                         MaterialPageRoute(
                             builder: (context) => BookmarkManager(
                                   onBookMarkRefresh: (refreshController) async {
-                                    await getBookmark(refreshController);
+                                    await WhiteboardViewDataManager
+                                        .getBookmarks(
+                                            refreshController,
+                                            widget.auth_token,
+                                            widget.whiteboard,
+                                            widget.extWhiteboard,
+                                            widget.offlineWhiteboard,
+                                            (bookmarks) {
+                                      setState(() {
+                                        this.bookmarks = bookmarks;
+                                      });
+                                    });
                                   },
                                   auth_token: widget.auth_token,
                                   online: widget.online,
@@ -566,10 +584,37 @@ class _WhiteboardViewState extends State<WhiteboardView> {
 
   Future _getWhiteboardData() async {
     if (websocketConnection != null) {
-      await _getScribbles();
-      await _getUploads();
-      await _getTextItems();
-      await getBookmark(null);
+      await WhiteboardViewDataManager.getScribbles(
+          widget.auth_token, widget.whiteboard, widget.extWhiteboard,
+          (Scribble newScribble) {
+            setState(() {
+              scribbles.add(newScribble);
+            });
+      }, zoomOptions);
+      await WhiteboardViewDataManager.getUploads(
+          widget.auth_token, widget.whiteboard, widget.extWhiteboard,
+          (Upload newUpload) {
+            setState(() {
+              uploads.add(newUpload);
+            });
+      }, zoomOptions);
+      await WhiteboardViewDataManager.getTextItems(
+          widget.auth_token, widget.whiteboard, widget.extWhiteboard,
+          (TextItem textItem) {
+            setState(() {
+              texts.add(textItem);
+            });
+      });
+      await WhiteboardViewDataManager.getBookmarks(
+          null,
+          widget.auth_token,
+          widget.whiteboard,
+          widget.extWhiteboard,
+          widget.offlineWhiteboard, (List<Bookmark> bookmarks) {
+        setState(() {
+          this.bookmarks = bookmarks;
+        });
+      });
     }
     if (widget.offlineWhiteboard != null) {
       setState(() {
@@ -578,171 +623,6 @@ class _WhiteboardViewState extends State<WhiteboardView> {
         texts = widget.offlineWhiteboard!.texts.list;
         bookmarks = widget.offlineWhiteboard!.bookmarks.list;
       });
-    }
-  }
-
-  Future _getScribbles() async {
-    http.Response scribbleResponse = await http.post(
-        Uri.parse((settingsStorage.getItem("REST_API_URL") ??
-                dotenv.env['REST_API_URL']!) +
-            "/whiteboard/scribble/get"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        },
-        body: jsonEncode({
-          "whiteboard": (widget.whiteboard == null)
-              ? widget.extWhiteboard!.original
-              : widget.whiteboard!.id,
-          "permission_id": widget.whiteboard == null
-              ? widget.extWhiteboard!.permissionId
-              : widget.whiteboard!.edit_id
-        }));
-
-    if (scribbleResponse.statusCode == 200) {
-      List<DecodeGetScribble> decodedScribbles =
-          DecodeGetScribbleList.fromJsonList(jsonDecode(scribbleResponse.body));
-      setState(() {
-        for (DecodeGetScribble decodeGetScribble in decodedScribbles) {
-          Scribble newScribble = new Scribble(
-              decodeGetScribble.uuid,
-              decodeGetScribble.strokeWidth,
-              StrokeCap.values[decodeGetScribble.strokeCap],
-              HexColor.fromHex(decodeGetScribble.color),
-              decodeGetScribble.points,
-              SelectedFigureTypeToolbar
-                  .values[decodeGetScribble.selectedFigureTypeToolbar],
-              PaintingStyle.values[decodeGetScribble.paintingStyle]);
-          scribbles.add(newScribble);
-          ScreenUtils.calculateScribbleBounds(newScribble);
-          ScreenUtils.bakeScribble(newScribble, zoomOptions.scale);
-        }
-      });
-    }
-  }
-
-  Future _getUploads() async {
-    http.Response uploadResponse = await http.post(
-        Uri.parse((settingsStorage.getItem("REST_API_URL") ??
-                dotenv.env['REST_API_URL']!) +
-            "/whiteboard/upload/get"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        },
-        body: jsonEncode({
-          "whiteboard": widget.whiteboard == null
-              ? widget.extWhiteboard!.original
-              : widget.whiteboard!.id,
-          "permission_id": widget.whiteboard == null
-              ? widget.extWhiteboard!.permissionId
-              : widget.whiteboard!.edit_id
-        }));
-    if (uploadResponse.statusCode == 200) {
-      List<DecodeGetUpload> decodedUploads =
-          DecodeGetUploadList.fromJsonList(jsonDecode(uploadResponse.body));
-      setState(() {
-        for (DecodeGetUpload decodeGetUpload in decodedUploads) {
-          Uint8List uint8list = Uint8List.fromList(decodeGetUpload.imageData);
-          ui.decodeImageFromList(uint8list, (image) {
-            uploads.add(new Upload(
-                decodeGetUpload.uuid,
-                UploadType.values[decodeGetUpload.uploadType],
-                uint8list,
-                new Offset(
-                    decodeGetUpload.offset_dx, decodeGetUpload.offset_dy),
-                image));
-          });
-        }
-      });
-    }
-  }
-
-  Future _getTextItems() async {
-    http.Response textItemResponse = await http.post(
-        Uri.parse((settingsStorage.getItem("REST_API_URL") ??
-                dotenv.env['REST_API_URL']!) +
-            "/whiteboard/textitem/get"),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json",
-          'Authorization': 'Bearer ' + widget.auth_token,
-        },
-        body: jsonEncode({
-          "whiteboard": widget.whiteboard == null
-              ? widget.extWhiteboard!.original
-              : widget.whiteboard!.id,
-          "permission_id": widget.whiteboard == null
-              ? widget.extWhiteboard!.permissionId
-              : widget.whiteboard!.edit_id
-        }));
-    if (textItemResponse.statusCode == 200) {
-      List<DecodeGetTextItem> decodeTextItems =
-          DecodeGetTextItemList.fromJsonList(jsonDecode(textItemResponse.body));
-      setState(() {
-        for (DecodeGetTextItem decodeGetTextItem in decodeTextItems) {
-          texts.add(new TextItem(
-              decodeGetTextItem.uuid,
-              false,
-              decodeGetTextItem.strokeWidth,
-              decodeGetTextItem.maxWidth,
-              decodeGetTextItem.maxHeight,
-              HexColor.fromHex(decodeGetTextItem.color),
-              decodeGetTextItem.contentText,
-              new Offset(
-                  decodeGetTextItem.offset_dx, decodeGetTextItem.offset_dy),
-              decodeGetTextItem.rotation));
-        }
-      });
-    }
-  }
-
-  Future getBookmark(RefreshController? refreshController) async {
-    if (widget.offlineWhiteboard != null) {
-      setState(() {
-        bookmarks = widget.offlineWhiteboard!.bookmarks.list;
-      });
-      if (refreshController != null) refreshController.refreshCompleted();
-    } else {
-      List<Bookmark> localBookmarks = [];
-      http.Response bookmarkResponse = await http.post(
-          Uri.parse((settingsStorage.getItem("REST_API_URL") ??
-                  dotenv.env['REST_API_URL']!) +
-              "/whiteboard/bookmark/get"),
-          headers: {
-            "content-type": "application/json",
-            "accept": "application/json",
-            'Authorization': 'Bearer ' + widget.auth_token,
-          },
-          body: jsonEncode({
-            "whiteboard": widget.whiteboard == null
-                ? widget.extWhiteboard!.original
-                : widget.whiteboard!.id,
-            "permission_id": widget.whiteboard == null
-                ? widget.extWhiteboard!.permissionId
-                : widget.whiteboard!.edit_id
-          }));
-      if (bookmarkResponse.statusCode == 200) {
-        List<DecodeGetBookmark> decodeBookmarks =
-            DecodeGetBookmarkList.fromJsonList(
-                jsonDecode(bookmarkResponse.body));
-        setState(() {
-          for (DecodeGetBookmark decodeGetBookmark in decodeBookmarks) {
-            localBookmarks.add(new Bookmark(
-                decodeGetBookmark.uuid,
-                decodeGetBookmark.name,
-                new Offset(
-                    decodeGetBookmark.offset_dx, decodeGetBookmark.offset_dy),
-                decodeGetBookmark.scale));
-          }
-          this.bookmarks = localBookmarks;
-          if (refreshController != null) refreshController.refreshCompleted();
-        });
-      } else {
-        if (refreshController != null) refreshController.refreshFailed();
-      }
     }
   }
 
