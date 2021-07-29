@@ -55,9 +55,13 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance!.addPostFrameCallback((_) => {
-          accountStorage.ready.then((value) async => {_setStorageReady()}),
-          introStorage.ready.then((value) async => {_setIntroStorageReady()})
+    WidgetsBinding.instance!.addPostFrameCallback((_) => {
+          setState(() {
+            accountStorage.ready.then((value) => {_setStorageReady()});
+            introStorage.ready.then((value) => {_setIntroStorageReady()});
+            settingsStorage.ready
+                .then((value) => {print("Settingstorage is ready")});
+          })
         });
   }
 
@@ -107,7 +111,7 @@ class _DashboardState extends State<Dashboard> {
 
   _setIntroStorageReady() {
     setState(() {
-      introStorageReady = true;
+      this.introStorageReady = true;
     });
   }
 
@@ -120,6 +124,7 @@ class _DashboardState extends State<Dashboard> {
       });
     } else {
       try {
+        await settingsStorage.ready;
         http.Response response = await http.get(
             Uri.parse((settingsStorage.getItem("REST_API_URL") ??
                     dotenv.env['REST_API_URL']!) +
