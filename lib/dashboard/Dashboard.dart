@@ -23,10 +23,14 @@ class Dashboard extends StatefulWidget {
       appBar: AppBar(
         title: Text(name),
       ),
-      body: Center(child: SingleChildScrollView(
+      body: Center(
+          child: SingleChildScrollView(
         child: Column(
           children: [
-            Image.asset("assets/images/FluffyBoardIcon.png", height: 300,),
+            Image.asset(
+              "assets/images/FluffyBoardIcon.png",
+              height: 300,
+            ),
             CircularProgressIndicator(),
           ],
         ),
@@ -60,26 +64,31 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     const name = "Dashboard";
-
-    if ((!checkedLogin && !storageReady) || !introStorageReady) return (Dashboard.loading(name));
-    SchedulerBinding.instance!.addPostFrameCallback((_) => {
-          Future.delayed(const Duration(milliseconds: 1000), () {
-            if (checkedLogin && !loggedIn && online)
-              Navigator.of(context).pushReplacementNamed('/login');
-          })
+    print(checkedLogin);
+    print(storageReady);
+    print(introStorageReady);
+    if ((!checkedLogin && !storageReady) || !introStorageReady)
+      return (Dashboard.loading(name));
+    WidgetsBinding.instance!.addPostFrameCallback((_) => {
+          print("PostframeCallBack"),
+          if (checkedLogin && !loggedIn && online)
+            {
+              print("Switching to login"),
+              Navigator.of(context).pushReplacementNamed('/login')
+            }
         });
     if (!checkedLogin && !loggedIn && online) return (Dashboard.loading(name));
-    if(introStorage.getItem('read') == null)
-      SchedulerBinding.instance!.addPostFrameCallback((_) => {
-        Future.delayed(const Duration(milliseconds: 1000), () {
+    if (introStorage.getItem('read') == null) print("Switching to tutorial");
+    SchedulerBinding.instance!.addPostFrameCallback((_) => {
           if (checkedLogin && !loggedIn && online)
-            Navigator.of(context).pushNamed('/intro');
-        })
-      });
+            Navigator.of(context).pushNamed('/intro')
+        });
+    if (introStorage.getItem('read') == null) return (Dashboard.loading(name));
+
     return (Scaffold(
       appBar: AppBar(title: Text(name), actions: [AvatarIcon(online)]),
       body: Container(
-        child: FileManager(auth_token, username, id,  online),
+        child: FileManager(auth_token, username, id, online),
       ),
     ));
   }
@@ -96,7 +105,7 @@ class _DashboardState extends State<Dashboard> {
     _checkLoggedIn(auth_token);
   }
 
-  _setIntroStorageReady(){
+  _setIntroStorageReady() {
     setState(() {
       introStorageReady = true;
     });
@@ -112,7 +121,9 @@ class _DashboardState extends State<Dashboard> {
     } else {
       try {
         http.Response response = await http.get(
-            Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/account/check"),
+            Uri.parse((settingsStorage.getItem("REST_API_URL") ??
+                    dotenv.env['REST_API_URL']!) +
+                "/account/check"),
             headers: {
               "content-type": "application/json",
               "accept": "application/json",
@@ -120,6 +131,7 @@ class _DashboardState extends State<Dashboard> {
               'Access-Control-Allow-Origin': '*'
             });
         setState(() {
+          print("Logged in");
           checkedLogin = true;
           loggedIn = response.statusCode == 200 ? true : false;
         });
