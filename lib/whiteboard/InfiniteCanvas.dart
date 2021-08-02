@@ -323,7 +323,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         (details.localFocalPoint - widget.offset) / widget.zoomOptions.scale;
     this.setState(() {
       cursorPosition = details.localFocalPoint / widget.zoomOptions.scale;
-      if (details.pointerCount == 2 && details.scale * _initialScale > 0.1) {
+      if (details.pointerCount == 2 && details.scale * _initialScale > 0.1 && details.scale * _initialScale <= 5) {
         widget.zoomOptions.scale = details.scale * _initialScale;
         print(details.scale * _initialScale);
       }
@@ -502,7 +502,6 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
       widget.onOffsetChange(widget.offset, widget.sessionOffset);
       onSettingsMove = Offset.zero;
       onSettingsMovePoints = [];
-      print(widget.zoomOptions.scale);
       widget.onChangedToolbarOptions(widget.toolbarOptions);
       if (widget.toolbarOptions.selectedTool == SelectedTool.pencil ||
           widget.toolbarOptions.selectedTool == SelectedTool.highlighter ||
@@ -547,6 +546,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         widget.onChangedToolbarOptions(widget.toolbarOptions);
       }
     });
+    widget.onSaveOfflineWhiteboard();
   }
 
   _calculateOffset(Offset offset, Offset _sessionOffset, double scale) {

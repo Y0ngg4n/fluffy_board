@@ -163,6 +163,18 @@ class PainterUtils {
         case SelectedFigureTypeToolbar.none:
           // DEBUG: Draw Points
           // canvas.drawPoints(PointMode.points, scribble.points, drawingPaint);
+          Paint paint = new Paint();
+          paint.color = Colors.red;
+          canvas.drawCircle(
+              new Offset(scribble.leftExtremity, scribble.topExtremity) +
+                  offset,
+              3,
+              paint);
+          canvas.drawCircle(
+              new Offset(scribble.rightExtremity, scribble.bottomExtremity) +
+                  offset,
+              3,
+              paint);
           for (int x = 0; x < scribble.points.length - 1; x++) {
             //drawing line between the points to form a continuous line
             if (!scribble.points[x].empty && !scribble.points[x + 1].empty) {
@@ -172,27 +184,51 @@ class PainterUtils {
             //if next point is null, means the line ends here
             // else if (!scribble.points[x].empty && scribble.points[x + 1].empty) {
             //   canvas.drawPoints(
-            //       PointMode.points, [scribble.poinpts[x] + offset], drawingPaint);
+            //       PointMode.points, [scribble.points[x] + offset], drawingPaint);
             // }
           }
           break;
       }
     } else {
+      Paint paint = new Paint();
+      paint.color = Colors.green;
+      Offset leftTopOffset = new Offset(
+              scribble.leftExtremity - scribble.strokeWidth * 2,
+              scribble.topExtremity - scribble.strokeWidth * 2) +
+          offset;
+      Offset rightBottomOffset = new Offset(
+              (scribble.rightExtremity + scribble.strokeWidth * 4)
+                  .ceilToDouble(),
+              (scribble.bottomExtremity + scribble.strokeWidth * 4)
+                  .ceilToDouble()) +
+          offset;
+      canvas.drawCircle(leftTopOffset, 3, paint);
+      canvas.drawCircle(rightBottomOffset, 3, paint);
       paintImage(
-          canvas: canvas,
-          rect: Rect.fromPoints(
-            new Offset(scribble.leftExtremity - scribble.strokeWidth,
-                    scribble.topExtremity - scribble.strokeWidth) +
-                offset,
-            new Offset(scribble.rightExtremity + scribble.strokeWidth,
-                    scribble.bottomExtremity + scribble.strokeWidth) +
-                offset,
-          ),
-          filterQuality: FilterQuality.high,
-          isAntiAlias: true,
-          image: scribble.backedScribble!,
-          // Can be increased if to pixelated
-          // scale: 1
+        canvas: canvas,
+        // rect: Rect.fromLTWH(scribble.leftExtremity, scribble.topExtremity,
+        //     scribble.leftExtremity + scribble.backedScribble!.width + offset.dx,
+        //     scribble.topExtremity + scribble.backedScribble!.height + offset.dy),
+        rect: Rect.fromPoints(
+            leftTopOffset,
+            new Offset(
+                scribble.leftExtremity +
+                    scribble.backedScribble!.width +
+                    offset.dx,
+                scribble.topExtremity +
+                    scribble.backedScribble!.height +
+                    offset.dy)
+            // rect: Rect.fromPoints(
+            //         new Offset((scribble.leftExtremity - scribble.strokeWidth * 2),
+            //             (scribble.topExtremity - scribble.strokeWidth * 2)) + offset,
+            //         new Offset(scribble.rightExtremity + scribble.strokeWidth * 2,
+            //                 scribble.bottomExtremity + scribble.strokeWidth * 2) + offset,
+            ),
+        filterQuality: FilterQuality.high,
+        isAntiAlias: true,
+        image: scribble.backedScribble!,
+        // Can be increased if to pixelated
+        // scale: 1
       );
       // canvas.drawImage(
       //     scribble.backedScribble!,

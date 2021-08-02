@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 
 class Directory {
@@ -93,10 +95,11 @@ class OfflineWhiteboard {
   TextItems texts;
   Scribbles scribbles;
   Bookmarks bookmarks;
+  ui.Offset offset;
+  double scale;
 
   toJSONEncodable() {
     Map<String, dynamic> m = new Map();
-
     m['uuid'] = uuid;
     m['directory'] = directory;
     m['name'] = name;
@@ -104,6 +107,9 @@ class OfflineWhiteboard {
     m['texts'] = texts.toJSONEncodable();
     m['scribbles'] = scribbles.toJSONEncodable();
     m['bookmarks'] = bookmarks.toJSONEncodable();
+    m['offset_dx'] = offset.dx;
+    m['offset_dy'] = offset.dy;
+    m['scale'] = scale;
     return m;
   }
 
@@ -123,11 +129,14 @@ class OfflineWhiteboard {
             : new Scribbles([]),
         json['bookmarks'] != null
             ? Bookmarks.fromJson(json['bookmarks'])
-            : new Bookmarks([]));
+            : new Bookmarks([]),
+      new ui.Offset(json['offset_dx'].toDouble(), json['offset_dy'].toDouble()),
+      json['scale'].toDouble(),
+    );
   }
 
   OfflineWhiteboard(this.uuid, this.directory, this.name, this.uploads,
-      this.texts, this.scribbles, this.bookmarks);
+      this.texts, this.scribbles, this.bookmarks, this.offset, this.scale);
 }
 
 class OfflineWhiteboards {

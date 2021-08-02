@@ -174,7 +174,7 @@ class DeleteManager {
                     fileManagerStorage
                         .deleteItem("offline_whiteboard-" + whiteboard.uuid);
                     offlineWhiteboardIds.remove(whiteboard.uuid);
-                    fileManagerStorageIndex.setItem(
+                    await fileManagerStorageIndex.setItem(
                         "indexes", jsonEncode(offlineWhiteboardIds.toList()));
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text("Trying to delete Whiteboard ..."),

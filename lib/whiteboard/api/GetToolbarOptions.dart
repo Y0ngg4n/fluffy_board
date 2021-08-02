@@ -374,7 +374,7 @@ class GetToolbarOptions {
               pencilOptions.strokeWidth,
               pencilOptions.currentColor)));
     } else {
-      settingsStorage.setItem(
+      await settingsStorage.setItem(
           "pencil-options",
           jsonEncode(new EncodePencilOptions(
               pencilOptions.colorPresets.map((e) => e.toHex()).toList(),
@@ -401,7 +401,7 @@ class GetToolbarOptions {
               highlighterOptions.strokeWidth,
               highlighterOptions.currentColor)));
     } else {
-      settingsStorage.setItem(
+      await settingsStorage.setItem(
           "highlighter-options",
           jsonEncode(new EncodeHighlighterOptions(
               highlighterOptions.colorPresets.map((e) => e.toHex()).toList(),
@@ -425,7 +425,7 @@ class GetToolbarOptions {
           },
           body: jsonEncode(new EncodeEraserOptions(eraserOptions.strokeWidth)));
     } else {
-      settingsStorage.setItem("eraser-options",
+      await settingsStorage.setItem("eraser-options",
           jsonEncode(new EncodeEraserOptions(eraserOptions.strokeWidth)));
     }
   }
@@ -450,7 +450,7 @@ class GetToolbarOptions {
               straightLineOptions.currentColor,
               straightLineOptions.selectedCap)));
     } else {
-      settingsStorage.setItem(
+      await settingsStorage.setItem(
           "straight-line-options",
           jsonEncode(new EncodeStraightLineOptions(
               straightLineOptions.colorPresets.map((e) => e.toHex()).toList(),
@@ -480,7 +480,7 @@ class GetToolbarOptions {
               figureOptions.selectedFigure,
               figureOptions.selectedFill)));
     } else {
-      settingsStorage.setItem(
+      await settingsStorage.setItem(
           "figure-options",
           jsonEncode(new EncodeFigureOptions(
               figureOptions.colorPresets.map((e) => e.toHex()).toList(),
@@ -508,7 +508,7 @@ class GetToolbarOptions {
               backgroundOptions.strokeWidth,
               backgroundOptions.selectedBackground)));
     } else {
-      settingsStorage.setItem(
+      await settingsStorage.setItem(
           "background-options",
           jsonEncode(new EncodeBackgroundOptions(backgroundOptions.strokeWidth,
               backgroundOptions.selectedBackground)));

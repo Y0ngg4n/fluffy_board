@@ -11,25 +11,24 @@ import 'package:localstorage/localstorage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Register extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
         appBar: AppBar(
           title: Text("Register"),
-          actions: [PopupMenuButton(
-            itemBuilder: (context) {
-              return [
-                PopupMenuItem(child: Text("Change server"), value: 0)
-              ];
-            },
-            onSelected: (value) {
-              switch (value){
-                case 0:
-                  Navigator.pushNamed(context, "/server-settings");
-              }
-            },
-          )],
+          actions: [
+            PopupMenuButton(
+              itemBuilder: (context) {
+                return [PopupMenuItem(child: Text("Change server"), value: 0)];
+              },
+              onSelected: (value) {
+                switch (value) {
+                  case 0:
+                    Navigator.pushNamed(context, "/server-settings");
+                }
+              },
+            )
+          ],
         ),
         body: Center(
           child: Padding(
@@ -59,24 +58,21 @@ class _RegisterFormState extends State<RegisterForm> {
   final TextStyle defaultStyle = TextStyle(color: Colors.grey);
   final TextStyle linkStyle = TextStyle(color: Colors.blue);
 
-  final TextEditingController usernameController =
-  new TextEditingController();
+  final TextEditingController usernameController = new TextEditingController();
   final TextEditingController emailController = new TextEditingController();
-  final TextEditingController passwordController =
-  new TextEditingController();
+  final TextEditingController passwordController = new TextEditingController();
   final LocalStorage storage = new LocalStorage('account');
   final LocalStorage settingsStorage = new LocalStorage('settings');
 
   _showError() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Error while registering your account! Please try an other Email."),
+        content: Text(
+            "Error while registering your account! Please try an other Email."),
         backgroundColor: Colors.red));
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -163,7 +159,8 @@ class _RegisterFormState extends State<RegisterForm> {
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             print('Terms of Service"');
-                            launch("https://www.app-privacy-policy.com/live.php?token=R3OKXP0yWoKDwrnbBxRu6izDQKXZOpIB");
+                            launch(
+                                "https://www.app-privacy-policy.com/live.php?token=R3OKXP0yWoKDwrnbBxRu6izDQKXZOpIB");
                           }),
                     TextSpan(text: ' and agree that you have read our '),
                     TextSpan(
@@ -172,7 +169,8 @@ class _RegisterFormState extends State<RegisterForm> {
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             print('Privacy Policy"');
-                            launch("https://www.app-privacy-policy.com/live.php?token=5xqgiUqBX8rTmLGwsGUjUW5tIZ1Cc38T");
+                            launch(
+                                "https://www.app-privacy-policy.com/live.php?token=5xqgiUqBX8rTmLGwsGUjUW5tIZ1Cc38T");
                           }),
                   ],
                 ),
@@ -186,26 +184,26 @@ class _RegisterFormState extends State<RegisterForm> {
                       return Center(child: CircularProgressIndicator());
                     }
                     return (ElevatedButton(
-                        onPressed: () => _register(),
-                        child: Text("Register")));
+                        style: ElevatedButton.styleFrom(
+                          textStyle: TextStyle(fontSize: 20),
+                          minimumSize: const Size(
+                              double.infinity, 60)),
+                        onPressed: () => _register(), child: Text("Register")));
                   })),
           Padding(
             padding: const EdgeInsets.all(16),
-            child: RichText(
-              text: TextSpan(
-                style: defaultStyle,
-                children: <TextSpan>[
-                  TextSpan(text: 'Allready have an account? '),
-                  TextSpan(
-                      text: 'Login here.',
-                      style: linkStyle,
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          print('Login');
-                          Navigator.pushReplacementNamed(context, '/login');
-                        }),
-                ],
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Allready have an account? '),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: OutlinedButton(
+                      child: Text('Login'),
+                      onPressed: () =>
+                          Navigator.pushReplacementNamed(context, '/login')),
+                ),
+              ],
             ),
           ),
         ],
@@ -218,11 +216,12 @@ class _RegisterFormState extends State<RegisterForm> {
     if (_formKey.currentState!.validate()) {
       // If the form is valid, display a snackbar. In the real world,
       // you'd often call a server or save the information in a database.
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Creating your Account ...')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Creating your Account ...')));
       try {
         http.Response response = await http.post(
-            Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +
+            Uri.parse((settingsStorage.getItem("REST_API_URL") ??
+                    dotenv.env['REST_API_URL']!) +
                 "/account/register"),
             headers: {
               "content-type": "application/json",
@@ -235,24 +234,19 @@ class _RegisterFormState extends State<RegisterForm> {
             }));
         if (response.statusCode == 200) {
           Map<String, dynamic> body =
-          jsonDecode(utf8.decode(response.bodyBytes));
-          await storage.setItem(
-              "auth_token", body['auth_token']);
-          await storage.setItem(
-              "id", body['id']);
+              jsonDecode(utf8.decode(response.bodyBytes));
+          await storage.setItem("auth_token", body['auth_token']);
+          await storage.setItem("id", body['id']);
           await storage.setItem("username", usernameController.text);
           await storage.setItem("email", emailController.text);
-          Navigator.pushReplacementNamed(
-              context, '/dashboard');
+          Navigator.pushReplacementNamed(context, '/dashboard');
         } else {
           print(response.body);
           _showError();
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content:
-                Text("Error creating account!")));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Error creating account!")));
       }
     }
   }

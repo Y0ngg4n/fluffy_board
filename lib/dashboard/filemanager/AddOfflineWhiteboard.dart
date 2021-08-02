@@ -124,8 +124,12 @@ class _AddOfflineWhiteboardFormState extends State<AddOfflineWhiteboardForm> {
               },
             ),
             Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.fromLTRB(0, 16, 0, 8),
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      textStyle: TextStyle(fontSize: 20),
+                      minimumSize: const Size(
+                          double.infinity, 60)),
                     onPressed: () => _addOfflineWhiteboard(),
                     child: Text("Create Offline Whiteboard")))
           ])),
@@ -146,15 +150,15 @@ class _AddOfflineWhiteboardFormState extends State<AddOfflineWhiteboardForm> {
           new Uploads([]),
           new TextItems([]),
           new Scribbles([]),
-          new Bookmarks([]));
+          new Bookmarks([]), Offset.zero, 1);
 
       widget.offlineWhiteboards.list.add(offlineWhiteboard);
-      fileManagerStorage.setItem("offline_whiteboard-" + offlineWhiteboard.uuid,
+      await fileManagerStorage.setItem("offline_whiteboard-" + offlineWhiteboard.uuid,
           offlineWhiteboard.toJSONEncodable());
       for (OfflineWhiteboard offWhi in widget.offlineWhiteboards.list) {
         widget.offlineWhiteboardIds.add(offWhi.uuid);
       }
-      fileManagerStorageIndex.setItem(
+      await fileManagerStorageIndex.setItem(
           "indexes", jsonEncode(widget.offlineWhiteboardIds.toList()));
       Navigator.pop(context);
       widget._refreshController.requestRefresh();

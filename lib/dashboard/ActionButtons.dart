@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:fluffy_board/dashboard/filemanager/AddFolder.dart';
 import 'package:fluffy_board/dashboard/filemanager/AddOfflineWhiteboard.dart';
+import 'package:fluffy_board/utils/ThemeDataUtils.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
@@ -23,8 +24,14 @@ class ActionButtons extends StatefulWidget {
   bool online;
   Directories directories;
 
-  ActionButtons(this.auth_token, this.parent, this._refreshController,
-      this.offlineWhiteboards, this.offlineWhiteboardIds, this.online, this.directories);
+  ActionButtons(
+      this.auth_token,
+      this.parent,
+      this._refreshController,
+      this.offlineWhiteboards,
+      this.offlineWhiteboardIds,
+      this.online,
+      this.directories);
 
   @override
   _ActionButtonsState createState() => _ActionButtonsState();
@@ -34,42 +41,52 @@ class _ActionButtonsState extends State<ActionButtons> {
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
   final LocalStorage fileManagerStorageIndex =
       new LocalStorage('filemanager-index');
+  final ButtonStyle outlineButtonStyle =
+      OutlinedButton.styleFrom(primary: Colors.white);
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      children: [
-        widget.online
-            ? Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                child: ElevatedButton(
-                    onPressed: _createWhiteboard,
-                    child: Text("Create Whiteboard")))
-            : Container(),
-        Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-            child: ElevatedButton(
-                onPressed: _createOfflineWhiteboard,
-                child: Text("Create Offline Whiteboard"))),
-        Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-            child: ElevatedButton(
-                onPressed: _createFolder, child: Text("Create Folder"))),
-        widget.online
-            ? Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                child: ElevatedButton(
-                    onPressed: _collabOnWhiteboard,
-                    child: Text("Collab on Whiteboard")))
-            : Container(),
-        widget.online
-            ? Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                child: ElevatedButton(
-                    onPressed: _importWhiteboard,
-                    child: Text("Import Whiteboard")))
-            : Container(),
-      ],
+    return Center(
+      child: Wrap(
+        children: [
+          widget.online
+              ? Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: OutlinedButton(
+                      style: outlineButtonStyle,
+                      onPressed: _createWhiteboard,
+                      child: Text("Create Whiteboard")))
+              : Container(),
+          Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: OutlinedButton(
+                  style: outlineButtonStyle,
+                  onPressed: _createOfflineWhiteboard,
+                  child: Text("Create Offline Whiteboard"))),
+          Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: OutlinedButton(
+                  style: outlineButtonStyle,
+                  onPressed: _createFolder,
+                  child: Text("Create Folder"))),
+          widget.online
+              ? Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: OutlinedButton(
+                      style: outlineButtonStyle,
+                      onPressed: _collabOnWhiteboard,
+                      child: Text("Collab on Whiteboard")))
+              : Container(),
+          widget.online
+              ? Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: OutlinedButton(
+                      style: outlineButtonStyle,
+                      onPressed: _importWhiteboard,
+                      child: Text("Import Whiteboard")))
+              : Container(),
+        ],
+      ),
     );
   }
 
@@ -78,7 +95,11 @@ class _ActionButtonsState extends State<ActionButtons> {
       context,
       MaterialPageRoute<void>(
         builder: (BuildContext context) => AddFolder(
-            widget.auth_token, widget.parent, widget._refreshController, widget.directories, widget.online),
+            widget.auth_token,
+            widget.parent,
+            widget._refreshController,
+            widget.directories,
+            widget.online),
       ),
     );
   }
@@ -125,18 +146,19 @@ class _ActionButtonsState extends State<ActionButtons> {
     String json = new String.fromCharCodes(result.toUint8List());
     OfflineWhiteboard offlineWhiteboard =
         await OfflineWhiteboard.fromJson(jsonDecode(json));
-    fileManagerStorage.setItem("offline_whiteboard-" + offlineWhiteboard.uuid,
+    await fileManagerStorage.setItem("offline_whiteboard-" + offlineWhiteboard.uuid,
         offlineWhiteboard.toJSONEncodable());
     Set<String> offlineWhiteboardIds = Set.of([]);
     try {
       offlineWhiteboardIds = Set.of(
           jsonDecode(fileManagerStorageIndex.getItem("indexes"))
-                  .cast<String>() ?? []);
+                  .cast<String>() ??
+              []);
     } catch (ignore) {
       offlineWhiteboardIds = Set.of([]);
     }
     offlineWhiteboardIds.add(offlineWhiteboard.uuid);
-    fileManagerStorageIndex.setItem(
+    await fileManagerStorageIndex.setItem(
         "indexes", jsonEncode(offlineWhiteboardIds.toList()));
     widget._refreshController.requestRefresh();
   }

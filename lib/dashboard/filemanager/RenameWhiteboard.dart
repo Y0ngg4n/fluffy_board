@@ -111,6 +111,10 @@ class _RenameWhiteboardFormState extends State<RenameWhiteboardForm> {
             Padding(
                 padding: const EdgeInsets.all(16),
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      textStyle: TextStyle(fontSize: 20),
+                      minimumSize: const Size(
+                          double.infinity, 60)),
                     onPressed: () => _renameWhiteboard(),
                     child: Text("Rename Whiteboard")))
           ])),

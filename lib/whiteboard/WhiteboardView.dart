@@ -330,7 +330,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                         child: const Text("Export screen size Image"),
                         value: 2),
                   ],
-              child: Icon(Icons.import_export)),
+              icon: Icon(Icons.import_export)),
           IconButton(
               onPressed: () => {
                     Navigator.push(
@@ -587,23 +587,23 @@ class _WhiteboardViewState extends State<WhiteboardView> {
       await WhiteboardViewDataManager.getScribbles(
           widget.auth_token, widget.whiteboard, widget.extWhiteboard,
           (Scribble newScribble) {
-            setState(() {
-              scribbles.add(newScribble);
-            });
+        setState(() {
+          scribbles.add(newScribble);
+        });
       }, zoomOptions);
       await WhiteboardViewDataManager.getUploads(
           widget.auth_token, widget.whiteboard, widget.extWhiteboard,
           (Upload newUpload) {
-            setState(() {
-              uploads.add(newUpload);
-            });
+        setState(() {
+          uploads.add(newUpload);
+        });
       }, zoomOptions);
       await WhiteboardViewDataManager.getTextItems(
           widget.auth_token, widget.whiteboard, widget.extWhiteboard,
           (TextItem textItem) {
-            setState(() {
-              texts.add(textItem);
-            });
+        setState(() {
+          texts.add(textItem);
+        });
       });
       await WhiteboardViewDataManager.getBookmarks(
           null,
@@ -617,18 +617,23 @@ class _WhiteboardViewState extends State<WhiteboardView> {
       });
     }
     if (widget.offlineWhiteboard != null) {
+      print("Get Offset" + widget.offlineWhiteboard!.offset.toString());
+      print("Get scale" + widget.offlineWhiteboard!.scale.toString());
       setState(() {
         scribbles = widget.offlineWhiteboard!.scribbles.list;
         uploads = widget.offlineWhiteboard!.uploads.list;
         texts = widget.offlineWhiteboard!.texts.list;
         bookmarks = widget.offlineWhiteboard!.bookmarks.list;
+        offset = widget.offlineWhiteboard!.offset;
+        zoomOptions.scale = widget.offlineWhiteboard!.scale;
       });
     }
   }
 
-  saveOfflineWhiteboard() {
+  saveOfflineWhiteboard() async {
+    print("Offset" + offset.toString());
     if (widget.offlineWhiteboard == null) return;
-    fileManagerStorage.setItem(
+    await fileManagerStorage.setItem(
         "offline_whiteboard-" + widget.offlineWhiteboard!.uuid,
         new OfflineWhiteboard(
                 widget.offlineWhiteboard!.uuid,
@@ -637,8 +642,11 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                 new Uploads(uploads),
                 new TextItems(texts),
                 new Scribbles(scribbles),
-                new Bookmarks(bookmarks))
+                new Bookmarks(bookmarks),
+                offset + _sessionOffset,
+                zoomOptions.scale)
             .toJSONEncodable());
+    print("Save");
   }
 }
 

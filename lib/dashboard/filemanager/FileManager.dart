@@ -19,7 +19,8 @@ import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 import 'package:localstorage/localstorage.dart';
 import '../ActionButtons.dart';
 import 'package:uuid/uuid.dart';
-
+import 'package:fab_circular_menu/fab_circular_menu.dart';
+import '../AvatarIcon.dart';
 import 'DeleteManager.dart';
 import 'FileActionManager.dart';
 import 'FileManagerTypes.dart';
@@ -77,8 +78,8 @@ class _FileManagerState extends State<FileManager> {
       currentDirectory = directory!.id;
       currentDirectoryPath.add(directory);
     });
-    FileActionManager.mapBreadCrumbs(context,
-        breadCrumbItems, font_size, widget.auth_token, (directory) {
+    FileActionManager.mapBreadCrumbs(
+        context, breadCrumbItems, font_size, widget.auth_token, (directory) {
       if (directory == null) {
         currentDirectory = "";
         currentDirectoryPath.clear();
@@ -122,65 +123,71 @@ class _FileManagerState extends State<FileManager> {
         _refreshController,
         offlineWhiteboardIds);
 
-    return Container(
-        child: Column(children: [
-      Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Wrap(
-          alignment: WrapAlignment.spaceBetween,
-          children: [
-            BreadCrumb(
-              items: breadCrumbItems,
-              divider: Icon(Icons.chevron_right),
-              overflow: WrapOverflow(
-                keepLastDivider: false,
-                direction: Axis.horizontal,
+    return Scaffold(
+      appBar: AppBar(title: Text("Dashboard"), actions: [
+        ActionButtons(
+            widget.auth_token,
+            currentDirectory,
+            _refreshController,
+            offlineWhiteboards,
+            offlineWhiteboardIds,
+            widget.online,
+            directories),
+        AvatarIcon(widget.online)
+      ]),
+      body: Container(
+          child: Column(children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+          child: Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            children: [
+              BreadCrumb(
+                items: breadCrumbItems,
+                divider: Icon(Icons.chevron_right),
+                overflow: WrapOverflow(
+                  keepLastDivider: false,
+                  direction: Axis.horizontal,
+                ),
               ),
-            ),
-            ActionButtons(
-                widget.auth_token,
-                currentDirectory,
-                _refreshController,
-                offlineWhiteboards,
-                offlineWhiteboardIds,
-                widget.online,
-                directories)
-          ],
+            ],
+          ),
         ),
-      ),
-      Expanded(
-          child: SmartRefresher(
-              enablePullDown: true,
-              enablePullUp: false,
-              controller: _refreshController,
-              onRefresh: () {
-                WhiteboardDataManager.getDirectoriesAndWhiteboards(
-                    widget.online,
-                    currentDirectory,
-                    widget.auth_token,
-                    _refreshController,
-                    directories,
-                    whiteboards,
-                    extWhiteboards,
-                    offlineWhiteboardIds,
-                    offlineWhiteboards, (directories,
-                        whiteboards,
-                        extWhiteboards,
-                        offlineWhiteboardIds,
-                        offlineWhiteboards) {
-                  setState(() {
-                    this.directories = directories;
-                    this.whiteboards = whiteboards;
-                    this.extWhiteboards = extWhiteboards;
-                    this.offlineWhiteboardIds = offlineWhiteboardIds;
-                    this.offlineWhiteboards = offlineWhiteboards;
+        Divider(),
+        Expanded(
+            child: SmartRefresher(
+                enablePullDown: true,
+                enablePullUp: false,
+                controller: _refreshController,
+                onRefresh: () {
+                  WhiteboardDataManager.getDirectoriesAndWhiteboards(
+                      widget.online,
+                      currentDirectory,
+                      widget.auth_token,
+                      _refreshController,
+                      directories,
+                      whiteboards,
+                      extWhiteboards,
+                      offlineWhiteboardIds,
+                      offlineWhiteboards, (directories,
+                          whiteboards,
+                          extWhiteboards,
+                          offlineWhiteboardIds,
+                          offlineWhiteboards) {
+                    setState(() {
+                      this.directories = directories;
+                      this.whiteboards = whiteboards;
+                      this.extWhiteboards = extWhiteboards;
+                      this.offlineWhiteboardIds = offlineWhiteboardIds;
+                      this.offlineWhiteboards = offlineWhiteboards;
+                    });
                   });
-                });
-              },
-              child: GridView.extent(
-                maxCrossAxisExtent: 200,
-                children: directoryAndWhiteboardButtons,
-              )))
-    ]));
+                },
+                child: GridView.extent(
+                  maxCrossAxisExtent: 200,
+                  children: directoryAndWhiteboardButtons,
+                )))
+      ])),
+    );
   }
 }

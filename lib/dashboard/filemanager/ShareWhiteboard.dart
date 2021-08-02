@@ -165,12 +165,22 @@ class _ShareWhiteboardFormState extends State<ShareWhiteboardForm> {
               Padding(
                   padding: const EdgeInsets.all(16),
                   child: ElevatedButton(
-                      onPressed: (){launchMailto(widget.id + "#" + widget.view_id);},
+                      style: ElevatedButton.styleFrom(
+                          textStyle: TextStyle(fontSize: 20),
+                          minimumSize: const Size(double.infinity, 60)),
+                      onPressed: () {
+                        launchMailto(widget.id + "#" + widget.view_id);
+                      },
                       child: Text("Share Readonly/View Invite via Email"))),
               Padding(
                   padding: const EdgeInsets.all(16),
                   child: ElevatedButton(
-                      onPressed: (){launchMailto(widget.id + "#" + widget.edit_id);},
+                      style: ElevatedButton.styleFrom(
+                          textStyle: TextStyle(fontSize: 20),
+                          minimumSize: const Size(double.infinity, 60)),
+                      onPressed: () {
+                        launchMailto(widget.id + "#" + widget.edit_id);
+                      },
                       child: Text("Share Writable/Edit Invite via Email")))
             ])));
   }

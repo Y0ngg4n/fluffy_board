@@ -30,17 +30,12 @@ class ZoomView extends StatefulWidget {
 }
 
 class _ZoomViewState extends State<ZoomView> {
-  double zoomFactor = 0.1;
+  final double zoomFactor = 0.1;
 
   @override
   Widget build(BuildContext context) {
     double moveFactorVertical = ScreenUtils.getScreenHeight(context);
     double moveFactorHorizontal = ScreenUtils.getScreenWidth(context);
-
-    final buttonStyle = ButtonStyle(
-      backgroundColor:
-          MaterialStateProperty.resolveWith((states) => Colors.white70),
-    );
 
     MainAxisAlignment mainAxisAlignmentRow;
 
@@ -61,13 +56,12 @@ class _ZoomViewState extends State<ZoomView> {
           children: [
             Container(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(0,0,4,0),
+                padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
                 child: (Column(
                   children: [
                     Row(
                       children: [
                         OutlinedButton(
-                            style: buttonStyle,
                             onPressed: () {
                               setState(() {
                                 widget.offset +=
@@ -81,7 +75,6 @@ class _ZoomViewState extends State<ZoomView> {
                     Row(
                       children: [
                         OutlinedButton(
-                            style: buttonStyle,
                             onPressed: () {
                               setState(() {
                                 widget.offset +=
@@ -91,13 +84,11 @@ class _ZoomViewState extends State<ZoomView> {
                             },
                             child: Icon(Icons.arrow_left_outlined)),
                         OutlinedButton(
-                            style: buttonStyle,
                             onPressed: () {
                               widget.onChangedOffset(Offset.zero);
                             },
                             child: Icon(Icons.reset_tv)),
                         OutlinedButton(
-                            style: buttonStyle,
                             onPressed: () {
                               setState(() {
                                 widget.offset +=
@@ -111,7 +102,6 @@ class _ZoomViewState extends State<ZoomView> {
                     Row(
                       children: [
                         OutlinedButton(
-                            style: buttonStyle,
                             onPressed: () {
                               setState(() {
                                 widget.offset +=
@@ -126,8 +116,8 @@ class _ZoomViewState extends State<ZoomView> {
                       padding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
                       child: Row(
                         children: [
+                          Text("Scale: " + widget.zoomOptions.scale.toString()),
                           OutlinedButton(
-                              style: buttonStyle,
                               onPressed: () {
                                 if (widget.zoomOptions.scale - zoomFactor <=
                                     zoomFactor) return;
@@ -137,9 +127,9 @@ class _ZoomViewState extends State<ZoomView> {
                               },
                               child: Icon(Icons.remove)),
                           OutlinedButton(
-                              style: buttonStyle,
                               onPressed: () {
-                                if(widget.zoomOptions.scale + zoomFactor >= 5) return;
+                                if (widget.zoomOptions.scale + zoomFactor >= 5)
+                                  return;
                                 widget.zoomOptions.scale =
                                     widget.zoomOptions.scale + zoomFactor;
                                 widget.onChangedZoomOptions(widget.zoomOptions);

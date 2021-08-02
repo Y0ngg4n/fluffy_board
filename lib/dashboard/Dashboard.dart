@@ -89,12 +89,7 @@ class _DashboardState extends State<Dashboard> {
         });
     if (introStorage.getItem('read') == null) return (Dashboard.loading(name));
 
-    return (Scaffold(
-      appBar: AppBar(title: Text(name), actions: [AvatarIcon(online)]),
-      body: Container(
-        child: FileManager(auth_token, username, id, online),
-      ),
-    ));
+    return (FileManager(auth_token, username, id, online));
   }
 
   _setStorageReady() {

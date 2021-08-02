@@ -74,6 +74,9 @@ dev_dependencies:
   # Cross Platform
   universal_html: ^2.0.8 #NS
   merge_images: ^2.0.0-nullsafety #NS
+  # Theming
+  easy_dynamic_theme: ^2.2.0 #NS
+  fab_circular_menu: ^1.0.2 #NS
 
 #   App Icons
 flutter_icons:

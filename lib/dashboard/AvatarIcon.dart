@@ -20,7 +20,6 @@ class _AvatarIconState extends State<AvatarIcon> {
     return Container(
       child:
         PopupMenuButton(
-          icon: CircleAvatar(),
           itemBuilder: (context) => [
             PopupMenuItem(child: Text("Edit Account"), value: "/edit-account"),
             PopupMenuItem(child: Text("Logout"), value: "/login"),

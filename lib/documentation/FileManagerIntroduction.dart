@@ -109,8 +109,8 @@ class _FileManagerIntroductionState extends State<FileManagerIntroduction>
   Widget build(BuildContext context) {
     return IntroductionScreen(
       pages: pages,
-      onDone: () {
-        introStorage.setItem('read', true);
+      onDone: () async{
+        await introStorage.setItem('read', true);
         Navigator.of(context).pop();
       },
       next: const Icon(Icons.arrow_right),

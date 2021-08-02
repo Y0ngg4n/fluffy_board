@@ -95,8 +95,12 @@ class _AddWhiteboardFormState extends State<AddWhiteboardForm> {
                 },
               ),
               Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(0, 16, 0, 8),
                        child: ElevatedButton(
+                         style: ElevatedButton.styleFrom(
+                             textStyle: TextStyle(fontSize: 20),
+                             minimumSize: const Size(
+                                 double.infinity, 60)),
                             onPressed: () => _addWhiteboard(),
                             child: Text("Create Whiteboard")))
                       ])),

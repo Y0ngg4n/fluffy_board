@@ -142,69 +142,73 @@ class _ToolbarState extends State<Toolbar> {
         break;
     }
 
+    Widget normalToolbar = (Card(
+      elevation: 20,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(_borderRadius),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: axis,
+        child: (ToggleButtons(
+          direction: axis,
+          borderRadius: BorderRadius.circular(_borderRadius),
+          children: <Widget>[
+            Icon(OwnIcons.move),
+            Icon(Icons.settings),
+            Icon(OwnIcons.pencil_alt),
+            Icon(OwnIcons.eraser),
+            Icon(OwnIcons.highlight),
+            Icon(OwnIcons.flow_line),
+            Icon(OwnIcons.text_fields),
+            Icon(OwnIcons.change_history),
+            Icon(Icons.file_upload_outlined),
+            Icon(Icons.grid_4x4),
+          ],
+          onPressed: (int index) {
+            setState(() {
+              for (int buttonIndex = 0;
+                  buttonIndex < selectedToolList.length;
+                  buttonIndex++) {
+                if (buttonIndex == index) {
+                  selectedToolList[buttonIndex] = true;
+                } else {
+                  selectedToolList[buttonIndex] = false;
+                }
+                widget.toolbarOptions.selectedTool = SelectedTool.values[index];
+                widget.toolbarOptions.colorPickerOpen = false;
+                widget.toolbarOptions.settingsSelected = SettingsSelected.none;
+                widget.toolbarOptions.settingsSelectedScribble = null;
+                widget.onChangedToolbarOptions(widget.toolbarOptions);
+              }
+            });
+          },
+          isSelected: selectedToolList,
+        )),
+      ),
+    ));
+
+    Widget specialToolbar = (Card(
+        elevation: 20,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(_borderRadius),
+        ),
+        child: SingleChildScrollView(child: _openSpecialToolbar(axis))));
+
+    Widget settingsToolbar = (Card(
+        elevation: 20,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(_borderRadius),
+        ),
+        child: SingleChildScrollView(child: _openSettingsToolbar(axis))));
+
     return Flex(
       direction: axis == Axis.vertical ? Axis.horizontal : Axis.vertical,
       mainAxisAlignment: mainAxisAlignment,
       crossAxisAlignment: crossAxisAlignment,
       children: [
-        Card(
-          elevation: 20,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(_borderRadius),
-          ),
-          child: SingleChildScrollView(
-            scrollDirection: axis,
-            child: (ToggleButtons(
-              direction: axis,
-              borderRadius: BorderRadius.circular(_borderRadius),
-              children: <Widget>[
-                Icon(OwnIcons.move),
-                Icon(Icons.settings),
-                Icon(OwnIcons.pencil_alt),
-                Icon(OwnIcons.eraser),
-                Icon(OwnIcons.highlight),
-                Icon(OwnIcons.flow_line),
-                Icon(OwnIcons.text_fields),
-                Icon(OwnIcons.change_history),
-                Icon(Icons.file_upload_outlined),
-                Icon(Icons.grid_4x4),
-              ],
-              onPressed: (int index) {
-                setState(() {
-                  for (int buttonIndex = 0;
-                      buttonIndex < selectedToolList.length;
-                      buttonIndex++) {
-                    if (buttonIndex == index) {
-                      selectedToolList[buttonIndex] = true;
-                    } else {
-                      selectedToolList[buttonIndex] = false;
-                    }
-                    widget.toolbarOptions.selectedTool =
-                        SelectedTool.values[index];
-                    widget.toolbarOptions.colorPickerOpen = false;
-                    widget.toolbarOptions.settingsSelected =
-                        SettingsSelected.none;
-                    widget.toolbarOptions.settingsSelectedScribble = null;
-                    widget.onChangedToolbarOptions(widget.toolbarOptions);
-                  }
-                });
-              },
-              isSelected: selectedToolList,
-            )),
-          ),
-        ),
-        Card(
-            elevation: 20,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(_borderRadius),
-            ),
-            child: SingleChildScrollView(child: _openSpecialToolbar(axis))),
-        Card(
-            elevation: 20,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(_borderRadius),
-            ),
-            child: SingleChildScrollView(child: _openSettingsToolbar(axis))),
+        widget.toolbarLocation == "bottom" ? settingsToolbar : normalToolbar,
+        widget.toolbarLocation == "bottom" ? specialToolbar : specialToolbar,
+        widget.toolbarLocation == "bottom" ? normalToolbar : settingsToolbar,
         _openColorPicker(),
       ],
     );

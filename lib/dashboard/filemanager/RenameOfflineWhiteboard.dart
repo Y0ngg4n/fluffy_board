@@ -101,6 +101,10 @@ class _RenameOfflineWhiteboardFormState extends State<RenameOfflineWhiteboardFor
             Padding(
                 padding: const EdgeInsets.all(16),
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      textStyle: TextStyle(fontSize: 20),
+                      minimumSize: const Size(
+                          double.infinity, 60)),
                     onPressed: () => _renameOfflineWhiteboard(),
                     child: Text("Rename Whiteboard")))
           ])),
@@ -116,7 +120,7 @@ class _RenameOfflineWhiteboardFormState extends State<RenameOfflineWhiteboardFor
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Trying to rename whiteboard ...')));
       try {
-        fileManagerStorage.setItem("offline_whiteboard-" + widget.offlineWhiteboard.uuid,
+        await fileManagerStorage.setItem("offline_whiteboard-" + widget.offlineWhiteboard.uuid,
             widget.offlineWhiteboard.toJSONEncodable());
         widget._refreshController.requestRefresh();
         Navigator.pop(context);

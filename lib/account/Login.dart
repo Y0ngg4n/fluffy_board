@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fluffy_board/utils/ThemeDataUtils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -14,19 +15,19 @@ class Login extends StatelessWidget {
     return (Scaffold(
         appBar: AppBar(
           title: Text("Login"),
-          actions: [PopupMenuButton(
-            itemBuilder: (context) {
-              return [
-                PopupMenuItem(child: Text("Change server"), value: 0)
-              ];
-            },
-            onSelected: (value) {
-              switch (value){
-                case 0:
-                  Navigator.pushNamed(context, "/server-settings");
-              }
-            },
-          )],
+          actions: [
+            PopupMenuButton(
+              itemBuilder: (context) {
+                return [PopupMenuItem(child: Text("Change server"), value: 0)];
+              },
+              onSelected: (value) {
+                switch (value) {
+                  case 0:
+                    Navigator.pushNamed(context, "/server-settings");
+                }
+              },
+            )
+          ],
         ),
         body: Center(
           child: Padding(
@@ -64,9 +65,6 @@ class _LoginFormState extends State<LoginForm> {
         backgroundColor: Colors.red));
   }
 
-  final TextStyle defaultStyle = TextStyle(color: Colors.grey);
-  final TextStyle linkStyle = TextStyle(color: Colors.blue);
-
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -78,6 +76,7 @@ class _LoginFormState extends State<LoginForm> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextFormField(
+              autofocus: true,
               controller: emailController,
               decoration: const InputDecoration(
                   border: OutlineInputBorder(),
@@ -100,7 +99,7 @@ class _LoginFormState extends State<LoginForm> {
             ),
           ),
           Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
               child: FutureBuilder(
                   future: storage.ready,
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -108,25 +107,28 @@ class _LoginFormState extends State<LoginForm> {
                       return Center(child: CircularProgressIndicator());
                     }
                     return (ElevatedButton(
-                        onPressed: () => _login(), child: Text("Login")));
+                        style: ElevatedButton.styleFrom(
+                          textStyle: TextStyle(fontSize: 20),
+                          minimumSize: const Size(
+                              double.infinity, 60)),
+                        onPressed: () => _login(),
+                        child: Text("Login")));
                   })),
           Padding(
             padding: const EdgeInsets.all(16),
-            child: RichText(
-              text: TextSpan(
-                style: defaultStyle,
-                children: <TextSpan>[
-                  TextSpan(text: 'Don`t have an account? '),
-                  TextSpan(
-                      text: 'Register here.',
-                      style: linkStyle,
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          print('Login');
-                          Navigator.pushReplacementNamed(context, '/register');
-                        }),
-                ],
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Don`t have an account?'),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: OutlinedButton(
+                    child: Text('Register'),
+                    onPressed: () =>
+                        {Navigator.pushReplacementNamed(context, '/register')},
+                  ),
+                )
+              ],
             ),
           ),
         ],
@@ -143,7 +145,9 @@ class _LoginFormState extends State<LoginForm> {
           .showSnackBar(SnackBar(content: Text('Trying to login ...')));
       try {
         http.Response response = await http.post(
-            Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) + "/account/login"),
+            Uri.parse((settingsStorage.getItem("REST_API_URL") ??
+                    dotenv.env['REST_API_URL']!) +
+                "/account/login"),
             headers: {
               "content-type": "application/json",
               "accept": "application/json",

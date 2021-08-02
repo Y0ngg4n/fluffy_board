@@ -13,7 +13,7 @@ void main() {
       await accountStorage.ready;
       accountStorage.clear();
     });
-    await tester.pumpWidget(buildMaterialApp('/dashboard'));
+    // await tester.pumpWidget(buildMaterialApp('/dashboard'));
     await tester.runAsync(() => Future.delayed(Duration(seconds: 20)));
     await tester.pump(Duration(seconds: 5));
     tester.binding.scheduleWarmUpFrame();

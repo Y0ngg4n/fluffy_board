@@ -124,9 +124,6 @@ class Uploads {
   List<Upload> list = [];
 
   toJSONEncodable() {
-    print(list.map((item) {
-      return item.toJson();
-    }).toList());
     return list.map((item) {
       return item.toJson();
     }).toList();

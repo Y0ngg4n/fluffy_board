@@ -280,17 +280,18 @@ class FileActionManager {
                                 await WhiteboardDataManager.getBookmarks(
                                     whiteboard.id,
                                     whiteboard.edit_id,
-                                    auth_token));
+                                    auth_token),
+                          Offset.zero, 1
+                        );
                         offlineWhiteboards.list.add(offlineWhiteboard);
-                        print(offlineWhiteboard.toJSONEncodable().toString());
-                        fileManagerStorage.setItem(
+                       await fileManagerStorage.setItem(
                             "offline_whiteboard-" + offlineWhiteboard.uuid,
                             offlineWhiteboard.toJSONEncodable());
                         for (OfflineWhiteboard offWhi
                             in offlineWhiteboards.list) {
                           offlineWhiteboardIds.add(offWhi.uuid);
                         }
-                        fileManagerStorageIndex.setItem("indexes",
+                        await fileManagerStorageIndex.setItem("indexes",
                             jsonEncode(offlineWhiteboardIds.toList()));
                         _refreshController.requestRefresh();
                         break;
@@ -379,17 +380,16 @@ class FileActionManager {
                                 await WhiteboardDataManager.getBookmarks(
                                     whiteboard.original,
                                     whiteboard.permissionId,
-                                    auth_token));
+                                    auth_token), Offset.zero, 1);
                         offlineWhiteboards.list.add(offlineWhiteboard);
-                        print(offlineWhiteboard.toJSONEncodable().toString());
-                        fileManagerStorage.setItem(
+                        await fileManagerStorage.setItem(
                             "offline_whiteboard-" + offlineWhiteboard.uuid,
                             offlineWhiteboard.toJSONEncodable());
                         for (OfflineWhiteboard offWhi
                             in offlineWhiteboards.list) {
                           offlineWhiteboardIds.add(offWhi.uuid);
                         }
-                        fileManagerStorageIndex.setItem("indexes",
+                        await fileManagerStorageIndex.setItem("indexes",
                             jsonEncode(offlineWhiteboardIds.toList()));
                         _refreshController.requestRefresh();
                         break;
@@ -414,6 +414,7 @@ class FileActionManager {
       bool online,
       RefreshController _refreshController,
       Set<String> offlineWhiteboardIds) {
+    print("Map: " + offlineWhiteboards.list.length.toString());
     for (OfflineWhiteboard whiteboard in offlineWhiteboards.list) {
       whiteboardButtons.add(LongPressDraggable<OfflineWhiteboard>(
         data: whiteboard,
@@ -586,7 +587,7 @@ class FileActionManager {
     } else if (data is OfflineWhiteboard) {
       OfflineWhiteboard whiteboard = data;
       whiteboard.directory = directoryUuid;
-      fileManagerStorage.setItem("offline_whiteboard-" + whiteboard.uuid,
+      await fileManagerStorage.setItem("offline_whiteboard-" + whiteboard.uuid,
           whiteboard.toJSONEncodable());
       _refreshController.requestRefresh();
     } else if (data is Directory) {

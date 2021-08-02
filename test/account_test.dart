@@ -14,7 +14,7 @@ void main() {
       accountStorage.clear();
     });
 
-    await tester.pumpWidget(buildMaterialApp('/about'));
+    // await tester.pumpWidget(buildMaterialApp('/about'));
     await tester.pump(Duration(seconds: 5));
     print("Created Widget");
 
