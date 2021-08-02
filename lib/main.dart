@@ -1,3 +1,4 @@
+import 'package:fluffy_board/dashboard/WebDavSettings.dart';
 import 'package:fluffy_board/dashboard/filemanager/AddFolder.dart';
 import 'package:fluffy_board/documentation/FileManagerIntroduction.dart';
 import 'package:fluffy_board/utils/ThemeDataUtils.dart';
@@ -50,6 +51,7 @@ Widget buildMaterialApp(String initialRoute, context) {
       '/dashboard': (context) => Dashboard(),
       '/edit-account': (context) => EditAccount(),
       '/server-settings': (context) => ServerSettings(),
+      '/webdav-settings': (context) => WebDavSettings(),
     },
     initialRoute: initialRoute,
   );

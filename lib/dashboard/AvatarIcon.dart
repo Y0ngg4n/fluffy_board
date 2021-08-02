@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
-
+import 'package:flutter/foundation.dart' show kIsWeb;
 class AvatarIcon extends StatefulWidget {
   bool online;
 
@@ -24,6 +24,7 @@ class _AvatarIconState extends State<AvatarIcon> {
             PopupMenuItem(child: Text("Edit Account"), value: "/edit-account"),
             PopupMenuItem(child: Text("Logout"), value: "/login"),
             PopupMenuItem(child: Text("Change Server"), value: "/server-settings"),
+            PopupMenuItem(child: Text("Sync Server"), value: "/webdav-settings"),
           ],
           onSelected: (route) async {
             switch (route){
@@ -38,10 +39,13 @@ class _AvatarIconState extends State<AvatarIcon> {
               case "/server-settings":
                 Navigator.pushReplacementNamed(context, route.toString());
                 break;
+              case "/webdav-settings":
+                if(kIsWeb) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Not available on web")));
+                else Navigator.pushNamed(context, route.toString());
+                break;
             }
           },
         )
     );
-
   }
 }

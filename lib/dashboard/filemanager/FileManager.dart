@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:fluffy_board/dashboard/filemanager/RenameFolder.dart';
 import 'package:fluffy_board/dashboard/filemanager/RenameWhiteboard.dart';
 import 'package:fluffy_board/dashboard/filemanager/ShareWhiteboard.dart';
+import 'package:fluffy_board/dashboard/filemanager/WebDavManager.dart';
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
@@ -19,7 +21,6 @@ import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 import 'package:localstorage/localstorage.dart';
 import '../ActionButtons.dart';
 import 'package:uuid/uuid.dart';
-import 'package:fab_circular_menu/fab_circular_menu.dart';
 import '../AvatarIcon.dart';
 import 'DeleteManager.dart';
 import 'FileActionManager.dart';
@@ -60,6 +61,7 @@ class _FileManagerState extends State<FileManager> {
   @override
   void initState() {
     super.initState();
+    WebDavManager.startAutomatedUpload(offlineWhiteboards);
   }
 
   @override

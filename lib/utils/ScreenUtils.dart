@@ -207,8 +207,6 @@ class ScreenUtils {
     // TODO: Check if cuts are right and make less pixelated
     double imageWidth = getBakeImageWidth(scribbleWidth, scribble, scale);
     double imageHeight = getBakeImageHeight(scribbleHeight, scribble, scale);
-    print(imageWidth);
-    print(imageHeight);
     try {
       var newImage =
           await picture.toImage((imageWidth).ceil(), (imageHeight).ceil());
