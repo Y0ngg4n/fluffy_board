@@ -116,7 +116,7 @@ class _ZoomViewState extends State<ZoomView> {
                       padding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
                       child: Row(
                         children: [
-                          Text("Scale: " + widget.zoomOptions.scale.toString()),
+                          Text("Scale: " + widget.zoomOptions.scale.toStringAsFixed(2)),
                           OutlinedButton(
                               onPressed: () {
                                 if (widget.zoomOptions.scale - zoomFactor <=
