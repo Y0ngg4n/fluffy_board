@@ -11,13 +11,14 @@ import 'FileManagerTypes.dart';
 
 class WebDavManager {
   static final LocalStorage settingsStorage = new LocalStorage('settings');
+  static Timer? timer;
 
-  static Future<webdav.Client?> connect() async{
+  static Future<webdav.Client?> connect() async {
     print("Connecting to WebDav ...");
     String webDavURL = settingsStorage.getItem("WEB_DAV_URL") ?? "";
     String webDavUsername = settingsStorage.getItem("WEB_DAV_USERNAME") ?? "";
     String webDavPassword = settingsStorage.getItem("WEB_DAV_PASSWORD") ?? "";
-    if(webDavURL.isEmpty) return null;
+    if (webDavURL.isEmpty) return null;
     webdav.Client client = webdav.newClient(
       webDavURL,
       user: webDavUsername,
@@ -28,13 +29,13 @@ class WebDavManager {
     client.setHeaders({'accept-charset': 'utf-8'});
 
     // Set the connection server timeout time in milliseconds.
-    client.setConnectTimeout(8000);
+    client.setConnectTimeout(1000000);
 
     // Set send data timeout time in milliseconds.
-    client.setSendTimeout(8000);
+    client.setSendTimeout(1000000);
 
     // Set transfer data time in milliseconds.
-    client.setReceiveTimeout(8000);
+    client.setReceiveTimeout(1000000);
 
     // Test whether the service can connect
     try {
@@ -47,23 +48,29 @@ class WebDavManager {
     return client;
   }
 
-  static startAutomatedUpload(OfflineWhiteboards offlineWhiteboards){
+  static startAutomatedUpload(OfflineWhiteboards offlineWhiteboards) {
     print("Starting automated webdav sync");
-    String webDavSyncInterval = settingsStorage.getItem("WEB_DAV_SYNC_INTERVAL") ?? 30;
-    Timer.periodic(
-        Duration(minutes: int.parse(webDavSyncInterval)), (timer) => uploadOfflineWhiteboards(offlineWhiteboards));
+    String webDavSyncInterval =
+        settingsStorage.getItem("WEB_DAV_SYNC_INTERVAL") ?? 30;
+    if (timer != null) timer!.cancel();
+    timer = Timer.periodic(Duration(minutes: int.parse(webDavSyncInterval)),
+        (timer) => uploadOfflineWhiteboards(offlineWhiteboards));
   }
 
-  static uploadOfflineWhiteboards(OfflineWhiteboards offlineWhiteboards) async{
+  static uploadOfflineWhiteboards(OfflineWhiteboards offlineWhiteboards) async {
     webdav.Client? client = await connect();
-    if(client == null) return;
+    if (client == null) return;
     print("Starting upload of offline Whiteboards");
     String path = "/Fluffyboard/OfflineWhiteboards";
     print("Creating Directory...");
     await client.mkdirAll(path);
     print("Created Directory");
-    for (OfflineWhiteboard offlineWhiteboard in offlineWhiteboards.list){
-      await client.write(path + "/" + offlineWhiteboard.uuid + ".json", Uint8List.fromList(jsonEncode(offlineWhiteboard.toJSONEncodable()).codeUnits));
+    for (OfflineWhiteboard offlineWhiteboard in offlineWhiteboards.list) {
+      print("Uploading " + offlineWhiteboard.name);
+      await client.write(
+          path + "/" + offlineWhiteboard.uuid + ".json",
+          Uint8List.fromList(
+              jsonEncode(offlineWhiteboard.toJSONEncodable()).codeUnits));
     }
     print("Uploaded offline Whiteboards");
   }

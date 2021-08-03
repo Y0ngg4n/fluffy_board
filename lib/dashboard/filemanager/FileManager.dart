@@ -61,7 +61,6 @@ class _FileManagerState extends State<FileManager> {
   @override
   void initState() {
     super.initState();
-    WebDavManager.startAutomatedUpload(offlineWhiteboards);
   }
 
   @override
@@ -161,8 +160,8 @@ class _FileManagerState extends State<FileManager> {
                 enablePullDown: true,
                 enablePullUp: false,
                 controller: _refreshController,
-                onRefresh: () {
-                  WhiteboardDataManager.getDirectoriesAndWhiteboards(
+                onRefresh: () async {
+                 await WhiteboardDataManager.getDirectoriesAndWhiteboards(
                       widget.online,
                       currentDirectory,
                       widget.auth_token,
@@ -184,6 +183,7 @@ class _FileManagerState extends State<FileManager> {
                       this.offlineWhiteboards = offlineWhiteboards;
                     });
                   });
+                  if (widget.online) WebDavManager.startAutomatedUpload(offlineWhiteboards);
                 },
                 child: GridView.extent(
                   maxCrossAxisExtent: 200,
