@@ -1,9 +1,4 @@
-import 'package:fluffy_board/account/Login.dart';
-import 'package:fluffy_board/documentation/About.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/material.dart';
-
-import 'package:fluffy_board/main.dart';
 import 'package:localstorage/localstorage.dart';
 
 void main() {
@@ -13,7 +8,7 @@ void main() {
       await accountStorage.ready;
       accountStorage.clear();
     });
-    await tester.pumpWidget(buildMaterialApp('/dashboard'));
+    // await tester.pumpWidget(buildMaterialApp('/dashboard'));
     await tester.runAsync(() => Future.delayed(Duration(seconds: 20)));
     await tester.pump(Duration(seconds: 5));
     tester.binding.scheduleWarmUpFrame();

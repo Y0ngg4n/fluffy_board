@@ -95,6 +95,12 @@
       "css": "fill_drip",
       "code": 62838,
       "src": "fontawesome5"
+    },
+    {
+      "uid": "073697e4105f5e203bef7af4a035bd3e",
+      "css": "location_arrow",
+      "code": 61732,
+      "src": "fontawesome5"
     }
   ]
 }

@@ -74,6 +74,10 @@ dev_dependencies:
   # Cross Platform
   universal_html: ^2.0.8 #NS
   merge_images: ^2.0.0-nullsafety #NS
+  # Theming
+  easy_dynamic_theme: ^2.2.0 #NS
+  # WebDav Sync
+  webdav_client: ^1.0.0
 
 #   App Icons
 flutter_icons:
