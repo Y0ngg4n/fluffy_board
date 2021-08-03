@@ -1,5 +1,5 @@
-import 'package:fluffy_board/account/Login.dart';
-import 'package:fluffy_board/documentation/About.dart';
+import 'package:fluffy_board/account/login.dart';
+import 'package:fluffy_board/documentation/about.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 
