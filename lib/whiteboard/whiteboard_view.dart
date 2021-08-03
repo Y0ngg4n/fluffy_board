@@ -1,9 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:fluffy_board/dashboard/dashboard.dart';
-import 'package:fluffy_board/dashboard/filemanager/file_manager.dart';
 import 'package:fluffy_board/dashboard/filemanager/file_manager_types.dart';
 import 'package:fluffy_board/utils/export_utils.dart';
 import 'package:fluffy_board/utils/screen_utils.dart';
@@ -11,7 +8,6 @@ import 'package:fluffy_board/whiteboard/infinite_canvas.dart';
 import 'package:fluffy_board/whiteboard/texts_canvas.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_manager_send.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket-types/websocket_types.dart';
 import 'package:fluffy_board/whiteboard/api/get_toolbar_options.dart';
 import 'package:fluffy_board/whiteboard/appbar/connected_users.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/background_toolbar.dart';
@@ -28,28 +24,23 @@ import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:localstorage/localstorage.dart';
-import 'whiteboard-data/json_encodable.dart';
 import 'whiteboard_view_data_manager.dart';
 import 'appbar/bookmark_manager.dart';
 import 'overlays/toolbar.dart' as Toolbar;
-import 'dart:ui' as ui;
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 typedef OnSaveOfflineWhiteboard = Function();
 
 class WhiteboardView extends StatefulWidget {
-  Whiteboard? whiteboard;
-  ExtWhiteboard? extWhiteboard;
-  OfflineWhiteboard? offlineWhiteboard;
-  String auth_token;
-  String id;
-  bool online;
+  final Whiteboard? whiteboard;
+  final ExtWhiteboard? extWhiteboard;
+  final OfflineWhiteboard? offlineWhiteboard;
+  final String authToken;
+  final String id;
+  final bool online;
 
   WhiteboardView(this.whiteboard, this.extWhiteboard, this.offlineWhiteboard,
-      this.auth_token, this.id, this.online);
+      this.authToken, this.id, this.online);
 
   @override
   _WhiteboardViewState createState() => _WhiteboardViewState();
@@ -82,7 +73,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           whiteboard: widget.whiteboard == null
               ? widget.extWhiteboard!.original
               : widget.whiteboard!.id,
-          auth_token: widget.auth_token,
+          authToken: widget.authToken,
           onScribbleAdd: (scribble) {
             setState(() {
               scribbles.add(scribble);
@@ -345,7 +336,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                                     await WhiteboardViewDataManager
                                         .getBookmarks(
                                             refreshController,
-                                            widget.auth_token,
+                                            widget.authToken,
                                             widget.whiteboard,
                                             widget.extWhiteboard,
                                             widget.offlineWhiteboard,
@@ -355,7 +346,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                                       });
                                     });
                                   },
-                                  auth_token: widget.auth_token,
+                                  authToken: widget.authToken,
                                   online: widget.online,
                                   onBookMarkTeleport: (offset, scale) => {
                                     setState(() {
@@ -488,7 +479,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
               stylusOnly: stylusOnly,
               id: widget.id,
               onSaveOfflineWhiteboard: () => saveOfflineWhiteboard(),
-              auth_token: widget.auth_token,
+              authToken: widget.authToken,
               websocketConnection: websocketConnection,
               toolbarOptions: toolbarOptions!,
               zoomOptions: zoomOptions,
@@ -556,20 +547,20 @@ class _WhiteboardViewState extends State<WhiteboardView> {
 
   Future _getToolBarOptions() async {
     PencilOptions pencilOptions = await GetToolbarOptions.getPencilOptions(
-        widget.auth_token, widget.online);
+        widget.authToken, widget.online);
     HighlighterOptions highlighterOptions =
         await GetToolbarOptions.getHighlighterOptions(
-            widget.auth_token, widget.online);
+            widget.authToken, widget.online);
     EraserOptions eraserOptions = await GetToolbarOptions.getEraserOptions(
-        widget.auth_token, widget.online);
+        widget.authToken, widget.online);
     StraightLineOptions straightLineOptions =
         await GetToolbarOptions.getStraightLineOptions(
-            widget.auth_token, widget.online);
+            widget.authToken, widget.online);
     FigureOptions figureOptions = await GetToolbarOptions.getFigureOptions(
-        widget.auth_token, widget.online);
+        widget.authToken, widget.online);
     BackgroundOptions backgroundOptions =
         await GetToolbarOptions.getBackgroundOptions(
-            widget.auth_token, widget.online);
+            widget.authToken, widget.online);
     setState(() {
       toolbarOptions = new Toolbar.ToolbarOptions(
           Toolbar.SelectedTool.move,
@@ -589,21 +580,21 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   Future _getWhiteboardData() async {
     if (websocketConnection != null) {
       await WhiteboardViewDataManager.getScribbles(
-          widget.auth_token, widget.whiteboard, widget.extWhiteboard,
+          widget.authToken, widget.whiteboard, widget.extWhiteboard,
           (Scribble newScribble) {
         setState(() {
           scribbles.add(newScribble);
         });
       }, zoomOptions);
       await WhiteboardViewDataManager.getUploads(
-          widget.auth_token, widget.whiteboard, widget.extWhiteboard,
+          widget.authToken, widget.whiteboard, widget.extWhiteboard,
           (Upload newUpload) {
         setState(() {
           uploads.add(newUpload);
         });
       }, zoomOptions);
       await WhiteboardViewDataManager.getTextItems(
-          widget.auth_token, widget.whiteboard, widget.extWhiteboard,
+          widget.authToken, widget.whiteboard, widget.extWhiteboard,
           (TextItem textItem) {
         setState(() {
           texts.add(textItem);
@@ -611,7 +602,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
       });
       await WhiteboardViewDataManager.getBookmarks(
           null,
-          widget.auth_token,
+          widget.authToken,
           widget.whiteboard,
           widget.extWhiteboard,
           widget.offlineWhiteboard, (List<Bookmark> bookmarks) {

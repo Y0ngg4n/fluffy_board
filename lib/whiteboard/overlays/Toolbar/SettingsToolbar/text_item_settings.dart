@@ -1,28 +1,24 @@
-import 'dart:convert';
 
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/whiteboard/infinite_canvas.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_manager_send.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket-types/websocket_types.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui';
 
-import '../../../whiteboard-data/json_encodable.dart';
 import '../../../whiteboard_view.dart';
 import '../../toolbar.dart' as Toolbar;
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 class TextItemSettings extends StatefulWidget {
-  TextItem? selectedTextItem;
-  List<TextItem> texts;
-  OnTextItemsChange onTextItemsChange;
-  Toolbar.ToolbarOptions toolbarOptions;
-  Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
-  WebsocketConnection? websocketConnection;
-  OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
-  Axis axis;
+  final TextItem? selectedTextItem;
+  final List<TextItem> texts;
+  final OnTextItemsChange onTextItemsChange;
+  final Toolbar.ToolbarOptions toolbarOptions;
+  final Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
+  final WebsocketConnection? websocketConnection;
+  final OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
+  final Axis axis;
   TextItemSettings(
       {required this.selectedTextItem,
       required this.toolbarOptions,

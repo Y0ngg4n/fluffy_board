@@ -1,23 +1,19 @@
-import 'dart:convert';
-
 import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_manager_send.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:uuid/uuid.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class RenameBookmark extends StatefulWidget {
-  String auth_token;
-  bool online;
-  WebsocketConnection? websocketConnection;
-  RefreshController refreshController;
-  Bookmark bookmark;
+  final String authToken;
+  final bool online;
+  final WebsocketConnection? websocketConnection;
+  final RefreshController refreshController;
+  final Bookmark bookmark;
 
-  RenameBookmark(this.auth_token, this.online, this.websocketConnection,
+  RenameBookmark(this.authToken, this.online, this.websocketConnection,
       this.refreshController, this.bookmark);
 
   @override
@@ -40,13 +36,13 @@ class _RenameBookmarkState extends State<RenameBookmark> {
                   return (FractionallySizedBox(
                       widthFactor: 0.5,
                       child: RenameBookmarkForm(
-                          widget.auth_token,
+                          widget.authToken,
                           widget.online,
                           widget.websocketConnection,
                           widget.refreshController, widget.bookmark)));
                 } else {
                   return (RenameBookmarkForm(
-                      widget.auth_token,
+                      widget.authToken,
                       widget.online,
                       widget.websocketConnection,
                       widget.refreshController, widget.bookmark));
@@ -59,13 +55,13 @@ class _RenameBookmarkState extends State<RenameBookmark> {
 }
 
 class RenameBookmarkForm extends StatefulWidget {
-  String auth_token;
-  bool online;
-  WebsocketConnection? websocketConnection;
-  RefreshController refreshController;
-  Bookmark bookmark;
+  final String authToken;
+  final bool online;
+  final WebsocketConnection? websocketConnection;
+  final RefreshController refreshController;
+  final Bookmark bookmark;
 
-  RenameBookmarkForm(this.auth_token, this.online, this.websocketConnection,
+  RenameBookmarkForm(this.authToken, this.online, this.websocketConnection,
       this.refreshController, this.bookmark);
 
   @override
@@ -80,14 +76,9 @@ class _RenameBookmarkFormState extends State<RenameBookmarkForm> {
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
   var uuid = Uuid();
 
-  _showError() {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Error while adding Bookmark! Please try an other Name."),
-        backgroundColor: Colors.red));
-  }
-
   @override
   void initState() {
+    super.initState();
     nameController.text = widget.bookmark.name;
   }
 

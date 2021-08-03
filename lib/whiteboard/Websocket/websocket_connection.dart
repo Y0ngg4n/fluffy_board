@@ -19,9 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'dart:ui';
 
-import '../whiteboard-data/json_encodable.dart';
 import '../whiteboard_view.dart';
-import 'websocket-types/websocket_types.dart';
 import 'dart:ui' as ui;
 import 'package:random_color/random_color.dart';
 
@@ -46,13 +44,13 @@ typedef OnBookmarkUpdate= Function(Bookmark);
 typedef OnBookmarkDelete= Function(String);
 
 class WebsocketConnection {
-  static WebsocketConnection? _singleton = null;
+  static WebsocketConnection? _singleton;
 
   StreamController<String> streamController =
   new StreamController.broadcast(sync: true);
 
   String whiteboard;
-  String auth_token;
+  String authToken;
   bool disconnect = false;
 
   late WebsocketManager websocketManager;
@@ -80,7 +78,7 @@ class WebsocketConnection {
 
   WebsocketConnection({
     required this.whiteboard,
-    required this.auth_token,
+    required this.authToken,
     required this.onScribbleAdd,
     required this.onScribbleUpdate,
     required this.onScribbleDelete,
@@ -98,7 +96,7 @@ class WebsocketConnection {
   });
 
   static WebsocketConnection getInstance({required String whiteboard,
-    required String auth_token,
+    required String authToken,
     required Function(Scribble) onScribbleAdd,
     required Function(Scribble) onScribbleUpdate,
     required Function(String) onScribbleDelete,
@@ -117,7 +115,7 @@ class WebsocketConnection {
     if (_singleton == null) {
       _singleton = new WebsocketConnection(
           whiteboard: whiteboard,
-          auth_token: auth_token,
+          authToken: authToken,
           onScribbleAdd: onScribbleAdd,
           onScribbleUpdate: onScribbleUpdate,
           onScribbleDelete: onScribbleDelete,
@@ -133,21 +131,22 @@ class WebsocketConnection {
         onBookmarkUpdate: onBookmarkUpdate,
         onBookmarkDelete: onBookmarkDelete
       );
-      _singleton!.initWebSocketConnection(whiteboard, auth_token);
+      _singleton!.initWebSocketConnection(whiteboard, authToken);
     }
     return _singleton!;
   }
 
-  void initWebSocketConnection(String whiteboard, String auth_token) async {
+  void initWebSocketConnection(String whiteboard, String authToken) async {
     websocketManager =
     new WebsocketManager((streamData) => messageHandler(streamData));
-    await websocketManager.initializeConnection(whiteboard, auth_token);
+    await websocketManager.initializeConnection(whiteboard, authToken);
     print("conecting...");
   }
 
   dispose() {
     websocketManager.disconnect = true;
     websocketManager.startDisconnect();
+    streamController.close();
     _singleton = null;
   }
 
@@ -192,7 +191,7 @@ class WebsocketConnection {
       Uint8List uint8list = Uint8List.fromList(json.imageData);
       ui.decodeImageFromList(uint8list, (image) {
         Upload newUpload = Upload(json.uuid, UploadType.values[json.uploadType],
-            uint8list, new Offset(json.offset_dx, json.offset_dy), image);
+            uint8list, new Offset(json.offsetDx, json.offsetDy), image);
         onUploadAdd(newUpload);
       });
     } else if (message.startsWith(r"upload-update#")) {
@@ -203,7 +202,7 @@ class WebsocketConnection {
           json.uuid,
           UploadType.Image,
           Uint8List.fromList(List.empty()),
-          new Offset(json.offset_dx, json.offset_dy),
+          new Offset(json.offsetDx, json.offsetDy),
           null));
     } else if (message.startsWith(r"upload-image-data-update#")) {
       WSUploadImageDataUpdate json = WSUploadImageDataUpdate.fromJson(
@@ -233,8 +232,8 @@ class WebsocketConnection {
           json.maxWidth,
           json.maxHeight,
           HexColor.fromHex(json.color),
-          json.content_text,
-          new Offset(json.offset_dx, json.offset_dy),
+          json.contentText,
+          new Offset(json.offsetDx, json.offsetDy),
           json.rotation));
     } else if (message.startsWith(r"textitem-update#")) {
       WSTextItemUpdate json = WSTextItemUpdate.fromJson(
@@ -247,8 +246,8 @@ class WebsocketConnection {
           json.maxWidth,
           json.maxHeight,
           HexColor.fromHex(json.color),
-          json.content_text,
-          new Offset(json.offset_dx, json.offset_dy),
+          json.contentText,
+          new Offset(json.offsetDx, json.offsetDy),
           json.rotation));
     } else if (message.startsWith(r"user-join#")) {
       String newMessage = message.replaceFirst(r"user-join#", "");
@@ -258,18 +257,18 @@ class WebsocketConnection {
       WSUserMove json = WSUserMove.fromJson(
           jsonDecode(message.replaceFirst(r"user-move#", ""))
           as Map<String, dynamic>);
-      onUserMove(new ConnectedUserMove(json.uuid, new Offset(json.offset_dx, json.offset_dy), json.scale));
+      onUserMove(new ConnectedUserMove(json.uuid, new Offset(json.offsetDx, json.offsetDy), json.scale));
     } else if (message.startsWith(r"bookmark-add#")) {
       print("On r bookmark add");
       WSBookmarkAdd json = WSBookmarkAdd.fromJson(
           jsonDecode(message.replaceFirst(r"bookmark-add#", ""))
           as Map<String, dynamic>);
-      onBookmarkAdd(new Bookmark(json.uuid, json.name, new Offset(json.offset_dx, json.offset_dy), json.scale));
+      onBookmarkAdd(new Bookmark(json.uuid, json.name, new Offset(json.offsetDx, json.offsetDy), json.scale));
     }else if (message.startsWith(r"bookmark-update#")) {
       WSBookmarkUpdate json = WSBookmarkUpdate.fromJson(
           jsonDecode(message.replaceFirst(r"bookmark-update#", ""))
           as Map<String, dynamic>);
-      onBookmarkUpdate(new Bookmark(json.uuid, json.name, new Offset(json.offset_dx, json.offset_dy), json.scale));
+      onBookmarkUpdate(new Bookmark(json.uuid, json.name, new Offset(json.offsetDx, json.offsetDy), json.scale));
     }else if (message.startsWith(r"bookmark-delete#")) {
       WSBookmarkDelete json = WSBookmarkDelete.fromJson(
           jsonDecode(message.replaceFirst(r"bookmark-delete#", ""))
@@ -278,9 +277,8 @@ class WebsocketConnection {
     }
   }
 
-
-
   sendDataToChannel(String key, String data) {
     websocketManager.sendDataToChannel(key, data);
   }
+
 }

@@ -1,10 +1,7 @@
 import 'dart:convert';
 
-import 'package:fluffy_board/utils/theme_data_utils.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:flutter_pw_validator/flutter_pw_validator.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:localstorage/localstorage.dart';

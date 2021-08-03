@@ -1,10 +1,7 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/draw_point.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_manager_send.dart';
 import 'package:fluffy_board/whiteboard/whiteboard_view.dart';
 import 'package:fluffy_board/whiteboard/overlays/toolbar.dart';
@@ -15,12 +12,10 @@ import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
 import 'package:smoothie/smoothie.dart';
 
 import 'canvas_custom_painter.dart';
 import 'Websocket/websocket_connection.dart';
-import 'Websocket/websocket-types/websocket_types.dart';
 import 'overlays/toolbar.dart' as Toolbar;
 import 'overlays/zoom.dart' as Zoom;
 import 'package:uuid/uuid.dart';
@@ -33,24 +28,24 @@ typedef OnChangedToolbarOptions<T> = Function(Toolbar.ToolbarOptions);
 typedef OnDontFollow = Function();
 
 class InfiniteCanvasPage extends StatefulWidget {
-  Zoom.OnChangedZoomOptions onChangedZoomOptions;
-  Toolbar.ToolbarOptions toolbarOptions;
-  Zoom.ZoomOptions zoomOptions;
-  double appBarHeight;
-  List<Upload> uploads;
-  List<TextItem> texts;
-  List<Scribble> scribbles;
-  Offset offset;
-  Offset sessionOffset;
-  OnOffsetChange onOffsetChange;
-  OnChangedToolbarOptions onChangedToolbarOptions;
-  OnScribblesChange onScribblesChange;
-  WebsocketConnection? websocketConnection;
-  String auth_token;
-  String id;
-  OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
-  OnDontFollow onDontFollow;
-  bool stylusOnly;
+  final Zoom.OnChangedZoomOptions onChangedZoomOptions;
+  final Toolbar.ToolbarOptions toolbarOptions;
+  final Zoom.ZoomOptions zoomOptions;
+  final double appBarHeight;
+  final List<Upload> uploads;
+  final List<TextItem> texts;
+  final List<Scribble> scribbles;
+  final Offset offset;
+  final Offset sessionOffset;
+  final OnOffsetChange onOffsetChange;
+  final OnChangedToolbarOptions onChangedToolbarOptions;
+  final OnScribblesChange onScribblesChange;
+  final WebsocketConnection? websocketConnection;
+  final String authToken;
+  final String id;
+  final OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
+  final OnDontFollow onDontFollow;
+  final bool stylusOnly;
 
   InfiniteCanvasPage(
       {required this.toolbarOptions,
@@ -66,7 +61,7 @@ class InfiniteCanvasPage extends StatefulWidget {
       required this.scribbles,
       required this.onScribblesChange,
       required this.websocketConnection,
-      required this.auth_token,
+      required this.authToken,
       required this.id,
       required this.onSaveOfflineWhiteboard,
       required this.onDontFollow,
@@ -327,7 +322,9 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         (details.localFocalPoint - widget.offset) / widget.zoomOptions.scale;
     this.setState(() {
       cursorPosition = details.localFocalPoint / widget.zoomOptions.scale;
-      if (details.pointerCount == 2 && details.scale * _initialScale > 0.1 && details.scale * _initialScale <= 5) {
+      if (details.pointerCount == 2 &&
+          details.scale * _initialScale > 0.1 &&
+          details.scale * _initialScale <= 5) {
         widget.zoomOptions.scale = details.scale * _initialScale;
         print(details.scale * _initialScale);
       }
@@ -336,12 +333,12 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         case SelectedTool.move:
           // TODO: Test on mobile
           if (details.pointerCount == 3) {
-            widget.sessionOffset =
-                (details.focalPoint - _initialFocalPoint) * 5;
+            widget.onOffsetChange(
+                widget.offset, (details.focalPoint - _initialFocalPoint) * 5);
           } else {
-            widget.sessionOffset = details.focalPoint - _initialFocalPoint;
+            widget.onOffsetChange(
+                widget.offset, details.focalPoint - _initialFocalPoint);
           }
-          widget.onOffsetChange(widget.offset, widget.sessionOffset);
           WebsocketSend.sendUserMove(
               _calculateOffset(widget.offset, widget.sessionOffset,
                   widget.zoomOptions.scale),
@@ -501,9 +498,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
 
   Future _onScaleEnd(ScaleEndDetails details) async {
     this.setState(() {
-      widget.offset += widget.sessionOffset;
-      widget.sessionOffset = Offset.zero;
-      widget.onOffsetChange(widget.offset, widget.sessionOffset);
+      widget.onOffsetChange(widget.offset + widget.sessionOffset, Offset.zero);
       onSettingsMove = Offset.zero;
       onSettingsMovePoints = [];
       widget.onChangedToolbarOptions(widget.toolbarOptions);
@@ -630,19 +625,19 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
     double distance = sqrt((deltaX * deltaX) + (deltaY * deltaY));
     double frac = (1 / (distance / length));
 
-    double point_x_1 = x0 + ((1 - frac) * deltaX + frac * deltaY);
-    double point_y_1 = y0 + ((1 - frac) * deltaY - frac * deltaX);
+    double pointX1 = x0 + ((1 - frac) * deltaX + frac * deltaY);
+    double pointY1 = y0 + ((1 - frac) * deltaY - frac * deltaX);
 
-    double point_x_3 = x0 + ((1 - frac) * deltaX - frac * deltaY);
-    double point_y_3 = y0 + ((1 - frac) * deltaY + frac * deltaX);
+    double pointX3 = x0 + ((1 - frac) * deltaX - frac * deltaY);
+    double pointY3 = y0 + ((1 - frac) * deltaY + frac * deltaX);
 
     list.add(new DrawPoint(x1, y1));
-    list.add(new DrawPoint(point_x_1, point_y_1));
+    list.add(new DrawPoint(pointX1, pointY1));
     list.add(new DrawPoint(x1, y1));
-    list.add(new DrawPoint(point_x_3, point_y_3));
+    list.add(new DrawPoint(pointX3, pointY3));
     list.add(new DrawPoint(x1, y1));
-    // path.lineTo(point_x_3, point_y_3);
-    // path.lineTo(point_x_1, point_y_1);
-    // path.lineTo(point_x_1, point_y_1);
+    // path.lineTo(pointX3, pointY3);
+    // path.lineTo(pointX1, pointY1);
+    // path.lineTo(pointX1, pointY1);
   }
 }

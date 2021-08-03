@@ -13,9 +13,6 @@ import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 
-import '../whiteboard-data/json_encodable.dart';
-import 'websocket-types/websocket_types.dart';
-
 class WebsocketSend {
   static Future sendCreateScribble(
       Scribble newScribble, WebsocketConnection? websocketConnection) async{

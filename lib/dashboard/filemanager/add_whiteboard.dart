@@ -8,11 +8,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class AddWhiteboard extends StatefulWidget {
-  String auth_token;
-  String directory;
-  RefreshController _refreshController;
+  final String authToken;
+  final String directory;
+  final RefreshController _refreshController;
 
-  AddWhiteboard(this.auth_token, this.directory, this._refreshController);
+  AddWhiteboard(this.authToken, this.directory, this._refreshController);
 
   @override
   _AddWhiteboardState createState() => _AddWhiteboardState();
@@ -32,10 +32,10 @@ class _AddWhiteboardState extends State<AddWhiteboard> {
               builder: (BuildContext context, BoxConstraints constraints) {
                 if (constraints.maxWidth > 600) {
                   return (FractionallySizedBox(
-                      widthFactor: 0.5, child: AddWhiteboardForm(widget.auth_token,
+                      widthFactor: 0.5, child: AddWhiteboardForm(widget.authToken,
                       widget.directory, widget._refreshController)));
                 } else {
-                  return (AddWhiteboardForm(widget.auth_token,
+                  return (AddWhiteboardForm(widget.authToken,
                   widget.directory,widget._refreshController));
                 }
               },
@@ -46,11 +46,11 @@ class _AddWhiteboardState extends State<AddWhiteboard> {
 }
 
 class AddWhiteboardForm extends StatefulWidget {
-  String auth_token;
-  String directory;
-  RefreshController _refreshController;
+  final String authToken;
+  final String directory;
+  final RefreshController _refreshController;
 
-  AddWhiteboardForm(this.auth_token, this.directory, this._refreshController);
+  AddWhiteboardForm(this.authToken, this.directory, this._refreshController);
 
   @override
   _AddWhiteboardFormState createState() => _AddWhiteboardFormState();
@@ -121,7 +121,7 @@ class _AddWhiteboardFormState extends State<AddWhiteboardForm> {
             headers: {
               "content-type": "application/json",
               "accept": "application/json",
-              'Authorization': 'Bearer ' + widget.auth_token,
+              'Authorization': 'Bearer ' + widget.authToken,
             },
             body: jsonEncode({
               'name': nameController.text,

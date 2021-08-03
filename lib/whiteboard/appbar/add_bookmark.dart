@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_manager_send.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:uuid/uuid.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -13,15 +9,15 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 typedef OnOfflineBookMarkAdd = Function(Bookmark);
 
 class AddBookmark extends StatefulWidget {
-  String auth_token;
-  bool online;
-  WebsocketConnection? websocketConnection;
-  Offset offset;
-  double scale;
-  RefreshController refreshController;
-  OnOfflineBookMarkAdd offlineBookMarkAdd;
+  final String authToken;
+  final bool online;
+  final WebsocketConnection? websocketConnection;
+  final Offset offset;
+  final double scale;
+  final RefreshController refreshController;
+  final OnOfflineBookMarkAdd offlineBookMarkAdd;
 
-  AddBookmark(this.auth_token, this.online, this.websocketConnection,
+  AddBookmark(this.authToken, this.online, this.websocketConnection,
       this.offset, this.scale, this.refreshController, this.offlineBookMarkAdd);
 
   @override
@@ -44,7 +40,7 @@ class _AddBookmarkState extends State<AddBookmark> {
                   return (FractionallySizedBox(
                       widthFactor: 0.5,
                       child: AddBookmarkForm(
-                          widget.auth_token,
+                          widget.authToken,
                           widget.online,
                           widget.websocketConnection,
                           widget.offset,
@@ -53,7 +49,7 @@ class _AddBookmarkState extends State<AddBookmark> {
                           widget.offlineBookMarkAdd)));
                 } else {
                   return (AddBookmarkForm(
-                      widget.auth_token,
+                      widget.authToken,
                       widget.online,
                       widget.websocketConnection,
                       widget.offset,
@@ -69,15 +65,15 @@ class _AddBookmarkState extends State<AddBookmark> {
 }
 
 class AddBookmarkForm extends StatefulWidget {
-  String auth_token;
-  bool online;
-  WebsocketConnection? websocketConnection;
-  Offset offset;
-  double scale;
-  RefreshController refreshController;
-  OnOfflineBookMarkAdd onOfflineBookMarkAdd;
+  final String authToken;
+  final bool online;
+  final WebsocketConnection? websocketConnection;
+  final Offset offset;
+  final double scale;
+  final RefreshController refreshController;
+  final OnOfflineBookMarkAdd onOfflineBookMarkAdd;
 
-  AddBookmarkForm(this.auth_token, this.online, this.websocketConnection,
+  AddBookmarkForm(this.authToken, this.online, this.websocketConnection,
       this.offset, this.scale, this.refreshController,
       this.onOfflineBookMarkAdd);
 
@@ -91,12 +87,6 @@ class _AddBookmarkFormState extends State<AddBookmarkForm> {
   final TextEditingController nameController = new TextEditingController();
   final LocalStorage storage = new LocalStorage('account');
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
-
-  _showError() {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Error while adding Bookmark! Please try an other Name."),
-        backgroundColor: Colors.red));
-  }
 
   var uuid = Uuid();
 

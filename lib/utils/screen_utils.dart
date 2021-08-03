@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:fluffy_board/whiteboard/canvas_custom_painter.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/draw_point.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';

@@ -4,8 +4,6 @@ import 'dart:ui' as ui;
 import 'package:fluffy_board/dashboard/filemanager/file_manager_types.dart';
 import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket-types/websocket_types.dart';
 import 'package:fluffy_board/whiteboard/whiteboard_view.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/figure_toolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/zoom.dart';
@@ -35,7 +33,7 @@ class WhiteboardViewDataManager {
   static final LocalStorage fileManagerStorage =
       new LocalStorage('filemanager');
 
-  static Future getScribbles(String auth_token, Whiteboard? whiteboard, ExtWhiteboard? extWhiteboard, OnGetScribbleAdd onGetScribbleAdd, ZoomOptions zoomOptions) async {
+  static Future getScribbles(String authToken, Whiteboard? whiteboard, ExtWhiteboard? extWhiteboard, OnGetScribbleAdd onGetScribbleAdd, ZoomOptions zoomOptions) async {
     http.Response scribbleResponse = await http.post(
         Uri.parse((settingsStorage.getItem("REST_API_URL") ??
                 dotenv.env['REST_API_URL']!) +
@@ -43,7 +41,7 @@ class WhiteboardViewDataManager {
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
-          'Authorization': 'Bearer ' + auth_token,
+          'Authorization': 'Bearer ' + authToken,
         },
         body: jsonEncode({
           "whiteboard": (whiteboard == null)
@@ -51,7 +49,7 @@ class WhiteboardViewDataManager {
               : whiteboard.id,
           "permission_id": whiteboard == null
               ? extWhiteboard!.permissionId
-              : whiteboard.edit_id
+              : whiteboard.editId
         }));
 
     if (scribbleResponse.statusCode == 200) {
@@ -75,7 +73,7 @@ class WhiteboardViewDataManager {
     }
   }
 
-  static Future getUploads(String auth_token, Whiteboard? whiteboard, ExtWhiteboard? extWhiteboard, OnGetUploadAdd onGetUploadAdd, ZoomOptions zoomOptions) async {
+  static Future getUploads(String authToken, Whiteboard? whiteboard, ExtWhiteboard? extWhiteboard, OnGetUploadAdd onGetUploadAdd, ZoomOptions zoomOptions) async {
     http.Response uploadResponse = await http.post(
         Uri.parse((settingsStorage.getItem("REST_API_URL") ??
                 dotenv.env['REST_API_URL']!) +
@@ -83,7 +81,7 @@ class WhiteboardViewDataManager {
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
-          'Authorization': 'Bearer ' + auth_token,
+          'Authorization': 'Bearer ' + authToken,
         },
         body: jsonEncode({
           "whiteboard": whiteboard == null
@@ -91,7 +89,7 @@ class WhiteboardViewDataManager {
               : whiteboard.id,
           "permission_id": whiteboard == null
               ? extWhiteboard!.permissionId
-              : whiteboard.edit_id
+              : whiteboard.editId
         }));
     if (uploadResponse.statusCode == 200) {
       List<DecodeGetUpload> decodedUploads =
@@ -105,14 +103,14 @@ class WhiteboardViewDataManager {
                 UploadType.values[decodeGetUpload.uploadType],
                 uint8list,
                 new Offset(
-                    decodeGetUpload.offset_dx, decodeGetUpload.offset_dy),
+                    decodeGetUpload.offsetDx, decodeGetUpload.offsetDy),
                 image));
           });
         }
     }
   }
 
-  static Future getTextItems(String auth_token, Whiteboard? whiteboard, ExtWhiteboard? extWhiteboard, OnGetTextItemAdd onGetTextItemAdd) async {
+  static Future getTextItems(String authToken, Whiteboard? whiteboard, ExtWhiteboard? extWhiteboard, OnGetTextItemAdd onGetTextItemAdd) async {
     http.Response textItemResponse = await http.post(
         Uri.parse((settingsStorage.getItem("REST_API_URL") ??
                 dotenv.env['REST_API_URL']!) +
@@ -120,7 +118,7 @@ class WhiteboardViewDataManager {
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
-          'Authorization': 'Bearer ' + auth_token,
+          'Authorization': 'Bearer ' + authToken,
         },
         body: jsonEncode({
           "whiteboard": whiteboard == null
@@ -128,7 +126,7 @@ class WhiteboardViewDataManager {
               : whiteboard.id,
           "permission_id": whiteboard == null
               ? extWhiteboard!.permissionId
-              : whiteboard.edit_id
+              : whiteboard.editId
         }));
     if (textItemResponse.statusCode == 200) {
       List<DecodeGetTextItem> decodeTextItems =
@@ -143,13 +141,13 @@ class WhiteboardViewDataManager {
               HexColor.fromHex(decodeGetTextItem.color),
               decodeGetTextItem.contentText,
               new Offset(
-                  decodeGetTextItem.offset_dx, decodeGetTextItem.offset_dy),
+                  decodeGetTextItem.offsetDx, decodeGetTextItem.offsetDy),
               decodeGetTextItem.rotation));
         }
     }
   }
 
-  static Future getBookmarks(RefreshController? refreshController, String auth_token, Whiteboard? whiteboard, ExtWhiteboard? extWhiteboard, OfflineWhiteboard? offlineWhiteboard, OnGetBookmark onGetBookmark) async {
+  static Future getBookmarks(RefreshController? refreshController, String authToken, Whiteboard? whiteboard, ExtWhiteboard? extWhiteboard, OfflineWhiteboard? offlineWhiteboard, OnGetBookmark onGetBookmark) async {
     if (offlineWhiteboard != null) {
       onGetBookmark(offlineWhiteboard.bookmarks.list);
       if (refreshController != null) refreshController.refreshCompleted();
@@ -162,7 +160,7 @@ class WhiteboardViewDataManager {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           },
           body: jsonEncode({
             "whiteboard": whiteboard == null
@@ -170,7 +168,7 @@ class WhiteboardViewDataManager {
                 : whiteboard.id,
             "permission_id": whiteboard == null
                 ? extWhiteboard!.permissionId
-                : whiteboard.edit_id
+                : whiteboard.editId
           }));
       if (bookmarkResponse.statusCode == 200) {
         List<DecodeGetBookmark> decodeBookmarks =
@@ -181,7 +179,7 @@ class WhiteboardViewDataManager {
                 decodeGetBookmark.uuid,
                 decodeGetBookmark.name,
                 new Offset(
-                    decodeGetBookmark.offset_dx, decodeGetBookmark.offset_dy),
+                    decodeGetBookmark.offsetDx, decodeGetBookmark.offsetDy),
                 decodeGetBookmark.scale));
           }
           onGetBookmark(localBookmarks);

@@ -6,9 +6,9 @@ class WSTextItemAdd implements JsonWebSocketType{
   int maxWidth;
   int maxHeight;
   String color;
-  String content_text;
-  double offset_dx;
-  double offset_dy;
+  String contentText;
+  double offsetDx;
+  double offsetDy;
   double rotation;
 
   WSTextItemAdd.fromJson(Map<String, dynamic> json)
@@ -17,9 +17,9 @@ class WSTextItemAdd implements JsonWebSocketType{
         maxWidth = json['max_width'],
         maxHeight = json['max_height'],
         color = json['color'],
-        content_text = json['content_text'],
-        offset_dx = json['offset_dx'].toDouble(),
-        offset_dy = json['offset_dy'].toDouble(),
+        contentText = json['content_text'],
+        offsetDx = json['offset_dx'].toDouble(),
+        offsetDy = json['offset_dy'].toDouble(),
         rotation = json['rotation'].toDouble();
 
   Map toJson() {
@@ -29,9 +29,9 @@ class WSTextItemAdd implements JsonWebSocketType{
       'max_width': maxWidth,
       'max_height': maxHeight,
       'color': color,
-      'content_text': content_text,
-      'offset_dx': offset_dx,
-      'offset_dy': offset_dy,
+      'content_text': contentText,
+      'offset_dx': offsetDx,
+      'offset_dy': offsetDy,
       'rotation': rotation
     };
   }
@@ -42,9 +42,9 @@ class WSTextItemAdd implements JsonWebSocketType{
       this.maxWidth,
       this.maxHeight,
       this.color,
-      this.content_text,
-      this.offset_dx,
-      this.offset_dy,
+      this.contentText,
+      this.offsetDx,
+      this.offsetDy,
       this.rotation);
 }
 
@@ -54,9 +54,9 @@ class WSTextItemUpdate implements JsonWebSocketType{
   int maxWidth;
   int maxHeight;
   String color;
-  String content_text;
-  double offset_dx;
-  double offset_dy;
+  String contentText;
+  double offsetDx;
+  double offsetDy;
   double rotation;
 
   WSTextItemUpdate.fromJson(Map<String, dynamic> json)
@@ -65,9 +65,9 @@ class WSTextItemUpdate implements JsonWebSocketType{
         maxWidth = json['max_width'],
         maxHeight = json['max_height'],
         color = json['color'],
-        content_text = json['content_text'],
-        offset_dx = json['offset_dx'].toDouble(),
-        offset_dy = json['offset_dy'].toDouble(),
+        contentText = json['content_text'],
+        offsetDx = json['offset_dx'].toDouble(),
+        offsetDy = json['offset_dy'].toDouble(),
         rotation = json['rotation'].toDouble();
 
   Map toJson() {
@@ -77,9 +77,9 @@ class WSTextItemUpdate implements JsonWebSocketType{
       'max_width': maxWidth,
       'max_height': maxHeight,
       'color': color,
-      'content_text': content_text,
-      'offset_dx': offset_dx,
-      'offset_dy': offset_dy,
+      'content_text': contentText,
+      'offset_dx': offsetDx,
+      'offset_dy': offsetDy,
       'rotation': rotation
     };
   }
@@ -90,9 +90,9 @@ class WSTextItemUpdate implements JsonWebSocketType{
       this.maxWidth,
       this.maxHeight,
       this.color,
-      this.content_text,
-      this.offset_dx,
-      this.offset_dy,
+      this.contentText,
+      this.offsetDx,
+      this.offsetDy,
       this.rotation);
 }
 
@@ -117,8 +117,8 @@ class DecodeGetTextItem implements DecodeGetJsonWebSocketType{
   int maxWidth;
   String color;
   String contentText;
-  double offset_dx;
-  double offset_dy;
+  double offsetDx;
+  double offsetDy;
   double rotation;
 
   DecodeGetTextItem.fromJson(Map<String, dynamic> json)
@@ -128,8 +128,8 @@ class DecodeGetTextItem implements DecodeGetJsonWebSocketType{
         maxWidth = json['max_width'],
         color = json['color'],
         contentText = json['content_text'],
-        offset_dx = json['offset_dx'].toDouble(),
-        offset_dy = json['offset_dy'].toDouble(),
+        offsetDx = json['offset_dx'].toDouble(),
+        offsetDy = json['offset_dy'].toDouble(),
         rotation = json['rotation'].toDouble();
 }
 

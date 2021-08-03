@@ -7,8 +7,6 @@ import 'package:fluffy_board/whiteboard/Websocket/websocket-types/ws_scribble.da
 import 'package:fluffy_board/whiteboard/Websocket/websocket-types/ws_textitem.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket-types/ws_upload.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket-types/websocket_types.dart';
 import 'package:fluffy_board/whiteboard/whiteboard_view.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/figure_toolbar.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
@@ -34,7 +32,7 @@ class WhiteboardDataManager {
   static Future<void> getDirectoriesAndWhiteboards(
       bool online,
       String currentDirectory,
-      String auth_token,
+      String authToken,
       RefreshController _refreshController,
       Directories directories,
       Whiteboards whiteboards,
@@ -63,7 +61,7 @@ class WhiteboardDataManager {
           "content-type": "application/json",
           "accept": "application/json",
           "charset": "utf-8",
-          'Authorization': 'Bearer ' + auth_token,
+          'Authorization': 'Bearer ' + authToken,
         },
         body: jsonEncode({
           "parent": currentDirectory,
@@ -76,7 +74,7 @@ class WhiteboardDataManager {
           "content-type": "application/json",
           "accept": "application/json",
           "charset": "utf-8",
-          'Authorization': 'Bearer ' + auth_token,
+          'Authorization': 'Bearer ' + authToken,
         },
         body: jsonEncode({
           "directory": currentDirectory,
@@ -89,7 +87,7 @@ class WhiteboardDataManager {
           "content-type": "application/json",
           "accept": "application/json",
           "charset": "utf-8",
-          'Authorization': 'Bearer ' + auth_token,
+          'Authorization': 'Bearer ' + authToken,
         },
         body: jsonEncode({
           "directory": currentDirectory,
@@ -110,7 +108,7 @@ class WhiteboardDataManager {
             headers: {
               "content-type": "application/json",
               "accept": "application/json",
-              'Authorization': 'Bearer ' + auth_token,
+              'Authorization': 'Bearer ' + authToken,
             },
             body: jsonEncode({
               'filename': offlineDirectory.filename,
@@ -213,7 +211,7 @@ class WhiteboardDataManager {
   }
 
   static Future<Scribbles> getScribbles(
-      String whiteboard, String permissionId, String auth_token) async {
+      String whiteboard, String permissionId, String authToken) async {
     http.Response scribbleResponse = await http.post(
         Uri.parse((settingsStorage.getItem("REST_API_URL") ??
                 dotenv.env['REST_API_URL']!) +
@@ -221,7 +219,7 @@ class WhiteboardDataManager {
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
-          'Authorization': 'Bearer ' + auth_token,
+          'Authorization': 'Bearer ' + authToken,
         },
         body: jsonEncode(
             {"whiteboard": whiteboard, "permission_id": permissionId}));
@@ -247,7 +245,7 @@ class WhiteboardDataManager {
   }
 
   static Future<Uploads> getUploads(
-      String whiteboard, String permissionId, String auth_token) async {
+      String whiteboard, String permissionId, String authToken) async {
     http.Response uploadResponse = await http.post(
         Uri.parse((settingsStorage.getItem("REST_API_URL") ??
                 dotenv.env['REST_API_URL']!) +
@@ -255,7 +253,7 @@ class WhiteboardDataManager {
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
-          'Authorization': 'Bearer ' + auth_token,
+          'Authorization': 'Bearer ' + authToken,
         },
         body: jsonEncode(
             {"whiteboard": whiteboard, "permission_id": permissionId}));
@@ -281,14 +279,14 @@ class WhiteboardDataManager {
           decodeGetUpload.uuid,
           UploadType.values[decodeGetUpload.uploadType],
           uint8list,
-          new Offset(decodeGetUpload.offset_dx, decodeGetUpload.offset_dy),
+          new Offset(decodeGetUpload.offsetDx, decodeGetUpload.offsetDy),
           frameInfo.image));
     }
     return uploads;
   }
 
   static Future<TextItems> getTextItems(
-      String whiteboard, String permissionId, String auth_token) async {
+      String whiteboard, String permissionId, String authToken) async {
     http.Response textItemResponse = await http.post(
         Uri.parse((settingsStorage.getItem("REST_API_URL") ??
                 dotenv.env['REST_API_URL']!) +
@@ -296,7 +294,7 @@ class WhiteboardDataManager {
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
-          'Authorization': 'Bearer ' + auth_token,
+          'Authorization': 'Bearer ' + authToken,
         },
         body: jsonEncode(
             {"whiteboard": whiteboard, "permission_id": permissionId}));
@@ -314,7 +312,7 @@ class WhiteboardDataManager {
             HexColor.fromHex(decodeGetTextItem.color),
             decodeGetTextItem.contentText,
             new Offset(
-                decodeGetTextItem.offset_dx, decodeGetTextItem.offset_dy),
+                decodeGetTextItem.offsetDx, decodeGetTextItem.offsetDy),
             decodeGetTextItem.rotation));
       }
     }
@@ -322,7 +320,7 @@ class WhiteboardDataManager {
   }
 
   static Future<Bookmarks> getBookmarks(
-      String whiteboard, String permissionId, String auth_token) async {
+      String whiteboard, String permissionId, String authToken) async {
     http.Response textItemResponse = await http.post(
         Uri.parse((settingsStorage.getItem("REST_API_URL") ??
                 dotenv.env['REST_API_URL']!) +
@@ -330,7 +328,7 @@ class WhiteboardDataManager {
         headers: {
           "content-type": "application/json",
           "accept": "application/json",
-          'Authorization': 'Bearer ' + auth_token,
+          'Authorization': 'Bearer ' + authToken,
         },
         body: jsonEncode(
             {"whiteboard": whiteboard, "permission_id": permissionId}));
@@ -343,7 +341,7 @@ class WhiteboardDataManager {
             decodeGetBookmark.uuid,
             decodeGetBookmark.name,
             new Offset(
-                decodeGetBookmark.offset_dx, decodeGetBookmark.offset_dy),
+                decodeGetBookmark.offsetDx, decodeGetBookmark.offsetDy),
             decodeGetBookmark.scale));
       }
     }

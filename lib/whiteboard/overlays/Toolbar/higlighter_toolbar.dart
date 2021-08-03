@@ -1,4 +1,3 @@
-import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -50,9 +49,9 @@ class DecodeHighlighterOptions {
 }
 
 class HighlighterToolbar extends StatefulWidget {
-  Toolbar.ToolbarOptions toolbarOptions;
-  Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
-  Axis axis;
+  final Toolbar.ToolbarOptions toolbarOptions;
+  final Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
+  final Axis axis;
 
   HighlighterToolbar(
       {required this.toolbarOptions,
@@ -80,7 +79,6 @@ class _HighlighterToolbarState extends State<HighlighterToolbar> {
 
   @override
   Widget build(BuildContext context) {
-    const _borderRadius = 50.0;
 
     return Flex(
       mainAxisSize: MainAxisSize.min,

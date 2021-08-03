@@ -1,5 +1,4 @@
 import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_manager_send.dart';
 import 'package:fluffy_board/whiteboard/appbar/add_bookmark.dart';
@@ -12,17 +11,17 @@ typedef OnBookMarkTeleport = Function(Offset, double);
 typedef OnBookMarkRefresh = Function(RefreshController);
 
 class BookmarkManager extends StatefulWidget {
-  String auth_token;
-  OnBookMarkTeleport onBookMarkTeleport;
-  List<Bookmark> bookmarks;
-  Offset offset;
-  double scale;
-  WebsocketConnection? websocketConnection;
-  bool online;
-  OnBookMarkRefresh onBookMarkRefresh;
+  final String authToken;
+  final OnBookMarkTeleport onBookMarkTeleport;
+  final List<Bookmark> bookmarks;
+  final Offset offset;
+  final double scale;
+  final WebsocketConnection? websocketConnection;
+  final bool online;
+  final OnBookMarkRefresh onBookMarkRefresh;
 
   BookmarkManager(
-      {required this.auth_token,
+      {required this.authToken,
       required this.online,
       required this.onBookMarkTeleport,
       required this.bookmarks,
@@ -55,7 +54,7 @@ class _BookmarkManagerState extends State<BookmarkManager> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => AddBookmark(
-                                  widget.auth_token,
+                                  widget.authToken,
                                   widget.online,
                                   widget.websocketConnection,
                                   widget.offset,
@@ -100,7 +99,7 @@ class _BookmarkManagerState extends State<BookmarkManager> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => RenameBookmark(
-                                          widget.auth_token,
+                                          widget.authToken,
                                           widget.online,
                                           widget.websocketConnection,
                                           refreshController,

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 class AvatarIcon extends StatefulWidget {
-  bool online;
+  final bool online;
 
   AvatarIcon(this.online);
 

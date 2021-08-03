@@ -8,13 +8,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class RenameFolder extends StatefulWidget {
-  String auth_token;
-  String parent;
-  String id;
-  String currentName;
-  RefreshController _refreshController;
+  final String authToken;
+  final String parent;
+  final String id;
+  final String currentName;
+  final RefreshController _refreshController;
 
-  RenameFolder(this.auth_token, this.id, this.parent, this.currentName, this._refreshController);
+  RenameFolder(this.authToken, this.id, this.parent, this.currentName, this._refreshController);
 
   @override
   _RenameFolderState createState() => _RenameFolderState();
@@ -36,14 +36,14 @@ class _RenameFolderState extends State<RenameFolder> {
                   return (FractionallySizedBox(
                       widthFactor: 0.5,
                       child: RenameFolderForm(
-                          widget.auth_token,
+                          widget.authToken,
                           widget.id,
                           widget.parent,
                           widget.currentName,
                           widget._refreshController)));
                 } else {
                   return (RenameFolderForm(
-                      widget.auth_token,
+                      widget.authToken,
                       widget.id,
                       widget.parent,
                       widget.currentName,
@@ -57,14 +57,14 @@ class _RenameFolderState extends State<RenameFolder> {
 }
 
 class RenameFolderForm extends StatefulWidget {
-  String auth_token;
-  String parent;
-  String id;
-  String currentName;
-  RefreshController _refreshController;
+  final String authToken;
+  final String parent;
+  final String id;
+  final String currentName;
+  final RefreshController _refreshController;
 
   RenameFolderForm(
-      this.auth_token, this.id, this.parent, this.currentName, this._refreshController);
+      this.authToken, this.id, this.parent, this.currentName, this._refreshController);
 
   @override
   _RenameFolderFormState createState() => _RenameFolderFormState();
@@ -137,7 +137,7 @@ class _RenameFolderFormState extends State<RenameFolderForm> {
               "content-type": "application/json",
               "accept": "application/json",
               'Authorization':
-              'Bearer ' + widget.auth_token,
+              'Bearer ' + widget.authToken,
             },
             body: jsonEncode({
               'id': widget.id,

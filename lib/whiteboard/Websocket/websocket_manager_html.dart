@@ -1,7 +1,3 @@
-
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:fluffy_board/whiteboard/Websocket/websocket_manager.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:universal_html/html.dart';
@@ -14,19 +10,19 @@ class WebsocketManagerHtml implements WebsocketManager {
   late WebSocket channel;
 
   @override
-  initializeConnection(String whiteboard, String auth_token) async {
-    channel = await connectWs(whiteboard, auth_token);
+  initializeConnection(String whiteboard, String authToken) async {
+    channel = await connectWs(whiteboard, authToken);
     print("socket connection initialized");
     this.channel.onClose.listen((event) {
-      onDisconnected(whiteboard, auth_token);
+      onDisconnected(whiteboard, authToken);
     });
-    startListener(whiteboard, auth_token);
+    startListener(whiteboard, authToken);
   }
 
   @override
-  connectWs(String whiteboard, String auth_token) async {
+  connectWs(String whiteboard, String authToken) async {
     WebSocket webSocket = WebSocket(
-        (settingsStorage.getItem("WS_API_URL") ?? dotenv.env['WS_API_URL']!) + "/$whiteboard/$auth_token");
+        (settingsStorage.getItem("WS_API_URL") ?? dotenv.env['WS_API_URL']!) + "/$whiteboard/$authToken");
     return webSocket;
   }
 
@@ -36,8 +32,8 @@ class WebsocketManagerHtml implements WebsocketManager {
   }
 
   @override
-  onDisconnected(String whiteboard, String auth_token) {
-    if (!disconnect) initializeConnection(whiteboard, auth_token);
+  onDisconnected(String whiteboard, String authToken) {
+    if (!disconnect) initializeConnection(whiteboard, authToken);
   }
 
   @override
@@ -49,7 +45,7 @@ class WebsocketManagerHtml implements WebsocketManager {
   }
 
   @override
-  startListener(String whiteboard, String auth_token) {
+  startListener(String whiteboard, String authToken) {
     print("starting listeners ...");
     channel.onOpen.listen((event) {
       sendDataToChannel("connected-users#", "");
@@ -59,11 +55,11 @@ class WebsocketManagerHtml implements WebsocketManager {
     });
     channel.onClose.listen((event) {
       print("connecting aborted");
-      if (!disconnect) initializeConnection(whiteboard, auth_token);
+      if (!disconnect) initializeConnection(whiteboard, authToken);
     });
     channel.onError.listen((event) {
       print('Server error: $event');
-      initializeConnection(whiteboard, auth_token);
+      initializeConnection(whiteboard, authToken);
     });
   }
 

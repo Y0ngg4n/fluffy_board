@@ -17,7 +17,7 @@ class DeleteManager {
   static deleteFolderDialog(
       BuildContext context,
       Directory directory,
-      String auth_token,
+      String authToken,
       Directories directories,
       RefreshController _refreshController) {
     showDialog(
@@ -38,7 +38,7 @@ class DeleteManager {
                           "content-type": "application/json",
                           "accept": "application/json",
                           "charset": "utf-8",
-                          'Authorization': 'Bearer ' + auth_token,
+                          'Authorization': 'Bearer ' + authToken,
                         },
                         body: jsonEncode({
                           "id": directory.id,
@@ -67,7 +67,7 @@ class DeleteManager {
         });
   }
 
-  static deleteWhiteboardDialog(BuildContext context, Whiteboard whiteboard, String auth_token,
+  static deleteWhiteboardDialog(BuildContext context, Whiteboard whiteboard, String authToken,
       RefreshController _refreshController) {
     showDialog(
         context: context,
@@ -87,7 +87,7 @@ class DeleteManager {
                           "content-type": "application/json",
                           "accept": "application/json",
                           "charset": "utf-8",
-                          'Authorization': 'Bearer ' + auth_token,
+                          'Authorization': 'Bearer ' + authToken,
                         },
                         body: jsonEncode({
                           "id": whiteboard.id,
@@ -114,7 +114,7 @@ class DeleteManager {
   }
 
   static deleteExtWhiteboardDialog(
-      BuildContext context, ExtWhiteboard whiteboard, String auth_token, RefreshController _refreshController) {
+      BuildContext context, ExtWhiteboard whiteboard, String authToken, RefreshController _refreshController) {
     showDialog(
         context: context,
         builder: (BuildContext ctx) {
@@ -133,7 +133,7 @@ class DeleteManager {
                           "content-type": "application/json",
                           "accept": "application/json",
                           "charset": "utf-8",
-                          'Authorization': 'Bearer ' + auth_token,
+                          'Authorization': 'Bearer ' + authToken,
                         },
                         body: jsonEncode({
                           "id": whiteboard.id,
@@ -160,7 +160,7 @@ class DeleteManager {
   }
 
   static deleteOfflineWhiteboardDialog(
-      BuildContext context, OfflineWhiteboard whiteboard, Set<String> offlineWhiteboardIds, String auth_token, RefreshController _refreshController) {
+      BuildContext context, OfflineWhiteboard whiteboard, Set<String> offlineWhiteboardIds, String authToken, RefreshController _refreshController) {
     showDialog(
         context: context,
         builder: (BuildContext ctx) {

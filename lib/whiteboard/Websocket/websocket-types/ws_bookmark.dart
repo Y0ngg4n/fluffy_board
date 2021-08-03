@@ -3,57 +3,57 @@ import 'package:fluffy_board/whiteboard/Websocket/websocket-types/websocket_type
 class WSBookmarkAdd implements JsonWebSocketType {
   String uuid;
   String name;
-  double offset_dx;
-  double offset_dy;
+  double offsetDx;
+  double offsetDy;
   double scale;
 
   WSBookmarkAdd.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'],
         name = json['name'],
-        offset_dx = json['offset_dx'].toDouble(),
-        offset_dy = json['offset_dy'].toDouble(),
+        offsetDx = json['offset_dx'].toDouble(),
+        offsetDy = json['offset_dy'].toDouble(),
         scale = json['scale'].toDouble();
 
   Map toJson() {
     return {
       'uuid': uuid,
       'name': name,
-      'offset_dx': offset_dx,
-      'offset_dy': offset_dy,
+      'offset_dx': offsetDx,
+      'offset_dy': offsetDy,
       'scale': scale,
     };
   }
 
   WSBookmarkAdd(
-      this.uuid, this.name, this.offset_dx, this.offset_dy, this.scale);
+      this.uuid, this.name, this.offsetDx, this.offsetDy, this.scale);
 }
 
 class WSBookmarkUpdate implements JsonWebSocketType {
   String uuid;
   String name;
-  double offset_dx;
-  double offset_dy;
+  double offsetDx;
+  double offsetDy;
   double scale;
 
   WSBookmarkUpdate.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'],
         name = json['name'],
-        offset_dx = json['offset_dx'].toDouble(),
-        offset_dy = json['offset_dy'].toDouble(),
+        offsetDx = json['offset_dx'].toDouble(),
+        offsetDy = json['offset_dy'].toDouble(),
         scale = json['scale'].toDouble();
 
   Map toJson() {
     return {
       'uuid': uuid,
       'name': name,
-      'offset_dx': offset_dx,
-      'offset_dy': offset_dy,
+      'offset_dx': offsetDx,
+      'offset_dy': offsetDy,
       'scale': scale,
     };
   }
 
   WSBookmarkUpdate(
-      this.uuid, this.name, this.offset_dx, this.offset_dy, this.scale);
+      this.uuid, this.name, this.offsetDx, this.offsetDy, this.scale);
 }
 
 class WSBookmarkDelete  implements JsonWebSocketType{
@@ -83,15 +83,15 @@ class DecodeGetBookmarkList implements DecodeGetJsonWebSocketTypeList{
 class DecodeGetBookmark implements DecodeGetJsonWebSocketType{
   String uuid;
   String name;
-  double offset_dx;
-  double offset_dy;
+  double offsetDx;
+  double offsetDy;
   double scale;
 
   DecodeGetBookmark.fromJson(Map<String, dynamic> json)
       : uuid = json['id'],
         name = json['name'],
-        offset_dx = json['offset_dx'].toDouble(),
-        offset_dy = json['offset_dy'].toDouble(),
+        offsetDx = json['offset_dx'].toDouble(),
+        offsetDy = json['offset_dy'].toDouble(),
         scale = json['scale'].toDouble();
 }
 

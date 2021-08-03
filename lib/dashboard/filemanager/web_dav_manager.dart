@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:webdav_client/webdav_client.dart' as webdav;
 
 import 'file_manager_types.dart';

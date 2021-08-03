@@ -12,11 +12,11 @@ typedef OnChangedZoomOptions<T> = Function(ZoomOptions);
 typedef OnChangedOffset<T> = Function(Offset);
 
 class ZoomView extends StatefulWidget {
-  ZoomOptions zoomOptions;
-  OnChangedZoomOptions onChangedZoomOptions;
-  OnChangedOffset onChangedOffset;
-  Offset offset;
-  String toolbarLocation;
+  final ZoomOptions zoomOptions;
+  final OnChangedZoomOptions onChangedZoomOptions;
+  final OnChangedOffset onChangedOffset;
+  final Offset offset;
+  final String toolbarLocation;
 
   ZoomView(
       {required this.zoomOptions,
@@ -64,9 +64,7 @@ class _ZoomViewState extends State<ZoomView> {
                         OutlinedButton(
                             onPressed: () {
                               setState(() {
-                                widget.offset +=
-                                    new Offset(0, moveFactorVertical);
-                                widget.onChangedOffset(widget.offset);
+                                widget.onChangedOffset(widget.offset + new Offset(0, moveFactorVertical));
                               });
                             },
                             child: Icon(Icons.arrow_upward_outlined))
@@ -77,9 +75,7 @@ class _ZoomViewState extends State<ZoomView> {
                         OutlinedButton(
                             onPressed: () {
                               setState(() {
-                                widget.offset +=
-                                    new Offset(moveFactorHorizontal, 0);
-                                widget.onChangedOffset(widget.offset);
+                                widget.onChangedOffset(widget.offset + new Offset(moveFactorHorizontal, 0));
                               });
                             },
                             child: Icon(Icons.arrow_left_outlined)),
@@ -91,9 +87,7 @@ class _ZoomViewState extends State<ZoomView> {
                         OutlinedButton(
                             onPressed: () {
                               setState(() {
-                                widget.offset +=
-                                    new Offset(-moveFactorHorizontal, 0);
-                                widget.onChangedOffset(widget.offset);
+                                widget.onChangedOffset(widget.offset + new Offset(-moveFactorHorizontal, 0));
                               });
                             },
                             child: Icon(Icons.arrow_right_outlined)),
@@ -104,9 +98,7 @@ class _ZoomViewState extends State<ZoomView> {
                         OutlinedButton(
                             onPressed: () {
                               setState(() {
-                                widget.offset +=
-                                    new Offset(0, -moveFactorVertical);
-                                widget.onChangedOffset(widget.offset);
+                                widget.onChangedOffset(widget.offset + new Offset(0, -moveFactorVertical));
                               });
                             },
                             child: Icon(Icons.arrow_downward_outlined))

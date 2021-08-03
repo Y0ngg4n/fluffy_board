@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ServerSettings extends StatefulWidget {
 

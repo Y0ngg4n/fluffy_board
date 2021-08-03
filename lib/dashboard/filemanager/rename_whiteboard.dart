@@ -8,13 +8,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class RenameWhiteboard extends StatefulWidget {
-  String auth_token;
-  String directory;
-  String id;
-  String currentName;
-  RefreshController _refreshController;
+  final String authToken;
+  final String directory;
+  final String id;
+  final String currentName;
+  final RefreshController _refreshController;
 
-  RenameWhiteboard(this.auth_token, this.id, this.directory, this.currentName, this._refreshController);
+  RenameWhiteboard(this.authToken, this.id, this.directory, this.currentName, this._refreshController);
 
   @override
   _RenameWhiteboardState createState() => _RenameWhiteboardState();
@@ -36,14 +36,14 @@ class _RenameWhiteboardState extends State<RenameWhiteboard> {
                   return (FractionallySizedBox(
                       widthFactor: 0.5,
                       child: RenameWhiteboardForm(
-                          widget.auth_token,
+                          widget.authToken,
                           widget.id,
                           widget.directory,
                           widget.currentName,
                           widget._refreshController)));
                 } else {
                   return (RenameWhiteboardForm(
-                      widget.auth_token,
+                      widget.authToken,
                       widget.id,
                       widget.directory,
                       widget.currentName,
@@ -57,14 +57,14 @@ class _RenameWhiteboardState extends State<RenameWhiteboard> {
 }
 
 class RenameWhiteboardForm extends StatefulWidget {
-  String auth_token;
-  String directory;
-  String id;
-  String currentName;
-  RefreshController _refreshController;
+  final String authToken;
+  final String directory;
+  final String id;
+  final String currentName;
+  final RefreshController _refreshController;
 
   RenameWhiteboardForm(
-      this.auth_token, this.id, this.directory, this.currentName, this._refreshController);
+      this.authToken, this.id, this.directory, this.currentName, this._refreshController);
 
   @override
   _RenameWhiteboardFormState createState() => _RenameWhiteboardFormState();
@@ -136,7 +136,7 @@ class _RenameWhiteboardFormState extends State<RenameWhiteboardForm> {
               "content-type": "application/json",
               "accept": "application/json",
               'Authorization':
-              'Bearer ' + widget.auth_token,
+              'Bearer ' + widget.authToken,
             },
             body: jsonEncode({
               'id': widget.id,

@@ -1,11 +1,6 @@
-import 'dart:convert';
-
 import 'package:fluffy_board/utils/screen_utils.dart';
-import 'package:fluffy_board/utils/own_icons_icons.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_manager_send.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket-types/websocket_types.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/upload-toolbar/pdf_import.dart';
 import 'package:fluffy_board/whiteboard/overlays/zoom.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
@@ -17,18 +12,16 @@ import 'package:uuid/uuid.dart';
 import '../../whiteboard_view.dart';
 import '../toolbar.dart' as Toolbar;
 
-import 'draw_options.dart';
-
 class UploadToolbar extends StatefulWidget {
-  Toolbar.ToolbarOptions toolbarOptions;
-  Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
-  List<Upload> uploads;
-  Offset offset;
-  Offset sessionOffset;
-  ZoomOptions zoomOptions;
-  WebsocketConnection? websocketConnection;
-  OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
-  Axis axis;
+  final Toolbar.ToolbarOptions toolbarOptions;
+  final Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
+  final  List<Upload> uploads;
+  final Offset offset;
+  final Offset sessionOffset;
+  final ZoomOptions zoomOptions;
+  final WebsocketConnection? websocketConnection;
+  final OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
+  final Axis axis;
 
   UploadToolbar(
       {required this.toolbarOptions,

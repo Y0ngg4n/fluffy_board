@@ -1,24 +1,18 @@
-import 'dart:convert';
-
 import 'package:fluffy_board/utils/screen_utils.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
-import 'package:fluffy_board/whiteboard/whiteboard_view.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'Websocket/websocket_manager_send.dart';
-import 'Websocket/websocket-types/websocket_types.dart';
 import 'overlays/toolbar.dart' as Toolbar;
-import 'dart:math';
 import 'package:vector_math/vector_math.dart';
 
 class TextsCanvas extends StatefulWidget {
-  List<TextItem> texts;
-  Offset offset;
-  Offset sessionOffset;
-  Toolbar.ToolbarOptions toolbarOptions;
-  WebsocketConnection? websocketConnection;
+  final List<TextItem> texts;
+  final Offset offset;
+  final Offset sessionOffset;
+  final Toolbar.ToolbarOptions toolbarOptions;
+  final WebsocketConnection? websocketConnection;
 
   TextsCanvas(
       {required this.texts,

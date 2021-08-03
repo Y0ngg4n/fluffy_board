@@ -1,11 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:ui' as ui;
-import 'package:fluffy_board/utils/screen_utils.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket-types/websocket_types.dart';
 import 'package:fluffy_board/whiteboard/whiteboard_view.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/figure_toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
@@ -50,20 +45,20 @@ class FileActionManager {
       bool online,
       directoryButtons,
       Directories directories,
-      double file_icon_size,
-      String auth_token,
+      double fileIconSize,
+      String authToken,
       String currentDirectory,
       RefreshController _refreshController,
       OnDirectorySwitch onDirectorySwitch) {
     for (Directory directory in directories.list) {
       directoryButtons.add(DragTarget(
         onAccept: (data) async {
-          await moveWhiteboard(context, data, directory.id, auth_token, _refreshController);
+          await moveWhiteboard(context, data, directory.id, authToken, _refreshController);
         },
         builder: (context, candidateData, rejectedData) {
           return LongPressDraggable<Directory>(
             data: directory,
-            feedback: Icon(Icons.folder_open_outlined, size: file_icon_size),
+            feedback: Icon(Icons.folder_open_outlined, size: fileIconSize),
             child: (Column(
               children: [
                 Row(
@@ -74,7 +69,7 @@ class FileActionManager {
                       children: [
                         InkWell(
                           child: Icon(Icons.folder_open_outlined,
-                              size: file_icon_size),
+                              size: fileIconSize),
                           onTap: () {
                             onDirectorySwitch(directory);
 
@@ -107,7 +102,7 @@ class FileActionManager {
                                 MaterialPageRoute<void>(
                                   builder: (BuildContext context) =>
                                       RenameFolder(
-                                          auth_token,
+                                          authToken,
                                           directory.id,
                                           currentDirectory,
                                           directory.filename,
@@ -116,7 +111,7 @@ class FileActionManager {
                             break;
                           case 1:
                             DeleteManager.deleteFolderDialog(context, directory,
-                                auth_token, directories, _refreshController);
+                                authToken, directories, _refreshController);
                             break;
                         }
                       },
@@ -134,18 +129,18 @@ class FileActionManager {
   static mapBreadCrumbs(
       BuildContext context,
       breadCrumbItems,
-      double font_size,
-      String auth_token,
+      double fontSize,
+      String authToken,
       OnDirectorySwitch onDirectorySwitch,
       RefreshController _refreshController,
       List<Directory> currentDirectoryPath) {
     breadCrumbItems.add(BreadCrumbItem(
         content: DragTarget(onAccept: (data) async {
-          await moveWhiteboard(context, data, "", auth_token, _refreshController);
+          await moveWhiteboard(context, data, "", authToken, _refreshController);
         }, builder: (context, candidateData, rejectedData) {
           return Icon(
             Icons.home,
-            size: font_size,
+            size: fontSize,
           );
         }),
         onTap: () {
@@ -158,10 +153,10 @@ class FileActionManager {
       breadCrumbItems.add(BreadCrumbItem(
           content: DragTarget(
             onAccept: (data) async {
-              await moveWhiteboard(context, data, uuid, auth_token, _refreshController);
+              await moveWhiteboard(context, data, uuid, authToken, _refreshController);
             },
             builder: (context, candidateData, rejectedData) {
-              return Text(filename, style: TextStyle(fontSize: font_size));
+              return Text(filename, style: TextStyle(fontSize: fontSize));
             },
           ),
           onTap: () {
@@ -178,8 +173,8 @@ class FileActionManager {
       BuildContext context,
       whiteboardButtons,
       Whiteboards whiteboards,
-      double file_icon_size,
-      String auth_token,
+      double fileIconSize,
+      String authToken,
       String id,
       String username,
       bool online,
@@ -190,7 +185,7 @@ class FileActionManager {
     for (Whiteboard whiteboard in whiteboards.list) {
       whiteboardButtons.add(LongPressDraggable<Whiteboard>(
         data: whiteboard,
-        feedback: Icon(Icons.assignment, size: file_icon_size),
+        feedback: Icon(Icons.assignment, size: fileIconSize),
         child: Column(
           children: [
             Row(
@@ -200,14 +195,14 @@ class FileActionManager {
                   child: Column(
                     children: [
                       InkWell(
-                        child: Icon(Icons.assignment, size: file_icon_size),
+                        child: Icon(Icons.assignment, size: fileIconSize),
                         onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute<void>(
                                   builder: (BuildContext context) =>
                                       WhiteboardView(whiteboard, null, null,
-                                          auth_token, id, online)));
+                                          authToken, id, online)));
                         },
                       ),
                       Text(
@@ -232,7 +227,7 @@ class FileActionManager {
                             MaterialPageRoute<void>(
                               builder: (BuildContext context) =>
                                   RenameWhiteboard(
-                                      auth_token,
+                                      authToken,
                                       whiteboard.id,
                                       currentDirectory,
                                       whiteboard.name,
@@ -241,7 +236,7 @@ class FileActionManager {
                         break;
                       case 1:
                         DeleteManager.deleteWhiteboardDialog(context,
-                            whiteboard, auth_token, _refreshController);
+                            whiteboard, authToken, _refreshController);
                         break;
                       case 2:
                         Navigator.push(
@@ -249,14 +244,13 @@ class FileActionManager {
                             MaterialPageRoute<void>(
                               builder: (BuildContext context) =>
                                   ShareWhiteboard(
-                                      auth_token,
+                                      authToken,
                                       username,
                                       whiteboard.id,
                                       whiteboard.name,
                                       currentDirectory,
-                                      whiteboard.view_id,
-                                      whiteboard.edit_id,
-                                      _refreshController),
+                                      whiteboard.viewId,
+                                      whiteboard.editId),
                             ));
                         break;
                       case 3:
@@ -267,20 +261,20 @@ class FileActionManager {
                                 whiteboard.name,
                                 await WhiteboardDataManager.getUploads(
                                     whiteboard.id,
-                                    whiteboard.edit_id,
-                                    auth_token),
+                                    whiteboard.editId,
+                                    authToken),
                                 await WhiteboardDataManager.getTextItems(
                                     whiteboard.id,
-                                    whiteboard.edit_id,
-                                    auth_token),
+                                    whiteboard.editId,
+                                    authToken),
                                 await WhiteboardDataManager.getScribbles(
                                     whiteboard.id,
-                                    whiteboard.edit_id,
-                                    auth_token),
+                                    whiteboard.editId,
+                                    authToken),
                                 await WhiteboardDataManager.getBookmarks(
                                     whiteboard.id,
-                                    whiteboard.edit_id,
-                                    auth_token),
+                                    whiteboard.editId,
+                                    authToken),
                           Offset.zero, 1
                         );
                         offlineWhiteboards.list.add(offlineWhiteboard);
@@ -310,18 +304,18 @@ class FileActionManager {
       BuildContext context,
       whiteboardButtons,
       ExtWhiteboards extWhiteboards,
-      double file_icon_size,
+      double fileIconSize,
       OfflineWhiteboards offlineWhiteboards,
       Set<String> offlineWhiteboardIds,
       String currentDirectory,
-      String auth_token,
+      String authToken,
       String id,
       bool online,
       RefreshController _refreshController) {
     for (ExtWhiteboard whiteboard in extWhiteboards.list) {
       whiteboardButtons.add(LongPressDraggable<ExtWhiteboard>(
         data: whiteboard,
-        feedback: Icon(Icons.assignment_ind, size: file_icon_size),
+        feedback: Icon(Icons.assignment_ind, size: fileIconSize),
         child: Column(
           children: [
             Row(
@@ -331,14 +325,14 @@ class FileActionManager {
                   child: Column(
                     children: [
                       InkWell(
-                        child: Icon(Icons.assignment_ind, size: file_icon_size),
+                        child: Icon(Icons.assignment_ind, size: fileIconSize),
                         onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute<void>(
                                   builder: (BuildContext context) =>
                                       WhiteboardView(null, whiteboard, null,
-                                          auth_token, id, online)));
+                                          authToken, id, online)));
                         },
                       ),
                       Text(
@@ -357,7 +351,7 @@ class FileActionManager {
                     switch (value) {
                       case 0:
                         DeleteManager.deleteExtWhiteboardDialog(context,
-                            whiteboard, auth_token, _refreshController);
+                            whiteboard, authToken, _refreshController);
                         break;
                       case 1:
                         OfflineWhiteboard offlineWhiteboard =
@@ -368,19 +362,19 @@ class FileActionManager {
                                 await WhiteboardDataManager.getUploads(
                                     whiteboard.original,
                                     whiteboard.permissionId,
-                                    auth_token),
+                                    authToken),
                                 await WhiteboardDataManager.getTextItems(
                                     whiteboard.original,
                                     whiteboard.permissionId,
-                                    auth_token),
+                                    authToken),
                                 await WhiteboardDataManager.getScribbles(
                                     whiteboard.original,
                                     whiteboard.permissionId,
-                                    auth_token),
+                                    authToken),
                                 await WhiteboardDataManager.getBookmarks(
                                     whiteboard.original,
                                     whiteboard.permissionId,
-                                    auth_token), Offset.zero, 1);
+                                    authToken), Offset.zero, 1);
                         offlineWhiteboards.list.add(offlineWhiteboard);
                         await fileManagerStorage.setItem(
                             "offline_whiteboard-" + offlineWhiteboard.uuid,
@@ -408,8 +402,8 @@ class FileActionManager {
       BuildContext context,
       whiteboardButtons,
       OfflineWhiteboards offlineWhiteboards,
-      double file_icon_size,
-      String auth_token,
+      double fileIconSize,
+      String authToken,
       String id,
       bool online,
       RefreshController _refreshController,
@@ -419,7 +413,7 @@ class FileActionManager {
       whiteboardButtons.add(LongPressDraggable<OfflineWhiteboard>(
         data: whiteboard,
         feedback:
-            Icon(Icons.download_for_offline_outlined, size: file_icon_size),
+            Icon(Icons.download_for_offline_outlined, size: fileIconSize),
         child: Column(
           children: [
             Row(
@@ -430,7 +424,7 @@ class FileActionManager {
                     children: [
                       InkWell(
                         child: Icon(Icons.download_for_offline_outlined,
-                            size: file_icon_size),
+                            size: fileIconSize),
                         onTap: () {
                           Navigator.push(
                               context,
@@ -440,7 +434,7 @@ class FileActionManager {
                                           null,
                                           null,
                                           whiteboard,
-                                          auth_token,
+                                          authToken,
                                           id,
                                           online)));
                         },
@@ -473,7 +467,7 @@ class FileActionManager {
                             context,
                             whiteboard,
                             offlineWhiteboardIds,
-                            auth_token,
+                            authToken,
                             _refreshController);
                         break;
                       case 2:
@@ -485,7 +479,7 @@ class FileActionManager {
                             headers: {
                               "content-type": "application/json",
                               "accept": "application/json",
-                              'Authorization': 'Bearer ' + auth_token,
+                              'Authorization': 'Bearer ' + authToken,
                             },
                             body: jsonEncode({
                               'name': whiteboard.name,
@@ -505,7 +499,7 @@ class FileActionManager {
                               headers: {
                                 "content-type": "application/json",
                                 "accept": "application/json",
-                                'Authorization': 'Bearer ' + auth_token,
+                                'Authorization': 'Bearer ' + authToken,
                               },
                               body: jsonEncode(whiteboard.toJSONEncodable()));
                           if (response.statusCode == 200) {
@@ -541,7 +535,7 @@ class FileActionManager {
     }
   }
 
-  static moveWhiteboard(BuildContext context, dynamic data, String directoryUuid, String auth_token, RefreshController _refreshController) async {
+  static moveWhiteboard(BuildContext context, dynamic data, String directoryUuid, String authToken, RefreshController _refreshController) async {
     if (data is Whiteboard) {
       Whiteboard whiteboard = data;
       whiteboard.parent = directoryUuid;
@@ -552,7 +546,7 @@ class FileActionManager {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           },
           body: jsonEncode({
             'id': whiteboard.id,
@@ -573,7 +567,7 @@ class FileActionManager {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           },
           body: jsonEncode({
             'id': whiteboard.id,
@@ -600,7 +594,7 @@ class FileActionManager {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           },
           body: jsonEncode({
             'id': directory.id,

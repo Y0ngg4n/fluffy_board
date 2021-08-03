@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 
 import 'websocket_manager.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -12,20 +11,20 @@ class WebsocketManagerOther implements WebsocketManager {
   late WebSocket channel;
 
   @override
-  initializeConnection(String whiteboard, String auth_token) async {
-    channel = await connectWs(whiteboard, auth_token);
+  initializeConnection(String whiteboard, String authToken) async {
+    channel = await connectWs(whiteboard, authToken);
     print("socket connection initialized");
     this
         .channel
         .done
-        .then((dynamic _) => onDisconnected(whiteboard, auth_token));
-    startListener(whiteboard, auth_token);
+        .then((dynamic _) => onDisconnected(whiteboard, authToken));
+    startListener(whiteboard, authToken);
   }
 
   @override
-  connectWs(String whiteboard, String auth_token) async {
+  connectWs(String whiteboard, String authToken) async {
     WebSocket webSocket = await WebSocket.connect(
-        (settingsStorage.getItem("WS_API_URL") ?? dotenv.env['WS_API_URL']!) + "/$whiteboard/$auth_token");
+        (settingsStorage.getItem("WS_API_URL") ?? dotenv.env['WS_API_URL']!) + "/$whiteboard/$authToken");
     return webSocket;
   }
 
@@ -35,8 +34,8 @@ class WebsocketManagerOther implements WebsocketManager {
   }
 
   @override
-  onDisconnected(String whiteboard, String auth_token) {
-    if (!disconnect) initializeConnection(whiteboard, auth_token);
+  onDisconnected(String whiteboard, String authToken) {
+    if (!disconnect) initializeConnection(whiteboard, authToken);
   }
 
   @override
@@ -48,17 +47,17 @@ class WebsocketManagerOther implements WebsocketManager {
   }
 
   @override
-  startListener(String whiteboard, String auth_token) {
+  startListener(String whiteboard, String authToken) {
     print("starting listeners ...");
     sendDataToChannel("connected-users#", "");
     this.channel.listen((streamData) {
       onWebsocketMessage(streamData);
     }, onDone: () {
       print("connecting aborted");
-      if (!disconnect) initializeConnection(whiteboard, auth_token);
+      if (!disconnect) initializeConnection(whiteboard, authToken);
     }, onError: (e) {
       print('Server error: $e');
-      initializeConnection(whiteboard, auth_token);
+      initializeConnection(whiteboard, authToken);
     });
   }
 

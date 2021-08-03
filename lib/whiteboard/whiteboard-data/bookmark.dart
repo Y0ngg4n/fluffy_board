@@ -1,14 +1,4 @@
-import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
-
-import 'package:fluffy_board/whiteboard/whiteboard_view.dart';
-import 'package:flutter/material.dart';
-
-import '../overlays/Toolbar/figure_toolbar.dart';
-import 'package:uuid/uuid.dart';
-
-import 'json_encodable.dart';
 
 class Bookmarks {
   List<Bookmark> list = [];

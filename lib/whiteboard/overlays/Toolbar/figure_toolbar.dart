@@ -1,4 +1,3 @@
-import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -60,9 +59,9 @@ class DecodeFigureptions{
 }
 
 class FigureToolbar extends StatefulWidget {
-  Toolbar.ToolbarOptions toolbarOptions;
-  Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
-  Axis axis;
+  final Toolbar.ToolbarOptions toolbarOptions;
+  final Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
+  final Axis axis;
   FigureToolbar(
       {required this.toolbarOptions, required this.onChangedToolbarOptions, required this.axis});
 

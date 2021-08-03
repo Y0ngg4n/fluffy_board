@@ -1,5 +1,4 @@
 import 'package:fluffy_board/utils/own_icons_icons.dart';
-import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/whiteboard/infinite_canvas.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/figure_toolbar.dart';
@@ -16,7 +15,6 @@ import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-import '../whiteboard-data/json_encodable.dart';
 import '../whiteboard_view.dart';
 import 'Toolbar/background_toolbar.dart';
 import 'Toolbar/color_picker_view.dart';
@@ -73,20 +71,20 @@ class ToolbarOptions {
 }
 
 class Toolbar extends StatefulWidget {
-  ToolbarOptions toolbarOptions;
-  OnChangedToolbarOptions onChangedToolbarOptions;
-  List<Upload> uploads;
-  Offset offset;
-  Offset sessionOffset;
-  ZoomOptions zoomOptions;
-  List<Scribble> scribbles;
-  OnScribblesChange onScribblesChange;
-  OnUploadsChange onUploadsChange;
-  OnTextItemsChange onTextItemsChange;
-  WebsocketConnection? websocketConnection;
-  List<TextItem> texts;
-  OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
-  String toolbarLocation;
+  final ToolbarOptions toolbarOptions;
+  final OnChangedToolbarOptions onChangedToolbarOptions;
+  final List<Upload> uploads;
+  final  Offset offset;
+  final Offset sessionOffset;
+  final ZoomOptions zoomOptions;
+  final List<Scribble> scribbles;
+  final OnScribblesChange onScribblesChange;
+  final OnUploadsChange onUploadsChange;
+  final OnTextItemsChange onTextItemsChange;
+  final WebsocketConnection? websocketConnection;
+  final List<TextItem> texts;
+  final OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
+  final String toolbarLocation;
 
   Toolbar(
       {required this.toolbarOptions,
@@ -227,7 +225,6 @@ class _ToolbarState extends State<Toolbar> {
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {
-              widget.toolbarOptions = toolbarOptions;
               widget.onChangedToolbarOptions(toolbarOptions);
             })
           },
@@ -238,7 +235,6 @@ class _ToolbarState extends State<Toolbar> {
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {
-              widget.toolbarOptions = toolbarOptions;
               widget.onChangedToolbarOptions(toolbarOptions);
             })
           },
@@ -249,7 +245,6 @@ class _ToolbarState extends State<Toolbar> {
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {
-              widget.toolbarOptions = toolbarOptions;
               widget.onChangedToolbarOptions(toolbarOptions);
             })
           },
@@ -260,7 +255,6 @@ class _ToolbarState extends State<Toolbar> {
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {
-              widget.toolbarOptions = toolbarOptions;
               widget.onChangedToolbarOptions(toolbarOptions);
             })
           },
@@ -271,7 +265,6 @@ class _ToolbarState extends State<Toolbar> {
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {
-              widget.toolbarOptions = toolbarOptions;
               widget.onChangedToolbarOptions(toolbarOptions);
             })
           },
@@ -285,7 +278,6 @@ class _ToolbarState extends State<Toolbar> {
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {
-              widget.toolbarOptions = toolbarOptions;
               widget.onChangedToolbarOptions(toolbarOptions);
             })
           },
@@ -300,7 +292,6 @@ class _ToolbarState extends State<Toolbar> {
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) => {
             setState(() {
-              widget.toolbarOptions = toolbarOptions;
               widget.onChangedToolbarOptions(toolbarOptions);
             })
           },
@@ -314,7 +305,6 @@ class _ToolbarState extends State<Toolbar> {
             onChangedToolbarOptions: (toolbarOptions) {
               setState(() {
                 setState(() {
-                  widget.toolbarOptions = toolbarOptions;
                   widget.onChangedToolbarOptions(toolbarOptions);
                 });
               });
@@ -326,7 +316,6 @@ class _ToolbarState extends State<Toolbar> {
     switch (widget.toolbarOptions.settingsSelected) {
       case SettingsSelected.none:
         return Container();
-        break;
       case SettingsSelected.scribble:
         return ScribbleSettings(
           offset: widget.offset,
@@ -338,13 +327,11 @@ class _ToolbarState extends State<Toolbar> {
           selectedScribble: widget.toolbarOptions.settingsSelectedScribble,
           onChangedToolbarOptions: (toolbarOptions) {
             setState(() {
-              widget.toolbarOptions = toolbarOptions;
               widget.onChangedToolbarOptions(toolbarOptions);
             });
           },
           onScribblesChange: (scribbles) {
             setState(() {
-              widget.scribbles = scribbles;
               widget.onScribblesChange(scribbles);
               if (!scribbles
                   .contains(widget.toolbarOptions.settingsSelectedScribble)) {
@@ -356,7 +343,6 @@ class _ToolbarState extends State<Toolbar> {
           },
           scribbles: widget.scribbles,
         );
-        break;
       case SettingsSelected.image:
         return UploadSettings(
           axis: axis,
@@ -366,14 +352,12 @@ class _ToolbarState extends State<Toolbar> {
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) {
             setState(() {
-              widget.toolbarOptions = toolbarOptions;
               widget.onChangedToolbarOptions(toolbarOptions);
             });
           },
           uploads: widget.uploads,
           onUploadsChange: (uploads) {
             setState(() {
-              widget.uploads = uploads;
               widget.onUploadsChange(uploads);
               if (!uploads
                   .contains(widget.toolbarOptions.settingsSelectedUpload)) {
@@ -384,7 +368,6 @@ class _ToolbarState extends State<Toolbar> {
             });
           },
         );
-        break;
       case SettingsSelected.text:
         return TextItemSettings(
           axis: axis,
@@ -394,14 +377,12 @@ class _ToolbarState extends State<Toolbar> {
           toolbarOptions: widget.toolbarOptions,
           onChangedToolbarOptions: (toolbarOptions) {
             setState(() {
-              widget.toolbarOptions = toolbarOptions;
               widget.onChangedToolbarOptions(toolbarOptions);
             });
           },
           texts: widget.texts,
           onTextItemsChange: (texts) {
             setState(() {
-              widget.texts = texts;
               widget.onTextItemsChange(texts);
               if (!texts
                   .contains(widget.toolbarOptions.settingsSelectedTextItem)) {
@@ -412,7 +393,6 @@ class _ToolbarState extends State<Toolbar> {
             });
           },
         );
-        break;
     }
   }
 

@@ -1,18 +1,9 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
-import 'dart:math';
-
-import 'package:fluffy_board/dashboard/avatar_icon.dart';
 import 'package:fluffy_board/dashboard/filemanager/file_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-import 'action_buttons.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -48,7 +39,7 @@ class _DashboardState extends State<Dashboard> {
   bool checkedLogin = false;
   bool online = true;
   bool loggedIn = false;
-  late String auth_token;
+  late String authToken;
   late String username;
   late String id;
 
@@ -89,19 +80,19 @@ class _DashboardState extends State<Dashboard> {
         });
     if (introStorage.getItem('read') == null) return (Dashboard.loading(name));
 
-    return (FileManager(auth_token, username, id, online));
+    return (FileManager(authToken, username, id, online));
   }
 
   _setStorageReady() {
-    auth_token = accountStorage.getItem("auth_token") ?? "";
+    authToken = accountStorage.getItem("auth_token") ?? "";
     username = accountStorage.getItem("username") ?? "";
     id = accountStorage.getItem("id") ?? "";
     setState(() {
       this.storageReady = true;
-      this.auth_token = auth_token;
+      this.authToken = authToken;
       this.username = username;
     });
-    _checkLoggedIn(auth_token);
+    _checkLoggedIn(authToken);
   }
 
   _setIntroStorageReady() {
@@ -110,9 +101,9 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  Future _checkLoggedIn(String auth_token) async {
+  Future _checkLoggedIn(String authToken) async {
     print("Checking if logged in...");
-    if (auth_token.isEmpty) {
+    if (authToken.isEmpty) {
       setState(() {
         checkedLogin = true;
         loggedIn = false;
@@ -127,7 +118,7 @@ class _DashboardState extends State<Dashboard> {
             headers: {
               "content-type": "application/json",
               "accept": "application/json",
-              'Authorization': 'Bearer ' + auth_token,
+              'Authorization': 'Bearer ' + authToken,
               'Access-Control-Allow-Origin': '*'
             });
         setState(() {

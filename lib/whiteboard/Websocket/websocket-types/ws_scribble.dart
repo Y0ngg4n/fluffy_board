@@ -1,13 +1,7 @@
-import 'dart:convert';
 import 'dart:core';
-import 'dart:typed_data';
 
 import 'package:fluffy_board/whiteboard/Websocket/websocket-types/websocket_types.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/draw_point.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'dart:ui';
 
 class WSScribbleAdd implements JsonWebSocketType {
   String uuid;

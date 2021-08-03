@@ -1,8 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/whiteboard/canvas_custom_painter.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'dart:ui' as ui;
 import 'package:file_saver/file_saver.dart';
 import 'package:fluffy_board/whiteboard/overlays/toolbar.dart';
@@ -18,7 +16,7 @@ class ExportUtils {
       double scale) async {
     ui.Rect rect = getBounds(scribbles, uploads, texts);
     ui.PictureRecorder recorder = ui.PictureRecorder();
-    ui.Canvas canvas = getCanvas(scribbles, uploads, texts, offset, screenSize, scale, rect, recorder);
+    getCanvas(scribbles, uploads, texts, offset, screenSize, scale, rect, recorder);
 
     // Finally render the image, this can take about 8 to 25 milliseconds.
     var picture = recorder.endRecording();
@@ -38,7 +36,7 @@ class ExportUtils {
       double scale) async{
     ui.Rect rect = getBounds(scribbles, uploads, texts);
     ui.PictureRecorder recorder = ui.PictureRecorder();
-    ui.Canvas canvas = getCanvas(scribbles, uploads, texts, offset, screenSize, scale, rect, recorder);
+    getCanvas(scribbles, uploads, texts, offset, screenSize, scale, rect, recorder);
 
     // Finally render the image, this can take about 8 to 25 milliseconds.
     var picture = recorder.endRecording();
@@ -67,7 +65,7 @@ class ExportUtils {
       double scale) async {
     ui.Rect rect = material.Rect.fromLTWH(offset.dx, offset.dy, screenSize.dx, screenSize.dy);
     ui.PictureRecorder recorder = ui.PictureRecorder();
-    ui.Canvas canvas = getScreenSizeCanvas(scribbles, uploads, texts, offset, screenSize, scale, rect, recorder);
+    getScreenSizeCanvas(scribbles, uploads, texts, offset, screenSize, scale, rect, recorder);
 
     // Finally render the image, this can take about 8 to 25 milliseconds.
     var picture = recorder.endRecording();

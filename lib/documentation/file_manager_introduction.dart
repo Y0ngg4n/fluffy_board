@@ -1,6 +1,4 @@
-import 'package:fluffy_board/dashboard/dashboard.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
 import 'package:introduction_screen/introduction_screen.dart';

@@ -9,11 +9,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class AddExtWhiteboard extends StatefulWidget {
-  String auth_token;
-  String directory;
-  RefreshController _refreshController;
+  final String authToken;
+  final String directory;
+  final RefreshController _refreshController;
 
-  AddExtWhiteboard(this.auth_token, this.directory, this._refreshController);
+  AddExtWhiteboard(this.authToken, this.directory, this._refreshController);
 
   @override
   _AddExtWhiteboardState createState() => _AddExtWhiteboardState();
@@ -33,10 +33,10 @@ class _AddExtWhiteboardState extends State<AddExtWhiteboard> {
               builder: (BuildContext context, BoxConstraints constraints) {
                 if (constraints.maxWidth > 600) {
                   return (FractionallySizedBox(
-                      widthFactor: 0.5, child: AddExtWhiteboardForm(widget.auth_token,
+                      widthFactor: 0.5, child: AddExtWhiteboardForm(widget.authToken,
                       widget.directory, widget._refreshController)));
                 } else {
-                  return (AddExtWhiteboardForm(widget.auth_token,
+                  return (AddExtWhiteboardForm(widget.authToken,
                   widget.directory,widget._refreshController));
                 }
               },
@@ -47,11 +47,11 @@ class _AddExtWhiteboardState extends State<AddExtWhiteboard> {
 }
 
 class AddExtWhiteboardForm extends StatefulWidget {
-  String auth_token;
-  String directory;
-  RefreshController _refreshController;
+  final String authToken;
+  final String directory;
+  final RefreshController _refreshController;
 
-  AddExtWhiteboardForm(this.auth_token, this.directory, this._refreshController);
+  AddExtWhiteboardForm(this.authToken, this.directory, this._refreshController);
 
   @override
   _AddExtWhiteboardFormState createState() => _AddExtWhiteboardFormState();
@@ -131,7 +131,7 @@ class _AddExtWhiteboardFormState extends State<AddExtWhiteboardForm> {
             headers: {
               "content-type": "application/json",
               "accept": "application/json",
-              'Authorization': 'Bearer ' + widget.auth_token,
+              'Authorization': 'Bearer ' + widget.authToken,
             },
             body: jsonEncode({
               'id': splitInviteId[0],

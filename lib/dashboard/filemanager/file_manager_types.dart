@@ -1,7 +1,6 @@
 import 'dart:ui' as ui;
 
 import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
@@ -50,11 +49,11 @@ class Directories {
 }
 
 class Whiteboard {
-  late String id, owner, parent, name, view_id, edit_id;
+  late String id, owner, parent, name, viewId, editId;
   late int created;
 
   Whiteboard(this.id, this.owner, this.parent, this.name, this.created,
-      this.view_id, this.edit_id);
+      this.viewId, this.editId);
 }
 
 class Whiteboards {

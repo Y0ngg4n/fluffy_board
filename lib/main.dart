@@ -1,8 +1,5 @@
 import 'package:fluffy_board/dashboard/web_dav_settings.dart';
-import 'package:fluffy_board/dashboard/filemanager/add_folder.dart';
 import 'package:fluffy_board/documentation/file_manager_introduction.dart';
-import 'package:fluffy_board/utils/theme_data_utils.dart';
-import 'package:fluffy_board/whiteboard/whiteboard_view.dart';
 import 'package:flutter/material.dart';
 
 import 'account/login.dart';
@@ -10,9 +7,7 @@ import 'account/register.dart';
 import 'dashboard/dashboard.dart';
 import 'dashboard/edit_account.dart';
 import 'dashboard/server_settings.dart';
-import 'dashboard/filemanager/add_folder.dart';
 import 'documentation/about.dart';
-import 'whiteboard/infinite_canvas.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 

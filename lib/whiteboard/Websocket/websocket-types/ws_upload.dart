@@ -3,50 +3,50 @@ import 'package:fluffy_board/whiteboard/Websocket/websocket-types/websocket_type
 class WSUploadAdd implements JsonWebSocketType{
   String uuid;
   int uploadType;
-  double offset_dx;
-  double offset_dy;
+  double offsetDx;
+  double offsetDy;
   List<int> imageData;
 
   WSUploadAdd.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'],
         uploadType = json['upload_type'],
-        offset_dx = json['offset_dx'].toDouble(),
-        offset_dy = json['offset_dy'].toDouble(),
+        offsetDx = json['offset_dx'].toDouble(),
+        offsetDy = json['offset_dy'].toDouble(),
         imageData = json['image_data'].cast<int>();
 
   Map toJson() {
     return {
       'uuid': uuid,
       'upload_type': uploadType,
-      'offset_dx': offset_dx,
-      'offset_dy': offset_dy,
+      'offset_dx': offsetDx,
+      'offset_dy': offsetDy,
       'image_data': imageData,
     };
   }
 
-  WSUploadAdd(this.uuid, this.uploadType, this.offset_dx, this.offset_dy,
+  WSUploadAdd(this.uuid, this.uploadType, this.offsetDx, this.offsetDy,
       this.imageData);
 }
 
 class WSUploadUpdate implements JsonWebSocketType{
   String uuid;
-  double offset_dx;
-  double offset_dy;
+  double offsetDx;
+  double offsetDy;
 
   WSUploadUpdate.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'],
-        offset_dx = json['offset_dx'].toDouble(),
-        offset_dy = json['offset_dy'].toDouble();
+        offsetDx = json['offset_dx'].toDouble(),
+        offsetDy = json['offset_dy'].toDouble();
 
   Map toJson() {
     return {
       'uuid': uuid,
-      'offset_dx': offset_dx,
-      'offset_dy': offset_dy,
+      'offset_dx': offsetDx,
+      'offset_dy': offsetDy,
     };
   }
 
-  WSUploadUpdate(this.uuid, this.offset_dx, this.offset_dy);
+  WSUploadUpdate(this.uuid, this.offsetDx, this.offsetDy);
 }
 
 class WSUploadImageDataUpdate implements JsonWebSocketType{
@@ -84,16 +84,16 @@ class WSUploadDelete implements JsonWebSocketType{
 class DecodeGetUpload implements DecodeGetJsonWebSocketType{
   String uuid;
   int uploadType;
-  double offset_dx;
-  double offset_dy;
+  double offsetDx;
+  double offsetDy;
 
   List<int> imageData;
 
   DecodeGetUpload.fromJson(Map<String, dynamic> json)
       : uuid = json['id'],
         uploadType = json['upload_type'],
-        offset_dx = json['offset_dx'].toDouble(),
-        offset_dy = json['offset_dy'].toDouble(),
+        offsetDx = json['offset_dx'].toDouble(),
+        offsetDy = json['offset_dy'].toDouble(),
         imageData = json['image_data'].cast<int>();
 }
 

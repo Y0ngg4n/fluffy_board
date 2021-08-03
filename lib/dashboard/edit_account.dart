@@ -62,7 +62,7 @@ class _EditAccountFormState extends State<EditAccountForm> {
                   if (snapshot.data == null) {
                     return Center(child: CircularProgressIndicator());
                   }
-                  String auth_token =
+                  String authToken =
                       accountStorage.getItem("auth_token") ?? "";
                   String email = accountStorage.getItem("email") ?? "";
                   String username = accountStorage.getItem("username") ?? "";
@@ -97,7 +97,7 @@ class _EditAccountFormState extends State<EditAccountForm> {
                                             "content-type": "application/json",
                                             "accept": "application/json",
                                             'Authorization':
-                                                'Bearer ' + auth_token,
+                                                'Bearer ' + authToken,
                                           },
                                           body: jsonEncode({
                                             'name': usernameController.text,
@@ -132,7 +132,7 @@ class _EditAccountFormState extends State<EditAccountForm> {
                                       (Set<MaterialState> states) {
                                 return Colors.red;
                               })),
-                              onPressed: () {_deleteAccountDialog(auth_token);},
+                              onPressed: () {_deleteAccountDialog(authToken);},
                               child: Text("Delete account"),
                             ),
                           ),
@@ -141,7 +141,7 @@ class _EditAccountFormState extends State<EditAccountForm> {
                 })));
   }
 
-  _deleteAccountDialog(String auth_token){
+  _deleteAccountDialog(String authToken){
     showDialog(
         context: context,
         builder: (BuildContext ctx) {
@@ -160,7 +160,7 @@ class _EditAccountFormState extends State<EditAccountForm> {
                           "content-type": "application/json",
                           "accept": "application/json",
                           "charset": "utf-8",
-                          'Authorization': 'Bearer ' + auth_token,
+                          'Authorization': 'Bearer ' + authToken,
                         },
                     );
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(

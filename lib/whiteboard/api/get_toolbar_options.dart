@@ -18,14 +18,14 @@ class GetToolbarOptions {
   static final LocalStorage settingsStorage = new LocalStorage('settings');
 
   static Future<PencilOptions> getPencilOptions(
-      String auth_token, bool online) async {
+      String authToken, bool online) async {
     PencilOptions pencilOptions = PencilOptions(
         List.from({Colors.black, Colors.blue, Colors.red}),
         1,
         StrokeCap.round,
         0,
         (drawOptions) =>
-            _sendPencilToolbarOptions(drawOptions, auth_token, online));
+            _sendPencilToolbarOptions(drawOptions, authToken, online));
     if (online) {
       http.Response pencilResponse = await http.get(
           Uri.parse((settingsStorage.getItem("REST_API_URL") ??
@@ -34,7 +34,7 @@ class GetToolbarOptions {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           });
 
       if (pencilResponse.statusCode == 200) {
@@ -49,7 +49,7 @@ class GetToolbarOptions {
             StrokeCap.round,
             decodePencilOptions.selectedColor,
             (drawOptions) =>
-                _sendPencilToolbarOptions(drawOptions, auth_token, online));
+                _sendPencilToolbarOptions(drawOptions, authToken, online));
         return pencilOptions;
       }
     } else {
@@ -67,7 +67,7 @@ class GetToolbarOptions {
             StrokeCap.round,
             decodePencilOptions.selectedColor,
             (drawOptions) =>
-                _sendPencilToolbarOptions(drawOptions, auth_token, online));
+                _sendPencilToolbarOptions(drawOptions, authToken, online));
         return pencilOptions;
       }
     }
@@ -75,7 +75,7 @@ class GetToolbarOptions {
   }
 
   static Future<HighlighterOptions> getHighlighterOptions(
-      String auth_token, bool online) async {
+      String authToken, bool online) async {
     HighlighterOptions highlighterOptions = HighlighterOptions(
         List.from({
           HexColor.fromHexWithOpacity(Colors.limeAccent, 0.25),
@@ -86,7 +86,7 @@ class GetToolbarOptions {
         StrokeCap.square,
         0,
         (drawOptions) =>
-            _sendHighlighterToolbarOptions(drawOptions, auth_token, online));
+            _sendHighlighterToolbarOptions(drawOptions, authToken, online));
     if (online) {
       http.Response highlighterResponse = await http.get(
           Uri.parse((settingsStorage.getItem("REST_API_URL") ??
@@ -95,7 +95,7 @@ class GetToolbarOptions {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           });
 
       if (highlighterResponse.statusCode == 200) {
@@ -110,7 +110,7 @@ class GetToolbarOptions {
             StrokeCap.square,
             decodeHighlighterOptions.selectedColor,
             (drawOptions) => _sendHighlighterToolbarOptions(
-                drawOptions, auth_token, online));
+                drawOptions, authToken, online));
       }
     } else {
       String? decodableHighlighterOptions =
@@ -127,7 +127,7 @@ class GetToolbarOptions {
             StrokeCap.square,
             decodeHighlighterOptions.selectedColor,
             (drawOptions) => _sendHighlighterToolbarOptions(
-                drawOptions, auth_token, online));
+                drawOptions, authToken, online));
         return highlighterOptions;
       }
     }
@@ -135,14 +135,14 @@ class GetToolbarOptions {
   }
 
   static Future<EraserOptions> getEraserOptions(
-      String auth_token, bool online) async {
+      String authToken, bool online) async {
     EraserOptions eraserOptions = EraserOptions(
         List.empty(),
         50,
         StrokeCap.square,
         0,
         (drawOptions) =>
-            _sendEraserToolbarOptions(drawOptions, auth_token, online));
+            _sendEraserToolbarOptions(drawOptions, authToken, online));
     if (online) {
       http.Response highlighterResponse = await http.get(
           Uri.parse((settingsStorage.getItem("REST_API_URL") ??
@@ -151,7 +151,7 @@ class GetToolbarOptions {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           });
 
       if (highlighterResponse.statusCode == 200) {
@@ -163,7 +163,7 @@ class GetToolbarOptions {
             StrokeCap.square,
             0,
             (drawOptions) =>
-                _sendEraserToolbarOptions(drawOptions, auth_token, online));
+                _sendEraserToolbarOptions(drawOptions, authToken, online));
       }
     } else {
       String? decodableEraserOptions =
@@ -177,7 +177,7 @@ class GetToolbarOptions {
             StrokeCap.square,
             0,
             (drawOptions) =>
-                _sendEraserToolbarOptions(drawOptions, auth_token, online));
+                _sendEraserToolbarOptions(drawOptions, authToken, online));
         return eraserOptions;
       }
     }
@@ -185,7 +185,7 @@ class GetToolbarOptions {
   }
 
   static Future<StraightLineOptions> getStraightLineOptions(
-      String auth_token, bool online) async {
+      String authToken, bool online) async {
     StraightLineOptions straightLineOptions = StraightLineOptions(
         0,
         List.from({Colors.black, Colors.blue, Colors.red}),
@@ -193,7 +193,7 @@ class GetToolbarOptions {
         StrokeCap.round,
         0,
         (drawOptions) =>
-            _sendStraightLineToolbarOptions(drawOptions, auth_token, online));
+            _sendStraightLineToolbarOptions(drawOptions, authToken, online));
 
     if (online) {
       http.Response straightLineResponse = await http.get(
@@ -203,7 +203,7 @@ class GetToolbarOptions {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           });
 
       if (straightLineResponse.statusCode == 200) {
@@ -219,7 +219,7 @@ class GetToolbarOptions {
             StrokeCap.square,
             decodeStraightLineOptions.selectedColor,
             (drawOptions) => _sendStraightLineToolbarOptions(
-                drawOptions, auth_token, online));
+                drawOptions, authToken, online));
       }
     } else {
       String? decodableStraightLineOptions =
@@ -237,14 +237,14 @@ class GetToolbarOptions {
             StrokeCap.square,
             decodeStraightLineOptions.selectedColor,
             (drawOptions) => _sendStraightLineToolbarOptions(
-                drawOptions, auth_token, online));
+                drawOptions, authToken, online));
       }
     }
     return straightLineOptions;
   }
 
   static Future<FigureOptions> getFigureOptions(
-      String auth_token, bool online) async {
+      String authToken, bool online) async {
     FigureOptions figureOptions = FigureOptions(
         1,
         1,
@@ -253,7 +253,7 @@ class GetToolbarOptions {
         StrokeCap.round,
         0,
         (drawOptions) =>
-            _sendFigureToolbarOptions(drawOptions, auth_token, online));
+            _sendFigureToolbarOptions(drawOptions, authToken, online));
     if (online) {
       http.Response straightLineResponse = await http.get(
           Uri.parse((settingsStorage.getItem("REST_API_URL") ??
@@ -262,7 +262,7 @@ class GetToolbarOptions {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           });
 
       if (straightLineResponse.statusCode == 200) {
@@ -278,7 +278,7 @@ class GetToolbarOptions {
             StrokeCap.round,
             decodeFigureptions.selectedColor,
             (drawOptions) =>
-                _sendFigureToolbarOptions(drawOptions, auth_token, online));
+                _sendFigureToolbarOptions(drawOptions, authToken, online));
       }
     } else {
       String? decodableFigureOptions =
@@ -296,14 +296,14 @@ class GetToolbarOptions {
             StrokeCap.round,
             decodeFigureOptions.selectedColor,
             (drawOptions) =>
-                _sendFigureToolbarOptions(drawOptions, auth_token, online));
+                _sendFigureToolbarOptions(drawOptions, authToken, online));
       }
     }
     return figureOptions;
   }
 
   static Future<BackgroundOptions> getBackgroundOptions(
-      String auth_token, bool online) async {
+      String authToken, bool online) async {
     BackgroundOptions backgroundOptions = BackgroundOptions(
         0,
         List.empty(),
@@ -311,7 +311,7 @@ class GetToolbarOptions {
         StrokeCap.round,
         0,
         (drawOptions) =>
-            _sendBackgroundToolbarOptions(drawOptions, auth_token, online));
+            _sendBackgroundToolbarOptions(drawOptions, authToken, online));
     if (online) {
       http.Response backgroundResponse = await http.get(
           Uri.parse((settingsStorage.getItem("REST_API_URL") ??
@@ -320,7 +320,7 @@ class GetToolbarOptions {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           });
 
       if (backgroundResponse.statusCode == 200) {
@@ -334,7 +334,7 @@ class GetToolbarOptions {
             StrokeCap.round,
             0,
             (drawOptions) =>
-                _sendBackgroundToolbarOptions(drawOptions, auth_token, online));
+                _sendBackgroundToolbarOptions(drawOptions, authToken, online));
       }
     } else {
       String? decodableBackgroundOptions =
@@ -350,14 +350,14 @@ class GetToolbarOptions {
             StrokeCap.round,
             0,
             (drawOptions) =>
-                _sendBackgroundToolbarOptions(drawOptions, auth_token, online));
+                _sendBackgroundToolbarOptions(drawOptions, authToken, online));
       }
     }
     return backgroundOptions;
   }
 
   static _sendPencilToolbarOptions(
-      DrawOptions drawOptions, String auth_token, bool online) async {
+      DrawOptions drawOptions, String authToken, bool online) async {
     PencilOptions pencilOptions = drawOptions as PencilOptions;
     if (online) {
       await http.post(
@@ -367,7 +367,7 @@ class GetToolbarOptions {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           },
           body: jsonEncode(new EncodePencilOptions(
               pencilOptions.colorPresets.map((e) => e.toHex()).toList(),
@@ -384,7 +384,7 @@ class GetToolbarOptions {
   }
 
   static _sendHighlighterToolbarOptions(
-      DrawOptions drawOptions, String auth_token, bool online) async {
+      DrawOptions drawOptions, String authToken, bool online) async {
     HighlighterOptions highlighterOptions = drawOptions as HighlighterOptions;
     if (online) {
       await http.post(
@@ -394,7 +394,7 @@ class GetToolbarOptions {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           },
           body: jsonEncode(new EncodeHighlighterOptions(
               highlighterOptions.colorPresets.map((e) => e.toHex()).toList(),
@@ -411,7 +411,7 @@ class GetToolbarOptions {
   }
 
   static _sendEraserToolbarOptions(
-      DrawOptions drawOptions, String auth_token, bool online) async {
+      DrawOptions drawOptions, String authToken, bool online) async {
     EraserOptions eraserOptions = drawOptions as EraserOptions;
     if (online) {
       await http.post(
@@ -421,7 +421,7 @@ class GetToolbarOptions {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           },
           body: jsonEncode(new EncodeEraserOptions(eraserOptions.strokeWidth)));
     } else {
@@ -431,7 +431,7 @@ class GetToolbarOptions {
   }
 
   static _sendStraightLineToolbarOptions(
-      DrawOptions drawOptions, String auth_token, bool online) async {
+      DrawOptions drawOptions, String authToken, bool online) async {
     StraightLineOptions straightLineOptions =
         drawOptions as StraightLineOptions;
     if (online) {
@@ -442,7 +442,7 @@ class GetToolbarOptions {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           },
           body: jsonEncode(new EncodeStraightLineOptions(
               straightLineOptions.colorPresets.map((e) => e.toHex()).toList(),
@@ -461,7 +461,7 @@ class GetToolbarOptions {
   }
 
   static _sendFigureToolbarOptions(
-      DrawOptions drawOptions, String auth_token, bool online) async {
+      DrawOptions drawOptions, String authToken, bool online) async {
     FigureOptions figureOptions = drawOptions as FigureOptions;
     if (online) {
       await http.post(
@@ -471,7 +471,7 @@ class GetToolbarOptions {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           },
           body: jsonEncode(new EncodeFigureOptions(
               figureOptions.colorPresets.map((e) => e.toHex()).toList(),
@@ -492,7 +492,7 @@ class GetToolbarOptions {
   }
 
   static _sendBackgroundToolbarOptions(
-      DrawOptions drawOptions, String auth_token, bool online) async {
+      DrawOptions drawOptions, String authToken, bool online) async {
     BackgroundOptions backgroundOptions = drawOptions as BackgroundOptions;
     if (online) {
       await http.post(
@@ -502,7 +502,7 @@ class GetToolbarOptions {
           headers: {
             "content-type": "application/json",
             "accept": "application/json",
-            'Authorization': 'Bearer ' + auth_token,
+            'Authorization': 'Bearer ' + authToken,
           },
           body: jsonEncode(new EncodeBackgroundOptions(
               backgroundOptions.strokeWidth,

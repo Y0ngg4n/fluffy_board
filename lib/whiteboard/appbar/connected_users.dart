@@ -22,11 +22,11 @@ typedef OnTeleport = Function(Offset, double);
 typedef OnFollowing = Function(ConnectedUser);
 
 class ConnectedUsers extends StatefulWidget {
-  Set<ConnectedUser> connectedUsers;
-  OnTeleport onTeleport;
-  OnFollowing onFollowing;
-  Offset offset;
-  double scale;
+  final Set<ConnectedUser> connectedUsers;
+  final OnTeleport onTeleport;
+  final OnFollowing onFollowing;
+  final Offset offset;
+  final double scale;
 
   ConnectedUsers(
       {required this.connectedUsers,

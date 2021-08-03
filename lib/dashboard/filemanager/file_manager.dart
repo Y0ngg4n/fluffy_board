@@ -1,40 +1,23 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:fluffy_board/dashboard/filemanager/rename_folder.dart';
-import 'package:fluffy_board/dashboard/filemanager/rename_whiteboard.dart';
-import 'package:fluffy_board/dashboard/filemanager/share_whiteboard.dart';
 import 'package:fluffy_board/dashboard/filemanager/web_dav_manager.dart';
-import 'package:fluffy_board/utils/screen_utils.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket-types/websocket_types.dart';
-import 'package:fluffy_board/whiteboard/whiteboard_view.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/figure_toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:http/http.dart' as http;
-import 'dart:ui' as ui;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter_breadcrumb/flutter_breadcrumb.dart';
 import 'package:localstorage/localstorage.dart';
 import '../action_buttons.dart';
 import 'package:uuid/uuid.dart';
 import '../avatar_icon.dart';
-import 'delete_manager.dart';
 import 'file_action_manager.dart';
 import 'file_manager_types.dart';
-import 'rename_offline_whiteboard.dart';
 import 'whiteboard_data_manager.dart';
 
 class FileManager extends StatefulWidget {
-  String auth_token;
-  String username;
-  String id;
-  bool online;
+  final String authToken;
+  final String username;
+  final String id;
+  final bool online;
 
-  FileManager(this.auth_token, this.username, this.id, this.online);
+  FileManager(this.authToken, this.username, this.id, this.online);
 
   @override
   _FileManagerState createState() => _FileManagerState();
@@ -50,8 +33,8 @@ class _FileManagerState extends State<FileManager> {
   List<Directory> currentDirectoryPath = [];
   RefreshController _refreshController =
       RefreshController(initialRefresh: true);
-  double font_size = 25;
-  double file_icon_size = 100;
+  static const double fontSize = 25;
+  static const double fileIconSize = 100;
   final LocalStorage fileManagerStorageIndex =
       new LocalStorage('filemanager-index');
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
@@ -72,15 +55,15 @@ class _FileManagerState extends State<FileManager> {
         widget.online,
         directoryAndWhiteboardButtons,
         directories,
-        file_icon_size,
-        widget.auth_token,
+        fileIconSize,
+        widget.authToken,
         currentDirectory,
         _refreshController, (directory) {
       currentDirectory = directory!.id;
       currentDirectoryPath.add(directory);
     });
     FileActionManager.mapBreadCrumbs(
-        context, breadCrumbItems, font_size, widget.auth_token, (directory) {
+        context, breadCrumbItems, fontSize, widget.authToken, (directory) {
       if (directory == null) {
         currentDirectory = "";
         currentDirectoryPath.clear();
@@ -92,8 +75,8 @@ class _FileManagerState extends State<FileManager> {
         context,
         directoryAndWhiteboardButtons,
         whiteboards,
-        file_icon_size,
-        widget.auth_token,
+        fileIconSize,
+        widget.authToken,
         widget.id,
         widget.username,
         widget.online,
@@ -105,11 +88,11 @@ class _FileManagerState extends State<FileManager> {
         context,
         directoryAndWhiteboardButtons,
         extWhiteboards,
-        file_icon_size,
+        fileIconSize,
         offlineWhiteboards,
         offlineWhiteboardIds,
         currentDirectory,
-        widget.auth_token,
+        widget.authToken,
         widget.id,
         widget.online,
         _refreshController);
@@ -117,8 +100,8 @@ class _FileManagerState extends State<FileManager> {
         context,
         directoryAndWhiteboardButtons,
         offlineWhiteboards,
-        file_icon_size,
-        widget.auth_token,
+        fileIconSize,
+        widget.authToken,
         widget.id,
         widget.online,
         _refreshController,
@@ -127,7 +110,7 @@ class _FileManagerState extends State<FileManager> {
     return Scaffold(
       appBar: AppBar(title: Text("Dashboard"), actions: [
         ActionButtons(
-            widget.auth_token,
+            widget.authToken,
             currentDirectory,
             _refreshController,
             offlineWhiteboards,
@@ -164,7 +147,7 @@ class _FileManagerState extends State<FileManager> {
                  await WhiteboardDataManager.getDirectoriesAndWhiteboards(
                       widget.online,
                       currentDirectory,
-                      widget.auth_token,
+                      widget.authToken,
                       _refreshController,
                       directories,
                       whiteboards,

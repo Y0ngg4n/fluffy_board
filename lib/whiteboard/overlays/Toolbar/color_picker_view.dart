@@ -1,28 +1,24 @@
-import 'dart:convert';
 
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_manager_send.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket-types/websocket_types.dart';
-import 'package:fluffy_board/whiteboard/whiteboard_view.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/draw_options.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-import '../../whiteboard-data/json_encodable.dart';
 import '../toolbar.dart' as Toolbar;
 
 typedef OnChangedColor<T> = Function(List<Color>);
 
 class ColorPickerView extends StatefulWidget {
-  Toolbar.ToolbarOptions toolbarOptions;
-  Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
-  Scribble? selectedSettingsScribble;
-  TextItem? selectedTextItemScribble;
-  WebsocketConnection? websocketConnection;
+  final Toolbar.ToolbarOptions toolbarOptions;
+  final Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
+  final Scribble? selectedSettingsScribble;
+  final TextItem? selectedTextItemScribble;
+  final WebsocketConnection? websocketConnection;
 
   ColorPickerView(
       {required this.toolbarOptions,

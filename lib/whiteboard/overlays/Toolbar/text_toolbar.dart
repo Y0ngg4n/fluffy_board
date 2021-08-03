@@ -1,16 +1,8 @@
-import 'dart:convert';
-
-import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket-types/websocket_types.dart';
-import 'package:fluffy_board/whiteboard/whiteboard_view.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
-
-import '../../whiteboard-data/json_encodable.dart';
 import '../toolbar.dart' as Toolbar;
-
 import 'draw_options.dart';
 
 enum SelectedTextColorToolbar {
@@ -25,14 +17,14 @@ class TextOptions extends DrawOptions {
 
   TextOptions(this.selectedTextColorToolbar)
       : super(List.from({Colors.black, Colors.red, Colors.blue}), 10,
-            StrokeCap.round, 0, (DrawOptions) => {});
+            StrokeCap.round, 0, (drawOptions) => {});
 }
 
 class TextToolbar extends StatefulWidget {
-  Toolbar.ToolbarOptions toolbarOptions;
-  Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
-  WebsocketConnection? websocketConnection;
-  Axis axis;
+  final Toolbar.ToolbarOptions toolbarOptions;
+  final Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
+  final WebsocketConnection? websocketConnection;
+  final Axis axis;
   TextToolbar(
       {required this.toolbarOptions,
       required this.onChangedToolbarOptions,

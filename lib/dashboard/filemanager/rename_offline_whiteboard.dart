@@ -1,18 +1,13 @@
-import 'dart:convert';
-
-import 'package:fluffy_board/dashboard/filemanager/file_manager.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'file_manager_types.dart';
 
 class RenameOfflineWhiteboard extends StatefulWidget {
-  OfflineWhiteboard offlineWhiteboard;
-  RefreshController _refreshController;
+  final OfflineWhiteboard offlineWhiteboard;
+  final RefreshController _refreshController;
 
   RenameOfflineWhiteboard(this.offlineWhiteboard, this._refreshController);
 
@@ -51,8 +46,8 @@ class _RenameOfflineWhiteboardState extends State<RenameOfflineWhiteboard> {
 }
 
 class RenameOfflineWhiteboardForm extends StatefulWidget {
-  OfflineWhiteboard offlineWhiteboard;
-  RefreshController _refreshController;
+  final OfflineWhiteboard offlineWhiteboard;
+  final RefreshController _refreshController;
 
   RenameOfflineWhiteboardForm(this.offlineWhiteboard, this._refreshController);
 

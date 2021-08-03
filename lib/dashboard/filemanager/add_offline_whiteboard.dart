@@ -1,30 +1,26 @@
 import 'dart:convert';
 
 import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'file_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import 'file_manager_types.dart';
 
 class AddOfflineWhiteboard extends StatefulWidget {
-  String auth_token;
-  String directory;
-  OfflineWhiteboards offlineWhiteboards;
-  Set<String> offlineWhiteboardIds = Set.of([]);
-  RefreshController _refreshController;
+  final String authToken;
+  final String directory;
+  final OfflineWhiteboards offlineWhiteboards;
+  final Set<String> offlineWhiteboardIds;
+  final RefreshController _refreshController;
 
-  AddOfflineWhiteboard(this.auth_token, this.directory, this._refreshController,
+  AddOfflineWhiteboard(this.authToken, this.directory, this._refreshController,
       this.offlineWhiteboards, this.offlineWhiteboardIds);
 
   @override
@@ -47,14 +43,14 @@ class _AddOfflineWhiteboardState extends State<AddOfflineWhiteboard> {
                   return (FractionallySizedBox(
                       widthFactor: 0.5,
                       child: AddOfflineWhiteboardForm(
-                          widget.auth_token,
+                          widget.authToken,
                           widget.directory,
                           widget._refreshController,
                           widget.offlineWhiteboards,
                           widget.offlineWhiteboardIds)));
                 } else {
                   return (AddOfflineWhiteboardForm(
-                      widget.auth_token,
+                      widget.authToken,
                       widget.directory,
                       widget._refreshController,
                       widget.offlineWhiteboards,
@@ -68,14 +64,14 @@ class _AddOfflineWhiteboardState extends State<AddOfflineWhiteboard> {
 }
 
 class AddOfflineWhiteboardForm extends StatefulWidget {
-  String auth_token;
-  String directory;
-  RefreshController _refreshController;
-  OfflineWhiteboards offlineWhiteboards;
-  Set<String> offlineWhiteboardIds = Set.of([]);
+  final String authToken;
+  final String directory;
+  final RefreshController _refreshController;
+  final OfflineWhiteboards offlineWhiteboards;
+  final Set<String> offlineWhiteboardIds;
 
   AddOfflineWhiteboardForm(
-      this.auth_token,
+      this.authToken,
       this.directory,
       this._refreshController,
       this.offlineWhiteboards,
@@ -94,13 +90,6 @@ class _AddOfflineWhiteboardFormState extends State<AddOfflineWhiteboardForm> {
   final LocalStorage fileManagerStorageIndex =
       new LocalStorage('filemanager-index');
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
-
-  _showError() {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-            "Error while adding Offline Whiteboard! Please try an other Name."),
-        backgroundColor: Colors.red));
-  }
 
   @override
   Widget build(BuildContext context) {

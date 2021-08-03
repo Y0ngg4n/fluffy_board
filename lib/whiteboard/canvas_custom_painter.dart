@@ -1,10 +1,8 @@
 import 'dart:math';
-import 'dart:ui' as ui;
 
 import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/background_toolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/figure_toolbar.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart';
@@ -120,13 +118,6 @@ class PainterUtils {
       ..isAntiAlias = true
       ..color = scribble.color
       ..strokeWidth = scribble.strokeWidth;
-
-    Paint imagePaint = Paint()
-      ..strokeCap = StrokeCap.round
-      ..isAntiAlias = true
-      ..color = Colors.green
-      ..strokeWidth = 1
-      ..style = PaintingStyle.fill;
 
     Paint figurePaint = drawingPaint..style = scribble.paintingStyle;
     if (scribble.backedScribble == null ||
@@ -273,7 +264,6 @@ class PainterUtils {
   static paintUploads(Canvas canvas, List<Upload> uploads, Offset screenSize,
       double scale, Offset offset, bool checkView) {
     // Images
-    Paint imagePaint = new Paint();
 
     for (Upload upload in uploads) {
       if (ScreenUtils.checkUploadIfNotInScreen(

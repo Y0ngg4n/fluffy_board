@@ -7,17 +7,16 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:uuid/uuid.dart';
-import 'file_manager.dart';
 import 'file_manager_types.dart';
 
 class AddFolder extends StatefulWidget {
-  String auth_token;
-  String parent;
-  RefreshController _refreshController;
-  Directories directories;
-  bool online;
+  final String authToken;
+  final String parent;
+  final RefreshController _refreshController;
+  final Directories directories;
+  final bool online;
 
-  AddFolder(this.auth_token, this.parent, this._refreshController,
+  AddFolder(this.authToken, this.parent, this._refreshController,
       this.directories, this.online);
 
   @override
@@ -40,14 +39,14 @@ class _AddFolderState extends State<AddFolder> {
                   return (FractionallySizedBox(
                       widthFactor: 0.5,
                       child: AddFolderForm(
-                          widget.auth_token,
+                          widget.authToken,
                           widget.parent,
                           widget._refreshController,
                           widget.directories,
                           widget.online)));
                 } else {
                   return (AddFolderForm(
-                      widget.auth_token,
+                      widget.authToken,
                       widget.parent,
                       widget._refreshController,
                       widget.directories,
@@ -61,13 +60,13 @@ class _AddFolderState extends State<AddFolder> {
 }
 
 class AddFolderForm extends StatefulWidget {
-  String auth_token;
-  String parent;
-  RefreshController _refreshController;
-  Directories directories;
-  bool online;
+  final String authToken;
+  final String parent;
+  final RefreshController _refreshController;
+  final Directories directories;
+  final bool online;
 
-  AddFolderForm(this.auth_token, this.parent, this._refreshController,
+  AddFolderForm(this.authToken, this.parent, this._refreshController,
       this.directories, this.online);
 
   @override
@@ -143,7 +142,7 @@ class _AddFolderFormState extends State<AddFolderForm> {
               headers: {
                 "content-type": "application/json",
                 "accept": "application/json",
-                'Authorization': 'Bearer ' + widget.auth_token,
+                'Authorization': 'Bearer ' + widget.authToken,
               },
               body: jsonEncode({
                 'filename': nameController.text,

@@ -2,30 +2,24 @@ import 'dart:convert';
 
 import 'package:fluffy_board/dashboard/filemanager/add_folder.dart';
 import 'package:fluffy_board/dashboard/filemanager/add_offline_whiteboard.dart';
-import 'package:fluffy_board/utils/theme_data_utils.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
 import 'package:localstorage/localstorage.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:file_picker_cross/file_picker_cross.dart';
 import 'filemanager/add_ext_whiteboard.dart';
 import 'filemanager/add_whiteboard.dart';
-import 'filemanager/file_manager.dart';
 import 'filemanager/file_manager_types.dart';
 
 class ActionButtons extends StatefulWidget {
-  String auth_token, parent;
-  RefreshController _refreshController;
-  OfflineWhiteboards offlineWhiteboards;
-  Set<String> offlineWhiteboardIds;
-  bool online;
-  Directories directories;
+  final String authToken, parent;
+  final RefreshController _refreshController;
+  final OfflineWhiteboards offlineWhiteboards;
+  final Set<String> offlineWhiteboardIds;
+  final bool online;
+  final Directories directories;
 
   ActionButtons(
-      this.auth_token,
+      this.authToken,
       this.parent,
       this._refreshController,
       this.offlineWhiteboards,
@@ -95,7 +89,7 @@ class _ActionButtonsState extends State<ActionButtons> {
       context,
       MaterialPageRoute<void>(
         builder: (BuildContext context) => AddFolder(
-            widget.auth_token,
+            widget.authToken,
             widget.parent,
             widget._refreshController,
             widget.directories,
@@ -109,7 +103,7 @@ class _ActionButtonsState extends State<ActionButtons> {
       context,
       MaterialPageRoute<void>(
         builder: (BuildContext context) => AddWhiteboard(
-            widget.auth_token, widget.parent, widget._refreshController),
+            widget.authToken, widget.parent, widget._refreshController),
       ),
     );
   }
@@ -119,7 +113,7 @@ class _ActionButtonsState extends State<ActionButtons> {
       context,
       MaterialPageRoute<void>(
         builder: (BuildContext context) => AddOfflineWhiteboard(
-            widget.auth_token,
+            widget.authToken,
             widget.parent,
             widget._refreshController,
             widget.offlineWhiteboards,
@@ -133,7 +127,7 @@ class _ActionButtonsState extends State<ActionButtons> {
       context,
       MaterialPageRoute<void>(
         builder: (BuildContext context) => AddExtWhiteboard(
-            widget.auth_token, widget.parent, widget._refreshController),
+            widget.authToken, widget.parent, widget._refreshController),
       ),
     );
   }
