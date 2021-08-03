@@ -44,7 +44,7 @@ class ToolbarOptions {
   SelectedTool selectedTool;
   PencilOptions pencilOptions;
   HighlighterOptions highlighterOptions;
-  StraightLineOptions straightLineOptions;
+  StraigtLineOptions straightLineOptions;
   EraserOptions eraserOptions;
   FigureOptions figureOptions;
   TextOptions textOptions;
@@ -207,10 +207,11 @@ class _ToolbarState extends State<Toolbar> {
       mainAxisAlignment: mainAxisAlignment,
       crossAxisAlignment: crossAxisAlignment,
       children: [
+        widget.toolbarLocation == "bottom" ? _openColorPicker() : Container(),
         widget.toolbarLocation == "bottom" ? settingsToolbar : normalToolbar,
         widget.toolbarLocation == "bottom" ? specialToolbar : specialToolbar,
         widget.toolbarLocation == "bottom" ? normalToolbar : settingsToolbar,
-        _openColorPicker(),
+        widget.toolbarLocation != "bottom" ? _openColorPicker() : Container(),
       ],
     );
   }

@@ -38,6 +38,7 @@ typedef OnTextItemUpdate = Function(TextItem);
 
 typedef OnUserJoin = Function(ConnectedUser);
 typedef OnUserMove = Function(ConnectedUserMove);
+typedef OnUserCursorMove = Function(ConnectedUserCursorMove);
 
 typedef OnBookmarkAdd = Function(Bookmark);
 typedef OnBookmarkUpdate= Function(Bookmark);
@@ -69,6 +70,7 @@ class WebsocketConnection {
 
   OnUserJoin onUserJoin;
   OnUserMove onUserMove;
+  OnUserCursorMove onUserCursorMove;
 
   OnBookmarkAdd onBookmarkAdd;
   OnBookmarkUpdate onBookmarkUpdate;
@@ -90,6 +92,7 @@ class WebsocketConnection {
     required this.onTextItemUpdate,
     required this.onUserJoin,
     required this.onUserMove,
+    required this.onUserCursorMove,
     required this.onBookmarkAdd,
     required this.onBookmarkUpdate,
     required this.onBookmarkDelete
@@ -108,6 +111,7 @@ class WebsocketConnection {
     required Function(TextItem) onTextItemUpdate,
     required Function(ConnectedUser) onUserJoin,
     required Function(ConnectedUserMove) onUserMove,
+    required Function(ConnectedUserCursorMove) onUserCursorMove,
     required Function(Bookmark) onBookmarkAdd,
     required Function(Bookmark) onBookmarkUpdate,
     required Function(String) onBookmarkDelete
@@ -127,6 +131,7 @@ class WebsocketConnection {
           onTextItemUpdate: onTextItemUpdate,
           onUserJoin: onUserJoin,
         onUserMove: onUserMove,
+        onUserCursorMove: onUserCursorMove,
         onBookmarkAdd: onBookmarkAdd,
         onBookmarkUpdate: onBookmarkUpdate,
         onBookmarkDelete: onBookmarkDelete
@@ -252,12 +257,17 @@ class WebsocketConnection {
     } else if (message.startsWith(r"user-join#")) {
       String newMessage = message.replaceFirst(r"user-join#", "");
       List<String> arguments = newMessage.split("#");
-      onUserJoin(new ConnectedUser(arguments[0], arguments[1], _randomColor.randomColor(), Offset.zero, 1));
+      onUserJoin(new ConnectedUser(arguments[0], arguments[1], _randomColor.randomColor(), Offset.zero, Offset.zero, 1));
     }else if (message.startsWith(r"user-move#")) {
       WSUserMove json = WSUserMove.fromJson(
           jsonDecode(message.replaceFirst(r"user-move#", ""))
           as Map<String, dynamic>);
       onUserMove(new ConnectedUserMove(json.uuid, new Offset(json.offsetDx, json.offsetDy), json.scale));
+    }else if (message.startsWith(r"user-cursor-move#")) {
+      WSUserMove json = WSUserMove.fromJson(
+          jsonDecode(message.replaceFirst(r"user-cursor-move#", ""))
+          as Map<String, dynamic>);
+      onUserCursorMove(new ConnectedUserCursorMove(json.uuid, new Offset(json.offsetDx, json.offsetDy)));
     } else if (message.startsWith(r"bookmark-add#")) {
       print("On r bookmark add");
       WSBookmarkAdd json = WSBookmarkAdd.fromJson(

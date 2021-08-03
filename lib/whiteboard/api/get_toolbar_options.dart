@@ -7,6 +7,7 @@ import 'package:fluffy_board/whiteboard/overlays/toolbar/figure_toolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/toolbar/higlighter_toolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/toolbar/pencil_toolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/toolbar/straight_line_toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/text_toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -109,8 +110,8 @@ class GetToolbarOptions {
             decodeHighlighterOptions.strokeWidth,
             StrokeCap.square,
             decodeHighlighterOptions.selectedColor,
-            (drawOptions) => _sendHighlighterToolbarOptions(
-                drawOptions, authToken, online));
+            (drawOptions) =>
+                _sendHighlighterToolbarOptions(drawOptions, authToken, online));
       }
     } else {
       String? decodableHighlighterOptions =
@@ -126,8 +127,8 @@ class GetToolbarOptions {
             decodeHighlighterOptions.strokeWidth,
             StrokeCap.square,
             decodeHighlighterOptions.selectedColor,
-            (drawOptions) => _sendHighlighterToolbarOptions(
-                drawOptions, authToken, online));
+            (drawOptions) =>
+                _sendHighlighterToolbarOptions(drawOptions, authToken, online));
         return highlighterOptions;
       }
     }
@@ -184,9 +185,9 @@ class GetToolbarOptions {
     return eraserOptions;
   }
 
-  static Future<StraightLineOptions> getStraightLineOptions(
+  static Future<StraigtLineOptions> getStraightLineOptions(
       String authToken, bool online) async {
-    StraightLineOptions straightLineOptions = StraightLineOptions(
+    StraigtLineOptions straightLineOptions = StraigtLineOptions(
         0,
         List.from({Colors.black, Colors.blue, Colors.red}),
         5,
@@ -210,7 +211,7 @@ class GetToolbarOptions {
         DecodeStraightLineOptions decodeStraightLineOptions =
             DecodeStraightLineOptions.fromJson(
                 jsonDecode(straightLineResponse.body));
-        straightLineOptions = new StraightLineOptions(
+        straightLineOptions = new StraigtLineOptions(
             decodeStraightLineOptions.selectedCap,
             decodeStraightLineOptions.colorPresets
                 .map((e) => HexColor.fromHex(e))
@@ -228,7 +229,7 @@ class GetToolbarOptions {
         DecodeStraightLineOptions decodeStraightLineOptions =
             DecodeStraightLineOptions.fromJson(
                 jsonDecode(decodableStraightLineOptions));
-        straightLineOptions = new StraightLineOptions(
+        straightLineOptions = new StraigtLineOptions(
             decodeStraightLineOptions.selectedCap,
             decodeStraightLineOptions.colorPresets
                 .map((e) => HexColor.fromHex(e))
@@ -241,6 +242,63 @@ class GetToolbarOptions {
       }
     }
     return straightLineOptions;
+  }
+
+  static Future<TextOptions> getTextItemOptions(
+      String authToken, bool online) async {
+    TextOptions textItemOptions = TextOptions(
+        List.from({Colors.black, Colors.blue, Colors.red}),
+        5,
+        StrokeCap.round,
+        0,
+        (drawOptions) =>
+            _sendTextItemToolbarOptions(drawOptions, authToken, online));
+
+    if (online) {
+      http.Response textItemResponse = await http.get(
+          Uri.parse((settingsStorage.getItem("REST_API_URL") ??
+                  dotenv.env['REST_API_URL']!) +
+              "/toolbar-options/text-item/get"),
+          headers: {
+            "content-type": "application/json",
+            "accept": "application/json",
+            'Authorization': 'Bearer ' + authToken,
+          });
+
+      if (textItemResponse.statusCode == 200) {
+        DecodeTextItemOptions decodeTextItemOptions =
+        DecodeTextItemOptions.fromJson(jsonDecode(textItemResponse.body));
+        textItemOptions = new TextOptions(
+            decodeTextItemOptions.colorPresets
+                .map((e) => HexColor.fromHex(e))
+                .toList(),
+            decodeTextItemOptions.strokeWidth,
+            StrokeCap.square,
+            decodeTextItemOptions.selectedColor,
+            (drawOptions) =>
+                _sendTextItemToolbarOptions(drawOptions, authToken, online));
+        print("Innnnnn"  + decodeTextItemOptions.selectedColor.toString());
+        print("Innnnnn"  + textItemOptions.currentColor.toString());
+      }
+    } else {
+      String? decodableTextItemLineOptions =
+          settingsStorage.getItem("text-item-options");
+      if (decodableTextItemLineOptions != null) {
+        DecodeStraightLineOptions decodeTextItemOptions =
+            DecodeStraightLineOptions.fromJson(
+                jsonDecode(decodableTextItemLineOptions));
+        textItemOptions = new TextOptions(
+            decodeTextItemOptions.colorPresets
+                .map((e) => HexColor.fromHex(e))
+                .toList(),
+            decodeTextItemOptions.strokeWidth,
+            StrokeCap.square,
+            decodeTextItemOptions.selectedColor,
+            (drawOptions) =>
+                _sendTextItemToolbarOptions(drawOptions, authToken, online));
+      }
+    }
+    return textItemOptions;
   }
 
   static Future<FigureOptions> getFigureOptions(
@@ -432,8 +490,7 @@ class GetToolbarOptions {
 
   static _sendStraightLineToolbarOptions(
       DrawOptions drawOptions, String authToken, bool online) async {
-    StraightLineOptions straightLineOptions =
-        drawOptions as StraightLineOptions;
+    StraigtLineOptions straightLineOptions = drawOptions as StraigtLineOptions;
     if (online) {
       await http.post(
           Uri.parse((settingsStorage.getItem("REST_API_URL") ??
@@ -457,6 +514,34 @@ class GetToolbarOptions {
               straightLineOptions.strokeWidth,
               straightLineOptions.currentColor,
               straightLineOptions.selectedCap)));
+    }
+  }
+
+  static _sendTextItemToolbarOptions(
+      DrawOptions drawOptions, String authToken, bool online) async {
+    print("Sending text item options");
+    TextOptions textItemOptions = drawOptions as TextOptions;
+    if (online) {
+      await http.post(
+          Uri.parse((settingsStorage.getItem("REST_API_URL") ??
+                  dotenv.env['REST_API_URL']!) +
+              "/toolbar-options/text-item/update"),
+          headers: {
+            "content-type": "application/json",
+            "accept": "application/json",
+            'Authorization': 'Bearer ' + authToken,
+          },
+          body: jsonEncode(new EncodeTextItemOptions(
+              textItemOptions.colorPresets.map((e) => e.toHex()).toList(),
+              textItemOptions.strokeWidth,
+              textItemOptions.currentColor)));
+    } else {
+      await settingsStorage.setItem(
+          "text-item-options",
+          jsonEncode(new EncodeTextItemOptions(
+              textItemOptions.colorPresets.map((e) => e.toHex()).toList(),
+              textItemOptions.strokeWidth,
+              textItemOptions.currentColor)));
     }
   }
 

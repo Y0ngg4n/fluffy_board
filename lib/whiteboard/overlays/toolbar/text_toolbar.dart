@@ -5,19 +5,44 @@ import 'dart:ui';
 import '../toolbar.dart' as Toolbar;
 import 'draw_options.dart';
 
-enum SelectedTextColorToolbar {
-  ColorPreset1,
-  ColorPreset2,
-  ColorPreset3,
+class TextOptions extends DrawOptions {
+  TextOptions(List<Color> colors, double strokeWidth, StrokeCap strokeCap,
+      int currentColor, dynamic Function(DrawOptions) onTextItemChange)
+      : super(colors, strokeWidth, strokeCap, currentColor, onTextItemChange);
 }
 
-class TextOptions extends DrawOptions {
-  SelectedTextColorToolbar selectedTextColorToolbar =
-      SelectedTextColorToolbar.ColorPreset1;
+class DecodeTextItemOptions {
+  List<dynamic> colorPresets;
+  double strokeWidth;
+  int selectedColor;
 
-  TextOptions(this.selectedTextColorToolbar)
-      : super(List.from({Colors.black, Colors.red, Colors.blue}), 10,
-            StrokeCap.round, 0, (drawOptions) => {});
+  DecodeTextItemOptions(
+      this.colorPresets, this.strokeWidth, this.selectedColor);
+
+  factory DecodeTextItemOptions.fromJson(dynamic json) {
+    return DecodeTextItemOptions(
+      json['color_presets'] as List<dynamic>,
+      json['stroke_width'] as double,
+      json['selected_color'] as int,
+    );
+  }
+}
+
+class EncodeTextItemOptions {
+  List<String> colorPresets;
+  double strokeWidth;
+  int selectedColor;
+
+  EncodeTextItemOptions(
+      this.colorPresets, this.strokeWidth, this.selectedColor);
+
+  Map toJson() {
+    return {
+      'color_presets': colorPresets,
+      'stroke_width': strokeWidth,
+      'selected_color': selectedColor,
+    };
+  }
 }
 
 class TextToolbar extends StatefulWidget {
@@ -25,6 +50,7 @@ class TextToolbar extends StatefulWidget {
   final Toolbar.OnChangedToolbarOptions onChangedToolbarOptions;
   final WebsocketConnection? websocketConnection;
   final Axis axis;
+
   TextToolbar(
       {required this.toolbarOptions,
       required this.onChangedToolbarOptions,
@@ -38,7 +64,16 @@ class TextToolbar extends StatefulWidget {
 class _TextToolbarState extends State<TextToolbar> {
   int beforeIndex = -1;
   int realBeforeIndex = 0;
-  List<bool> selectedColorList = List.generate(3, (i) => i == 0 ? true : false);
+  late List<bool> selectedColorList;
+
+  @override
+  void initState() {
+    selectedColorList = List.generate(
+        3,
+        (i) =>
+            i == widget.toolbarOptions.textOptions.currentColor ? true : false);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,72 +81,72 @@ class _TextToolbarState extends State<TextToolbar> {
 
     return Flex(
       mainAxisSize: MainAxisSize.min,
+      direction: widget.axis,
+      children: [
+        RotatedBox(
+          quarterTurns: widget.axis == Axis.vertical ? -1 : 0,
+          child: Slider.adaptive(
+            value: widget.toolbarOptions.textOptions.strokeWidth,
+            onChanged: (value) {
+              setState(() {
+                widget.toolbarOptions.textOptions.strokeWidth = value;
+                widget.onChangedToolbarOptions(widget.toolbarOptions);
+              });
+            },
+            onChangeEnd: (value) {
+              widget.toolbarOptions.textOptions
+                  .onDrawOptionChange(widget.toolbarOptions.textOptions);
+            },
+            min: 10,
+            max: 250,
+          ),
+        ),
+        ToggleButtons(
+            onPressed: (index) {
+              setState(() {
+                widget.toolbarOptions.textOptions.currentColor = index;
+                widget.toolbarOptions.colorPickerOpen =
+                    !widget.toolbarOptions.colorPickerOpen;
+
+                for (int buttonIndex = 0;
+                    buttonIndex < selectedColorList.length;
+                    buttonIndex++) {
+                  if (buttonIndex == index) {
+                    selectedColorList[buttonIndex] = true;
+                  } else {
+                    selectedColorList[buttonIndex] = false;
+                  }
+                }
+                if (beforeIndex == index) {
+                  widget.toolbarOptions.colorPickerOpen = false;
+                  beforeIndex = -1;
+                } else if (beforeIndex == -1) {
+                  widget.toolbarOptions.colorPickerOpen = false;
+                  beforeIndex = -2;
+                } else if (realBeforeIndex != index) {
+                  widget.toolbarOptions.colorPickerOpen = false;
+                } else {
+                  widget.toolbarOptions.colorPickerOpen = true;
+                  beforeIndex = index;
+                }
+                realBeforeIndex = index;
+
+                widget.onChangedToolbarOptions(widget.toolbarOptions);
+                widget.toolbarOptions.textOptions
+                    .onDrawOptionChange(widget.toolbarOptions.textOptions);
+              });
+            },
             direction: widget.axis,
-            children: [
-              RotatedBox(
-                quarterTurns: widget.axis == Axis.vertical ? -1: 0,
-                child: Slider.adaptive(
-                  value: widget.toolbarOptions.textOptions.strokeWidth,
-                  onChanged: (value) {
-                    setState(() {
-                      widget.toolbarOptions.textOptions.strokeWidth = value;
-                      widget.onChangedToolbarOptions(widget.toolbarOptions);
-                    });
-                  },
-                  min: 10,
-                  max: 250,
-                ),
-              ),
-              ToggleButtons(
-                  onPressed: (index) {
-                    setState(() {
-                      widget.toolbarOptions.textOptions.currentColor = index;
-                      widget.toolbarOptions.colorPickerOpen =
-                          !widget.toolbarOptions.colorPickerOpen;
-
-                      for (int buttonIndex = 0;
-                          buttonIndex < selectedColorList.length;
-                          buttonIndex++) {
-                        if (buttonIndex == index) {
-                          selectedColorList[buttonIndex] = true;
-                        } else {
-                          selectedColorList[buttonIndex] = false;
-                        }
-                      }
-                      if (beforeIndex == index) {
-                        widget.toolbarOptions.colorPickerOpen = false;
-                        beforeIndex = -1;
-                      } else if (beforeIndex == -1) {
-                        widget.toolbarOptions.colorPickerOpen = false;
-                        beforeIndex = -2;
-                      } else if (realBeforeIndex != index) {
-                        widget.toolbarOptions.colorPickerOpen = false;
-                      } else {
-                        widget.toolbarOptions.colorPickerOpen = true;
-                        beforeIndex = index;
-                      }
-                      realBeforeIndex = index;
-
-                      widget.toolbarOptions.textOptions
-                              .selectedTextColorToolbar =
-                          SelectedTextColorToolbar.values[index];
-                      widget.onChangedToolbarOptions(widget.toolbarOptions);
-                    });
-                  },
-                  direction: widget.axis,
-                  isSelected: selectedColorList,
-                  children: <Widget>[
-                    Icon(OwnIcons.color_lens,
-                        color:
-                            widget.toolbarOptions.textOptions.colorPresets[0]),
-                    Icon(OwnIcons.color_lens,
-                        color:
-                            widget.toolbarOptions.textOptions.colorPresets[1]),
-                    Icon(OwnIcons.color_lens,
-                        color:
-                            widget.toolbarOptions.textOptions.colorPresets[2]),
-                  ]),
-            ],
+            isSelected: selectedColorList,
+            children: <Widget>[
+              Icon(OwnIcons.color_lens,
+                  color: widget.toolbarOptions.textOptions.colorPresets[0]),
+              Icon(OwnIcons.color_lens,
+                  color: widget.toolbarOptions.textOptions.colorPresets[1]),
+              Icon(OwnIcons.color_lens,
+                  color: widget.toolbarOptions.textOptions.colorPresets[2]),
+            ]),
+      ],
     );
   }
 }

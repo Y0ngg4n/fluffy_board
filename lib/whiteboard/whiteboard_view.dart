@@ -189,6 +189,18 @@ class _WhiteboardViewState extends State<WhiteboardView> {
               }
             });
           },
+          onUserCursorMove: (connectedUserCursorMove) {
+            setState(() {
+              for (int i = 0; i < connectedUsers.length; i++) {
+                if (connectedUsers.elementAt(i).uuid ==
+                    connectedUserCursorMove.uuid) {
+                  connectedUsers.elementAt(i).cursorOffset =
+                      connectedUserCursorMove.offset;
+                  break;
+                }
+              }
+            });
+          },
           onBookmarkAdd: (bookmark) {
             setState(() {
               bookmarks.add(bookmark);
@@ -476,6 +488,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                 : BoxDecoration(
                     border: Border.all(color: followingUser!.color, width: 10)),
             child: InfiniteCanvasPage(
+              connectedUsers: connectedUsers,
               stylusOnly: stylusOnly,
               id: widget.id,
               onSaveOfflineWhiteboard: () => saveOfflineWhiteboard(),
@@ -553,14 +566,17 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             widget.authToken, widget.online);
     EraserOptions eraserOptions = await GetToolbarOptions.getEraserOptions(
         widget.authToken, widget.online);
-    StraightLineOptions straightLineOptions =
+    StraigtLineOptions straightLineOptions =
         await GetToolbarOptions.getStraightLineOptions(
             widget.authToken, widget.online);
+    TextOptions textItemOptions = await GetToolbarOptions.getTextItemOptions(
+        widget.authToken, widget.online);
     FigureOptions figureOptions = await GetToolbarOptions.getFigureOptions(
         widget.authToken, widget.online);
     BackgroundOptions backgroundOptions =
         await GetToolbarOptions.getBackgroundOptions(
             widget.authToken, widget.online);
+    print("TextItem: " + textItemOptions.currentColor.toString());
     setState(() {
       toolbarOptions = new Toolbar.ToolbarOptions(
           Toolbar.SelectedTool.move,
@@ -569,7 +585,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           straightLineOptions,
           eraserOptions,
           figureOptions,
-          new TextOptions(SelectedTextColorToolbar.ColorPreset1),
+          textItemOptions,
           backgroundOptions,
           false,
           Toolbar.SettingsSelected.none,

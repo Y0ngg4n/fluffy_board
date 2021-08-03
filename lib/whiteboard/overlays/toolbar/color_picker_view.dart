@@ -98,6 +98,11 @@ class _ColorPickerViewState extends State<ColorPickerView> {
                               .onDrawOptionChange(
                                   widget.toolbarOptions.straightLineOptions);
                           break;
+                        case Toolbar.SelectedTool.text:
+                          widget.toolbarOptions.textOptions
+                              .onDrawOptionChange(
+                              widget.toolbarOptions.textOptions);
+                          break;
                         default:
                           break;
                       }

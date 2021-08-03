@@ -6,18 +6,12 @@ import '../toolbar.dart' as Toolbar;
 
 import 'draw_options.dart';
 
-enum SelectedStraightLineColorToolbar {
-  ColorPreset1,
-  ColorPreset2,
-  ColorPreset3,
-}
-
 enum SelectedStraightLineCapToolbar { Normal, Arrow }
 
-class StraightLineOptions extends DrawOptions {
+class StraigtLineOptions extends DrawOptions {
   int selectedCap;
 
-  StraightLineOptions(this.selectedCap,
+  StraigtLineOptions(this.selectedCap,
       List<Color> colors, double strokeWidth, StrokeCap strokeCap, int currentColor, dynamic Function(DrawOptions) onStraightLineChange)
       : super(colors, strokeWidth, strokeCap, currentColor, onStraightLineChange);
 }

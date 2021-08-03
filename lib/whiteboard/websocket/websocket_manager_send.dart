@@ -150,6 +150,13 @@ class WebsocketSend {
       websocketConnection.sendDataToChannel("user-move#", data);
   }
 
+  static Future sendUserCursorMove(ui.Offset offset, String id,
+      WebsocketConnection? websocketConnection) async{
+    String data = jsonEncode(WSUserCursorMove(id, offset.dx, offset.dy));
+    if (websocketConnection != null)
+      websocketConnection.sendDataToChannel("user-cursor-move#", data);
+  }
+
   static Future sendBookmarkAdd(
       Bookmark newBookmark, WebsocketConnection? websocketConnection) async{
     if (websocketConnection != null) {

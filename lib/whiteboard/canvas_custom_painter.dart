@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/whiteboard/overlays/toolbar/background_toolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/toolbar/figure_toolbar.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:vector_math/vector_math.dart' as vectormath;
 
+import 'appbar/connected_users.dart';
 import 'overlays/toolbar.dart' as Toolbar;
 import 'whiteboard-data/scribble.dart';
 
@@ -27,6 +29,7 @@ class CanvasCustomPainter extends CustomPainter {
   Offset multiSelectStartPosition;
   Offset multiSelectStopPosition;
   Offset? hoverPosition;
+  Set<ConnectedUser> connectedUsers;
 
   CanvasCustomPainter(
       {required this.scribbles,
@@ -42,7 +45,8 @@ class CanvasCustomPainter extends CustomPainter {
       required this.multiSelectMove,
       required this.multiSelectStartPosition,
       required this.multiSelectStopPosition,
-      required this.hoverPosition});
+      required this.hoverPosition,
+      required this.connectedUsers});
 
   //define canvas background color
   Paint background = Paint()..color = Colors.white;
@@ -78,6 +82,8 @@ class CanvasCustomPainter extends CustomPainter {
     PainterUtils.paintTextItems(canvas, texts, offset, screenSize, scale, true);
     PainterUtils.paintScribbles(
         canvas, scribbles, offset, screenSize, scale, true);
+
+    PainterUtils.paintCursors(canvas, connectedUsers, offset, screenSize, scale);
 
     if (multiSelect && !multiSelectMove) {
       canvas.drawRect(
@@ -303,6 +309,24 @@ class PainterUtils {
       canvas.rotate(vectormath.radians(textItem.rotation));
       textPainter.paint(canvas, newOffset);
       canvas.restore();
+    }
+  }
+
+  static paintCursors(Canvas canvas, Set<ConnectedUser> connectedUsers, Offset offset, Offset screenSize, double scale){
+    final icon = OwnIcons.location_arrow;
+    for(ConnectedUser connectedUser in connectedUsers){
+      TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
+      textPainter.text = TextSpan(
+        text: String.fromCharCode(icon.codePoint),
+        style: TextStyle(
+          color: connectedUser.color,
+          fontSize: 16,
+          fontFamily: icon.fontFamily,
+          package: icon.fontPackage, // This line is mandatory for external icon packs
+        ),
+      );
+      textPainter.layout();
+      textPainter.paint(canvas, connectedUser.cursorOffset);
     }
   }
 }

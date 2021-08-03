@@ -14,6 +14,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:smoothie/smoothie.dart';
 
+import 'appbar/connected_users.dart';
 import 'canvas_custom_painter.dart';
 import 'websocket/websocket_connection.dart';
 import 'overlays/toolbar.dart' as Toolbar;
@@ -46,6 +47,7 @@ class InfiniteCanvasPage extends StatefulWidget {
   final OnSaveOfflineWhiteboard onSaveOfflineWhiteboard;
   final OnDontFollow onDontFollow;
   final bool stylusOnly;
+  final Set<ConnectedUser> connectedUsers;
 
   InfiniteCanvasPage(
       {required this.toolbarOptions,
@@ -65,7 +67,8 @@ class InfiniteCanvasPage extends StatefulWidget {
       required this.id,
       required this.onSaveOfflineWhiteboard,
       required this.onDontFollow,
-      required this.stylusOnly});
+      required this.stylusOnly,
+      required this.connectedUsers});
 
   @override
   _InfiniteCanvasPageState createState() => _InfiniteCanvasPageState();
@@ -136,6 +139,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 this.setState(() {
                   cursorPosition =
                       event.localPosition / widget.zoomOptions.scale;
+                  WebsocketSend.sendUserCursorMove(cursorPosition, widget.id, widget.websocketConnection);
                 })
               },
               onExit: (event) {
@@ -148,6 +152,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   isComplex: true,
                   willChange: true,
                   painter: CanvasCustomPainter(
+                    connectedUsers: widget.connectedUsers,
                       texts: widget.texts,
                       uploads: widget.uploads,
                       scribbles: widget.scribbles,
@@ -320,6 +325,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
   Future _onScaleUpdate(ScaleUpdateDetails details) async {
     Offset newOffset =
         (details.localFocalPoint - widget.offset) / widget.zoomOptions.scale;
+    WebsocketSend.sendUserCursorMove(newOffset, widget.id, widget.websocketConnection);
     this.setState(() {
       cursorPosition = details.localFocalPoint / widget.zoomOptions.scale;
       if (details.pointerCount == 2 &&

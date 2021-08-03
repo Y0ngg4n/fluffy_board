@@ -5,9 +5,10 @@ class ConnectedUser {
   String username;
   Color color;
   Offset offset;
+  Offset cursorOffset;
   double scale;
 
-  ConnectedUser(this.uuid, this.username, this.color, this.offset, this.scale);
+  ConnectedUser(this.uuid, this.username, this.color, this.offset, this.cursorOffset, this.scale);
 }
 
 class ConnectedUserMove {
@@ -16,6 +17,13 @@ class ConnectedUserMove {
   double scale;
 
   ConnectedUserMove(this.uuid, this.offset, this.scale);
+}
+
+class ConnectedUserCursorMove {
+  String uuid;
+  Offset offset;
+
+  ConnectedUserCursorMove(this.uuid, this.offset);
 }
 
 typedef OnTeleport = Function(Offset, double);

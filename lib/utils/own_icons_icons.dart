@@ -52,6 +52,7 @@ class OwnIcons {
   static const IconData text_height = IconData(0xf034, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData move = IconData(0xf047, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData circle_empty = IconData(0xf10c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData location_arrow = IconData(0xf124, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData eraser = IconData(0xf12d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData circle_notch = IconData(0xf1ce, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData pencil_alt = IconData(0xf303, fontFamily: _kFontFam, fontPackage: _kFontPkg);
