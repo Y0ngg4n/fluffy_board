@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:ui' as ui;
 
-import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket-types/ws_bookmark.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket-types/ws_scribble.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket-types/ws_textitem.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket-types/ws_upload.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket-types/ws_user_move.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket-types/ws_bookmark.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket-types/ws_scribble.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket-types/ws_textitem.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket-types/ws_upload.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket-types/ws_user_move.dart';
 import 'package:fluffy_board/whiteboard/whiteboard_view.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';

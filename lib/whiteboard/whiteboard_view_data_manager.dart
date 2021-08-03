@@ -5,7 +5,7 @@ import 'package:fluffy_board/dashboard/filemanager/file_manager_types.dart';
 import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
 import 'package:fluffy_board/whiteboard/whiteboard_view.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/figure_toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/figure_toolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/zoom.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
@@ -16,10 +16,10 @@ import 'package:localstorage/localstorage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'Websocket/websocket-types/ws_bookmark.dart';
-import 'Websocket/websocket-types/ws_scribble.dart';
-import 'Websocket/websocket-types/ws_textitem.dart';
-import 'Websocket/websocket-types/ws_upload.dart';
+import 'websocket/websocket-types/ws_bookmark.dart';
+import 'websocket/websocket-types/ws_scribble.dart';
+import 'websocket/websocket-types/ws_textitem.dart';
+import 'websocket/websocket-types/ws_upload.dart';
 
 typedef OnGetScribbleAdd = Function(Scribble);
 typedef OnGetUploadAdd = Function(Upload);

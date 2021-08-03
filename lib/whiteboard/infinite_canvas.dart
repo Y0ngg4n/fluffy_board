@@ -2,11 +2,11 @@ import 'dart:math';
 
 import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/draw_point.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket_manager_send.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket_manager_send.dart';
 import 'package:fluffy_board/whiteboard/whiteboard_view.dart';
 import 'package:fluffy_board/whiteboard/overlays/toolbar.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/figure_toolbar.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/straight_line_toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/figure_toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/straight_line_toolbar.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:smoothie/smoothie.dart';
 
 import 'canvas_custom_painter.dart';
-import 'Websocket/websocket_connection.dart';
+import 'websocket/websocket_connection.dart';
 import 'overlays/toolbar.dart' as Toolbar;
 import 'overlays/zoom.dart' as Zoom;
 import 'package:uuid/uuid.dart';

@@ -1,9 +1,9 @@
 import 'package:fluffy_board/utils/screen_utils.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'Websocket/websocket_manager_send.dart';
+import 'websocket/websocket_manager_send.dart';
 import 'overlays/toolbar.dart' as Toolbar;
 import 'package:vector_math/vector_math.dart';
 

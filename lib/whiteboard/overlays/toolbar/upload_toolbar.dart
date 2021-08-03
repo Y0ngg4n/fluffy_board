@@ -1,7 +1,7 @@
 import 'package:fluffy_board/utils/screen_utils.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket_manager_send.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/upload-toolbar/pdf_import.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket_manager_send.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/upload-toolbar/pdf_import.dart';
 import 'package:fluffy_board/whiteboard/overlays/zoom.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart';

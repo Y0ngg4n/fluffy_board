@@ -1,13 +1,13 @@
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/whiteboard/infinite_canvas.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/figure_toolbar.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/pencil_toolbar.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/SettingsToolbar/scribble_settings.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/SettingsToolbar/upload_settings.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/straight_line_toolbar.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/text_toolbar.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/upload_toolbar.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/figure_toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/pencil_toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/settings-toolbar/scribble_settings.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/settings-toolbar/upload_settings.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/straight_line_toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/text_toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/upload_toolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/zoom.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
@@ -16,12 +16,12 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 
 import '../whiteboard_view.dart';
-import 'Toolbar/background_toolbar.dart';
-import 'Toolbar/color_picker_view.dart';
-import 'Toolbar/eraser_toolbar.dart';
-import 'Toolbar/pencil_toolbar.dart';
-import 'Toolbar/higlighter_toolbar.dart';
-import 'Toolbar/SettingsToolbar/text_item_settings.dart';
+import 'toolbar/background_toolbar.dart';
+import 'toolbar/color_picker_view.dart';
+import 'toolbar/eraser_toolbar.dart';
+import 'toolbar/pencil_toolbar.dart';
+import 'toolbar/higlighter_toolbar.dart';
+import 'toolbar/settings-toolbar/text_item_settings.dart';
 
 enum SettingsSelected { none, scribble, image, text }
 

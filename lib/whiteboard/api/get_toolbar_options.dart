@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/background_toolbar.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/draw_options.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/eraser_toolbar.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/figure_toolbar.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/higlighter_toolbar.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/pencil_toolbar.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/straight_line_toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/background_toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/draw_options.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/eraser_toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/figure_toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/higlighter_toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/pencil_toolbar.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/straight_line_toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';

@@ -1,5 +1,5 @@
 import 'package:fluffy_board/utils/own_icons_icons.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../toolbar.dart' as Toolbar;

@@ -2,8 +2,8 @@
 import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/whiteboard/infinite_canvas.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket_manager_send.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket_manager_send.dart';
 import 'package:fluffy_board/whiteboard/overlays/zoom.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/draw_point.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';

@@ -1,6 +1,6 @@
 import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket_manager_send.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket_manager_send.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:uuid/uuid.dart';

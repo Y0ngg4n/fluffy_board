@@ -1,4 +1,4 @@
-import 'package:fluffy_board/whiteboard/Websocket/websocket-types/websocket_types.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket-types/websocket_types.dart';
 
 class WSUploadAdd implements JsonWebSocketType{
   String uuid;

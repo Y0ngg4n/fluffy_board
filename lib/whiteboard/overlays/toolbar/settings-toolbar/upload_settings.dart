@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:fluffy_board/whiteboard/infinite_canvas.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket_manager_send.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket_manager_send.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;

@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 import 'package:fluffy_board/whiteboard/whiteboard_view.dart';
-import '../overlays/Toolbar/figure_toolbar.dart';
+import '../overlays/toolbar/figure_toolbar.dart';
 import 'draw_point.dart';
 import 'json_encodable.dart';
 

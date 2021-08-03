@@ -1,9 +1,9 @@
 
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:fluffy_board/utils/screen_utils.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket_connection.dart';
-import 'package:fluffy_board/whiteboard/Websocket/websocket_manager_send.dart';
-import 'package:fluffy_board/whiteboard/overlays/Toolbar/draw_options.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
+import 'package:fluffy_board/whiteboard/websocket/websocket_manager_send.dart';
+import 'package:fluffy_board/whiteboard/overlays/toolbar/draw_options.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:flutter/material.dart';
