@@ -8,7 +8,7 @@ import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-import '../../DrawPoint.dart';
+import '../../whiteboard-data/json_encodable.dart';
 import '../Toolbar.dart' as Toolbar;
 
 import 'DrawOptions.dart';

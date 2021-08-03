@@ -3,12 +3,16 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:fluffy_board/utils/ScreenUtils.dart';
-import 'package:fluffy_board/whiteboard/DrawPoint.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/draw_point.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketSend.dart';
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;

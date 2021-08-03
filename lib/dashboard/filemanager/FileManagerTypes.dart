@@ -1,6 +1,10 @@
 import 'dart:ui' as ui;
 
-import 'package:fluffy_board/whiteboard/DrawPoint.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 
 class Directory {
   String id, owner, parent, filename;

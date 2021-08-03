@@ -7,11 +7,13 @@ import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketSend.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:fluffy_board/whiteboard/overlays/Zoom.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/draw_point.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
 import 'package:flutter/material.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'dart:ui';
 
-import '../../../DrawPoint.dart';
+import '../../../whiteboard-data/json_encodable.dart';
 import '../../../WhiteboardView.dart';
 import '../../Toolbar.dart' as Toolbar;
 import 'dart:math';

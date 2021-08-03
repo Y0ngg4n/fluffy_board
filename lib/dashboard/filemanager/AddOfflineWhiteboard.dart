@@ -1,6 +1,10 @@
 import 'dart:convert';
 
-import 'package:fluffy_board/whiteboard/DrawPoint.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:localstorage/localstorage.dart';

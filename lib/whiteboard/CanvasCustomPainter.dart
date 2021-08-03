@@ -1,15 +1,18 @@
 import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:fluffy_board/utils/ScreenUtils.dart';
-import 'package:fluffy_board/whiteboard/DrawPoint.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/BackgroundToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
 import 'package:localstorage/localstorage.dart';
 import 'package:vector_math/vector_math.dart' as vectormath;
 
 import 'overlays/Toolbar.dart' as Toolbar;
+import 'whiteboard-data/scribble.dart';
 
 class CanvasCustomPainter extends CustomPainter {
   Toolbar.ToolbarOptions toolbarOptions;

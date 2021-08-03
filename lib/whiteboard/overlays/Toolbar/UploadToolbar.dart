@@ -2,12 +2,13 @@ import 'dart:convert';
 
 import 'package:fluffy_board/utils/ScreenUtils.dart';
 import 'package:fluffy_board/utils/own_icons_icons.dart';
-import 'package:fluffy_board/whiteboard/DrawPoint.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketSend.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/PDFImport.dart';
 import 'package:fluffy_board/whiteboard/overlays/Zoom.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'package:file_picker_cross/file_picker_cross.dart';

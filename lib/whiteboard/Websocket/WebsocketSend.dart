@@ -3,8 +3,12 @@ import 'dart:ui' as ui;
 
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 
-import '../DrawPoint.dart';
+import '../whiteboard-data/json_encodable.dart';
 import 'WebsocketTypes.dart';
 
 class WebsocketSend {

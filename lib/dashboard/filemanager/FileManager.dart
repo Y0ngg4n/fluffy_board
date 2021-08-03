@@ -7,7 +7,7 @@ import 'package:fluffy_board/dashboard/filemanager/RenameWhiteboard.dart';
 import 'package:fluffy_board/dashboard/filemanager/ShareWhiteboard.dart';
 import 'package:fluffy_board/dashboard/filemanager/WebDavManager.dart';
 import 'package:fluffy_board/utils/ScreenUtils.dart';
-import 'package:fluffy_board/whiteboard/DrawPoint.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';

@@ -6,11 +6,15 @@ import 'dart:typed_data';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketManager.dart';
 import 'package:fluffy_board/whiteboard/appbar/ConnectedUsers.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/FigureToolbar.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'dart:ui';
 
-import '../DrawPoint.dart';
+import '../whiteboard-data/json_encodable.dart';
 import '../WhiteboardView.dart';
 import 'WebsocketTypes.dart';
 import 'dart:ui' as ui;

@@ -1,7 +1,11 @@
 import 'dart:math';
 
 import 'package:fluffy_board/whiteboard/CanvasCustomPainter.dart';
-import 'package:fluffy_board/whiteboard/DrawPoint.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/draw_point.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'package:simplify/simplify.dart';

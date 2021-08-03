@@ -1,9 +1,10 @@
 import 'dart:convert';
 
 import 'package:fluffy_board/utils/ScreenUtils.dart';
-import 'package:fluffy_board/whiteboard/DrawPoint.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'Websocket/WebsocketSend.dart';

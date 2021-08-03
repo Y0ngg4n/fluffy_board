@@ -6,12 +6,13 @@ import 'package:fluffy_board/whiteboard/InfiniteCanvas.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketSend.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'package:image/image.dart' as IMG;
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
-import '../../../DrawPoint.dart';
+import '../../../whiteboard-data/json_encodable.dart';
 import '../../../WhiteboardView.dart';
 import '../../Toolbar.dart' as Toolbar;
 

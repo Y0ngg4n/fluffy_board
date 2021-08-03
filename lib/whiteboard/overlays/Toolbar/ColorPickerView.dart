@@ -7,10 +7,12 @@ import 'package:fluffy_board/whiteboard/Websocket/WebsocketSend.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketTypes.dart';
 import 'package:fluffy_board/whiteboard/WhiteboardView.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/DrawOptions.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-import '../../DrawPoint.dart';
+import '../../whiteboard-data/json_encodable.dart';
 import '../Toolbar.dart' as Toolbar;
 
 typedef OnChangedColor<T> = Function(List<Color>);

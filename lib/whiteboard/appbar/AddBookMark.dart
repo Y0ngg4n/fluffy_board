@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:fluffy_board/whiteboard/DrawPoint.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/json_encodable.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketConnection.dart';
 import 'package:fluffy_board/whiteboard/Websocket/WebsocketSend.dart';
 import 'package:flutter/material.dart';

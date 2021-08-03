@@ -10,10 +10,13 @@ import 'package:fluffy_board/whiteboard/overlays/Toolbar/StraightLineToolbar.dar
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/TextToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Toolbar/UploadToolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/Zoom.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
+import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-import '../DrawPoint.dart';
+import '../whiteboard-data/json_encodable.dart';
 import '../WhiteboardView.dart';
 import 'Toolbar/BackgroundToolbar.dart';
 import 'Toolbar/ColorPickerView.dart';
