@@ -45,13 +45,13 @@ class _ActionButtonsState extends State<ActionButtons> {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            if(widget.online)
-                Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    child: OutlinedButton(
-                        style: outlineButtonStyle,
-                        onPressed: _createWhiteboard,
-                        child: Text("Create Whiteboard"))),
+            if (widget.online)
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: OutlinedButton(
+                      style: outlineButtonStyle,
+                      onPressed: _createWhiteboard,
+                      child: Text("Create Whiteboard"))),
             Padding(
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: OutlinedButton(
@@ -64,20 +64,20 @@ class _ActionButtonsState extends State<ActionButtons> {
                     style: outlineButtonStyle,
                     onPressed: _createFolder,
                     child: Text("Create Folder"))),
-            if(widget.online)
-                Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    child: OutlinedButton(
-                        style: outlineButtonStyle,
-                        onPressed: _collabOnWhiteboard,
-                        child: Text("Collab on Whiteboard"))),
-            if(widget.online)
-                Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    child: OutlinedButton(
-                        style: outlineButtonStyle,
-                        onPressed: _importWhiteboard,
-                        child: Text("Import Whiteboard"))),
+            if (widget.online)
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: OutlinedButton(
+                      style: outlineButtonStyle,
+                      onPressed: _collabOnWhiteboard,
+                      child: Text("Collab on Whiteboard"))),
+            if (widget.online)
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: OutlinedButton(
+                      style: outlineButtonStyle,
+                      onPressed: _importWhiteboard,
+                      child: Text("Import Whiteboard"))),
           ],
         ),
       ),
@@ -133,28 +133,31 @@ class _ActionButtonsState extends State<ActionButtons> {
   }
 
   _importWhiteboard() async {
-    FilePickerCross result = await FilePickerCross.importFromStorage(
-        type: FileTypeCross.custom, fileExtension: 'json');
+    List<FilePickerCross> results =
+        await FilePickerCross.importMultipleFromStorage();
     await fileManagerStorage.ready;
     await fileManagerStorageIndex.ready;
-    String json = new String.fromCharCodes(result.toUint8List());
-    OfflineWhiteboard offlineWhiteboard =
-        await OfflineWhiteboard.fromJson(jsonDecode(json));
-    offlineWhiteboard.directory = widget.parent;
-    await fileManagerStorage.setItem("offline_whiteboard-" + offlineWhiteboard.uuid,
-        offlineWhiteboard.toJSONEncodable());
-    Set<String> offlineWhiteboardIds = Set.of([]);
-    try {
-      offlineWhiteboardIds = Set.of(
-          jsonDecode(fileManagerStorageIndex.getItem("indexes"))
-                  .cast<String>() ??
-              []);
-    } catch (ignore) {
-      offlineWhiteboardIds = Set.of([]);
+    for (FilePickerCross filePickerCross in results) {
+      String json = new String.fromCharCodes(filePickerCross.toUint8List());
+      OfflineWhiteboard offlineWhiteboard =
+          await OfflineWhiteboard.fromJson(jsonDecode(json));
+      offlineWhiteboard.directory = widget.parent;
+      await fileManagerStorage.setItem(
+          "offline_whiteboard-" + offlineWhiteboard.uuid,
+          offlineWhiteboard.toJSONEncodable());
+      Set<String> offlineWhiteboardIds = Set.of([]);
+      try {
+        offlineWhiteboardIds = Set.of(
+            jsonDecode(fileManagerStorageIndex.getItem("indexes"))
+                    .cast<String>() ??
+                []);
+      } catch (ignore) {
+        offlineWhiteboardIds = Set.of([]);
+      }
+      offlineWhiteboardIds.add(offlineWhiteboard.uuid);
+      await fileManagerStorageIndex.setItem(
+          "indexes", jsonEncode(offlineWhiteboardIds.toList()));
+      widget._refreshController.requestRefresh();
     }
-    offlineWhiteboardIds.add(offlineWhiteboard.uuid);
-    await fileManagerStorageIndex.setItem(
-        "indexes", jsonEncode(offlineWhiteboardIds.toList()));
-    widget._refreshController.requestRefresh();
   }
 }
