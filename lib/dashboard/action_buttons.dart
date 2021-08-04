@@ -41,45 +41,45 @@ class _ActionButtonsState extends State<ActionButtons> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Wrap(
-        children: [
-          widget.online
-              ? Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  child: OutlinedButton(
-                      style: outlineButtonStyle,
-                      onPressed: _createWhiteboard,
-                      child: Text("Create Whiteboard")))
-              : Container(),
-          Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-              child: OutlinedButton(
-                  style: outlineButtonStyle,
-                  onPressed: _createOfflineWhiteboard,
-                  child: Text("Create Offline Whiteboard"))),
-          Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-              child: OutlinedButton(
-                  style: outlineButtonStyle,
-                  onPressed: _createFolder,
-                  child: Text("Create Folder"))),
-          widget.online
-              ? Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  child: OutlinedButton(
-                      style: outlineButtonStyle,
-                      onPressed: _collabOnWhiteboard,
-                      child: Text("Collab on Whiteboard")))
-              : Container(),
-          widget.online
-              ? Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  child: OutlinedButton(
-                      style: outlineButtonStyle,
-                      onPressed: _importWhiteboard,
-                      child: Text("Import Whiteboard")))
-              : Container(),
-        ],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            if(widget.online)
+                Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    child: OutlinedButton(
+                        style: outlineButtonStyle,
+                        onPressed: _createWhiteboard,
+                        child: Text("Create Whiteboard"))),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: OutlinedButton(
+                    style: outlineButtonStyle,
+                    onPressed: _createOfflineWhiteboard,
+                    child: Text("Create Offline Whiteboard"))),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: OutlinedButton(
+                    style: outlineButtonStyle,
+                    onPressed: _createFolder,
+                    child: Text("Create Folder"))),
+            if(widget.online)
+                Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    child: OutlinedButton(
+                        style: outlineButtonStyle,
+                        onPressed: _collabOnWhiteboard,
+                        child: Text("Collab on Whiteboard"))),
+            if(widget.online)
+                Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    child: OutlinedButton(
+                        style: outlineButtonStyle,
+                        onPressed: _importWhiteboard,
+                        child: Text("Import Whiteboard"))),
+          ],
+        ),
       ),
     );
   }
@@ -140,6 +140,7 @@ class _ActionButtonsState extends State<ActionButtons> {
     String json = new String.fromCharCodes(result.toUint8List());
     OfflineWhiteboard offlineWhiteboard =
         await OfflineWhiteboard.fromJson(jsonDecode(json));
+    offlineWhiteboard.directory = widget.parent;
     await fileManagerStorage.setItem("offline_whiteboard-" + offlineWhiteboard.uuid,
         offlineWhiteboard.toJSONEncodable());
     Set<String> offlineWhiteboardIds = Set.of([]);

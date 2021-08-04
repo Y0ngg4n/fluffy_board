@@ -1,7 +1,7 @@
 import 'dart:ui' as ui;
 import 'json_encodable.dart';
 
-class DrawPoints  implements JsonEncodable{
+class DrawPoints implements JsonEncodable {
   List<DrawPoint> list = [];
 
   toJSONEncodable() {
@@ -19,7 +19,7 @@ class DrawPoints  implements JsonEncodable{
   DrawPoints(this.list);
 }
 
-class DrawPoint extends ui.Offset implements JsonEncodable{
+class DrawPoint extends ui.Offset implements JsonEncodable {
   bool empty = false;
 
   DrawPoint(double dx, double dy) : super(dx, dy);
@@ -31,7 +31,7 @@ class DrawPoint extends ui.Offset implements JsonEncodable{
   DrawPoint.of(ui.Offset offset) : super(offset.dx, offset.dy);
 
   DrawPoint.fromJson(Map<String, dynamic> json)
-      : super(json['dx'].toDouble(), json['dy'].toDouble());
+      : super((json['dx'] ?? 0).toDouble(), (json['dy'] ?? 0).toDouble());
 
   Map toJSONEncodable() {
     return {

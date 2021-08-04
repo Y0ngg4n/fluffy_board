@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:fluffy_board/whiteboard/websocket/websocket-types/websocket_types.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/draw_point.dart';
+import 'package:uuid/uuid.dart';
 
 class WSScribbleAdd implements JsonWebSocketType {
   String uuid;
@@ -22,13 +23,13 @@ class WSScribbleAdd implements JsonWebSocketType {
   }
 
   WSScribbleAdd.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'],
-        selectedFigureTypeToolbar = json['selected_figure_type_toolbar'],
-        strokeWidth = json['stroke_width'].toDouble(),
-        strokeCap = json['stroke_cap'],
-        color = json['color'],
-        points = WSScribbleAdd.fromJsonList(json['points']),
-        paintingStyle = json['painting_style'];
+      : uuid = json['uuid'] ?? Uuid().v4(),
+        selectedFigureTypeToolbar = json['selected_figure_type_toolbar'] ?? 0,
+        strokeWidth = (json['stroke_width'] ?? 1).toDouble(),
+        strokeCap = json['stroke_cap'] ?? 0,
+        color = json['color'] ?? "#000000",
+        points = WSScribbleAdd.fromJsonList(json['points'] ?? []),
+        paintingStyle = json['painting_style'] ?? 0;
 
   Map toJson() {
     return {
@@ -65,16 +66,16 @@ class WSScribbleUpdate implements JsonWebSocketType {
   }
 
   WSScribbleUpdate.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'],
-        strokeWidth = json['stroke_width'].toDouble(),
-        strokeCap = json['stroke_cap'],
-        color = json['color'],
-        points = WSScribbleAdd.fromJsonList(json['points']),
-        paintingStyle = json['painting_style'],
-        leftExtremity = json['left_extremity'].toDouble(),
-        rightExtremity = json['right_extremity'].toDouble(),
-        topExtremity = json['top_extremity'].toDouble(),
-        bottomExtremity = json['bottom_extremity'].toDouble();
+      : uuid = json['uuid'] ?? Uuid().v4(),
+        strokeWidth = (json['stroke_width'] ?? 1).toDouble(),
+        strokeCap = json['stroke_cap'] ?? 0,
+        color = json['color'] ?? "#000000",
+        points = WSScribbleAdd.fromJsonList(json['points'] ?? []),
+        paintingStyle = json['painting_style'] ?? 0,
+        leftExtremity = (json['left_extremity'] ?? 0).toDouble(),
+        rightExtremity = (json['right_extremity'] ?? 0).toDouble(),
+        topExtremity = (json['top_extremity'] ?? 0).toDouble(),
+        bottomExtremity = (json['bottom_extremity'] ?? 0).toDouble();
 
   Map toJson() {
     return {
@@ -163,15 +164,15 @@ class DecodeGetScribble implements DecodeGetJsonWebSocketType{
       this.bottomExtremity);
 
   DecodeGetScribble.fromJson(Map<String, dynamic> json)
-      : uuid = json['id'],
-        selectedFigureTypeToolbar = json['selected_figure_type_toolbar'],
-        strokeWidth = json['stroke_width'].toDouble(),
-        strokeCap = json['stroke_cap'],
-        color = json['color'],
-        points = WSScribbleAdd.fromJsonList(json['points']),
-        paintingStyle = json['painting_style'],
-        leftExtremity = json['left_extremity'].toDouble(),
-        rightExtremity = json['right_extremity'].toDouble(),
-        topExtremity = json['top_extremity'].toDouble(),
-        bottomExtremity = json['bottom_extremity'].toDouble();
+      : uuid = json['id'] ?? Uuid().v4(),
+        selectedFigureTypeToolbar = json['selected_figure_type_toolbar'] ?? 0,
+        strokeWidth = (json['stroke_width'] ?? 1).toDouble(),
+        strokeCap = json['stroke_cap'] ?? 0,
+        color = json['color'] ?? "#000000",
+        points = WSScribbleAdd.fromJsonList(json['points'] ?? []),
+        paintingStyle = json['painting_style'] ?? 0,
+        leftExtremity = (json['left_extremity'] ?? 0).toDouble(),
+        rightExtremity = (json['right_extremity'] ?? 0).toDouble(),
+        topExtremity = (json['top_extremity'] ?? 0).toDouble(),
+        bottomExtremity = (json['bottom_extremity'] ?? 0).toDouble();
 }

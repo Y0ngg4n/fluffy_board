@@ -48,13 +48,13 @@ class TextItem {
   TextItem.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'],
         editing = false,
-        strokeWidth = json['stroke_width'],
-        maxWidth = json['max_width'],
-        maxHeight = json['max_height'],
-        color = HexColor.fromHex(json['color']),
-        text = json['text'],
-        offset = new ui.Offset(json['offset_dx'], json['offset_dy']),
-        rotation = json['rotation'];
+        strokeWidth = json['stroke_width'] ?? 1,
+        maxWidth = json['max_width'] ?? 500,
+        maxHeight = json['max_height'] ?? 200,
+        color = HexColor.fromHex(json['color'] ?? "#000000"),
+        text = json['text'] ?? "Import Error",
+        offset = new ui.Offset(json['offset_dx'] ?? 0, json['offset_dy'] ?? 0),
+        rotation = json['rotation'] ?? 0;
 
   TextItem(this.uuid, this.editing, this.strokeWidth, this.maxWidth,
       this.maxHeight, this.color, this.text, this.offset, this.rotation);

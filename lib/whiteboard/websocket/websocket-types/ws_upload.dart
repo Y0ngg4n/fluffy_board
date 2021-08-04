@@ -1,4 +1,5 @@
 import 'package:fluffy_board/whiteboard/websocket/websocket-types/websocket_types.dart';
+import 'package:uuid/uuid.dart';
 
 class WSUploadAdd implements JsonWebSocketType{
   String uuid;
@@ -8,11 +9,11 @@ class WSUploadAdd implements JsonWebSocketType{
   List<int> imageData;
 
   WSUploadAdd.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'],
-        uploadType = json['upload_type'],
-        offsetDx = json['offset_dx'].toDouble(),
-        offsetDy = json['offset_dy'].toDouble(),
-        imageData = json['image_data'].cast<int>();
+      : uuid = (json['uuid'] ?? Uuid().v4()),
+        uploadType = (json['upload_type'] ?? 0),
+        offsetDx = (json['offset_dx'] ?? 0).toDouble(),
+        offsetDy = (json['offset_dy'] ?? 0).toDouble(),
+        imageData = (json['image_data'] ?? []).cast<int>();
 
   Map toJson() {
     return {
@@ -34,9 +35,9 @@ class WSUploadUpdate implements JsonWebSocketType{
   double offsetDy;
 
   WSUploadUpdate.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'],
-        offsetDx = json['offset_dx'].toDouble(),
-        offsetDy = json['offset_dy'].toDouble();
+      : uuid = (json['uuid'] ?? Uuid().v4()),
+        offsetDx = (json['offset_dx'] ?? 0).toDouble(),
+        offsetDy = (json['offset_dy'] ?? 0).toDouble();
 
   Map toJson() {
     return {
@@ -54,8 +55,8 @@ class WSUploadImageDataUpdate implements JsonWebSocketType{
   List<int> imageData;
 
   WSUploadImageDataUpdate.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'],
-        imageData = json['image_data'].cast<int>();
+      : uuid = (json['uuid'] ?? Uuid().v4()),
+        imageData = (json['image_data'] ?? []).cast<int>();
 
   Map toJson() {
     return {
@@ -70,7 +71,7 @@ class WSUploadImageDataUpdate implements JsonWebSocketType{
 class WSUploadDelete implements JsonWebSocketType{
   String uuid;
 
-  WSUploadDelete.fromJson(Map<String, dynamic> json) : uuid = json['uuid'];
+  WSUploadDelete.fromJson(Map<String, dynamic> json) : uuid = (json['uuid'] ?? Uuid().v4());
 
   Map toJson() {
     return {
@@ -90,11 +91,11 @@ class DecodeGetUpload implements DecodeGetJsonWebSocketType{
   List<int> imageData;
 
   DecodeGetUpload.fromJson(Map<String, dynamic> json)
-      : uuid = json['id'],
-        uploadType = json['upload_type'],
-        offsetDx = json['offset_dx'].toDouble(),
-        offsetDy = json['offset_dy'].toDouble(),
-        imageData = json['image_data'].cast<int>();
+      : uuid = json['id'] ?? Uuid().v4(),
+        uploadType = json['upload_type'] ?? 0,
+        offsetDx = (json['offset_dx'] ?? 0).toDouble(),
+        offsetDy = (json['offset_dy'] ?? 0).toDouble(),
+        imageData = (json['image_data'] ?? []).cast<int>();
 }
 
 class DecodeGetUploadList implements DecodeGetJsonWebSocketTypeList {

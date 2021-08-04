@@ -1,4 +1,5 @@
 import 'package:fluffy_board/whiteboard/websocket/websocket-types/websocket_types.dart';
+import 'package:uuid/uuid.dart';
 
 class WSTextItemAdd implements JsonWebSocketType{
   String uuid;
@@ -12,15 +13,15 @@ class WSTextItemAdd implements JsonWebSocketType{
   double rotation;
 
   WSTextItemAdd.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'],
-        strokeWidth = json['stroke_width'].toDouble(),
-        maxWidth = json['max_width'],
-        maxHeight = json['max_height'],
-        color = json['color'],
-        contentText = json['content_text'],
-        offsetDx = json['offset_dx'].toDouble(),
-        offsetDy = json['offset_dy'].toDouble(),
-        rotation = json['rotation'].toDouble();
+      : uuid = json['uuid'] ?? Uuid().v4(),
+        strokeWidth = (json['stroke_width'] ?? 1).toDouble(),
+        maxWidth = json['max_width'] ?? 500,
+        maxHeight = json['max_height'] ?? 200,
+        color = json['color'] ?? "#000000",
+        contentText = json['content_text'] ?? "Import Error",
+        offsetDx = (json['offset_dx'] ?? 0).toDouble(),
+        offsetDy = (json['offset_dy'] ?? 0).toDouble(),
+        rotation = (json['rotation'] ?? 0).toDouble();
 
   Map toJson() {
     return {
@@ -60,15 +61,15 @@ class WSTextItemUpdate implements JsonWebSocketType{
   double rotation;
 
   WSTextItemUpdate.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'],
-        strokeWidth = json['stroke_width'].toDouble(),
-        maxWidth = json['max_width'],
-        maxHeight = json['max_height'],
-        color = json['color'],
-        contentText = json['content_text'],
-        offsetDx = json['offset_dx'].toDouble(),
-        offsetDy = json['offset_dy'].toDouble(),
-        rotation = json['rotation'].toDouble();
+      : uuid = json['uuid'] ?? Uuid().v4(),
+        strokeWidth = (json['stroke_width'] ?? 1).toDouble(),
+        maxWidth = (json['max_width'] ?? 500),
+        maxHeight = (json['max_height'] ?? 200),
+        color = (json['color'] ?? "#000000"),
+        contentText = (json['content_text'] ?? "Import Error"),
+        offsetDx = (json['offset_dx'] ?? 0).toDouble(),
+        offsetDy = (json['offset_dy'] ?? 0).toDouble(),
+        rotation = (json['rotation'] ?? 0).toDouble();
 
   Map toJson() {
     return {
@@ -122,15 +123,15 @@ class DecodeGetTextItem implements DecodeGetJsonWebSocketType{
   double rotation;
 
   DecodeGetTextItem.fromJson(Map<String, dynamic> json)
-      : uuid = json['id'],
-        strokeWidth = json['stroke_width'].toDouble(),
-        maxHeight = json['max_height'],
-        maxWidth = json['max_width'],
-        color = json['color'],
-        contentText = json['content_text'],
-        offsetDx = json['offset_dx'].toDouble(),
-        offsetDy = json['offset_dy'].toDouble(),
-        rotation = json['rotation'].toDouble();
+      : uuid = json['id'] ?? Uuid().v4(),
+        strokeWidth = (json['stroke_width'] ?? 1).toDouble(),
+        maxHeight = (json['max_height'] ?? 500),
+        maxWidth = (json['max_width'] ?? 200),
+        color = (json['color'] ?? "#000000"),
+        contentText = (json['content_text'] ?? "Import Error"),
+        offsetDx = (json['offset_dx'] ?? 0).toDouble(),
+        offsetDy = (json['offset_dy'] ?? 0).toDouble(),
+        rotation = (json['rotation'] ?? 0).toDouble();
 }
 
 class DecodeGetTextItemList implements DecodeGetJsonWebSocketTypeList{

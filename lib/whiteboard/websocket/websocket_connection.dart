@@ -264,7 +264,7 @@ class WebsocketConnection {
           as Map<String, dynamic>);
       onUserMove(new ConnectedUserMove(json.uuid, new Offset(json.offsetDx, json.offsetDy), json.scale));
     }else if (message.startsWith(r"user-cursor-move#")) {
-      WSUserMove json = WSUserMove.fromJson(
+      WSUserCursorMove json = WSUserCursorMove.fromJson(
           jsonDecode(message.replaceFirst(r"user-cursor-move#", ""))
           as Map<String, dynamic>);
       onUserCursorMove(new ConnectedUserCursorMove(json.uuid, new Offset(json.offsetDx, json.offsetDy)));

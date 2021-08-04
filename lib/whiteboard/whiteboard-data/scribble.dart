@@ -3,6 +3,8 @@ import 'package:fluffy_board/whiteboard/whiteboard_view.dart';
 import '../overlays/toolbar/figure_toolbar.dart';
 import 'draw_point.dart';
 import 'json_encodable.dart';
+import 'package:uuid/uuid.dart';
+
 
 class Scribbles implements JsonEncodable{
   List<Scribble> list = [];
@@ -54,18 +56,18 @@ class Scribble implements JsonEncodable{
   }
 
   Scribble.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'],
+      : uuid = json['uuid'] ?? Uuid().v4(),
         selectedFigureTypeToolbar = SelectedFigureTypeToolbar
-            .values[json['selected_figure_type_toolbar']],
-        strokeWidth = json['stroke_width'],
-        strokeCap = ui.StrokeCap.values[json['stroke_cap']],
-        color = HexColor.fromHex(json['color']),
-        points = DrawPoints.fromJson(json['points']).list,
-        paintingStyle = ui.PaintingStyle.values[json['painting_style']],
-        leftExtremity = json['left_extremity'],
-        rightExtremity = json['right_extremity'],
-        topExtremity = json['top_extremity'],
-        bottomExtremity = json['bottom_extremity'];
+            .values[json['selected_figure_type_toolbar'] ?? 0],
+        strokeWidth = json['stroke_width'] ?? 1,
+        strokeCap = ui.StrokeCap.values[json['stroke_cap'] ?? 0],
+        color = HexColor.fromHex(json['color'] ?? "#000000"),
+        points = DrawPoints.fromJson(json['points'] ?? []).list,
+        paintingStyle = ui.PaintingStyle.values[json['painting_style'] ?? 0],
+        leftExtremity = json['left_extremity'] ?? 0,
+        rightExtremity = json['right_extremity'] ?? 0,
+        topExtremity = json['top_extremity'] ?? 0,
+        bottomExtremity = json['bottom_extremity'] ?? 0;
 
   Scribble(this.uuid, this.strokeWidth, this.strokeCap, this.color, this.points,
       this.selectedFigureTypeToolbar, this.paintingStyle);

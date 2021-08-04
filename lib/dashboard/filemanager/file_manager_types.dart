@@ -119,8 +119,8 @@ class OfflineWhiteboard {
   static Future<OfflineWhiteboard> fromJson(Map<String, dynamic> json) async {
     return new OfflineWhiteboard(
         json['uuid'],
-        json['directory'],
-        json['name'],
+        json['directory'] ?? "",
+        json['name'] ?? "ImportError",
         json['uploads'] != null
             ? await Uploads.fromJson(json['uploads'])
             : new Uploads([]),
@@ -133,8 +133,8 @@ class OfflineWhiteboard {
         json['bookmarks'] != null
             ? Bookmarks.fromJson(json['bookmarks'])
             : new Bookmarks([]),
-      new ui.Offset(json['offset_dx'].toDouble(), json['offset_dy'].toDouble()),
-      json['scale'].toDouble(),
+      new ui.Offset((json['offset_dx'] ?? 0).toDouble(), (json['offset_dy'] ?? 0).toDouble()),
+        (json['scale'] ?? 0).toDouble(),
     );
   }
 

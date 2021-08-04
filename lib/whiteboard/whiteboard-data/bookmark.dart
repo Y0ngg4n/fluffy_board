@@ -1,4 +1,5 @@
 import 'dart:ui' as ui;
+import 'package:uuid/uuid.dart';
 
 class Bookmarks {
   List<Bookmark> list = [];
@@ -36,10 +37,10 @@ class Bookmark {
   }
 
   Bookmark.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'],
-        name = json['name'],
-        offset = new ui.Offset(json['offset_dx'].toDouble(), json['offset_dy'].toDouble()),
-        scale = json['scale'].toDouble();
+      : uuid = json['uuid'] ?? Uuid().v4(),
+        name = json['name'] ?? "Import Error",
+        offset = new ui.Offset((json['offset_dx'] ?? 0).toDouble(), (json['offset_dy'] ?? 0).toDouble()),
+        scale = (json['scale'] ?? 1).toDouble();
 
   Bookmark(this.uuid, this.name, this.offset, this.scale);
 

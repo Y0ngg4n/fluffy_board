@@ -1,4 +1,5 @@
 import 'package:fluffy_board/whiteboard/websocket/websocket-types/websocket_types.dart';
+import 'package:uuid/uuid.dart';
 
 class WSBookmarkAdd implements JsonWebSocketType {
   String uuid;
@@ -8,11 +9,11 @@ class WSBookmarkAdd implements JsonWebSocketType {
   double scale;
 
   WSBookmarkAdd.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'],
-        name = json['name'],
-        offsetDx = json['offset_dx'].toDouble(),
-        offsetDy = json['offset_dy'].toDouble(),
-        scale = json['scale'].toDouble();
+      : uuid = json['uuid'] ?? Uuid().v4(),
+        name = json['name'] ?? "Import Error",
+        offsetDx = (json['offset_dx'] ?? 0).toDouble(),
+        offsetDy = (json['offset_dy'] ?? 0).toDouble(),
+        scale = (json['scale'] ?? 1).toDouble();
 
   Map toJson() {
     return {
@@ -36,11 +37,11 @@ class WSBookmarkUpdate implements JsonWebSocketType {
   double scale;
 
   WSBookmarkUpdate.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'],
-        name = json['name'],
-        offsetDx = json['offset_dx'].toDouble(),
-        offsetDy = json['offset_dy'].toDouble(),
-        scale = json['scale'].toDouble();
+      : uuid = json['uuid'] ?? Uuid().v4(),
+        name = json['name'] ?? "Import Error",
+        offsetDx = (json['offset_dx'] ?? 0).toDouble(),
+        offsetDy = (json['offset_dy'] ?? 0).toDouble(),
+        scale = (json['scale'] ?? 1).toDouble();
 
   Map toJson() {
     return {
@@ -56,10 +57,10 @@ class WSBookmarkUpdate implements JsonWebSocketType {
       this.uuid, this.name, this.offsetDx, this.offsetDy, this.scale);
 }
 
-class WSBookmarkDelete  implements JsonWebSocketType{
+class WSBookmarkDelete implements JsonWebSocketType{
   String uuid;
 
-  WSBookmarkDelete.fromJson(Map<String, dynamic> json) : uuid = json['uuid'];
+  WSBookmarkDelete.fromJson(Map<String, dynamic> json) : uuid = json['uuid'] ?? Uuid().v4();
 
   Map toJson() {
     return {
@@ -88,10 +89,10 @@ class DecodeGetBookmark implements DecodeGetJsonWebSocketType{
   double scale;
 
   DecodeGetBookmark.fromJson(Map<String, dynamic> json)
-      : uuid = json['id'],
-        name = json['name'],
-        offsetDx = json['offset_dx'].toDouble(),
-        offsetDy = json['offset_dy'].toDouble(),
-        scale = json['scale'].toDouble();
+      : uuid = json['id'] ?? Uuid().v4(),
+        name = json['name'] ?? "Import Error",
+        offsetDx = (json['offset_dx'] ?? 0).toDouble(),
+        offsetDy = (json['offset_dy'] ?? 0).toDouble(),
+        scale = (json['scale'] ?? 1).toDouble();
 }
 
