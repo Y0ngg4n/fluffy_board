@@ -393,6 +393,9 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                             "points-to-image",
                             !(settingsStorage.getItem("points-to-image") ??
                                 true));
+                      } else if (value.toString() == "user-cursors") {
+                        settingsStorage.setItem("user-cursors",
+                            !(settingsStorage.getItem("user-cursors") ?? true));
                       }
                     })
                   },
@@ -430,7 +433,12 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                             const Text("Points to images (Off may cause lag)"),
                         checked:
                             settingsStorage.getItem("points-to-image") ?? true,
-                        value: "points-to-image")
+                        value: "points-to-image"),
+                    CheckedPopupMenuItem(
+                        child: const Text("Display Cursors"),
+                        checked:
+                            settingsStorage.getItem("user-cursors") ?? true,
+                        value: "user-cursors")
                   ])
         ]);
 
