@@ -39,4 +39,11 @@ class DrawPoint extends ui.Offset implements JsonEncodable {
       'dy': dy,
     };
   }
+
+  Map toJson() {
+    return {
+      'dx': dx,
+      'dy': dy,
+    };
+  }
 }

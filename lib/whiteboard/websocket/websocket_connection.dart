@@ -136,7 +136,9 @@ class WebsocketConnection {
         onBookmarkUpdate: onBookmarkUpdate,
         onBookmarkDelete: onBookmarkDelete
       );
+      print("Before Initialize Websocket Connection");
       _singleton!.initWebSocketConnection(whiteboard, authToken);
+      print("After Initialize Websocket Connection");
     }
     return _singleton!;
   }

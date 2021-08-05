@@ -23,7 +23,7 @@ class WebsocketSend {
         newScribble.strokeCap.index,
         newScribble.color.toHex(),
         newScribble.points,
-        newScribble.paintingStyle.index));
+        newScribble.paintingStyle.index).toJson());
     if (websocketConnection != null) {
       websocketConnection.sendDataToChannel("scribble-add#", data);
     }
@@ -42,7 +42,8 @@ class WebsocketSend {
       newScribble.rightExtremity,
       newScribble.topExtremity,
       newScribble.bottomExtremity,
-    ));
+    ).toJson());
+    print(data);
     if (websocketConnection != null) {
       websocketConnection.sendDataToChannel("scribble-update#", data);
     }
@@ -52,7 +53,7 @@ class WebsocketSend {
       Scribble deleteScribble, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(WSScribbleDelete(
       deleteScribble.uuid,
-    ));
+    ).toJson());
     if (websocketConnection != null) {
       websocketConnection.sendDataToChannel("scribble-delete#", data);
     }
@@ -66,7 +67,7 @@ class WebsocketSend {
         upload.offset.dx,
         upload.offset.dy,
         // List.generate(10, (index) => 0)
-        upload.uint8List.toList()));
+        upload.uint8List.toList()).toJson());
     if (websocketConnection != null) {
       websocketConnection.sendDataToChannel("upload-add#", data);
     }
@@ -78,7 +79,7 @@ class WebsocketSend {
       newUpload.uuid,
       newUpload.offset.dx,
       newUpload.offset.dy,
-    ));
+    ).toJson());
     if (websocketConnection != null)
       websocketConnection.sendDataToChannel("upload-update#", data);
   }
@@ -86,7 +87,7 @@ class WebsocketSend {
   static Future sendUploadImageDataUpdate(
       Upload newUpload, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(
-        WSUploadImageDataUpdate(newUpload.uuid, newUpload.uint8List));
+        WSUploadImageDataUpdate(newUpload.uuid, newUpload.uint8List).toJson());
     if (websocketConnection != null)
       websocketConnection.sendDataToChannel("upload-image-data-update#", data);
   }
@@ -95,7 +96,7 @@ class WebsocketSend {
       Upload newUpload, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(WSUploadDelete(
       newUpload.uuid,
-    ));
+    ).toJson());
     if (websocketConnection != null)
       websocketConnection.sendDataToChannel("upload-delete#", data);
   }
@@ -111,7 +112,7 @@ class WebsocketSend {
         textItem.text,
         textItem.offset.dx,
         textItem.offset.dy,
-        textItem.rotation));
+        textItem.rotation).toJson());
     if (websocketConnection != null) {
       websocketConnection.sendDataToChannel("textitem-add#", data);
     }
@@ -128,7 +129,7 @@ class WebsocketSend {
         textItem.text,
         textItem.offset.dx,
         textItem.offset.dy,
-        textItem.rotation));
+        textItem.rotation).toJson());
     if (websocketConnection != null) {
       websocketConnection.sendDataToChannel("textitem-update#", data);
     }
@@ -138,21 +139,21 @@ class WebsocketSend {
       TextItem newTextItem, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(WSTextItemDelete(
       newTextItem.uuid,
-    ));
+    ).toJson());
     if (websocketConnection != null)
       websocketConnection.sendDataToChannel("text-item-delete#", data);
   }
 
   static Future sendUserMove(ui.Offset offset, String id, double scale,
       WebsocketConnection? websocketConnection) async{
-    String data = jsonEncode(WSUserMove(id, offset.dx, offset.dy, scale));
+    String data = jsonEncode(WSUserMove(id, offset.dx, offset.dy, scale).toJson());
     if (websocketConnection != null)
       websocketConnection.sendDataToChannel("user-move#", data);
   }
 
   static Future sendUserCursorMove(ui.Offset offset, String id,
       WebsocketConnection? websocketConnection) async{
-    String data = jsonEncode(WSUserCursorMove(id, offset.dx, offset.dy));
+    String data = jsonEncode(WSUserCursorMove(id, offset.dx, offset.dy).toJson());
     if (websocketConnection != null)
       websocketConnection.sendDataToChannel("user-cursor-move#", data);
   }
@@ -178,7 +179,7 @@ class WebsocketSend {
       Bookmark newBookmark, WebsocketConnection? websocketConnection) async{
     String data = jsonEncode(WSBookmarkDelete(
       newBookmark.uuid,
-    ));
+    ).toJson());
     if (websocketConnection != null)
       websocketConnection.sendDataToChannel("bookmark-delete#", data);
   }

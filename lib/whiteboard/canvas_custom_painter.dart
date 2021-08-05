@@ -304,7 +304,7 @@ class PainterUtils {
       Offset newOffset = textItem.offset + offset;
       Offset middlePoint = new Offset(
           ((newOffset.dx + textPainter.width) - newOffset.dx) / 2,
-          ((newOffset.dy + textPainter.height) - newOffset.dx) / 2);
+          ((newOffset.dy + textPainter.height) - newOffset.dy) / 2);
       canvas.translate(middlePoint.dx, middlePoint.dy);
       canvas.rotate(vectormath.radians(textItem.rotation));
       textPainter.paint(canvas, newOffset);
