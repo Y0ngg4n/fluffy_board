@@ -81,7 +81,7 @@ class CanvasCustomPainter extends CustomPainter {
     PainterUtils.paintUploads(canvas, uploads, screenSize, scale, offset, true);
     PainterUtils.paintTextItems(canvas, texts, offset, screenSize, scale, true);
     PainterUtils.paintScribbles(
-        canvas, scribbles, offset, screenSize, scale, true);
+        canvas, scribbles, offset, screenSize, scale, true, toolbarOptions);
 
     PainterUtils.paintCursors(
         canvas, connectedUsers, offset, screenSize, scale);
@@ -105,8 +105,22 @@ class CanvasCustomPainter extends CustomPainter {
 class PainterUtils {
   static final LocalStorage settingsStorage = new LocalStorage('settings');
 
-  static paintScribbles(Canvas canvas, List<Scribble> scribbles, Offset offset,
-      Offset screenSize, double scale, bool checkView) {
+  // Draw Multiselect
+  static final Paint selectPaint = Paint()
+    ..strokeCap = StrokeCap.round
+    ..isAntiAlias = true
+    ..color = Color.fromARGB(50, 31, 133, 222)
+    ..strokeWidth = 1
+    ..style = PaintingStyle.fill;
+
+  static paintScribbles(
+      Canvas canvas,
+      List<Scribble> scribbles,
+      Offset offset,
+      Offset screenSize,
+      double scale,
+      bool checkView,
+      Toolbar.ToolbarOptions? toolbarOptions) {
     //a single line is defined as a series of points followed by a null at the end
     for (Scribble scribble in scribbles) {
       if (checkView &&
@@ -114,12 +128,14 @@ class PainterUtils {
               scribble, offset, screenSize.dx, screenSize.dy, scale)) {
         continue;
       }
-      PainterUtils.paintScribble(scribble, canvas, scale, offset, checkView);
+      PainterUtils.paintScribble(
+          scribble, canvas, scale, offset, checkView, toolbarOptions);
     }
   }
 
   static paintScribble(Scribble scribble, Canvas canvas, double scale,
-      Offset offset, bool checkView) {
+      Offset offset, bool checkView,
+      [Toolbar.ToolbarOptions? toolbarOptions]) {
     Paint drawingPaint = Paint()
       ..strokeCap = scribble.strokeCap
       ..isAntiAlias = true
@@ -129,6 +145,7 @@ class PainterUtils {
     Paint figurePaint = drawingPaint..style = scribble.paintingStyle;
     if (scribble.backedScribble == null ||
         !(settingsStorage.getItem("points-to-image") ?? true)) {
+      print("NOt Backing");
       switch (scribble.selectedFigureTypeToolbar) {
         case SelectedFigureTypeToolbar.rect:
           canvas.drawRect(
@@ -178,6 +195,19 @@ class PainterUtils {
           }
           break;
       }
+      if (toolbarOptions != null &&
+          toolbarOptions.settingsSelectedScribble == scribble) {
+        Offset leftTopOffset = new Offset(
+                scribble.leftExtremity - scribble.strokeWidth * 2,
+                scribble.topExtremity - scribble.strokeWidth * 2) +
+            offset;
+        Offset rigthBottomOffset = new Offset(
+                scribble.rightExtremity + scribble.strokeWidth * 2,
+                scribble.bottomExtremity + scribble.strokeWidth * 2) +
+            offset;
+        canvas.drawRect(
+            Rect.fromPoints(leftTopOffset, rigthBottomOffset), selectPaint);
+      }
     } else {
       Paint paint = new Paint();
       paint.color = Colors.green;
@@ -185,23 +215,26 @@ class PainterUtils {
               scribble.leftExtremity - scribble.strokeWidth * 2,
               scribble.topExtremity - scribble.strokeWidth * 2) +
           offset;
+      Offset rightBottomOffset = new Offset(
+          scribble.leftExtremity + scribble.backedScribble!.width + offset.dx,
+          scribble.topExtremity + scribble.backedScribble!.height + offset.dy);
       paintImage(
         canvas: canvas,
         rect: Rect.fromPoints(
-            leftTopOffset,
-            new Offset(
-                scribble.leftExtremity +
-                    scribble.backedScribble!.width +
-                    offset.dx,
-                scribble.topExtremity +
-                    scribble.backedScribble!.height +
-                    offset.dy)),
+          leftTopOffset,
+          rightBottomOffset,
+        ),
         filterQuality: FilterQuality.high,
         isAntiAlias: true,
         image: scribble.backedScribble!,
         // Can be increased if to pixelated
         // scale: 1
       );
+      if (toolbarOptions != null &&
+          toolbarOptions.settingsSelectedScribble == scribble) {
+        canvas.drawRect(
+            Rect.fromPoints(leftTopOffset, rightBottomOffset), selectPaint);
+      }
     }
   }
 

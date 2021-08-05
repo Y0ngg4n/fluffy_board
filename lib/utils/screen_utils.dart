@@ -204,7 +204,7 @@ class ScreenUtils {
         scale,
         new Offset(-scribble.leftExtremity + scribble.strokeWidth,
             -scribble.topExtremity + scribble.strokeWidth),
-        false);
+        false, null);
     // Finally render the image, this can take about 8 to 25 milliseconds.
     var picture = recorder.endRecording();
     // TODO: Check if cuts are right and make less pixelated
