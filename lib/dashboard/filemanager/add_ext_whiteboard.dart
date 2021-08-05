@@ -7,6 +7,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddExtWhiteboard extends StatefulWidget {
   final String authToken;
@@ -24,7 +25,7 @@ class _AddExtWhiteboardState extends State<AddExtWhiteboard> {
   Widget build(BuildContext context) {
     return (Scaffold(
         appBar: AppBar(
-          title: Text("Add Whiteboard"),
+          title: Text(AppLocalizations.of(context)!.collabWhiteboard),
         ),
         body: Center(
           child: Padding(
@@ -65,7 +66,7 @@ class _AddExtWhiteboardFormState extends State<AddExtWhiteboardForm> {
 
   _showError() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Error while adding Whiteboard! Please try an other Invite ID."),
+        content: Text(AppLocalizations.of(context)!.errorCollabWhiteboard),
         backgroundColor: Colors.red));
   }
 
@@ -83,7 +84,7 @@ class _AddExtWhiteboardFormState extends State<AddExtWhiteboardForm> {
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     icon: Icon(Icons.email_outlined),
-                    hintText: "Enter your Invite ID",
+                    hintText: AppLocalizations.of(context)!.enterInviteID,
                     suffixIcon: IconButton(
                         icon: Icon(Icons.content_paste),
                         onPressed: () async {
@@ -93,11 +94,11 @@ class _AddExtWhiteboardFormState extends State<AddExtWhiteboardForm> {
                           }
                         },
                     ),
-                    labelText: "Invite ID"),
+                    labelText: AppLocalizations.of(context)!.inviteID),
                 validator: (value) {
                   if (value == null || value.isEmpty
                       && RegExp(r"[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}#[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}").hasMatch(value)) {
-                    return 'Please enter a valid Invite ID';
+                    return AppLocalizations.of(context)!.enterValidInviteID;
                   }
                   return null;
                 },
@@ -110,7 +111,7 @@ class _AddExtWhiteboardFormState extends State<AddExtWhiteboardForm> {
                              minimumSize: const Size(
                                  double.infinity, 60)),
                             onPressed: () => _addExtWhiteboard(),
-                            child: Text("Import Whiteboard")))
+                            child: Text(AppLocalizations.of(context)!.importWhiteboard)))
                       ])),
     );
   }
@@ -121,7 +122,7 @@ class _AddExtWhiteboardFormState extends State<AddExtWhiteboardForm> {
       // If the form is valid, display a snackbar. In the real world,
       // you'd often call a server or save the information in a database.
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Trying to let you in ...')));
+          SnackBar(content: Text(AppLocalizations.of(context)!.tryingJoin)));
       try {
         String inviteId = nameController.text;
         List splitInviteId = inviteId.split("#");

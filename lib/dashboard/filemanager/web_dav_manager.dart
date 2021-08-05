@@ -13,10 +13,11 @@ class WebDavManager {
 
   static Future<webdav.Client?> connect() async {
     print("Connecting to WebDav ...");
+    bool webDavEnabled = settingsStorage.getItem("WEB_DAV_ENABLED") ?? "";
     String webDavURL = settingsStorage.getItem("WEB_DAV_URL") ?? "";
     String webDavUsername = settingsStorage.getItem("WEB_DAV_USERNAME") ?? "";
     String webDavPassword = settingsStorage.getItem("WEB_DAV_PASSWORD") ?? "";
-    if (webDavURL.isEmpty) return null;
+    if (!webDavEnabled || webDavURL.isEmpty) return null;
     webdav.Client client = webdav.newClient(
       webDavURL,
       user: webDavUsername,
@@ -49,7 +50,7 @@ class WebDavManager {
   static startAutomatedUpload(OfflineWhiteboards offlineWhiteboards) {
     print("Starting automated webdav sync");
     String webDavSyncInterval =
-        settingsStorage.getItem("WEB_DAV_SYNC_INTERVAL") ?? 30;
+    (settingsStorage.getItem("WEB_DAV_SYNC_INTERVAL") ?? 30).toString();
     if (timer != null) timer!.cancel();
     timer = Timer.periodic(Duration(minutes: int.parse(webDavSyncInterval)),
         (timer) => uploadOfflineWhiteboards(offlineWhiteboards));

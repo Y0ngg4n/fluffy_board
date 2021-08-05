@@ -10,6 +10,7 @@ import 'dashboard/server_settings.dart';
 import 'documentation/about.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future main() async {
   await dotenv.load(fileName: ".env");
@@ -38,6 +39,8 @@ Widget buildMaterialApp(String initialRoute, context) {
     darkTheme: darkThemeData,
     themeMode: EasyDynamicTheme.of(context).themeMode,
     title: 'Flutter Demo',
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     routes: {
       '/about': (context) => About(),
       '/intro': (context) => FileManagerIntroduction(),

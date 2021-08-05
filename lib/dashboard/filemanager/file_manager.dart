@@ -108,17 +108,23 @@ class _FileManagerState extends State<FileManager> {
         offlineWhiteboardIds);
 
     return Scaffold(
-      appBar: AppBar(title: Text("Dashboard"), actions: [
-        ActionButtons(
-            widget.authToken,
-            currentDirectory,
-            _refreshController,
-            offlineWhiteboards,
-            offlineWhiteboardIds,
-            widget.online,
-            directories),
-        AvatarIcon(widget.online)
-      ]),
+      appBar: AppBar(
+          title: Row(
+            children: [
+              Text("Dashboard"),
+              Expanded(
+                child: ActionButtons(
+                    widget.authToken,
+                    currentDirectory,
+                    _refreshController,
+                    offlineWhiteboards,
+                    offlineWhiteboardIds,
+                    widget.online,
+                    directories),
+              ),
+            ],
+          ),
+          actions: [AvatarIcon(widget.online)]),
       body: Container(
           child: Column(children: [
         Padding(
@@ -144,7 +150,7 @@ class _FileManagerState extends State<FileManager> {
                 enablePullUp: false,
                 controller: _refreshController,
                 onRefresh: () async {
-                 await WhiteboardDataManager.getDirectoriesAndWhiteboards(
+                  await WhiteboardDataManager.getDirectoriesAndWhiteboards(
                       widget.online,
                       currentDirectory,
                       widget.authToken,
@@ -166,7 +172,8 @@ class _FileManagerState extends State<FileManager> {
                       this.offlineWhiteboards = offlineWhiteboards;
                     });
                   });
-                  if (widget.online) WebDavManager.startAutomatedUpload(offlineWhiteboards);
+                  if (widget.online)
+                    WebDavManager.startAutomatedUpload(offlineWhiteboards);
                 },
                 child: GridView.extent(
                   maxCrossAxisExtent: 200,

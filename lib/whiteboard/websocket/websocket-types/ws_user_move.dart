@@ -1,3 +1,5 @@
+import 'package:uuid/uuid.dart';
+
 class WSUserMove {
   String uuid;
   double offsetDx;
@@ -5,10 +7,10 @@ class WSUserMove {
   double scale;
 
   WSUserMove.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'],
-        offsetDx = json['offset_dx'].toDouble(),
-        offsetDy = json['offset_dy'].toDouble(),
-        scale = json['scale'].toDouble();
+      : uuid = (json['uuid'] ?? Uuid().v4()),
+        offsetDx = (json['offset_dx'] ?? 0).toDouble(),
+        offsetDy = (json['offset_dy'] ?? 0).toDouble(),
+        scale = (json['scale'] ?? 1).toDouble();
 
   Map toJson() {
     return {
@@ -28,9 +30,9 @@ class WSUserCursorMove {
   double offsetDy;
 
   WSUserCursorMove.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'],
-        offsetDx = json['offset_dx'].toDouble(),
-        offsetDy = json['offset_dy'].toDouble();
+      : uuid = json['uuid'] ?? Uuid().v4(),
+        offsetDx = (json['offset_dx'] ?? 0).toDouble(),
+        offsetDy = (json['offset_dy'] ?? 0).toDouble();
 
   Map toJson() {
     return {

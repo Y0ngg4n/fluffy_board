@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:fluffy_board/whiteboard/websocket/websocket_manager.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:universal_html/html.dart';

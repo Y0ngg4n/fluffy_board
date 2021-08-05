@@ -6,6 +6,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RenameWhiteboard extends StatefulWidget {
   final String authToken;
@@ -25,7 +26,7 @@ class _RenameWhiteboardState extends State<RenameWhiteboard> {
   Widget build(BuildContext context) {
     return (Scaffold(
         appBar: AppBar(
-          title: Text("Rename Folder"),
+          title: Text(AppLocalizations.of(context)!.renameWhiteboard),
         ),
         body: Center(
           child: Padding(
@@ -77,7 +78,7 @@ class _RenameWhiteboardFormState extends State<RenameWhiteboardForm> {
 
   _showError() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Error while renaming Whiteboard! Please try an other Name."),
+        content: Text(AppLocalizations.of(context)!.errorRenameWhiteboard),
         backgroundColor: Colors.red));
   }
 
@@ -94,16 +95,16 @@ class _RenameWhiteboardFormState extends State<RenameWhiteboardForm> {
             TextFormField(
               onFieldSubmitted: (value) => _renameWhiteboard(),
               controller: nameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.email_outlined),
-                  hintText: "Enter your new Whiteboard name",
-                  labelText: "New name"),
+                  hintText: AppLocalizations.of(context)!.enterWhiteboardName,
+                  labelText: AppLocalizations.of(context)!.enterWhiteboardName),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter a Name';
+                  return AppLocalizations.of(context)!.enterWhiteboardName;
                 } else if (value.length > 50) {
-                  return 'Please enter a Name smaller than 50';
+                  return AppLocalizations.of(context)!.nameSmaller;
                 }
                 return null;
               },

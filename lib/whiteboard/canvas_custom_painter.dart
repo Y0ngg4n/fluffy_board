@@ -83,7 +83,8 @@ class CanvasCustomPainter extends CustomPainter {
     PainterUtils.paintScribbles(
         canvas, scribbles, offset, screenSize, scale, true);
 
-    PainterUtils.paintCursors(canvas, connectedUsers, offset, screenSize, scale);
+    PainterUtils.paintCursors(
+        canvas, connectedUsers, offset, screenSize, scale);
 
     if (multiSelect && !multiSelectMove) {
       canvas.drawRect(
@@ -194,8 +195,7 @@ class PainterUtils {
                     offset.dx,
                 scribble.topExtremity +
                     scribble.backedScribble!.height +
-                    offset.dy)
-            ),
+                    offset.dy)),
         filterQuality: FilterQuality.high,
         isAntiAlias: true,
         image: scribble.backedScribble!,
@@ -312,21 +312,25 @@ class PainterUtils {
     }
   }
 
-  static paintCursors(Canvas canvas, Set<ConnectedUser> connectedUsers, Offset offset, Offset screenSize, double scale){
-    final icon = OwnIcons.location_arrow;
-    for(ConnectedUser connectedUser in connectedUsers){
-      TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
-      textPainter.text = TextSpan(
-        text: String.fromCharCode(icon.codePoint),
-        style: TextStyle(
-          color: connectedUser.color,
-          fontSize: 16,
-          fontFamily: icon.fontFamily,
-          package: icon.fontPackage, // This line is mandatory for external icon packs
-        ),
-      );
-      textPainter.layout();
-      textPainter.paint(canvas, connectedUser.cursorOffset);
+  static paintCursors(Canvas canvas, Set<ConnectedUser> connectedUsers,
+      Offset offset, Offset screenSize, double scale) {
+    if (settingsStorage.getItem("user-cursors") ?? true) {
+      final icon = OwnIcons.location_arrow;
+      for (ConnectedUser connectedUser in connectedUsers) {
+        TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
+        textPainter.text = TextSpan(
+          text: String.fromCharCode(icon.codePoint),
+          style: TextStyle(
+            color: connectedUser.color,
+            fontSize: 16,
+            fontFamily: icon.fontFamily,
+            package: icon
+                .fontPackage, // This line is mandatory for external icon packs
+          ),
+        );
+        textPainter.layout();
+        textPainter.paint(canvas, connectedUser.cursorOffset);
+      }
     }
   }
 }

@@ -6,6 +6,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RenameFolder extends StatefulWidget {
   final String authToken;
@@ -25,7 +26,7 @@ class _RenameFolderState extends State<RenameFolder> {
   Widget build(BuildContext context) {
     return (Scaffold(
         appBar: AppBar(
-          title: Text("Rename Folder"),
+          title: Text(AppLocalizations.of(context)!.renameFolder),
         ),
         body: Center(
           child: Padding(
@@ -78,7 +79,7 @@ class _RenameFolderFormState extends State<RenameFolderForm> {
 
   _showError() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Error while renaming Folder! Please try an other Name."),
+        content: Text(AppLocalizations.of(context)!.errorRenameFolder),
         backgroundColor: Colors.red));
   }
 
@@ -95,16 +96,16 @@ class _RenameFolderFormState extends State<RenameFolderForm> {
             TextFormField(
               onFieldSubmitted: (value) => _renameFolder(),
               controller: nameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.email_outlined),
-                  hintText: "Enter your new Directory name",
-                  labelText: "New name"),
+                  hintText: AppLocalizations.of(context)!.enterDirectoryName,
+                  labelText: AppLocalizations.of(context)!.enterDirectoryName),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter a Name';
+                  return AppLocalizations.of(context)!.enterDirectoryName;
                 } else if (value.length > 50) {
-                  return 'Please enter a Name smaller than 50';
+                  return AppLocalizations.of(context)!.nameSmaller;
                 }
                 return null;
               },
@@ -117,7 +118,7 @@ class _RenameFolderFormState extends State<RenameFolderForm> {
                       minimumSize: const Size(
                           double.infinity, 60)),
                     onPressed: () => _renameFolder(),
-                    child: Text("Rename Folder")))
+                    child: Text(AppLocalizations.of(context)!.renameFolder)))
           ])),
     );
   }
@@ -128,7 +129,7 @@ class _RenameFolderFormState extends State<RenameFolderForm> {
       // If the form is valid, display a snackbar. In the real world,
       // you'd often call a server or save the information in a database.
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Trying to rename folder ...')));
+          content: Text(AppLocalizations.of(context)!.tryingRenameFolder)));
       try {
         http.Response response = await http.post(
             Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +

@@ -5,13 +5,14 @@ import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EditAccount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Edit Account")),
+        appBar: AppBar(title: Text(AppLocalizations.of(context)!.editAccount)),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -47,7 +48,7 @@ class _EditAccountFormState extends State<EditAccountForm> {
 
   _showError() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Could not change username"),
+        content: Text(AppLocalizations.of(context)!.errorChangeUsername),
         backgroundColor: Colors.red));
   }
 
@@ -72,11 +73,11 @@ class _EditAccountFormState extends State<EditAccountForm> {
                       children: <Widget>[
                         TextFormField(
                             controller: usernameController,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                                 border: OutlineInputBorder(),
                                 icon: Icon(Icons.person_outlined),
-                                hintText: "Enter your new Username",
-                                labelText: "New Username")),
+                                hintText: AppLocalizations.of(context)!.enterUsername,
+                                labelText: AppLocalizations.of(context)!.enterUsername)),
                         Padding(
                             padding: const EdgeInsets.all(16),
                             child: ElevatedButton(
@@ -109,7 +110,7 @@ class _EditAccountFormState extends State<EditAccountForm> {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                                 content:
-                                                    Text('Username updated'),
+                                                    Text(AppLocalizations.of(context)!.savedAccount),
                                                 backgroundColor: Colors.green));
                                       } else {
                                         _showError();
@@ -120,7 +121,7 @@ class _EditAccountFormState extends State<EditAccountForm> {
                                     }
                                   }
                                 },
-                                child: Text("Save Username"))),
+                                child: Text(AppLocalizations.of(context)!.editAccount))),
                         Divider(),
                         Card(
                           color: Colors.redAccent,
@@ -133,7 +134,7 @@ class _EditAccountFormState extends State<EditAccountForm> {
                                 return Colors.red;
                               })),
                               onPressed: () {_deleteAccountDialog(authToken);},
-                              child: Text("Delete account"),
+                              child: Text(AppLocalizations.of(context)!.deleteAccount),
                             ),
                           ),
                         )

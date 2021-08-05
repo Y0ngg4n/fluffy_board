@@ -6,6 +6,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'file_manager_types.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DeleteManager {
   static final LocalStorage settingsStorage = new LocalStorage('settings');
@@ -24,8 +25,8 @@ class DeleteManager {
         context: context,
         builder: (BuildContext ctx) {
           return AlertDialog(
-            title: Text('Please Confirm'),
-            content: Text('Are you sure to delete the folder?'),
+            title: Text(AppLocalizations.of(context)!.pleaseConfirm),
+            content: Text(AppLocalizations.of(context)!.confirmDeletion),
             actions: [
               TextButton(
                   onPressed: () async {
@@ -44,24 +45,24 @@ class DeleteManager {
                           "id": directory.id,
                         }));
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text("Trying to delete Folder"),
+                      content: Text(AppLocalizations.of(context)!.tryingDelete),
                     ));
                     directories.list.remove(directory);
                     await fileManagerStorage.setItem(
                         "directories", directories.toJSONEncodable());
                     if (deleteResponse.statusCode != 200) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text("Error while deleting Folder!"),
+                          content: Text(AppLocalizations.of(context)!.errorDelete),
                           backgroundColor: Colors.red));
                     }
                     _refreshController.requestRefresh();
                   },
-                  child: Text('Yes')),
+                  child: Text(AppLocalizations.of(context)!.yes)),
               TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('No'))
+                  child: Text(AppLocalizations.of(context)!.no))
             ],
           );
         });
@@ -73,8 +74,8 @@ class DeleteManager {
         context: context,
         builder: (BuildContext ctx) {
           return AlertDialog(
-            title: Text('Please Confirm'),
-            content: Text('Are you sure to delete the Whiteboard?'),
+            title: Text(AppLocalizations.of(context)!.pleaseConfirm),
+            content: Text(AppLocalizations.of(context)!.confirmDeletion),
             actions: [
               TextButton(
                   onPressed: () async {
@@ -102,12 +103,12 @@ class DeleteManager {
                     }
                     _refreshController.requestRefresh();
                   },
-                  child: Text('Yes')),
+                  child: Text(AppLocalizations.of(context)!.yes)),
               TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('No'))
+                  child: Text(AppLocalizations.of(context)!.no))
             ],
           );
         });
@@ -119,8 +120,8 @@ class DeleteManager {
         context: context,
         builder: (BuildContext ctx) {
           return AlertDialog(
-            title: Text('Please Confirm'),
-            content: Text('Are you sure to delete the Whiteboard?'),
+            title: Text(AppLocalizations.of(context)!.pleaseConfirm),
+            content: Text(AppLocalizations.of(context)!.confirmDeletion),
             actions: [
               TextButton(
                   onPressed: () async {
@@ -139,21 +140,21 @@ class DeleteManager {
                           "id": whiteboard.id,
                         }));
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text("Trying to delete Whiteboard ..."),
+                      content: Text(AppLocalizations.of(context)!.tryingDelete),
                     ));
                     if (deleteResponse.statusCode != 200) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text("Error while deleting Whiteboard!"),
+                          content: Text(AppLocalizations.of(context)!.errorDelete),
                           backgroundColor: Colors.red));
                     }
                     _refreshController.requestRefresh();
                   },
-                  child: Text('Yes')),
+                  child: Text(AppLocalizations.of(context)!.yes)),
               TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('No'))
+                  child: Text(AppLocalizations.of(context)!.no))
             ],
           );
         });
@@ -165,8 +166,8 @@ class DeleteManager {
         context: context,
         builder: (BuildContext ctx) {
           return AlertDialog(
-            title: Text('Please Confirm'),
-            content: Text('Are you sure to delete the Whiteboard?'),
+            title: Text(AppLocalizations.of(context)!.pleaseConfirm),
+            content: Text(AppLocalizations.of(context)!.confirmDeletion),
             actions: [
               TextButton(
                   onPressed: () async {
@@ -177,16 +178,16 @@ class DeleteManager {
                     await fileManagerStorageIndex.setItem(
                         "indexes", jsonEncode(offlineWhiteboardIds.toList()));
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text("Trying to delete Whiteboard ..."),
+                      content: Text(AppLocalizations.of(context)!.tryingDelete),
                     ));
                     _refreshController.requestRefresh();
                   },
-                  child: Text('Yes')),
+                  child: Text(AppLocalizations.of(context)!.yes)),
               TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('No'))
+                  child: Text(AppLocalizations.of(context)!.no))
             ],
           );
         });

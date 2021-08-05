@@ -6,6 +6,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddWhiteboard extends StatefulWidget {
   final String authToken;
@@ -23,7 +24,7 @@ class _AddWhiteboardState extends State<AddWhiteboard> {
   Widget build(BuildContext context) {
     return (Scaffold(
         appBar: AppBar(
-          title: Text("Add Whiteboard"),
+          title: Text(AppLocalizations.of(context)!.createWhiteboard),
         ),
         body: Center(
           child: Padding(
@@ -80,16 +81,16 @@ class _AddWhiteboardFormState extends State<AddWhiteboardForm> {
               TextFormField(
                 onFieldSubmitted: (value) => _addWhiteboard(),
                 controller: nameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     icon: Icon(Icons.email_outlined),
-                    hintText: "Enter your Whiteboard Name",
-                    labelText: "Name"),
+                    hintText: AppLocalizations.of(context)!.enterWhiteboardName,
+                    labelText: AppLocalizations.of(context)!.enterWhiteboardName),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a Name';
+                    return AppLocalizations.of(context)!.enterWhiteboardName;
                   }else if(value.length > 50){
-                    return 'Please enter a Name smaller than 50';
+                    return AppLocalizations.of(context)!.nameSmaller;
                   }
                   return null;
                 },
@@ -102,7 +103,7 @@ class _AddWhiteboardFormState extends State<AddWhiteboardForm> {
                              minimumSize: const Size(
                                  double.infinity, 60)),
                             onPressed: () => _addWhiteboard(),
-                            child: Text("Create Whiteboard")))
+                            child: Text(AppLocalizations.of(context)!.createWhiteboard)))
                       ])),
     );
   }
@@ -113,7 +114,7 @@ class _AddWhiteboardFormState extends State<AddWhiteboardForm> {
       // If the form is valid, display a snackbar. In the real world,
       // you'd often call a server or save the information in a database.
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Trying to create your Whiteboard ...')));
+          SnackBar(content: Text(AppLocalizations.of(context)!.tryingCreateWhiteboard)));
       try {
         http.Response response = await http.post(
             Uri.parse((settingsStorage.getItem("REST_API_URL") ?? dotenv.env['REST_API_URL']!) +

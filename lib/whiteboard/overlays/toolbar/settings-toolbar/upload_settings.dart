@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:fluffy_board/utils/image_utils.dart';
 import 'package:fluffy_board/whiteboard/infinite_canvas.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_manager_send.dart';
@@ -59,7 +60,7 @@ class _UploadSettingsState extends State<UploadSettings> {
             onChangeEnd: (value) async {
               int index = widget.uploads.indexOf(widget.selectedUpload!);
               widget.selectedUpload!.uint8List =
-                  resizeImage(widget.selectedUpload!.uint8List, value);
+                  ImageUtils.resizeImage(widget.selectedUpload!.uint8List, value);
               final ui.Codec codec = await PaintingBinding.instance!
                   .instantiateImageCodec(widget.selectedUpload!.uint8List);
               final ui.FrameInfo frameInfo = await codec.getNextFrame();
@@ -98,7 +99,7 @@ class _UploadSettingsState extends State<UploadSettings> {
           onChangeEnd: (value) async {
             int index = widget.uploads.indexOf(widget.selectedUpload!);
             widget.selectedUpload!.uint8List =
-                rotateImage(widget.selectedUpload!.uint8List, value);
+                ImageUtils.rotateImage(widget.selectedUpload!.uint8List, value);
             final ui.Codec codec = await PaintingBinding.instance!
                 .instantiateImageCodec(widget.selectedUpload!.uint8List);
             final ui.FrameInfo frameInfo = await codec.getNextFrame();
@@ -130,23 +131,5 @@ class _UploadSettingsState extends State<UploadSettings> {
             ))
       ],
     );
-  }
-
-  Uint8List resizeImage(Uint8List data, double scaleFactor) {
-    Uint8List resizedData = data;
-    IMG.Image? img = IMG.decodeImage(data);
-    IMG.Image resized = IMG.copyResize(img!,
-        width: (img.width * scaleFactor).toInt(),
-        height: (img.height * scaleFactor).toInt());
-    resizedData = Uint8List.fromList(IMG.encodePng(resized));
-    return resizedData;
-  }
-
-  Uint8List rotateImage(Uint8List data, double rotateFactor) {
-    Uint8List resizedData = data;
-    IMG.Image? img = IMG.decodeImage(data);
-    IMG.Image resized = IMG.copyRotate(img!, rotateFactor);
-    resizedData = Uint8List.fromList(IMG.encodePng(resized));
-    return resizedData;
   }
 }

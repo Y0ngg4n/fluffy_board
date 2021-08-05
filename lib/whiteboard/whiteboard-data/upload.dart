@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-
+import 'package:uuid/uuid.dart';
 
 import 'json_encodable.dart';
 
@@ -45,10 +45,10 @@ class Upload {
   ui.Image? image;
 
   Upload.fromJson(Map<String, dynamic> json)
-      : uuid = json['uuid'],
-        uploadType = UploadType.values[json['upload_type']],
-        offset = new ui.Offset(json['offset_dx'], json['offset_dy']),
-        uint8List = Uint8List.fromList(json['uint8list'].cast<int>()),
+      : uuid = json['uuid'] ?? Uuid().v4(),
+        uploadType = UploadType.values[json['upload_type'] ?? 0],
+        offset = new ui.Offset(json['offset_dx'] ?? 0, json['offset_dy'] ?? 0),
+        uint8List = Uint8List.fromList((json['uint8list'] ?? []).cast<int>()),
         image = null;
 
   Map toJson() {

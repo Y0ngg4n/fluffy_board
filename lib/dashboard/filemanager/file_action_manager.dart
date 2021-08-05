@@ -16,6 +16,7 @@ import 'rename_whiteboard.dart';
 import 'share_whiteboard.dart';
 import 'whiteboard_data_manager.dart';
 import 'package:file_saver/file_saver.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 typedef OnDirectorySwitch = Function(Directory?);
 
@@ -30,13 +31,13 @@ class FileActionManager {
 
   static _showUploadError(context) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Error while uploading Whiteboard!"),
+        content: Text(AppLocalizations.of(context)!.errorUploadWhiteboard),
         backgroundColor: Colors.red));
   }
 
   static _showMoveError(context) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Error while moving Whiteboard!"),
+        content: Text(AppLocalizations.of(context)!.errorMovingWhiteboard),
         backgroundColor: Colors.red));
   }
 
@@ -86,13 +87,13 @@ class FileActionManager {
                       itemBuilder: (context) => online
                           ? [
                               PopupMenuItem(
-                                  child: Text("Rename Folder"), value: 0),
+                                  child: Text(AppLocalizations.of(context)!.renameFolder), value: 0),
                               PopupMenuItem(
-                                  child: Text("Delete Folder"), value: 1),
+                                  child: Text(AppLocalizations.of(context)!.deleteFolder), value: 1),
                             ]
                           : [
                               PopupMenuItem(
-                                  child: Text("Rename Folder"), value: 0),
+                                  child: Text(AppLocalizations.of(context)!.renameFolder), value: 0),
                             ],
                       onSelected: (value) {
                         switch (value) {
@@ -214,10 +215,10 @@ class FileActionManager {
                 ),
                 PopupMenuButton(
                   itemBuilder: (context) => [
-                    PopupMenuItem(child: Text("Rename Whiteboard"), value: 0),
-                    PopupMenuItem(child: Text("Delete Whiteboard"), value: 1),
-                    PopupMenuItem(child: Text("Share Whiteboard"), value: 2),
-                    PopupMenuItem(child: Text("Download Whiteboard"), value: 3),
+                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.renameWhiteboard), value: 0),
+                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.deleteWhiteboard), value: 1),
+                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.shareWhiteboard), value: 2),
+                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.downloadWhiteboard), value: 3),
                   ],
                   onSelected: (value) async {
                     switch (value) {
@@ -344,8 +345,8 @@ class FileActionManager {
                 ),
                 PopupMenuButton(
                   itemBuilder: (context) => [
-                    PopupMenuItem(child: Text("Delete Whiteboard"), value: 0),
-                    PopupMenuItem(child: Text("Download Whiteboard"), value: 1)
+                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.deleteWhiteboard), value: 0),
+                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.downloadWhiteboard), value: 1)
                   ],
                   onSelected: (value) async {
                     switch (value) {
@@ -447,10 +448,10 @@ class FileActionManager {
                 ),
                 PopupMenuButton(
                   itemBuilder: (context) => [
-                    PopupMenuItem(child: Text("Rename Whiteboard"), value: 0),
-                    PopupMenuItem(child: Text("Delete Whiteboard"), value: 1),
-                    PopupMenuItem(child: Text("Upload Whiteboard"), value: 2),
-                    PopupMenuItem(child: Text("Export Whiteboard"), value: 3)
+                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.renameWhiteboard), value: 0),
+                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.deleteWhiteboard), value: 1),
+                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.uploadWhiteboard), value: 2),
+                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.exportWhiteboard), value: 3)
                   ],
                   onSelected: (value) async {
                     switch (value) {
@@ -521,7 +522,7 @@ class FileActionManager {
                             "json");
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text(
-                                "Downloaded the Whiteboard to your Downloads folder"),
+                                AppLocalizations.of(context)!.downloadedWhiteboardDownloadsFolder),
                             backgroundColor: Colors.green));
                         break;
                     }

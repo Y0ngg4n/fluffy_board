@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'file_manager_types.dart';
 
 class RenameOfflineWhiteboard extends StatefulWidget {
@@ -20,7 +20,7 @@ class _RenameOfflineWhiteboardState extends State<RenameOfflineWhiteboard> {
   Widget build(BuildContext context) {
     return (Scaffold(
         appBar: AppBar(
-          title: Text("Rename Folder"),
+          title: Text(AppLocalizations.of(context)!.renameWhiteboard),
         ),
         body: Center(
           child: Padding(
@@ -63,7 +63,7 @@ class _RenameOfflineWhiteboardFormState extends State<RenameOfflineWhiteboardFor
 
   _showError() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Error while renaming Whiteboard! Please try an other Name."),
+        content: Text(AppLocalizations.of(context)!.errorRenameWhiteboard),
         backgroundColor: Colors.red));
   }
 
@@ -79,16 +79,16 @@ class _RenameOfflineWhiteboardFormState extends State<RenameOfflineWhiteboardFor
             TextFormField(
               onFieldSubmitted: (value) => _renameOfflineWhiteboard(),
               controller: nameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.email_outlined),
-                  hintText: "Enter your new Whiteboard name",
-                  labelText: "New name"),
+                  hintText: AppLocalizations.of(context)!.enterWhiteboardName,
+                  labelText: AppLocalizations.of(context)!.enterWhiteboardName),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter a Name';
+                  return AppLocalizations.of(context)!.enterWhiteboardName;
                 } else if (value.length > 50) {
-                  return 'Please enter a Name smaller than 50';
+                  return AppLocalizations.of(context)!.nameSmaller;
                 }
                 return null;
               },
@@ -101,7 +101,7 @@ class _RenameOfflineWhiteboardFormState extends State<RenameOfflineWhiteboardFor
                       minimumSize: const Size(
                           double.infinity, 60)),
                     onPressed: () => _renameOfflineWhiteboard(),
-                    child: Text("Rename Whiteboard")))
+                    child: Text(AppLocalizations.of(context)!.renameWhiteboard)))
           ])),
     );
   }
@@ -113,7 +113,7 @@ class _RenameOfflineWhiteboardFormState extends State<RenameOfflineWhiteboardFor
       // you'd often call a server or save the information in a database.
       widget.offlineWhiteboard.name = nameController.text;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Trying to rename whiteboard ...')));
+          content: Text(AppLocalizations.of(context)!.tryingRenameWhiteboard)));
       try {
         await fileManagerStorage.setItem("offline_whiteboard-" + widget.offlineWhiteboard.uuid,
             widget.offlineWhiteboard.toJSONEncodable());
