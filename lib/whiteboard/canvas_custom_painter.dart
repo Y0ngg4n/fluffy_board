@@ -270,18 +270,18 @@ class PainterUtils {
             SelectedBackgroundTypeToolbar.Grid) {
       for (int i = -offset.dy.toInt().abs();
       i <
-          (((screenSize.dy - offset.dy) / scale) /
+          (((screenSize.dy + offset.dy.abs()) / scale) /
               toolbarOptions.backgroundOptions.strokeWidth);
       i++) {
         canvas.drawLine(
             new Offset(
                 0,
                 (toolbarOptions.backgroundOptions.strokeWidth * i) +
-                    offset.dy / scale),
+                    offset.dy),
             new Offset(
                 screenSize.dx / scale,
                 (toolbarOptions.backgroundOptions.strokeWidth * i) +
-                    offset.dy / scale),
+                    offset.dy),
             backgroundPaint);
       }
     }
@@ -290,21 +290,17 @@ class PainterUtils {
         SelectedBackgroundTypeToolbar.Grid) {
       for (int i = -offset.dx.toInt().abs();
       i <
-          (((screenSize.dx - offset.dx) / scale) /
+          (((screenSize.dx + offset.dx.abs()) / scale) /
               toolbarOptions.backgroundOptions.strokeWidth);
       i++) {
         canvas.drawLine(
             new Offset(
                 (toolbarOptions.backgroundOptions.strokeWidth * i) +
-                    offset.dx / scale,
+                    offset.dx,
                 0),
-            // new Offset(
-            //     (toolbarOptions.backgroundOptions.strokeWidth * i) +
-            //         offset.dx / scale,
-            //     screenSize.dx / scale,
             new Offset(
               (toolbarOptions.backgroundOptions.strokeWidth * i) +
-                  offset.dx / scale,
+                  offset.dx,
               screenSize.dy / scale,
             ),
             backgroundPaint);

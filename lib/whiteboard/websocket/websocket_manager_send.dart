@@ -43,7 +43,6 @@ class WebsocketSend {
       newScribble.topExtremity,
       newScribble.bottomExtremity,
     ).toJson());
-    print(data);
     if (websocketConnection != null) {
       websocketConnection.sendDataToChannel("scribble-update#", data);
     }
