@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ServerSettings extends StatefulWidget {
 
@@ -12,7 +13,7 @@ class _ServerSettingsState extends State<ServerSettings> {
   Widget build(BuildContext context) {
     return (Scaffold(
         appBar: AppBar(
-          title: Text("Change Server"),
+          title: Text(AppLocalizations.of(context)!.changeServer),
         ),
         body: Center(
           child: Padding(
@@ -64,18 +65,18 @@ class _ServerSettingsFormState extends State<ServerSettingsForm> {
                           children: <Widget>[
                             TextFormField(
                                 controller: restApiController,
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
                                     border: OutlineInputBorder(),
                                     icon: Icon(Icons.person_outlined),
-                                    hintText: "Enter your REST API URL",
-                                    labelText: "New Server")),
+                                    hintText: AppLocalizations.of(context)!.restURL,
+                                    labelText: AppLocalizations.of(context)!.restURL)),
                             TextFormField(
                                 controller: websocketController,
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
                                     border: OutlineInputBorder(),
                                     icon: Icon(Icons.person_outlined),
-                                    hintText: "Enter your Websocket URL",
-                                    labelText: "New Websocket")),
+                                    hintText: AppLocalizations.of(context)!.wsURL,
+                                    labelText: AppLocalizations.of(context)!.wsURL)),
                             Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: ElevatedButton(
@@ -87,13 +88,13 @@ class _ServerSettingsFormState extends State<ServerSettingsForm> {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                             SnackBar(
-                                                content: Text('Saving ...')));
+                                                content: Text(AppLocalizations.of(context)!.saving)));
                                         await settingsStorage.setItem("REST_API_URL", restApiController.text);
                                         await settingsStorage.setItem("WS_API_URL", websocketController.text);
                                         Navigator.pushReplacementNamed(context, "/login");
                                       }
                                     },
-                                    child: Text("Save Server")))
+                                    child: Text(AppLocalizations.of(context)!.changeServer)))
                           ]));
                 })));
   }

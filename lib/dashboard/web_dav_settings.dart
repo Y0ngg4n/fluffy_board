@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class WebDavSettings extends StatefulWidget {
   @override
@@ -12,7 +13,7 @@ class _WebDavSettingsState extends State<WebDavSettings> {
   Widget build(BuildContext context) {
     return (Scaffold(
         appBar: AppBar(
-          title: Text("Change WebDav Sync Server"),
+          title: Text(AppLocalizations.of(context)!.changeWebDavSync),
         ),
         body: Center(
           child: Padding(
@@ -87,35 +88,35 @@ class _WebDavSettingsFormState extends State<WebDavSettingsForm> {
           ),
           TextFormField(
               controller: webDavURLController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.person_outlined),
-                  hintText: "Enter your WebDav URL",
-                  labelText: "WebDav URL")),
+                  hintText: AppLocalizations.of(context)!.webDavURL,
+                  labelText: AppLocalizations.of(context)!.webDavURL)),
           TextFormField(
               controller: webDavUsernameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.person_outlined),
-                  hintText: "Enter your WebDav Username",
-                  labelText: "WebDav Username")),
+                  hintText: AppLocalizations.of(context)!.webDavUsername,
+                  labelText: AppLocalizations.of(context)!.webDavUsername)),
           TextFormField(
               controller: webDavPasswordController,
               obscureText: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.password_outlined),
-                  hintText: "Enter your WebDav Password",
-                  labelText: "WebDav Password")),
+                  hintText: AppLocalizations.of(context)!.webDavPassword,
+                  labelText: AppLocalizations.of(context)!.webDavPassword)),
           TextFormField(
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               controller: syncIntervalController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.password_outlined),
-                  hintText: "Sync Interval in minutes",
-                  labelText: "Sync Interval in minutes")),
+                  hintText: AppLocalizations.of(context)!.webDavSyncInterval,
+                  labelText: AppLocalizations.of(context)!.webDavSyncInterval)),
           Padding(
               padding: const EdgeInsets.all(16),
               child: ElevatedButton(
@@ -139,7 +140,7 @@ class _WebDavSettingsFormState extends State<WebDavSettingsForm> {
                       Navigator.pop(context);
                     }
                   },
-                  child: Text("Save WebDav Sync Server")))
+                  child: Text(AppLocalizations.of(context)!.changeWebDavSync)))
         ])));
   }
 }

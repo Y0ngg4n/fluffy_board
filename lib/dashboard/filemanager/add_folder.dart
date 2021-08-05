@@ -8,6 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:uuid/uuid.dart';
 import 'file_manager_types.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddFolder extends StatefulWidget {
   final String authToken;
@@ -28,7 +29,7 @@ class _AddFolderState extends State<AddFolder> {
   Widget build(BuildContext context) {
     return (Scaffold(
         appBar: AppBar(
-          title: Text("Add Folder"),
+          title: Text(AppLocalizations.of(context)!.createFolder),
         ),
         body: Center(
           child: Padding(
@@ -83,7 +84,7 @@ class _AddFolderFormState extends State<AddFolderForm> {
 
   _showError() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Error while adding Folder! Please try an other Name."),
+        content: Text(AppLocalizations.of(context)!.errorCreateFolder),
         backgroundColor: Colors.red));
   }
 
@@ -100,16 +101,16 @@ class _AddFolderFormState extends State<AddFolderForm> {
             TextFormField(
               onFieldSubmitted: (value) => _addFolder(),
               controller: nameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.email_outlined),
-                  hintText: "Enter your Directory Name",
-                  labelText: "Name"),
+                  hintText: AppLocalizations.of(context)!.enterDirectoryName,
+                  labelText: AppLocalizations.of(context)!.enterDirectoryName,),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter a Name';
+                  return AppLocalizations.of(context)!.enterDirectoryName;
                 } else if (value.length > 50) {
-                  return 'Please enter a Name smaller than 50';
+                  return AppLocalizations.of(context)!.nameSmaller;
                 }
                 return null;
               },
@@ -122,7 +123,7 @@ class _AddFolderFormState extends State<AddFolderForm> {
                       minimumSize: const Size(
                           double.infinity, 60)),
                     onPressed: () => _addFolder(),
-                    child: Text("Create Folder")))
+                    child: Text(AppLocalizations.of(context)!.createFolder)))
           ])),
     );
   }
@@ -133,7 +134,7 @@ class _AddFolderFormState extends State<AddFolderForm> {
       // If the form is valid, display a snackbar. In the real world,
       // you'd often call a server or save the information in a database.
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Trying to create folder ...')));
+          .showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.tryingCreateFolder)));
       if (widget.online) {
         try {
           http.Response response = await http.post(

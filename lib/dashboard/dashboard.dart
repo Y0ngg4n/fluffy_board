@@ -4,6 +4,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -58,7 +59,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    const name = "Dashboard";
+    String name = AppLocalizations.of(context)!.dashboard;
     print(checkedLogin);
     print(storageReady);
     print(introStorageReady);

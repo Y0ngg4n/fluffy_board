@@ -49,10 +49,10 @@ class WebDavManager {
 
   static startAutomatedUpload(OfflineWhiteboards offlineWhiteboards) {
     print("Starting automated webdav sync");
-    int webDavSyncInterval =
-        settingsStorage.getItem("WEB_DAV_SYNC_INTERVAL") ?? 30;
+    String webDavSyncInterval =
+    (settingsStorage.getItem("WEB_DAV_SYNC_INTERVAL") ?? 30).toString();
     if (timer != null) timer!.cancel();
-    timer = Timer.periodic(Duration(minutes: webDavSyncInterval),
+    timer = Timer.periodic(Duration(minutes: int.parse(webDavSyncInterval)),
         (timer) => uploadOfflineWhiteboards(offlineWhiteboards));
   }
 

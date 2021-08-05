@@ -28,6 +28,7 @@ import 'package:localstorage/localstorage.dart';
 import 'whiteboard_view_data_manager.dart';
 import 'appbar/bookmark_manager.dart';
 import 'overlays/toolbar.dart' as Toolbar;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 typedef OnSaveOfflineWhiteboard = Function();
 
@@ -289,7 +290,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                       switch (value) {
                         case 0:
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text("Trying to export Image ...")));
+                              content: Text(AppLocalizations.of(context)!
+                                  .tryingExportImage)));
                           ExportUtils.exportPNG(
                               scribbles,
                               uploads,
@@ -302,7 +304,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                           break;
                         case 1:
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text("Trying to export PDF ...")));
+                              content: Text(AppLocalizations.of(context)!
+                                  .tryingExportPDF)));
                           ExportUtils.exportPDF(
                               scribbles,
                               uploads,
@@ -315,8 +318,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                           break;
                         case 2:
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(
-                                  "Trying to export screen size Image ...")));
+                              content: Text(AppLocalizations.of(context)!
+                                  .tryingExportScreenSizeImage)));
                           ExportUtils.exportScreenSizePNG(
                               scribbles,
                               uploads,
@@ -331,10 +334,10 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                     })
                   },
               itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                    PopupMenuItem(child: const Text("Export Image"), value: 0),
-                    PopupMenuItem(child: const Text("Export PDF"), value: 1),
+                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.exportImage), value: 0),
+                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.exportPDF), value: 1),
                     PopupMenuItem(
-                        child: const Text("Export screen size Image"),
+                        child: Text(AppLocalizations.of(context)!.exportScreenSizeImage),
                         value: 2),
                   ],
               icon: Icon(Icons.import_export)),
@@ -401,41 +404,41 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                   },
               itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                     CheckedPopupMenuItem(
-                        child: const Text("Left Toolbar"),
+                        child: Text(AppLocalizations.of(context)!.leftToolbar),
                         checked: toolbarLocation == "left" ? true : false,
                         value: "location-left"),
                     CheckedPopupMenuItem(
-                        child: const Text("Right Toolbar"),
+                        child: Text(AppLocalizations.of(context)!.rightToolbar),
                         checked: toolbarLocation == "right" ? true : false,
                         value: "location-right"),
                     CheckedPopupMenuItem(
-                        child: const Text("Top Toolbar"),
+                        child: Text(AppLocalizations.of(context)!.topToolbar),
                         checked: toolbarLocation == "top" ? true : false,
                         value: "location-top"),
                     CheckedPopupMenuItem(
-                        child: const Text("Bottom Toolbar"),
+                        child: Text(AppLocalizations.of(context)!.bottomToolbar),
                         checked: toolbarLocation == "bottom" ? true : false,
                         value: "location-bottom"),
                     PopupMenuDivider(),
                     CheckedPopupMenuItem(
-                        child: const Text("Stylus only"),
+                        child: Text(AppLocalizations.of(context)!.stylusOnly),
                         checked: stylusOnly,
                         value: "stylus-only"),
                     PopupMenuDivider(),
                     CheckedPopupMenuItem(
                         child:
-                            const Text("Optimize Points (Off may cause lag)"),
+                            Text(AppLocalizations.of(context)!.optimizePoints),
                         checked:
                             settingsStorage.getItem("points-simplify") ?? true,
                         value: "points-simplify"),
                     CheckedPopupMenuItem(
                         child:
-                            const Text("Points to images (Off may cause lag)"),
+                            Text(AppLocalizations.of(context)!.pointsToImages),
                         checked:
                             settingsStorage.getItem("points-to-image") ?? true,
                         value: "points-to-image"),
                     CheckedPopupMenuItem(
-                        child: const Text("Display Cursors"),
+                        child: Text(AppLocalizations.of(context)!.displayCursors),
                         checked:
                             settingsStorage.getItem("user-cursors") ?? true,
                         value: "user-cursors")

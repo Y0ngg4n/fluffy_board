@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 
 import 'file_manager_types.dart';
@@ -32,7 +32,7 @@ class _AddOfflineWhiteboardState extends State<AddOfflineWhiteboard> {
   Widget build(BuildContext context) {
     return (Scaffold(
         appBar: AppBar(
-          title: Text("Add Whiteboard"),
+          title: Text(AppLocalizations.of(context)!.createOfflineWhiteboard),
         ),
         body: Center(
           child: Padding(
@@ -102,16 +102,16 @@ class _AddOfflineWhiteboardFormState extends State<AddOfflineWhiteboardForm> {
             TextFormField(
               onFieldSubmitted: (value) => _addOfflineWhiteboard(),
               controller: nameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.email_outlined),
-                  hintText: "Enter your Whiteboard Name",
-                  labelText: "Name"),
+                  hintText: AppLocalizations.of(context)!.enterWhiteboardName,
+                  labelText: AppLocalizations.of(context)!.enterWhiteboardName),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter a Name';
+                  return AppLocalizations.of(context)!.enterWhiteboardName;
                 } else if (value.length > 50) {
-                  return 'Please enter a Name smaller than 50';
+                  return AppLocalizations.of(context)!.nameSmaller;
                 }
                 return null;
               },
@@ -124,7 +124,7 @@ class _AddOfflineWhiteboardFormState extends State<AddOfflineWhiteboardForm> {
                       minimumSize: const Size(
                           double.infinity, 60)),
                     onPressed: () => _addOfflineWhiteboard(),
-                    child: Text("Create Offline Whiteboard")))
+                    child: Text(AppLocalizations.of(context)!.createOfflineWhiteboard)))
           ])),
     );
   }
@@ -135,7 +135,7 @@ class _AddOfflineWhiteboardFormState extends State<AddOfflineWhiteboardForm> {
       // If the form is valid, display a snackbar. In the real world,
       // you'd often call a server or save the information in a database.
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Trying to create your Offline Whiteboard ...')));
+          content: Text(AppLocalizations.of(context)!.tryingCreateWhiteboard)));
       OfflineWhiteboard offlineWhiteboard = new OfflineWhiteboard(
           uuid.v4(),
           widget.directory,

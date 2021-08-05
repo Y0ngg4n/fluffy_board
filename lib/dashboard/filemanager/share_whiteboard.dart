@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'package:mailto/mailto.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // For Flutter applications, you'll most likely want to use
 // the url_launcher package.
@@ -29,7 +30,7 @@ class _ShareWhiteboardState extends State<ShareWhiteboard> {
   Widget build(BuildContext context) {
     return (Scaffold(
         appBar: AppBar(
-          title: Text("Add Whiteboard"),
+          title: Text(AppLocalizations.of(context)!.shareWhiteboard),
         ),
         body: Center(
           child: Padding(
@@ -89,7 +90,7 @@ class _ShareWhiteboardFormState extends State<ShareWhiteboardForm> {
 
   _copySuccess() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Copied to Clipboard'), backgroundColor: Colors.green));
+        content: Text(AppLocalizations.of(context)!.copiedClipboard), backgroundColor: Colors.green));
   }
 
   @override
@@ -106,7 +107,7 @@ class _ShareWhiteboardFormState extends State<ShareWhiteboardForm> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  "Share this Whiteboard",
+                  AppLocalizations.of(context)!.shareWhiteboard,
                   style: TextStyle(fontSize: 30),
                 ),
               ),
@@ -119,7 +120,7 @@ class _ShareWhiteboardFormState extends State<ShareWhiteboardForm> {
                         border: OutlineInputBorder(),
                         icon: Icon(Icons.visibility_outlined),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelText: "Readonly/View Invite",
+                        labelText: AppLocalizations.of(context)!.readOnlyInvite,
                         suffixIcon: IconButton(
                             icon: Icon(Icons.content_copy),
                             onPressed: () {
@@ -137,7 +138,7 @@ class _ShareWhiteboardFormState extends State<ShareWhiteboardForm> {
                       border: OutlineInputBorder(),
                       icon: Icon(Icons.edit_outlined),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
-                      labelText: "Writable/Edit Invite",
+                      labelText: AppLocalizations.of(context)!.writeInvite,
                       suffixIcon: IconButton(
                           icon: Icon(Icons.content_copy),
                           onPressed: () {
@@ -156,7 +157,7 @@ class _ShareWhiteboardFormState extends State<ShareWhiteboardForm> {
                       onPressed: () {
                         launchMailto(widget.id + "#" + widget.viewId);
                       },
-                      child: Text("Share Readonly/View Invite via Email"))),
+                      child: Text(AppLocalizations.of(context)!.shareReadOnlyEmail))),
               Padding(
                   padding: const EdgeInsets.all(16),
                   child: ElevatedButton(
@@ -166,7 +167,7 @@ class _ShareWhiteboardFormState extends State<ShareWhiteboardForm> {
                       onPressed: () {
                         launchMailto(widget.id + "#" + widget.editId);
                       },
-                      child: Text("Share Writable/Edit Invite via Email")))
+                      child: Text(AppLocalizations.of(context)!.shareWriteEmail)))
             ])));
   }
 

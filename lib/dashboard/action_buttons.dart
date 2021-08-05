@@ -9,6 +9,7 @@ import 'package:file_picker_cross/file_picker_cross.dart';
 import 'filemanager/add_ext_whiteboard.dart';
 import 'filemanager/add_whiteboard.dart';
 import 'filemanager/file_manager_types.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ActionButtons extends StatefulWidget {
   final String authToken, parent;
@@ -51,33 +52,33 @@ class _ActionButtonsState extends State<ActionButtons> {
                   child: OutlinedButton(
                       style: outlineButtonStyle,
                       onPressed: _createWhiteboard,
-                      child: Text("Create Whiteboard"))),
+                      child: Text(AppLocalizations.of(context)!.createWhiteboard))),
             Padding(
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: OutlinedButton(
                     style: outlineButtonStyle,
                     onPressed: _createOfflineWhiteboard,
-                    child: Text("Create Offline Whiteboard"))),
+                    child: Text(AppLocalizations.of(context)!.createOfflineWhiteboard))),
             Padding(
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: OutlinedButton(
                     style: outlineButtonStyle,
                     onPressed: _createFolder,
-                    child: Text("Create Folder"))),
+                    child: Text(AppLocalizations.of(context)!.createFolder))),
             if (widget.online)
               Padding(
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                   child: OutlinedButton(
                       style: outlineButtonStyle,
                       onPressed: _collabOnWhiteboard,
-                      child: Text("Collab on Whiteboard"))),
+                      child: Text(AppLocalizations.of(context)!.collabWhiteboard))),
             if (widget.online)
               Padding(
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                   child: OutlinedButton(
                       style: outlineButtonStyle,
                       onPressed: _importWhiteboard,
-                      child: Text("Import Whiteboard"))),
+                      child: Text(AppLocalizations.of(context)!.importWhiteboard))),
           ],
         ),
       ),

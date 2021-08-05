@@ -109,17 +109,19 @@ class _FileManagerState extends State<FileManager> {
 
     return Scaffold(
       appBar: AppBar(
-          title: Wrap(
+          title: Row(
             children: [
               Text("Dashboard"),
-              ActionButtons(
-                  widget.authToken,
-                  currentDirectory,
-                  _refreshController,
-                  offlineWhiteboards,
-                  offlineWhiteboardIds,
-                  widget.online,
-                  directories),
+              Expanded(
+                child: ActionButtons(
+                    widget.authToken,
+                    currentDirectory,
+                    _refreshController,
+                    offlineWhiteboards,
+                    offlineWhiteboardIds,
+                    widget.online,
+                    directories),
+              ),
             ],
           ),
           actions: [AvatarIcon(widget.online)]),

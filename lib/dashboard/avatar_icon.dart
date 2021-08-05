@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class AvatarIcon extends StatefulWidget {
   final bool online;
 
@@ -20,10 +22,10 @@ class _AvatarIconState extends State<AvatarIcon> {
       child:
         PopupMenuButton(
           itemBuilder: (context) => [
-            PopupMenuItem(child: Text("Edit Account"), value: "/edit-account"),
-            PopupMenuItem(child: Text("Logout"), value: "/login"),
-            PopupMenuItem(child: Text("Change Server"), value: "/server-settings"),
-            PopupMenuItem(child: Text("Sync Server"), value: "/webdav-settings"),
+            PopupMenuItem(child: Text(AppLocalizations.of(context)!.editAccount), value: "/edit-account"),
+            PopupMenuItem(child: Text(AppLocalizations.of(context)!.logout), value: "/login"),
+            PopupMenuItem(child: Text(AppLocalizations.of(context)!.changeServer), value: "/server-settings"),
+            PopupMenuItem(child: Text(AppLocalizations.of(context)!.syncServer), value: "/webdav-settings"),
           ],
           onSelected: (route) async {
             switch (route){
@@ -39,7 +41,7 @@ class _AvatarIconState extends State<AvatarIcon> {
                 Navigator.pushReplacementNamed(context, route.toString());
                 break;
               case "/webdav-settings":
-                if(kIsWeb) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Not available on web")));
+                if(kIsWeb) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.notAvailableWeb)));
                 else Navigator.pushNamed(context, route.toString());
                 break;
             }
