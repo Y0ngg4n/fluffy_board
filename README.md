@@ -15,6 +15,8 @@ Fluffyboard is a open source, free and self-hostable Whiteboard Application.
 ![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/yonggan/fluffy_board-web?style=for-the-badge)
 
 ![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/yonggan/fluffy_board-web?style=for-the-badge)
+
+<a href='https://play.google.com/store/apps/details?id=pro.oblivioncoding.fluffy_board&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
 ## Demo
 
 Demonstation can be found on dev instance of [Fluffyboard](https://fluffyboard.obco.pro)
