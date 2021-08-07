@@ -23,6 +23,7 @@ class WebsocketSend {
         newScribble.strokeCap.index,
         newScribble.color.toHex(),
         newScribble.points,
+        newScribble.rotation,
         newScribble.paintingStyle.index).toJson());
     if (websocketConnection != null) {
       websocketConnection.sendDataToChannel("scribble-add#", data);
@@ -37,6 +38,7 @@ class WebsocketSend {
       newScribble.strokeCap.index,
       newScribble.color.toHex(),
       newScribble.points,
+      newScribble.rotation,
       newScribble.paintingStyle.index,
       newScribble.leftExtremity,
       newScribble.rightExtremity,
@@ -65,6 +67,7 @@ class WebsocketSend {
         upload.uploadType.index,
         upload.offset.dx,
         upload.offset.dy,
+        upload.rotation,
         // List.generate(10, (index) => 0)
         upload.uint8List.toList()).toJson());
     if (websocketConnection != null) {
@@ -78,6 +81,7 @@ class WebsocketSend {
       newUpload.uuid,
       newUpload.offset.dx,
       newUpload.offset.dy,
+      newUpload.rotation,
     ).toJson());
     if (websocketConnection != null)
       websocketConnection.sendDataToChannel("upload-update#", data);

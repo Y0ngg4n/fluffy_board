@@ -31,25 +31,25 @@ class CanvasCustomPainter extends CustomPainter {
   Offset? hoverPosition;
   Set<ConnectedUser> connectedUsers;
 
-  CanvasCustomPainter({required this.scribbles,
-    required this.offset,
-    required this.scale,
-    required this.cursorRadius,
-    required this.cursorPosition,
-    required this.toolbarOptions,
-    required this.screenSize,
-    required this.uploads,
-    required this.texts,
-    required this.multiSelect,
-    required this.multiSelectMove,
-    required this.multiSelectStartPosition,
-    required this.multiSelectStopPosition,
-    required this.hoverPosition,
-    required this.connectedUsers});
+  CanvasCustomPainter(
+      {required this.scribbles,
+      required this.offset,
+      required this.scale,
+      required this.cursorRadius,
+      required this.cursorPosition,
+      required this.toolbarOptions,
+      required this.screenSize,
+      required this.uploads,
+      required this.texts,
+      required this.multiSelect,
+      required this.multiSelectMove,
+      required this.multiSelectStartPosition,
+      required this.multiSelectStopPosition,
+      required this.hoverPosition,
+      required this.connectedUsers});
 
   //define canvas background color
-  Paint background = Paint()
-    ..color = Colors.white;
+  Paint background = Paint()..color = Colors.white;
 
   // Draw Multiselect
   Paint multiselectPaint = Paint()
@@ -79,22 +79,11 @@ class CanvasCustomPainter extends CustomPainter {
     PainterUtils.paintBackground(
         canvas, toolbarOptions, screenSize, offset, scale);
     PainterUtils.paintUploads(
-        canvas,
-        uploads,
-        screenSize,
-        scale,
-        offset,
-        true,
-        toolbarOptions);
-    PainterUtils.paintTextItems(canvas, texts, offset, screenSize, scale, true, toolbarOptions);
+        canvas, uploads, screenSize, scale, offset, true, toolbarOptions);
+    PainterUtils.paintTextItems(
+        canvas, texts, offset, screenSize, scale, true, toolbarOptions);
     PainterUtils.paintScribbles(
-        canvas,
-        scribbles,
-        offset,
-        screenSize,
-        scale,
-        true,
-        toolbarOptions);
+        canvas, scribbles, offset, screenSize, scale, true, toolbarOptions);
 
     PainterUtils.paintCursors(
         canvas, connectedUsers, offset, screenSize, scale);
@@ -126,7 +115,8 @@ class PainterUtils {
     ..strokeWidth = 1
     ..style = PaintingStyle.fill;
 
-  static paintScribbles(Canvas canvas,
+  static paintScribbles(
+      Canvas canvas,
       List<Scribble> scribbles,
       Offset offset,
       Offset screenSize,
@@ -155,9 +145,13 @@ class PainterUtils {
       ..strokeWidth = scribble.strokeWidth;
 
     Paint figurePaint = drawingPaint..style = scribble.paintingStyle;
+    // canvas.save();
+    // canvas.translate(((scribble.rightExtremity - scribble.leftExtremity) / 2) + offset.dx,
+    //     ((scribble.bottomExtremity - scribble.topExtremity) / 2) + offset.dy);
+    // canvas.rotate(vectormath.radians(scribble.rotation));
+
     if (scribble.backedScribble == null ||
         !(settingsStorage.getItem("points-to-image") ?? true)) {
-      print("NOt Backing");
       switch (scribble.selectedFigureTypeToolbar) {
         case SelectedFigureTypeToolbar.rect:
           canvas.drawRect(
@@ -191,8 +185,8 @@ class PainterUtils {
               scribble.points.first + offset, distance, figurePaint);
           break;
         case SelectedFigureTypeToolbar.none:
-        // DEBUG: Draw Points
-        // canvas.drawPoints(PointMode.points, scribble.points, drawingPaint);
+          // DEBUG: Draw Points
+          // canvas.drawPoints(PointMode.points, scribble.points, drawingPaint);
           for (int x = 0; x < scribble.points.length - 1; x++) {
             //drawing line between the points to form a continuous line
             if (!scribble.points[x].empty && !scribble.points[x + 1].empty) {
@@ -210,12 +204,12 @@ class PainterUtils {
       if (toolbarOptions != null &&
           toolbarOptions.settingsSelectedScribble == scribble) {
         Offset leftTopOffset = new Offset(
-            scribble.leftExtremity - scribble.strokeWidth * 2,
-            scribble.topExtremity - scribble.strokeWidth * 2) +
+                scribble.leftExtremity - scribble.strokeWidth * 2,
+                scribble.topExtremity - scribble.strokeWidth * 2) +
             offset;
         Offset rigthBottomOffset = new Offset(
-            scribble.rightExtremity + scribble.strokeWidth * 2,
-            scribble.bottomExtremity + scribble.strokeWidth * 2) +
+                scribble.rightExtremity + scribble.strokeWidth * 2,
+                scribble.bottomExtremity + scribble.strokeWidth * 2) +
             offset;
         canvas.drawRect(
             Rect.fromPoints(leftTopOffset, rigthBottomOffset), selectPaint);
@@ -224,8 +218,8 @@ class PainterUtils {
       Paint paint = new Paint();
       paint.color = Colors.green;
       Offset leftTopOffset = new Offset(
-          scribble.leftExtremity - scribble.strokeWidth * 2,
-          scribble.topExtremity - scribble.strokeWidth * 2) +
+              scribble.leftExtremity - scribble.strokeWidth * 2,
+              scribble.topExtremity - scribble.strokeWidth * 2) +
           offset;
       Offset rightBottomOffset = new Offset(
           scribble.leftExtremity + scribble.backedScribble!.width + offset.dx,
@@ -248,6 +242,7 @@ class PainterUtils {
             Rect.fromPoints(leftTopOffset, rightBottomOffset), selectPaint);
       }
     }
+    // canvas.restore();
   }
 
   static paintBackground(Canvas canvas, Toolbar.ToolbarOptions toolbarOptions,
@@ -263,44 +258,38 @@ class PainterUtils {
     // TODO: Fix Scaled Scrolling
     // Draw Background
     if (SelectedBackgroundTypeToolbar
-        .values[toolbarOptions.backgroundOptions.selectedBackground] ==
-        SelectedBackgroundTypeToolbar.Lines ||
+                .values[toolbarOptions.backgroundOptions.selectedBackground] ==
+            SelectedBackgroundTypeToolbar.Lines ||
         SelectedBackgroundTypeToolbar
-            .values[toolbarOptions.backgroundOptions.selectedBackground] ==
+                .values[toolbarOptions.backgroundOptions.selectedBackground] ==
             SelectedBackgroundTypeToolbar.Grid) {
       for (int i = -offset.dy.toInt().abs();
-      i <
-          (((screenSize.dy + offset.dy.abs()) / scale) /
-              toolbarOptions.backgroundOptions.strokeWidth);
-      i++) {
+          i <
+              (((screenSize.dy + offset.dy.abs()) / scale) /
+                  toolbarOptions.backgroundOptions.strokeWidth);
+          i++) {
         canvas.drawLine(
-            new Offset(
-                0,
-                (toolbarOptions.backgroundOptions.strokeWidth * i) +
-                    offset.dy),
-            new Offset(
-                screenSize.dx / scale,
-                (toolbarOptions.backgroundOptions.strokeWidth * i) +
-                    offset.dy),
+            new Offset(0,
+                (toolbarOptions.backgroundOptions.strokeWidth * i) + offset.dy),
+            new Offset(screenSize.dx / scale,
+                (toolbarOptions.backgroundOptions.strokeWidth * i) + offset.dy),
             backgroundPaint);
       }
     }
     if (SelectedBackgroundTypeToolbar
-        .values[toolbarOptions.backgroundOptions.selectedBackground] ==
+            .values[toolbarOptions.backgroundOptions.selectedBackground] ==
         SelectedBackgroundTypeToolbar.Grid) {
       for (int i = -offset.dx.toInt().abs();
-      i <
-          (((screenSize.dx + offset.dx.abs()) / scale) /
-              toolbarOptions.backgroundOptions.strokeWidth);
-      i++) {
+          i <
+              (((screenSize.dx + offset.dx.abs()) / scale) /
+                  toolbarOptions.backgroundOptions.strokeWidth);
+          i++) {
         canvas.drawLine(
             new Offset(
-                (toolbarOptions.backgroundOptions.strokeWidth * i) +
-                    offset.dx,
+                (toolbarOptions.backgroundOptions.strokeWidth * i) + offset.dx,
                 0),
             new Offset(
-              (toolbarOptions.backgroundOptions.strokeWidth * i) +
-                  offset.dx,
+              (toolbarOptions.backgroundOptions.strokeWidth * i) + offset.dx,
               screenSize.dy / scale,
             ),
             backgroundPaint);
@@ -315,28 +304,35 @@ class PainterUtils {
 
     for (Upload upload in uploads) {
       if (ScreenUtils.checkUploadIfNotInScreen(
-          upload, offset, screenSize.dx, screenSize.dy, scale) &&
+              upload, offset, screenSize.dx, screenSize.dy, scale) &&
           checkView) continue;
       if (upload.image == null) continue;
+      canvas.save();
+      canvas.translate(upload.offset.dx + offset.dx + upload.image!.width / 2,
+          upload.offset.dy + offset.dy + upload.image!.height / 2);
+      canvas.rotate(vectormath.radians(upload.rotation));
       paintImage(
           canvas: canvas,
           rect: Rect.fromLTWH(
-              upload.offset.dx + offset.dx,
-              upload.offset.dy + offset.dy,
-              upload.image!.width.toDouble(),
-              upload.image!.height.toDouble()),
+              -(upload.image!.width / 2),
+              -(upload.image!.height / 2),
+              (upload.image!.width).toDouble(),
+              (upload.image!.height).toDouble()),
           filterQuality: FilterQuality.high,
           isAntiAlias: true,
           image: upload.image!);
-      // canvas.drawImage(upload.image!, upload.offset + offset, imagePaint);
       if (toolbarOptions != null &&
           toolbarOptions.settingsSelectedUpload == upload &&
           upload.image != null) {
-        canvas.drawRect(Rect.fromLTWH(
-            upload.offset.dx + offset.dx, upload.offset.dy + offset.dy,
-            upload.image!.width.toDouble(), upload.image!.height.toDouble()),
+        canvas.drawRect(
+            Rect.fromLTWH(
+                -(upload.image!.width / 2),
+                -(upload.image!.height / 2),
+                (upload.image!.width).toDouble(),
+                (upload.image!.height).toDouble()),
             selectPaint);
       }
+      canvas.restore();
     }
   }
 
@@ -349,24 +345,32 @@ class PainterUtils {
 
       TextPainter textPainter = ScreenUtils.getTextPainter(textItem);
       if (ScreenUtils.checkTextPainterIfNotInScreen(textPainter,
-          textItem.offset, offset, screenSize.dx, screenSize.dy, scale) &&
+              textItem.offset, offset, screenSize.dx, screenSize.dy, scale) &&
           checkView) continue;
       canvas.save();
       Offset newOffset = textItem.offset + offset;
-      Offset middlePoint = new Offset(
-          ((newOffset.dx + textPainter.width) - newOffset.dx) / 2,
-          ((newOffset.dy + textPainter.height) - newOffset.dy) / 2);
+      Offset middlePoint = new Offset((newOffset.dx + (textPainter.width / 2)),
+          (newOffset.dy + (textPainter.height / 2)));
+      canvas.drawCircle(middlePoint, 10, new Paint()..color = Colors.green);
+      canvas.drawCircle(newOffset, 10, new Paint()..color = Colors.red);
       canvas.translate(middlePoint.dx, middlePoint.dy);
       canvas.rotate(vectormath.radians(textItem.rotation));
-      textPainter.paint(canvas, newOffset);
-      canvas.restore();
+      textPainter.paint(
+        canvas,
+        new Offset(- (textPainter.width / 2),
+            (-(textPainter.height / 2))),
+      );
       if (toolbarOptions != null &&
           toolbarOptions.settingsSelectedTextItem == textItem) {
-        canvas.drawRect(Rect.fromLTWH(
-            textItem.offset.dx + offset.dx, textItem.offset.dy + offset.dy,
-            textItem.offset.dx + offset.dx + textPainter.width,
-            textItem.offset.dy + offset.dy + textPainter.height), selectPaint);
+        canvas.drawRect(
+            Rect.fromLTWH(
+                - (textPainter.width / 2),
+                -(textPainter.height / 2),
+                (textPainter.width).toDouble(),
+                (textPainter.height).toDouble()),
+            selectPaint);
       }
+      canvas.restore();
     }
   }
 

@@ -139,7 +139,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 this.setState(() {
                   cursorPosition =
                       event.localPosition / widget.zoomOptions.scale;
-                  WebsocketSend.sendUserCursorMove(cursorPosition, widget.id, widget.websocketConnection);
+                  WebsocketSend.sendUserCursorMove(
+                      cursorPosition, widget.id, widget.websocketConnection);
                 })
               },
               onExit: (event) {
@@ -152,7 +153,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   isComplex: true,
                   willChange: true,
                   painter: CanvasCustomPainter(
-                    connectedUsers: widget.connectedUsers,
+                      connectedUsers: widget.connectedUsers,
                       texts: widget.texts,
                       uploads: widget.uploads,
                       scribbles: widget.scribbles,
@@ -249,15 +250,12 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         if (found) return;
         // Check uploads
         for (Upload upload in widget.uploads) {
+          if (ScreenUtils.checkUploadIfNotInScreen(upload, widget.offset,
+              screenWidth, screenHeight, widget.zoomOptions.scale)) continue;
           // Check if image
           if (upload.image != null) {
-            if (ScreenUtils.inRect(
-                Rect.fromLTWH(
-                    upload.offset.dx,
-                    upload.offset.dy,
-                    upload.image!.width.toDouble(),
-                    upload.image!.height.toDouble()),
-                newOffset)) {
+            if (ScreenUtils.checkIfInUploadRect(
+                upload, widget.zoomOptions.scale, newOffset)) {
               found = true;
               widget.toolbarOptions.settingsSelectedUpload = upload;
               widget.toolbarOptions.settingsSelected = SettingsSelected.image;
@@ -271,10 +269,15 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
         if (found) return;
         for (TextItem textItem in widget.texts) {
           TextPainter textPainter = ScreenUtils.getTextPainter(textItem);
-          if (ScreenUtils.inRect(
-              Rect.fromLTWH(textItem.offset.dx, textItem.offset.dy,
-                  textPainter.width, textPainter.height),
-              newOffset)) {
+          if (ScreenUtils.checkTextPainterIfNotInScreen(
+              textPainter,
+              textItem.offset,
+              widget.offset,
+              screenWidth,
+              screenHeight,
+              widget.zoomOptions.scale)) continue;
+          if (ScreenUtils.checkIfInTextPainterRect(
+              textPainter, textItem, widget.zoomOptions.scale, newOffset)) {
             if (widget.toolbarOptions.settingsSelectedTextItem != null &&
                 widget.toolbarOptions.settingsSelectedTextItem!.uuid ==
                     textItem.uuid) {
@@ -325,7 +328,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
   Future _onScaleUpdate(ScaleUpdateDetails details) async {
     Offset newOffset =
         (details.localFocalPoint - widget.offset) / widget.zoomOptions.scale;
-    WebsocketSend.sendUserCursorMove(newOffset, widget.id, widget.websocketConnection);
+    WebsocketSend.sendUserCursorMove(
+        newOffset, widget.id, widget.websocketConnection);
     this.setState(() {
       cursorPosition = details.localFocalPoint / widget.zoomOptions.scale;
       if (details.pointerCount == 2 &&
@@ -595,7 +599,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
           .values[widget.toolbarOptions.figureOptions.selectedFill];
     }
 
-    return new Scribble(uuid.v4(), strokeWidth, strokeCap, color, drawPoints,
+    return new Scribble(uuid.v4(), strokeWidth, strokeCap, color, drawPoints, 0,
         selectedFigureTypeToolbar, paintingStyle);
   }
 

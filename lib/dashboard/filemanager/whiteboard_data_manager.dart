@@ -234,6 +234,7 @@ class WhiteboardDataManager {
             StrokeCap.values[decodeGetScribble.strokeCap],
             HexColor.fromHex(decodeGetScribble.color),
             decodeGetScribble.points,
+            decodeGetScribble.rotation,
             SelectedFigureTypeToolbar
                 .values[decodeGetScribble.selectedFigureTypeToolbar],
             PaintingStyle.values[decodeGetScribble.paintingStyle]);
@@ -280,6 +281,7 @@ class WhiteboardDataManager {
           UploadType.values[decodeGetUpload.uploadType],
           uint8list,
           new Offset(decodeGetUpload.offsetDx, decodeGetUpload.offsetDy),
+          decodeGetUpload.rotation,
           frameInfo.image));
     }
     return uploads;

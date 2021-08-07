@@ -88,31 +88,37 @@ class _UploadSettingsState extends State<UploadSettings> {
                 final roundedValue = value.ceil().toInt().toString();
                 return '$roundedValue °';
               })),
-          initialValue: rotation,
+          initialValue: widget.selectedUpload != null ? widget.selectedUpload!.rotation : rotation,
           min: 0,
           max: 360,
           onChange: (value) {
             setState(() {
               rotation = value;
+              int index = widget.uploads.indexOf(widget.selectedUpload!);
+              widget.selectedUpload!.rotation = value;
+              widget.selectedUpload!.rotation = value;
+              widget.uploads[index] = widget.selectedUpload!;
+              widget.onUploadsChange(widget.uploads);
             });
           },
           onChangeEnd: (value) async {
             int index = widget.uploads.indexOf(widget.selectedUpload!);
-            widget.selectedUpload!.uint8List =
-                ImageUtils.rotateImage(widget.selectedUpload!.uint8List, value);
-            final ui.Codec codec = await PaintingBinding.instance!
-                .instantiateImageCodec(widget.selectedUpload!.uint8List);
-            final ui.FrameInfo frameInfo = await codec.getNextFrame();
-
-            widget.selectedUpload!.image = frameInfo.image;
+            widget.selectedUpload!.rotation = value;
+            // widget.selectedUpload!.uint8List =
+            //     ImageUtils.rotateImage(widget.selectedUpload!.uint8List, value);
+            // final ui.Codec codec = await PaintingBinding.instance!
+            //     .instantiateImageCodec(widget.selectedUpload!.uint8List);
+            // final ui.FrameInfo frameInfo = await codec.getNextFrame();
+            //
+            // widget.selectedUpload!.image = frameInfo.image;
             widget.uploads[index] = widget.selectedUpload!;
             widget.onUploadsChange(widget.uploads);
             widget.onSaveOfflineWhiteboard();
             WebsocketSend.sendUploadImageDataUpdate(
                 widget.selectedUpload!, widget.websocketConnection);
-            setState(() {
-              rotation = 0;
-            });
+            // setState(() {
+            //   rotation = 0;
+            // });
           },
         ),
         OutlinedButton(

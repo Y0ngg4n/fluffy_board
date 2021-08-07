@@ -62,6 +62,7 @@ class WhiteboardViewDataManager {
               StrokeCap.values[decodeGetScribble.strokeCap],
               HexColor.fromHex(decodeGetScribble.color),
               decodeGetScribble.points,
+              decodeGetScribble.rotation,
               SelectedFigureTypeToolbar
                   .values[decodeGetScribble.selectedFigureTypeToolbar],
               PaintingStyle.values[decodeGetScribble.paintingStyle]);
@@ -104,6 +105,7 @@ class WhiteboardViewDataManager {
                 uint8list,
                 new Offset(
                     decodeGetUpload.offsetDx, decodeGetUpload.offsetDy),
+                decodeGetUpload.rotation,
                 image));
           });
         }
