@@ -7,13 +7,13 @@ class WebsocketManagerHtml implements WebsocketManager {
   final LocalStorage settingsStorage = new LocalStorage('settings');
   OnWebsocketMessage onWebsocketMessage;
 
-  late WebSocket channel;
+  WebSocket? channel;
 
   @override
   initializeConnection(String whiteboard, String authToken) async {
     channel = await connectWs(whiteboard, authToken);
     print("socket connection initialized");
-    this.channel.onClose.listen((event) {
+    this.channel!.onClose.listen((event) {
       onDisconnected(whiteboard, authToken);
     });
     startListener(whiteboard, authToken);
@@ -28,7 +28,7 @@ class WebsocketManagerHtml implements WebsocketManager {
 
   @override
   sendDataToChannel(String key, String data) {
-    channel.sendString(key + data);
+    if (!disconnect) channel!.sendString(key + data);
   }
 
   @override
@@ -47,17 +47,17 @@ class WebsocketManagerHtml implements WebsocketManager {
   @override
   startListener(String whiteboard, String authToken) {
     print("starting listeners ...");
-    channel.onOpen.listen((event) {
+    channel!.onOpen.listen((event) {
       sendDataToChannel("connected-users#", "");
     });
-    channel.onMessage.listen((event) {
+    channel!.onMessage.listen((event) {
       onWebsocketMessage(event.data);
     });
-    channel.onClose.listen((event) {
+    channel!.onClose.listen((event) {
       print("connecting aborted");
       if (!disconnect) initializeConnection(whiteboard, authToken);
     });
-    channel.onError.listen((event) {
+    channel!.onError.listen((event) {
       print('Server error: $event');
       initializeConnection(whiteboard, authToken);
     });
@@ -67,7 +67,7 @@ class WebsocketManagerHtml implements WebsocketManager {
 
   @override
   startDisconnect() {
-    channel.close();
+    channel!.close();
   }
 }
 

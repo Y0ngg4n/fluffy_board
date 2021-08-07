@@ -248,7 +248,7 @@ class GetToolbarOptions {
       String authToken, bool online) async {
     TextOptions textItemOptions = TextOptions(
         List.from({Colors.black, Colors.blue, Colors.red}),
-        5,
+        10,
         StrokeCap.round,
         0,
         (drawOptions) =>
@@ -277,8 +277,6 @@ class GetToolbarOptions {
             decodeTextItemOptions.selectedColor,
             (drawOptions) =>
                 _sendTextItemToolbarOptions(drawOptions, authToken, online));
-        print("Innnnnn"  + decodeTextItemOptions.selectedColor.toString());
-        print("Innnnnn"  + textItemOptions.currentColor.toString());
       }
     } else {
       String? decodableTextItemLineOptions =

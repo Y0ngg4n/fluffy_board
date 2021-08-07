@@ -1,11 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:fluffy_board/utils/image_utils.dart';
-import 'package:fluffy_board/whiteboard/overlays/toolbar/settings-toolbar/upload_settings.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import 'package:pdf/src/pdf/page_format.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker_cross/file_picker_cross.dart';
 import 'dart:ui' as ui;

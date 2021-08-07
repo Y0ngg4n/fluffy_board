@@ -1,4 +1,3 @@
-
 import 'websocket_manager.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:io';
@@ -8,14 +7,14 @@ class WebsocketManagerOther implements WebsocketManager {
   OnWebsocketMessage onWebsocketMessage;
   final LocalStorage settingsStorage = new LocalStorage('settings');
 
-  late WebSocket channel;
+  WebSocket? channel;
 
   @override
   initializeConnection(String whiteboard, String authToken) async {
     channel = await connectWs(whiteboard, authToken);
     print("socket connection initialized");
     this
-        .channel
+        .channel!
         .done
         .then((dynamic _) => onDisconnected(whiteboard, authToken));
     startListener(whiteboard, authToken);
@@ -24,13 +23,15 @@ class WebsocketManagerOther implements WebsocketManager {
   @override
   connectWs(String whiteboard, String authToken) async {
     WebSocket webSocket = await WebSocket.connect(
-        (settingsStorage.getItem("WS_API_URL") ?? dotenv.env['WS_API_URL']!) + "/$whiteboard/$authToken");
+        (settingsStorage.getItem("WS_API_URL") ?? dotenv.env['WS_API_URL']!) +
+            "/$whiteboard/$authToken");
+    print("New Websocket");
     return webSocket;
   }
 
   @override
   sendDataToChannel(String key, String data) {
-    channel.add(key + data);
+    if (channel != null) channel!.add(key + data);
   }
 
   @override
@@ -50,7 +51,7 @@ class WebsocketManagerOther implements WebsocketManager {
   startListener(String whiteboard, String authToken) {
     print("starting listeners ...");
     sendDataToChannel("connected-users#", "");
-    this.channel.listen((streamData) {
+    this.channel!.listen((streamData) {
       onWebsocketMessage(streamData);
     }, onDone: () {
       print("connecting aborted");
@@ -65,7 +66,7 @@ class WebsocketManagerOther implements WebsocketManager {
 
   @override
   startDisconnect() {
-    channel.close();
+    channel!.close();
   }
 }
 

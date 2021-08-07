@@ -89,7 +89,7 @@ class ExportUtils {
     ui.Paint background = ui.Paint()
       ..color = material.Colors.white;
     canvas.drawRect(rect, background);
-    PainterUtils.paintScribbles(canvas, scribbles, offset, screenSize, scale, false);
+    PainterUtils.paintScribbles(canvas, scribbles, offset, screenSize, scale, false, null);
     PainterUtils.paintUploads(canvas, uploads, screenSize, scale, offset, false);
     PainterUtils.paintTextItems(canvas, texts, offset, screenSize, scale, false);
     return canvas;
@@ -102,7 +102,7 @@ class ExportUtils {
     ui.Paint background = ui.Paint()
       ..color = material.Colors.white;
     canvas.drawRect(rect, background);
-    PainterUtils.paintScribbles(canvas, scribbles, offset, screenSize, scale, false);
+    PainterUtils.paintScribbles(canvas, scribbles, offset, screenSize, scale, false, null);
     PainterUtils.paintUploads(canvas, uploads, screenSize, scale, offset, false);
     PainterUtils.paintTextItems(canvas, texts, offset, screenSize, scale, false);
     return canvas;

@@ -34,7 +34,7 @@ class TextItemSettings extends StatefulWidget {
 }
 
 class _TextItemSettingsState extends State<TextItemSettings> {
-
+  double rotation = 0;
   @override
   Widget build(BuildContext context) {
 
@@ -69,17 +69,21 @@ class _TextItemSettingsState extends State<TextItemSettings> {
                       final roundedValue = value.ceil().toInt().toString();
                       return '$roundedValue °';
                     })),
-                initialValue: widget.selectedTextItem!.rotation,
+                initialValue: widget.selectedTextItem == null ? rotation : widget.selectedTextItem!.rotation,
                 min: 0,
                 max: 360,
                 onChange: (value) {
                   setState(() {
                     widget.selectedTextItem!.rotation = value;
+                    int index = widget.texts.indexOf(widget.selectedTextItem!);
+                    widget.selectedTextItem!.rotation = value;
+                    widget.texts[index] = widget.selectedTextItem!;
+                    widget.onTextItemsChange(widget.texts);
                   });
                 },
                 onChangeEnd: (value) async {
-                  print(value);
                   int index = widget.texts.indexOf(widget.selectedTextItem!);
+                  widget.selectedTextItem!.rotation = value;
                   widget.texts[index] = widget.selectedTextItem!;
                   widget.onTextItemsChange(widget.texts);
                   widget.onSaveOfflineWhiteboard();
