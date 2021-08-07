@@ -2,11 +2,11 @@ name: Fdroid Releases
 on:
   push:
     branches:
-      - ci
+      - master
       - 'releases/**'
   pull_request:
     branches:
-      - ci
+      - master
       - 'releases/**'
 jobs:
   release:
