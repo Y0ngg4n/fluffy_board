@@ -41,6 +41,8 @@ class InfiniteCanvasPage extends StatefulWidget {
   final OnOffsetChange onOffsetChange;
   final OnChangedToolbarOptions onChangedToolbarOptions;
   final OnScribblesChange onScribblesChange;
+  final OnUploadsChange onUploadsChange;
+  final OnTextItemsChange onTextItemsChange;
   final WebsocketConnection? websocketConnection;
   final String authToken;
   final String id;
@@ -62,6 +64,8 @@ class InfiniteCanvasPage extends StatefulWidget {
       required this.texts,
       required this.scribbles,
       required this.onScribblesChange,
+      required this.onUploadsChange,
+      required this.onTextItemsChange,
       required this.websocketConnection,
       required this.authToken,
       required this.id,
@@ -90,6 +94,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
   Offset multiSelectStartPosition = Offset.zero;
   Offset multiSelectStopPosition = Offset.zero;
   Map<Scribble, List<DrawPoint>> selectedMultiScribblesOffsets = new Map();
+  List<Upload> selectedMultiUploads = [];
+  List<TextItem> selectedMultiTextItems = [];
   List<Scribble> selectedMultiScribbles = [];
   Offset multiSelectMoveOffset = Offset.zero;
   Offset? hoverPosition;
@@ -485,7 +491,14 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 }
                 scribble.points = newPoints;
               }
+              // for (Upload upload in selectedMultiUploads) {
+              //   upload.offset = (newOffset - multiSelectMoveOffset);
+              // }
+              // for (TextItem textItem in selectedMultiTextItems) {
+              //   textItem.offset = (newOffset - multiSelectMoveOffset);
+              // }
               widget.onScribblesChange(widget.scribbles);
+              // widget.onUploadsChange(widget.uploads);
             }
           }
           widget.onChangedToolbarOptions(widget.toolbarOptions);
@@ -546,6 +559,35 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
             ScreenUtils.bakeScribble(scribble, widget.zoomOptions.scale);
             WebsocketSend.sendScribbleUpdate(
                 scribble, widget.websocketConnection);
+          }
+        }
+        for (Upload upload in widget.uploads) {
+          if (multiSelect && !multiSelectMove) {
+            if (ScreenUtils.inRect(
+                Rect.fromPoints(
+                    multiSelectStartPosition, multiSelectStopPosition),
+                upload.offset)) {
+              selectedMultiUploads.add(upload);
+              continue;
+            }
+          }
+          if (multiSelectMove) {
+            WebsocketSend.sendUploadUpdate(upload, widget.websocketConnection);
+          }
+        }
+        for (TextItem textItem in widget.texts) {
+          if (multiSelect && !multiSelectMove) {
+            if (ScreenUtils.inRect(
+                Rect.fromPoints(
+                    multiSelectStartPosition, multiSelectStopPosition),
+                textItem.offset)) {
+              selectedMultiTextItems.add(textItem);
+              continue;
+            }
+          }
+          if (multiSelectMove) {
+            WebsocketSend.sendUpdateTextItem(
+                textItem, widget.websocketConnection);
           }
         }
       }
