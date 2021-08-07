@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:core';
 
 import 'package:fluffy_board/whiteboard/websocket/websocket-types/websocket_types.dart';

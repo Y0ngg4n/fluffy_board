@@ -1,19 +1,15 @@
 
-import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:fluffy_board/whiteboard/infinite_canvas.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_manager_send.dart';
 import 'package:fluffy_board/whiteboard/overlays/zoom.dart';
-import 'package:fluffy_board/whiteboard/whiteboard-data/draw_point.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
 import 'package:flutter/material.dart';
-import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'dart:ui';
 
 import '../../../whiteboard_view.dart';
 import '../../toolbar.dart' as Toolbar;
-import 'dart:math';
 
 class ScribbleSettings extends StatefulWidget {
   final Scribble? selectedScribble;

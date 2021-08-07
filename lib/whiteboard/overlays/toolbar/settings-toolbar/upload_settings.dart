@@ -1,13 +1,8 @@
-import 'dart:typed_data';
-
-import 'package:fluffy_board/utils/image_utils.dart';
 import 'package:fluffy_board/whiteboard/infinite_canvas.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_manager_send.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
-import 'package:image/image.dart' as IMG;
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 import '../../../whiteboard_view.dart';
