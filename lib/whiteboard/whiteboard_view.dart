@@ -513,6 +513,16 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                   this.scribbles = scribbles;
                 });
               },
+              onUploadsChange: (uploads) {
+                setState(() {
+                  this.uploads = uploads;
+                });
+              },
+              onTextItemsChange: (textItems) {
+                setState(() {
+                  this.texts = textItems;
+                });
+              },
               onChangedZoomOptions: (zoomOptions) {
                 setState(() {
                   this.zoomOptions = zoomOptions;

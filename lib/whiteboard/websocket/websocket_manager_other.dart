@@ -32,6 +32,7 @@ class WebsocketManagerOther implements WebsocketManager {
   @override
   sendDataToChannel(String key, String data) {
     if (channel != null) channel!.add(key + data);
+    else print("Channel is null");
   }
 
   @override
