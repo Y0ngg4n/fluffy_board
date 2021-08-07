@@ -1,0 +1,40 @@
+name: Fdroid Releases
+on:
+  push:
+    branches:
+      - ci
+      - 'releases/**'
+  pull_request:
+    branches:
+      - ci
+      - 'releases/**'
+jobs:
+  get-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          ls version/
+          version_number=$(cat version/version.yml | sed 's/\(---\|major: \|minor: \|patch: \|\)//g' | sed -z 's/\n/./g;s/,$/\n/' | sed 's/^\.//g')
+          echo "${version_number}"
+          echo "version_number=${version_number}" >> $GITHUB_ENV
+          echo "${{ env.version_number }}"
+      - run: |
+          version_code=$(cat pubspec.yaml | grep "version: ${{ env.version_number }}+" | sed 's/version:.*+//g')
+          echo "version_code=${version_code}" >> $GITHUB_ENV
+          echo "${{ env.version_code }}"
+  release:
+    runs-on: ubuntu-latest
+    needs: [ get-version ]
+    steps:
+      - run: |
+          git clone https://gitlab.com/yonggan/fdroiddata.git
+          git checkout pro.oblivioncoding.fluffy_board
+          cd fdroiddata
+          metadata/pro.oblivioncoding.fluffy_board.yml
+          sed -i "s/  - versionName: .*/  - versionName: ${{ env.version_number }}/g"  metadata/pro.oblivioncoding.fluffy_board.yml
+          sed -i "s/    versionCode: .*/    versionCode: ${{ env.version_code }}/g"  metadata/pro.oblivioncoding.fluffy_board.yml
+          sed -i "s/    commit: .*/    commit: ${{ env.version_number }}/g"  metadata/pro.oblivioncoding.fluffy_board.yml
+          sed -i "s/CurrentVersion: .*/CurrentVersion: ${{ env.version_number }}/g"  metadata/pro.oblivioncoding.fluffy_board.yml
+          sed -i "s/CurrentVersionCode: .*/CurrentVersionCode: ${{ env.version_code }}/g"  metadata/pro.oblivioncoding.fluffy_board.yml
+          cat metadata/pro.oblivioncoding.fluffy_board.yml
