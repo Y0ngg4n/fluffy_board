@@ -200,7 +200,7 @@ class WebsocketConnection {
       Uint8List uint8list = Uint8List.fromList(json.imageData);
       ui.decodeImageFromList(uint8list, (image) {
         Upload newUpload = Upload(json.uuid, UploadType.values[json.uploadType],
-            uint8list, new Offset(json.offsetDx, json.offsetDy), json.rotation, image);
+            uint8list, new Offset(json.offsetDx, json.offsetDy), json.rotation, json.scale, image);
         onUploadAdd(newUpload);
       });
     } else if (message.startsWith(r"upload-update#")) {
@@ -213,6 +213,7 @@ class WebsocketConnection {
           Uint8List.fromList(List.empty()),
           new Offset(json.offsetDx, json.offsetDy),
           json.rotation,
+          json.scale,
           null));
     } else if (message.startsWith(r"upload-image-data-update#")) {
       WSUploadImageDataUpdate json = WSUploadImageDataUpdate.fromJson(
@@ -221,11 +222,9 @@ class WebsocketConnection {
       Uint8List uint8list = Uint8List.fromList(json.imageData);
       ui.decodeImageFromList(uint8list, (image) {
         Upload newUpload =
-        Upload(json.uuid, UploadType.Image, uint8list, Offset.zero, 0, image);
+        Upload(json.uuid, UploadType.Image, uint8list, Offset.zero, 0, 1, image);
         onUploadImageDataUpdate(newUpload);
       });
-      onUploadImageDataUpdate(new Upload(json.uuid, UploadType.Image,
-          Uint8List.fromList(List.empty()), Offset.zero, 0, null));
     } else if (message.startsWith(r"upload-delete#")) {
       WSUploadDelete json = WSUploadDelete.fromJson(
           jsonDecode(message.replaceFirst(r"upload-delete#", ""))

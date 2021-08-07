@@ -320,6 +320,7 @@ class PainterUtils {
               (upload.image!.height).toDouble()),
           filterQuality: FilterQuality.high,
           isAntiAlias: true,
+          scale: upload.scale,
           image: upload.image!);
       if (toolbarOptions != null &&
           toolbarOptions.settingsSelectedUpload == upload &&

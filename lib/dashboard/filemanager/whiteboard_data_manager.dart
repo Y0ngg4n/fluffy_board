@@ -282,6 +282,7 @@ class WhiteboardDataManager {
           uint8list,
           new Offset(decodeGetUpload.offsetDx, decodeGetUpload.offsetDy),
           decodeGetUpload.rotation,
+          decodeGetUpload.scale,
           frameInfo.image));
     }
     return uploads;

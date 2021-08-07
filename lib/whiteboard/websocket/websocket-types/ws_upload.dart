@@ -7,6 +7,7 @@ class WSUploadAdd implements JsonWebSocketType {
   double offsetDx;
   double offsetDy;
   double rotation;
+  double scale;
   List<int> imageData;
 
   WSUploadAdd.fromJson(Map<String, dynamic> json)
@@ -15,6 +16,7 @@ class WSUploadAdd implements JsonWebSocketType {
         offsetDx = (json['offset_dx'] ?? 0).toDouble(),
         offsetDy = (json['offset_dy'] ?? 0).toDouble(),
         rotation = (json['rotation'] ?? 0).toDouble(),
+        scale = (json['scale'] ?? 1).toDouble(),
         imageData = (json['image_data'] ?? []).cast<int>();
 
   Map toJson() {
@@ -24,12 +26,13 @@ class WSUploadAdd implements JsonWebSocketType {
       'offset_dx': offsetDx,
       'offset_dy': offsetDy,
       'rotation': rotation,
+      'scale': scale,
       'image_data': imageData,
     };
   }
 
   WSUploadAdd(this.uuid, this.uploadType, this.offsetDx, this.offsetDy,
-      this.rotation, this.imageData);
+      this.rotation, this.scale, this.imageData);
 }
 
 class WSUploadUpdate implements JsonWebSocketType {
@@ -37,23 +40,26 @@ class WSUploadUpdate implements JsonWebSocketType {
   double offsetDx;
   double offsetDy;
   double rotation;
+  double scale;
 
   WSUploadUpdate.fromJson(Map<String, dynamic> json)
       : uuid = (json['uuid'] ?? Uuid().v4()),
         offsetDx = (json['offset_dx'] ?? 0).toDouble(),
         offsetDy = (json['offset_dy'] ?? 0).toDouble(),
-        rotation = (json['rotation'] ?? 0).toDouble();
+        rotation = (json['rotation'] ?? 0).toDouble(),
+        scale = (json['scale'] ?? 1).toDouble();
 
   Map toJson() {
     return {
       'uuid': uuid,
       'offset_dx': offsetDx,
       'offset_dy': offsetDy,
-      'rotation': rotation
+      'rotation': rotation,
+      'scale': scale
     };
   }
 
-  WSUploadUpdate(this.uuid, this.offsetDx, this.offsetDy, this.rotation);
+  WSUploadUpdate(this.uuid, this.offsetDx, this.offsetDy, this.rotation, this.scale);
 }
 
 class WSUploadImageDataUpdate implements JsonWebSocketType {
@@ -95,6 +101,7 @@ class DecodeGetUpload implements DecodeGetJsonWebSocketType {
   double offsetDx;
   double offsetDy;
   double rotation;
+  double scale;
 
   List<int> imageData;
 
@@ -104,6 +111,7 @@ class DecodeGetUpload implements DecodeGetJsonWebSocketType {
         offsetDx = (json['offset_dx'] ?? 0).toDouble(),
         offsetDy = (json['offset_dy'] ?? 0).toDouble(),
         rotation = (json['rotation'] ?? 0).toDouble(),
+        scale = (json['scale'] ?? 1).toDouble(),
         imageData = (json['image_data'] ?? []).cast<int>();
 }
 

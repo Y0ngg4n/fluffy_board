@@ -68,6 +68,7 @@ class WebsocketSend {
         upload.offset.dx,
         upload.offset.dy,
         upload.rotation,
+        upload.scale,
         // List.generate(10, (index) => 0)
         upload.uint8List.toList()).toJson());
     if (websocketConnection != null) {
@@ -82,6 +83,7 @@ class WebsocketSend {
       newUpload.offset.dx,
       newUpload.offset.dy,
       newUpload.rotation,
+      newUpload.scale,
     ).toJson());
     if (websocketConnection != null)
       websocketConnection.sendDataToChannel("upload-update#", data);

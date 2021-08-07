@@ -106,6 +106,7 @@ class WhiteboardViewDataManager {
                 new Offset(
                     decodeGetUpload.offsetDx, decodeGetUpload.offsetDy),
                 decodeGetUpload.rotation,
+                decodeGetUpload.scale,
                 image));
           });
         }

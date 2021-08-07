@@ -38,7 +38,7 @@ class UploadSettings extends StatefulWidget {
 }
 
 class _UploadSettingsState extends State<UploadSettings> {
-  double uploadSize = 1;
+  double scale = 1;
   double rotation = 0;
 
   @override
@@ -51,32 +51,35 @@ class _UploadSettingsState extends State<UploadSettings> {
         RotatedBox(
           quarterTurns: widget.axis == Axis.vertical ? -1 : 0,
           child: Slider.adaptive(
-            value: uploadSize,
+            value: widget.selectedUpload == null ? scale: widget.selectedUpload!.scale,
             onChanged: (value) async {
               setState(() {
-                uploadSize = value;
+                scale = value;
+                print(value);
+                int index = widget.uploads.indexOf(widget.selectedUpload!);
+                widget.selectedUpload!.scale = value;
+                widget.uploads[index] = widget.selectedUpload!;
+                widget.onUploadsChange(widget.uploads);
               });
             },
             onChangeEnd: (value) async {
               int index = widget.uploads.indexOf(widget.selectedUpload!);
-              widget.selectedUpload!.uint8List =
-                  ImageUtils.resizeImage(widget.selectedUpload!.uint8List, value);
-              final ui.Codec codec = await PaintingBinding.instance!
-                  .instantiateImageCodec(widget.selectedUpload!.uint8List);
-              final ui.FrameInfo frameInfo = await codec.getNextFrame();
-
-              widget.selectedUpload!.image = frameInfo.image;
+              // widget.selectedUpload!.uint8List =
+              //     ImageUtils.resizeImage(widget.selectedUpload!.uint8List, value);
+              // final ui.Codec codec = await PaintingBinding.instance!
+              //     .instantiateImageCodec(widget.selectedUpload!.uint8List);
+              // final ui.FrameInfo frameInfo = await codec.getNextFrame();
+              //
+              // widget.selectedUpload!.image = frameInfo.image;
+              widget.selectedUpload!.scale = value;
               widget.uploads[index] = widget.selectedUpload!;
               widget.onUploadsChange(widget.uploads);
               widget.onSaveOfflineWhiteboard();
               WebsocketSend.sendUploadImageDataUpdate(
                   widget.selectedUpload!, widget.websocketConnection);
-              setState(() {
-                uploadSize = 1;
-              });
             },
-            min: 0.1,
-            max: 2,
+            min: 1,
+            max: 5,
           ),
         ),
         SleekCircularSlider(
