@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pro.oblivioncoding.fluffy_board">
    <application
-        android:label="fluffy_board"
-        android:icon="@mipmap/ic_launcher">
+        android:label="Fluffyboard"
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -38,6 +38,7 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
     <queries>
         <!-- If your app opens https URLs -->
         <intent>

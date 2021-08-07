@@ -1,0 +1,157 @@
+name: Platform Releases
+on:
+  push:
+    branches:
+      - master
+      - 'releases/**'
+  pull_request:
+    branches:
+      - master
+      - 'releases/**'
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/upload-artifact@v2
+        with:
+          name: version
+          path: version.yml
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: beta
+      - run: flutter config --enable-windows-desktop
+      - run: flutter doctor -v
+      - run: flutter build windows
+      - uses: papeloto/action-zip@v1
+        with:
+          files: build/windows/runner/Release
+          dest: Fluffyboard-windows.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Fluffyboard-windows
+          path: Fluffyboard-windows.zip
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - run: sudo apt-get update -y
+      - run: sudo apt-get install -y ninja-build libgtk-3-dev libblkid-dev
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: dev
+      - run: flutter config --enable-linux-desktop
+      - run: flutter doctor -v
+      - run: flutter pub get
+      - run: flutter build linux
+      - uses: papeloto/action-zip@v1
+        with:
+          files: build/linux/x64/release/bundle
+          dest: Fluffyboard-linux.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Fluffyboard-linux
+          path: Fluffyboard-linux.zip
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+      - run: flutter config --enable-web
+      - run: flutter doctor -v
+      - run: flutter pub get
+      - run: flutter build web
+      - uses: papeloto/action-zip@v1
+        with:
+          files: build/web
+          dest: Fluffyboard-web.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Fluffyboard-web
+          path: Fluffyboard-web.zip
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+      - uses: subosito/flutter-action@v1
+      - run: flutter doctor -v
+      - run: flutter pub get
+      - run: flutter build apk
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Fluffyboard-android
+          path: build/app/outputs/apk/release/app-release.apk
+  mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - uses: subosito/flutter-action@v1
+      - run: flutter config --enable-macos-desktop
+      - run: flutter doctor -v
+      - run: flutter pub get
+      - run: flutter build macos --release
+      - uses: papeloto/action-zip@v1
+        with:
+          files: build/macos/Release/Product
+          dest: Fluffyboard-mac.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Fluffyboard-mac
+          path: Fluffyboard-mac.zip
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [version, windows, linux, web, mac]
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: version
+          path: version
+      - uses: actions/download-artifact@v2
+        with:
+          name: Fluffyboard-windows
+          path: windows/Fluffyboard-windows.zip
+      - uses: actions/download-artifact@v2
+        with:
+          name: Fluffyboard-linux
+          path: linux/Fluffyboard-linux.zip
+      - uses: actions/download-artifact@v2
+        with:
+          name: Fluffyboard-web
+          path: web/Fluffyboard-web.zip
+#      - uses: actions/download-artifact@v2
+#        with:
+#          name: Fluffyboard-android
+#          path: android/Fluffyboard-android.apk
+      - uses: actions/download-artifact@v2
+        with:
+          name: Fluffyboard-mac
+          path: mac/Fluffyboard-mac.zip
+      - run: |
+          chmod 755 mac/Fluffyboard-mac.zip
+      - run: |
+          ls version/
+          version_number=$(cat version/version.yml | sed 's/\(---\|major: \|minor: \|patch: \|\)//g' | sed -z 's/\n/./g;s/,$/\n/' | sed 's/^\.//g')
+          echo "${version_number}"
+          echo "version_number=${version_number}" >> $GITHUB_ENV
+          echo "${{ env.version_number }}"
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "${{ env.version_number }}"
+          title: "Release ${{ env.version_number }}"
+          files: |
+            windows/Fluffyboard-windows.zip
+            linux/Fluffyboard-linux.zip
+            web/Fluffyboard-web.zip
+            mac/Fluffyboard-mac.zip

@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 0.0.6+29720039
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -23,11 +23,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.17.0
 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  simplify: ^1.0.2
 
 dev_dependencies:
   flutter_test:
@@ -49,7 +53,7 @@ dev_dependencies:
   # smoothing: ^0.0.1 #No NS
   # calculess: ^1.0.2
   # Toolbar
-  flex_color_picker: ^2.0.1 #NS
+  flex_color_picker: ^2.0.2 #NS
   # Canvas
   vector_math: ^2.1.0 #NS
   path_icon: ^0.7.0 #NS
@@ -59,7 +63,7 @@ dev_dependencies:
   pdf: ^3.4.2 #NS
   sleek_circular_slider: ^2.0.1
   #Export:
-  file_saver: ^0.0.8 #NS
+  file_saver: ^0.0.9 #NS
   # Server Connection
   uuid: ^3.0.4 #NS
   web_socket_channel: ^2.1.0 #NS
@@ -71,19 +75,26 @@ dev_dependencies:
   # Fonts
   google_fonts: ^2.1.0 #NS
   # Cross Platform
-  universal_html: ^2.0.8
+  universal_html: ^2.0.8 #NS
+  merge_images: ^2.0.0-nullsafety #NS
+  # Theming
+  easy_dynamic_theme: ^2.2.0 #NS
+  # WebDav Sync
+  webdav_client: ^1.0.0
 
 #   App Icons
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/AppLogo.png"
+  remove_alpha_ios: true
+  image_path: "assets/images/AppLogo.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

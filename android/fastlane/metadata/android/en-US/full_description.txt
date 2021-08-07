@@ -1,0 +1,1 @@
+This is a open source Flutter whiteboard, with the ability to host your own Server.
