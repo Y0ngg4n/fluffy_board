@@ -81,6 +81,7 @@ class _PDFImportFormState extends State<PDFImportForm> {
               controller: spacingController,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: const InputDecoration(
+                  errorMaxLines: 5,
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.space_dashboard),
                   hintText: "Spacing",

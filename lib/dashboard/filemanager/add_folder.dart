@@ -102,6 +102,7 @@ class _AddFolderFormState extends State<AddFolderForm> {
               onFieldSubmitted: (value) => _addFolder(),
               controller: nameController,
               decoration: InputDecoration(
+                errorMaxLines: 5,
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.email_outlined),
                   hintText: AppLocalizations.of(context)!.enterDirectoryName,

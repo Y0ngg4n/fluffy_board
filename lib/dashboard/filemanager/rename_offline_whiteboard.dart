@@ -80,6 +80,7 @@ class _RenameOfflineWhiteboardFormState extends State<RenameOfflineWhiteboardFor
               onFieldSubmitted: (value) => _renameOfflineWhiteboard(),
               controller: nameController,
               decoration: InputDecoration(
+                  errorMaxLines: 5,
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.email_outlined),
                   hintText: AppLocalizations.of(context)!.enterWhiteboardName,

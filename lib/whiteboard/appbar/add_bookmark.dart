@@ -102,6 +102,7 @@ class _AddBookmarkFormState extends State<AddBookmarkForm> {
                   onFieldSubmitted: (value) => _addBookmark(),
                   controller: nameController,
                   decoration: const InputDecoration(
+                      errorMaxLines: 5,
                       border: OutlineInputBorder(),
                       icon: Icon(Icons.email_outlined),
                       hintText: "Enter your Bookmark Name",

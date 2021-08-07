@@ -94,6 +94,7 @@ class _RenameBookmarkFormState extends State<RenameBookmarkForm> {
               onFieldSubmitted: (value) => _renameBookmark(widget.bookmark),
               controller: nameController,
               decoration: const InputDecoration(
+                  errorMaxLines: 5,
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.email_outlined),
                   hintText: "Enter your Bookmark Name",
