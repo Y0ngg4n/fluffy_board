@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          version_number=$(cat version/version.yml | sed 's/\(---\|major: \|minor: \|patch: \|\)//g' | sed -z 's/\n/./g;s/,$/\n/' | sed 's/^\.//g')
+          version_number=$(cat version.yml | sed 's/\(---\|major: \|minor: \|patch: \|\)//g' | sed -z 's/\n/./g;s/,$/\n/' | sed 's/^\.//g')
           echo "${version_number}"
           echo "version_number=${version_number}" >> $GITHUB_ENV
           echo "${{ env.version_number }}"
