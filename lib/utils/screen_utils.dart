@@ -5,10 +5,12 @@ import 'package:fluffy_board/whiteboard/whiteboard-data/draw_point.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'package:simplify/simplify.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:vector_math/vector_math.dart' as vectormath;
 
 class ScreenUtils {
   static final LocalStorage settingsStorage = new LocalStorage('settings');
@@ -78,6 +80,63 @@ class ScreenUtils {
         : false;
   }
 
+  static double isLeft(Offset p0, Offset p1, Offset p2) {
+    return ((p1.dx - p0.dx) * (p2.dy - p0.dy) -
+            (p2.dx - p0.dx) * (p1.dy - p0.dy))
+        .toDouble();
+  }
+
+  static bool pointInRectangle(
+      Offset X, Offset Y, Offset Z, Offset W, Offset checkPoint) {
+    return (isLeft(X, Y, checkPoint) > 0 &&
+        isLeft(Y, Z, checkPoint) > 0 &&
+        isLeft(Z, W, checkPoint) > 0 &&
+        isLeft(W, X, checkPoint) > 0);
+  }
+
+  static Offset calculateRotatedTopLeftCTopLeft(
+      Offset offset, Offset middlePoint, double rotation) {
+    double xRotatedTopLeft = ((offset.dx - middlePoint.dx) * cos(rotation)) -
+        ((middlePoint.dy - offset.dy) * sin(rotation)) +
+        middlePoint.dx;
+    double yRotatedTopLeft = middlePoint.dy -
+        ((middlePoint.dy - offset.dy) * cos(rotation)) +
+        ((offset.dx - middlePoint.dx) * sin(rotation));
+    return new Offset(xRotatedTopLeft, yRotatedTopLeft);
+  }
+
+  static Offset calculateRotatedCBottomLeft(
+      Offset offset, Offset middlePoint, rotation) {
+    double xRotated = ((offset.dx - middlePoint.dx) * cos(rotation)) -
+        ((offset.dy - middlePoint.dy) * sin(rotation)) +
+        middlePoint.dx;
+    double yRotated = ((offset.dx - middlePoint.dx) * sin(rotation)) +
+        ((offset.dy - middlePoint.dy) * cos(rotation)) +
+        middlePoint.dy;
+    return new Offset(xRotated, yRotated);
+  }
+
+  static Offset getUploadMiddlePointWithOffset(
+      Upload currentUpload, Offset calculatedOffset) {
+    return new Offset(
+        currentUpload.offset.dx +
+            calculatedOffset.dx +
+            currentUpload.image!.width / 2,
+        currentUpload.offset.dy +
+            calculatedOffset.dy +
+            currentUpload.image!.height / 2);
+  }
+
+  static Offset getUploadMiddlePoint(Upload currentUpload) {
+    return new Offset(currentUpload.offset.dx + currentUpload.image!.width / 2,
+        currentUpload.offset.dy + currentUpload.image!.height / 2);
+  }
+
+  static Offset getTextItemMiddlePoint(TextItem textItem, TextPainter textPainter) {
+    return new Offset(textItem.offset.dx + textPainter.width / 2,
+        textItem.offset.dy + textPainter.height / 2);
+  }
+
   static bool checkUploadIfNotInScreen(
       Upload currentUpload,
       Offset calculatedOffset,
@@ -86,36 +145,164 @@ class ScreenUtils {
       double scale) {
     if (currentUpload.image == null) return false;
 
-    return (currentUpload.offset.dx + calculatedOffset.dx < 0 &&
-                currentUpload.offset.dx +
-                        currentUpload.image!.width +
-                        calculatedOffset.dx <
-                    0)
-            // Check Right
-            ||
-            (currentUpload.offset.dx +
-                        currentUpload.image!.width +
-                        calculatedOffset.dx >
-                    (screenWidth / scale) &&
-                currentUpload.offset.dx + calculatedOffset.dx >
-                    (screenWidth / scale))
-            // Check Top
-            ||
-            (currentUpload.offset.dy + calculatedOffset.dy < 0 &&
-                currentUpload.offset.dy +
-                        currentUpload.image!.height +
-                        calculatedOffset.dy <
-                    0)
-            //    Check Bottom
-            ||
-            (currentUpload.offset.dy +
-                        currentUpload.image!.height +
-                        calculatedOffset.dy >
-                    (screenHeight) / scale &&
-                currentUpload.offset.dy + calculatedOffset.dy >
-                    (screenHeight) / scale)
-        ? true
-        : false;
+    if (currentUpload.rotation == 0) {
+      return (currentUpload.offset.dx + calculatedOffset.dx < 0 &&
+                  currentUpload.offset.dx +
+                          currentUpload.image!.width +
+                          calculatedOffset.dx <
+                      0)
+              // Check Right
+              ||
+              (currentUpload.offset.dx +
+                          currentUpload.image!.width +
+                          calculatedOffset.dx >
+                      (screenWidth / scale) &&
+                  currentUpload.offset.dx + calculatedOffset.dx >
+                      (screenWidth / scale))
+              // Check Top
+              ||
+              (currentUpload.offset.dy + calculatedOffset.dy < 0 &&
+                  currentUpload.offset.dy +
+                          currentUpload.image!.height +
+                          calculatedOffset.dy <
+                      0)
+              //    Check Bottom
+              ||
+              (currentUpload.offset.dy +
+                          currentUpload.image!.height +
+                          calculatedOffset.dy >
+                      (screenHeight) / scale &&
+                  currentUpload.offset.dy + calculatedOffset.dy >
+                      (screenHeight) / scale)
+          ? true
+          : false;
+    } else {
+      Offset middlePoint =
+          getUploadMiddlePointWithOffset(currentUpload, calculatedOffset);
+
+      Offset leftTopOffset = new Offset(
+          currentUpload.offset.dx + calculatedOffset.dx,
+          currentUpload.offset.dy + calculatedOffset.dy);
+      Offset rightTopOffset = new Offset(
+          currentUpload.offset.dx + calculatedOffset.dx + currentUpload.image!.width,
+          currentUpload.offset.dy + calculatedOffset.dy);
+      Offset rightBottomOffset = new Offset(
+          currentUpload.offset.dx + calculatedOffset.dx + currentUpload.image!.width,
+          currentUpload.offset.dy + calculatedOffset.dy + currentUpload.image!.height);
+      Offset leftBottomOffset = new Offset(currentUpload.offset.dx + calculatedOffset.dx ,
+          currentUpload.offset.dy + calculatedOffset.dy + currentUpload.image!.height);
+
+      Offset rotatedLeftTopOffset = calculateRotatedCBottomLeft(leftTopOffset,
+          middlePoint, vectormath.radians(currentUpload.rotation));
+      Offset rotatedRightTopOffset = calculateRotatedCBottomLeft(rightTopOffset,
+          middlePoint, vectormath.radians(currentUpload.rotation));
+      Offset rotatedRightBottomOffset = calculateRotatedCBottomLeft(
+          rightBottomOffset,
+          middlePoint,
+          vectormath.radians(currentUpload.rotation));
+      Offset rotatedLeftBottomOffset = calculateRotatedCBottomLeft(
+          leftBottomOffset,
+          middlePoint,
+          vectormath.radians(currentUpload.rotation));
+
+      bool notInScreen = (
+          // Check left
+          rotatedLeftTopOffset.dx < 0 &&
+                      rotatedRightTopOffset.dx < 0 &&
+                      rotatedLeftBottomOffset.dx < 0 &&
+                      rotatedRightBottomOffset.dx < 0
+                  // Check Right
+                  ||
+                  (rotatedLeftTopOffset.dx >
+                          (screenWidth / scale) &&
+                      rotatedRightTopOffset.dx >
+                          (screenWidth / scale) &&
+                      rotatedLeftBottomOffset.dx >
+                          (screenWidth / scale) &&
+                      rotatedRightBottomOffset.dx >
+                          (screenWidth / scale))
+                  // // Check Top
+                  ||
+                  (rotatedLeftTopOffset.dy  < 0&&
+                      rotatedRightTopOffset.dy  < 0 &&
+                      rotatedLeftBottomOffset.dy < 0 &&
+                      rotatedRightBottomOffset.dy < 0)
+                  // //    Check Bottom
+                  ||
+                  (rotatedLeftTopOffset.dy >
+                          (screenHeight / scale) &&
+                      rotatedRightTopOffset.dy >
+                          (screenHeight / scale) &&
+                      rotatedLeftBottomOffset.dy >
+                          (screenHeight / scale) &&
+                      rotatedRightBottomOffset.dy >
+                          (screenHeight / scale))
+              ? true
+              : false);
+      return notInScreen;
+    }
+  }
+
+  static bool checkIfInUploadRect(
+      Upload currentUpload, double scale, Offset location) {
+    if (currentUpload.image == null) return false;
+
+    if (currentUpload.rotation == 0) {
+      if (location.dx >= currentUpload.offset.dx &&
+          location.dx <= currentUpload.offset.dx + currentUpload.image!.width &&
+          location.dy >= currentUpload.offset.dy &&
+          location.dy <= currentUpload.offset.dy + currentUpload.image!.height)
+        return true;
+      else
+        return false;
+    } else {
+      Offset middlePoint = getUploadMiddlePoint(currentUpload);
+
+      Offset invertRotatedLocation = calculateRotatedCBottomLeft(
+          location, middlePoint, vectormath.radians(-currentUpload.rotation));
+
+      bool notInScreen = (
+          // Check if inverted rotated Point is in not rotated Image rect
+          invertRotatedLocation.dx >= currentUpload.offset.dx &&
+                  invertRotatedLocation.dx <=
+                      currentUpload.offset.dx + currentUpload.image!.width &&
+                  invertRotatedLocation.dy >= currentUpload.offset.dy &&
+                  invertRotatedLocation.dy <=
+                      currentUpload.offset.dy + currentUpload.image!.height
+              ? true
+              : false);
+      return notInScreen;
+    }
+  }
+
+  static bool checkIfInTextPainterRect(
+      TextPainter textPainter, TextItem textItem, double scale, Offset location) {
+    if (textItem.rotation == 0) {
+      if (location.dx >= textItem.offset.dx &&
+          location.dx <= textItem.offset.dx + textPainter.width &&
+          location.dy >= textItem.offset.dy &&
+          location.dy <= textItem.offset.dy + textPainter.height)
+        return true;
+      else
+        return false;
+    } else {
+      Offset middlePoint = getTextItemMiddlePoint(textItem, textPainter);
+
+      Offset invertRotatedLocation = calculateRotatedCBottomLeft(
+          location, middlePoint, vectormath.radians(-textItem.rotation));
+
+      bool notInScreen = (
+          // Check if inverted rotated Point is in not rotated Image rect
+          invertRotatedLocation.dx >= textItem.offset.dx &&
+              invertRotatedLocation.dx <=
+                  textItem.offset.dx + textPainter.width &&
+              invertRotatedLocation.dy >= textItem.offset.dy &&
+              invertRotatedLocation.dy <=
+                  textItem.offset.dy + textPainter.height
+              ? true
+              : false);
+      return notInScreen;
+    }
   }
 
   static bool checkTextPainterIfNotInScreen(
@@ -190,6 +377,33 @@ class ScreenUtils {
         }
       }
     }
+
+    // Offset middlePoint = calculateMiddlePoint(newScribble.leftExtremity, newScribble.rightExtremity, newScribble.topExtremity, newScribble.bottomExtremity);
+    // Offset topLeftRotatedPoint = calculateRotatedPoint(middlePoint, new Offset(newScribble.leftExtremity, newScribble.topExtremity), newScribble.rotation);
+    // Offset bottomRightRotatedPoint = calculateRotatedPoint(middlePoint, new Offset(newScribble.rightExtremity, newScribble.bottomExtremity), newScribble.rotation);
+    // newScribble.leftExtremity = topLeftRotatedPoint.dx;
+    // print(newScribble.leftExtremity);
+    // newScribble.topExtremity = topLeftRotatedPoint.dy;
+    // newScribble.rightExtremity = bottomRightRotatedPoint.dx;
+    // newScribble.bottomExtremity = bottomRightRotatedPoint.dy;
+  }
+
+  static calculateMiddlePoint(double leftExtremity, double rightExtremity,
+      double topExtremity, double bottomExtremity) {
+    return new Offset((rightExtremity - leftExtremity) / 2,
+        (bottomExtremity - topExtremity) / 2);
+  }
+
+  static calculateRotatedPoint(
+      Offset middlePoint, Offset point, double rotation) {
+    double newX = middlePoint.dx +
+        (point.dx - middlePoint.dx) * cos(rotation) -
+        (point.dy - middlePoint.dy) * sin(rotation);
+    // y′=10+(x−5)sin(φ)+(y−10)cos(φ)
+    double newY = middlePoint.dy +
+        (point.dx - middlePoint.dx) * sin(rotation) +
+        (point.dy - middlePoint.dy) * cos(rotation);
+    return Offset(newX, newY);
   }
 
   static bakeScribble(Scribble scribble, double scale) async {
@@ -204,7 +418,8 @@ class ScreenUtils {
         scale,
         new Offset(-scribble.leftExtremity + scribble.strokeWidth,
             -scribble.topExtremity + scribble.strokeWidth),
-        false);
+        false,
+        null);
     // Finally render the image, this can take about 8 to 25 milliseconds.
     var picture = recorder.endRecording();
     // TODO: Check if cuts are right and make less pixelated
@@ -221,12 +436,14 @@ class ScreenUtils {
     }
   }
 
-  static getBakeImageWidth(double scribbleWidth, Scribble scribble, double scale){
+  static getBakeImageWidth(
+      double scribbleWidth, Scribble scribble, double scale) {
     return ((scribbleWidth + scribble.strokeWidth * 2) *
         (scale < 1 ? (1 + (1 - scale)) : scale));
   }
 
-  static getBakeImageHeight(double scribbleHeight, Scribble scribble, double scale){
+  static getBakeImageHeight(
+      double scribbleHeight, Scribble scribble, double scale) {
     return ((scribbleHeight + scribble.strokeWidth * 2) *
         (scale < 1 ? (1 + (1 - scale)) : scale));
   }

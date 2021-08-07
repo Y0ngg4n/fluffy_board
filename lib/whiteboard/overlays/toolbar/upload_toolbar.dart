@@ -68,6 +68,7 @@ class _UploadToolbarState extends State<UploadToolbar> {
                                       (image.width / 2),
                                   (ScreenUtils.getScreenHeight(context) / 2) -
                                       (image.height / 2) ) - widget.offset,
+                          0, 1,
                           image);
                       widget.uploads.add(upload);
                       WebsocketSend.sendUploadCreate(upload, widget.websocketConnection);
@@ -95,7 +96,7 @@ class _UploadToolbarState extends State<UploadToolbar> {
                                 (result.images[i].width / 2),
                             (result.images[i].height + result.spacing) * i) - widget.offset;
                     Upload upload = new Upload(uuid.v4(), UploadType.PDF,
-                        result.imageData[i], offset, result.images[i]);
+                        result.imageData[i], offset, 0, 1, result.images[i]);
                     widget.uploads.add(upload);
                     WebsocketSend.sendUploadCreate(upload, widget.websocketConnection);
                     widget.onSaveOfflineWhiteboard();

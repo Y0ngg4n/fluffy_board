@@ -11,6 +11,7 @@ class WSScribbleAdd implements JsonWebSocketType {
   int strokeCap;
   String color;
   List<DrawPoint> points;
+  double rotation;
   int paintingStyle;
 
   // named constructor
@@ -29,6 +30,7 @@ class WSScribbleAdd implements JsonWebSocketType {
         strokeCap = json['stroke_cap'] ?? 0,
         color = json['color'] ?? "#000000",
         points = WSScribbleAdd.fromJsonList(json['points'] ?? []),
+        rotation = (json['rotation'] ?? 0).toDouble(),
         paintingStyle = json['painting_style'] ?? 0;
 
   Map toJson() {
@@ -39,12 +41,13 @@ class WSScribbleAdd implements JsonWebSocketType {
       'stroke_cap': strokeCap,
       'color': color,
       'points': points,
+      'rotation': rotation,
       'painting_style': paintingStyle
     };
   }
 
   WSScribbleAdd(this.uuid, this.selectedFigureTypeToolbar, this.strokeWidth,
-      this.strokeCap, this.color, this.points, this.paintingStyle);
+      this.strokeCap, this.color, this.points, this.rotation, this.paintingStyle);
 }
 
 class WSScribbleUpdate implements JsonWebSocketType {
@@ -53,6 +56,7 @@ class WSScribbleUpdate implements JsonWebSocketType {
   int strokeCap;
   String color;
   List<DrawPoint> points;
+  double rotation;
   int paintingStyle;
   double leftExtremity, rightExtremity, topExtremity, bottomExtremity;
 
@@ -71,6 +75,7 @@ class WSScribbleUpdate implements JsonWebSocketType {
         strokeCap = json['stroke_cap'] ?? 0,
         color = json['color'] ?? "#000000",
         points = WSScribbleAdd.fromJsonList(json['points'] ?? []),
+        rotation = (json['rotation'] ?? 0).toDouble(),
         paintingStyle = json['painting_style'] ?? 0,
         leftExtremity = (json['left_extremity'] ?? 0).toDouble(),
         rightExtremity = (json['right_extremity'] ?? 0).toDouble(),
@@ -84,6 +89,7 @@ class WSScribbleUpdate implements JsonWebSocketType {
       'stroke_cap': strokeCap,
       'color': color,
       'points': points,
+      'rotation': rotation,
       'painting_style': paintingStyle,
       'left_extremity': leftExtremity,
       'right_extremity': rightExtremity,
@@ -93,17 +99,18 @@ class WSScribbleUpdate implements JsonWebSocketType {
   }
 
   WSScribbleUpdate(
-      this.uuid,
-      this.strokeWidth,
-      this.strokeCap,
-      this.color,
-      this.points,
-      this.paintingStyle,
-      this.leftExtremity,
-      this.rightExtremity,
-      this.topExtremity,
-      this.bottomExtremity,
-      );
+    this.uuid,
+    this.strokeWidth,
+    this.strokeCap,
+    this.color,
+    this.points,
+    this.rotation,
+    this.paintingStyle,
+    this.leftExtremity,
+    this.rightExtremity,
+    this.topExtremity,
+    this.bottomExtremity,
+  );
 }
 
 class WSScribbleDelete implements JsonWebSocketType {
@@ -118,11 +125,11 @@ class WSScribbleDelete implements JsonWebSocketType {
   }
 
   WSScribbleDelete(
-      this.uuid,
-      );
+    this.uuid,
+  );
 }
 
-class DecodeGetScribbleList implements DecodeGetJsonWebSocketTypeList{
+class DecodeGetScribbleList implements DecodeGetJsonWebSocketTypeList {
   static List<DecodeGetScribble> fromJsonList(List<dynamic> jsonList) {
     List<DecodeGetScribble> points = new List.empty(growable: true);
     for (Map<String, dynamic> json in jsonList) {
@@ -132,14 +139,16 @@ class DecodeGetScribbleList implements DecodeGetJsonWebSocketTypeList{
   }
 }
 
-class DecodeGetScribble implements DecodeGetJsonWebSocketType{
+class DecodeGetScribble implements DecodeGetJsonWebSocketType {
   String uuid;
   int selectedFigureTypeToolbar;
   double strokeWidth;
   int strokeCap;
   String color;
   List<DrawPoint> points;
+  double rotation;
   int paintingStyle;
+
   double leftExtremity, rightExtremity, topExtremity, bottomExtremity;
 
   static List<DrawPoint> fromJsonList(List<dynamic> jsonList) {
@@ -157,6 +166,7 @@ class DecodeGetScribble implements DecodeGetJsonWebSocketType{
       this.strokeCap,
       this.color,
       this.points,
+      this.rotation,
       this.paintingStyle,
       this.leftExtremity,
       this.rightExtremity,
@@ -170,6 +180,7 @@ class DecodeGetScribble implements DecodeGetJsonWebSocketType{
         strokeCap = json['stroke_cap'] ?? 0,
         color = json['color'] ?? "#000000",
         points = WSScribbleAdd.fromJsonList(json['points'] ?? []),
+        rotation = (json['rotation'] ?? 0).toDouble(),
         paintingStyle = json['painting_style'] ?? 0,
         leftExtremity = (json['left_extremity'] ?? 0).toDouble(),
         rightExtremity = (json['right_extremity'] ?? 0).toDouble(),

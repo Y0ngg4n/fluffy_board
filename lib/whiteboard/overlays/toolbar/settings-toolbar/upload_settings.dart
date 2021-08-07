@@ -1,13 +1,8 @@
-import 'dart:typed_data';
-
-import 'package:fluffy_board/utils/image_utils.dart';
 import 'package:fluffy_board/whiteboard/infinite_canvas.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_manager_send.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
-import 'package:image/image.dart' as IMG;
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 import '../../../whiteboard_view.dart';
@@ -38,7 +33,7 @@ class UploadSettings extends StatefulWidget {
 }
 
 class _UploadSettingsState extends State<UploadSettings> {
-  double uploadSize = 1;
+  double scale = 1;
   double rotation = 0;
 
   @override
@@ -51,32 +46,35 @@ class _UploadSettingsState extends State<UploadSettings> {
         RotatedBox(
           quarterTurns: widget.axis == Axis.vertical ? -1 : 0,
           child: Slider.adaptive(
-            value: uploadSize,
+            value: widget.selectedUpload == null ? scale: widget.selectedUpload!.scale,
             onChanged: (value) async {
               setState(() {
-                uploadSize = value;
+                scale = value;
+                print(value);
+                int index = widget.uploads.indexOf(widget.selectedUpload!);
+                widget.selectedUpload!.scale = value;
+                widget.uploads[index] = widget.selectedUpload!;
+                widget.onUploadsChange(widget.uploads);
               });
             },
             onChangeEnd: (value) async {
               int index = widget.uploads.indexOf(widget.selectedUpload!);
-              widget.selectedUpload!.uint8List =
-                  ImageUtils.resizeImage(widget.selectedUpload!.uint8List, value);
-              final ui.Codec codec = await PaintingBinding.instance!
-                  .instantiateImageCodec(widget.selectedUpload!.uint8List);
-              final ui.FrameInfo frameInfo = await codec.getNextFrame();
-
-              widget.selectedUpload!.image = frameInfo.image;
+              // widget.selectedUpload!.uint8List =
+              //     ImageUtils.resizeImage(widget.selectedUpload!.uint8List, value);
+              // final ui.Codec codec = await PaintingBinding.instance!
+              //     .instantiateImageCodec(widget.selectedUpload!.uint8List);
+              // final ui.FrameInfo frameInfo = await codec.getNextFrame();
+              //
+              // widget.selectedUpload!.image = frameInfo.image;
+              widget.selectedUpload!.scale = value;
               widget.uploads[index] = widget.selectedUpload!;
               widget.onUploadsChange(widget.uploads);
               widget.onSaveOfflineWhiteboard();
               WebsocketSend.sendUploadImageDataUpdate(
                   widget.selectedUpload!, widget.websocketConnection);
-              setState(() {
-                uploadSize = 1;
-              });
             },
-            min: 0.1,
-            max: 2,
+            min: 1,
+            max: 5,
           ),
         ),
         SleekCircularSlider(
@@ -88,31 +86,37 @@ class _UploadSettingsState extends State<UploadSettings> {
                 final roundedValue = value.ceil().toInt().toString();
                 return '$roundedValue °';
               })),
-          initialValue: rotation,
+          initialValue: widget.selectedUpload != null ? widget.selectedUpload!.rotation : rotation,
           min: 0,
           max: 360,
           onChange: (value) {
             setState(() {
               rotation = value;
+              int index = widget.uploads.indexOf(widget.selectedUpload!);
+              widget.selectedUpload!.rotation = value;
+              widget.selectedUpload!.rotation = value;
+              widget.uploads[index] = widget.selectedUpload!;
+              widget.onUploadsChange(widget.uploads);
             });
           },
           onChangeEnd: (value) async {
             int index = widget.uploads.indexOf(widget.selectedUpload!);
-            widget.selectedUpload!.uint8List =
-                ImageUtils.rotateImage(widget.selectedUpload!.uint8List, value);
-            final ui.Codec codec = await PaintingBinding.instance!
-                .instantiateImageCodec(widget.selectedUpload!.uint8List);
-            final ui.FrameInfo frameInfo = await codec.getNextFrame();
-
-            widget.selectedUpload!.image = frameInfo.image;
+            widget.selectedUpload!.rotation = value;
+            // widget.selectedUpload!.uint8List =
+            //     ImageUtils.rotateImage(widget.selectedUpload!.uint8List, value);
+            // final ui.Codec codec = await PaintingBinding.instance!
+            //     .instantiateImageCodec(widget.selectedUpload!.uint8List);
+            // final ui.FrameInfo frameInfo = await codec.getNextFrame();
+            //
+            // widget.selectedUpload!.image = frameInfo.image;
             widget.uploads[index] = widget.selectedUpload!;
             widget.onUploadsChange(widget.uploads);
             widget.onSaveOfflineWhiteboard();
             WebsocketSend.sendUploadImageDataUpdate(
                 widget.selectedUpload!, widget.websocketConnection);
-            setState(() {
-              rotation = 0;
-            });
+            // setState(() {
+            //   rotation = 0;
+            // });
           },
         ),
         OutlinedButton(

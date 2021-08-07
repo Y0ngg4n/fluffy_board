@@ -40,14 +40,17 @@ class Upload {
   String uuid;
   UploadType uploadType;
   ui.Offset offset;
-
+  double rotation;
+  double scale;
   Uint8List uint8List;
   ui.Image? image;
 
   Upload.fromJson(Map<String, dynamic> json)
       : uuid = json['uuid'] ?? Uuid().v4(),
         uploadType = UploadType.values[json['upload_type'] ?? 0],
-        offset = new ui.Offset(json['offset_dx'] ?? 0, json['offset_dy'] ?? 0),
+        offset = new ui.Offset((json['offset_dx'] ?? 0).toDouble(), (json['offset_dy'] ?? 0).toDouble()),
+        rotation = (json['rotation'] ?? 0).toDouble(),
+        scale = (json['scale'] ?? 1).toDouble(),
         uint8List = Uint8List.fromList((json['uint8list'] ?? []).cast<int>()),
         image = null;
 
@@ -58,9 +61,11 @@ class Upload {
       'upload_type': uploadType.index,
       'offset_dx': offset.dx,
       'offset_dy': offset.dy,
+      'rotation': rotation,
+      'scale': scale,
       'uint8list': list
     };
   }
 
-  Upload(this.uuid, this.uploadType, this.uint8List, this.offset, this.image);
+  Upload(this.uuid, this.uploadType, this.uint8List, this.offset, this.rotation, this.scale, this.image);
 }

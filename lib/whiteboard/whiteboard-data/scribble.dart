@@ -31,6 +31,7 @@ class Scribble implements JsonEncodable{
   ui.StrokeCap strokeCap;
   ui.Color color;
   List<DrawPoint> points;
+  double rotation;
   ui.PaintingStyle paintingStyle;
   double leftExtremity = 0,
       topExtremity = 0,
@@ -46,6 +47,7 @@ class Scribble implements JsonEncodable{
     m['stroke_cap'] = strokeCap.index;
     m['color'] = color.toHex();
     m['points'] = new DrawPoints(points).toJSONEncodable();
+    m['rotation'] = rotation;
     m['painting_style'] = paintingStyle.index;
     m['left_extremity'] = leftExtremity;
     m['right_extremity'] = rightExtremity;
@@ -63,12 +65,13 @@ class Scribble implements JsonEncodable{
         strokeCap = ui.StrokeCap.values[json['stroke_cap'] ?? 0],
         color = HexColor.fromHex(json['color'] ?? "#000000"),
         points = DrawPoints.fromJson(json['points'] ?? []).list,
+        rotation = (json['rotation'] ?? 0).toDouble(),
         paintingStyle = ui.PaintingStyle.values[json['painting_style'] ?? 0],
-        leftExtremity = json['left_extremity'] ?? 0,
-        rightExtremity = json['right_extremity'] ?? 0,
-        topExtremity = json['top_extremity'] ?? 0,
-        bottomExtremity = json['bottom_extremity'] ?? 0;
+        leftExtremity = (json['left_extremity'] ?? 0).toDouble(),
+        rightExtremity = (json['right_extremity'] ?? 0).toDouble(),
+        topExtremity = (json['top_extremity'] ?? 0).toDouble(),
+        bottomExtremity = (json['bottom_extremity'] ?? 0).toDouble();
 
   Scribble(this.uuid, this.strokeWidth, this.strokeCap, this.color, this.points,
-      this.selectedFigureTypeToolbar, this.paintingStyle);
+      this.rotation, this.selectedFigureTypeToolbar, this.paintingStyle);
 }
