@@ -1,0 +1,41 @@
+name: Fdroid Releases
+on:
+  push:
+    branches:
+      - master
+      - 'releases/**'
+  pull_request:
+    branches:
+      - master
+      - 'releases/**'
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          version_number=$(cat version.yml | sed 's/\(---\|major: \|minor: \|patch: \|\)//g' | sed -z 's/\n/./g;s/,$/\n/' | sed 's/^\.//g')
+          echo "${version_number}"
+          echo "version_number=${version_number}" >> $GITHUB_ENV
+          echo "${{ env.version_number }}"
+      - run: |
+          version_code=$(cat pubspec.yaml | grep "version: ${{ env.version_number }}+" | sed 's/version:.*+//g')
+          echo "version_code=${version_code}" >> $GITHUB_ENV
+          echo "${{ env.version_code }}"
+      - run: |
+          git clone https://gitlab.com/yonggan/fdroiddata.git
+          cd fdroiddata
+          git checkout pro.oblivioncoding.fluffy_board
+          cat metadata/pro.oblivioncoding.fluffy_board.yml
+          sed -i "s/  - versionName: .*/  - versionName: ${{ env.version_number }}/g"  metadata/pro.oblivioncoding.fluffy_board.yml
+          sed -i "s/    versionCode: .*/    versionCode: ${{ env.version_code }}/g"  metadata/pro.oblivioncoding.fluffy_board.yml
+          sed -i "s/    commit: .*/    commit: ${{ env.version_number }}/g"  metadata/pro.oblivioncoding.fluffy_board.yml
+          sed -i "s/CurrentVersion: .*/CurrentVersion: ${{ env.version_number }}/g"  metadata/pro.oblivioncoding.fluffy_board.yml
+          sed -i "s/CurrentVersionCode: .*/CurrentVersionCode: ${{ env.version_code }}/g"  metadata/pro.oblivioncoding.fluffy_board.yml
+          cat metadata/pro.oblivioncoding.fluffy_board.yml
+          git add .
+          git config user.email "yonggan@oblivioncoding.pro"
+          git config user.name "Yonggan"
+          git commit -m "Bump top version ${{ env.version_number }}"
+          git remote add gitlab https://${{ secrets.GITLAB_USERNAME }}:${{ secrets.GITLAB_TOKEN }}@gitlab.com/yonggan/fdroiddata.git
+          git push gitlab pro.oblivioncoding.fluffy_board
