@@ -103,6 +103,7 @@ class _AddOfflineWhiteboardFormState extends State<AddOfflineWhiteboardForm> {
               onFieldSubmitted: (value) => _addOfflineWhiteboard(),
               controller: nameController,
               decoration: InputDecoration(
+                  errorMaxLines: 5,
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.email_outlined),
                   hintText: AppLocalizations.of(context)!.enterWhiteboardName,

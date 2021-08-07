@@ -82,6 +82,7 @@ class _AddExtWhiteboardFormState extends State<AddExtWhiteboardForm> {
                 controller: nameController,
                 onFieldSubmitted: (value) => _addExtWhiteboard(),
                 decoration: InputDecoration(
+                    errorMaxLines: 5,
                     border: OutlineInputBorder(),
                     icon: Icon(Icons.email_outlined),
                     hintText: AppLocalizations.of(context)!.enterInviteID,

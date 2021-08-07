@@ -97,6 +97,7 @@ class _RenameFolderFormState extends State<RenameFolderForm> {
               onFieldSubmitted: (value) => _renameFolder(),
               controller: nameController,
               decoration: InputDecoration(
+                  errorMaxLines: 5,
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.email_outlined),
                   hintText: AppLocalizations.of(context)!.enterDirectoryName,

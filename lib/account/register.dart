@@ -86,7 +86,9 @@ class _RegisterFormState extends State<RegisterForm> {
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.person_outlined),
                   hintText: "Enter your Username",
-                  labelText: "Username"),
+                  labelText: "Username",
+                errorMaxLines: 5,
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter a Username';
@@ -103,7 +105,9 @@ class _RegisterFormState extends State<RegisterForm> {
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.email_outlined),
                   hintText: "Enter your Email",
-                  labelText: "Email"),
+                  labelText: "Email",
+                errorMaxLines: 5,
+              ),
               validator: (value) {
                 if (value == null ||
                     value.isEmpty ||
@@ -124,7 +128,9 @@ class _RegisterFormState extends State<RegisterForm> {
                   border: OutlineInputBorder(),
                   icon: Icon(Icons.password_outlined),
                   hintText: "Enter your Password",
-                  labelText: "Password"),
+                  labelText: "Password",
+                  errorMaxLines: 5,
+              ),
               validator: (value) {
                 if (value == null ||
                     value.isEmpty ||
