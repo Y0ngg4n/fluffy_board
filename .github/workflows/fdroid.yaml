@@ -30,7 +30,7 @@ jobs:
           git clone https://gitlab.com/yonggan/fdroiddata.git
           cd fdroiddata
           git checkout pro.oblivioncoding.fluffy_board
-          metadata/pro.oblivioncoding.fluffy_board.yml
+          cat metadata/pro.oblivioncoding.fluffy_board.yml
           sed -i "s/  - versionName: .*/  - versionName: ${{ env.version_number }}/g"  metadata/pro.oblivioncoding.fluffy_board.yml
           sed -i "s/    versionCode: .*/    versionCode: ${{ env.version_code }}/g"  metadata/pro.oblivioncoding.fluffy_board.yml
           sed -i "s/    commit: .*/    commit: ${{ env.version_number }}/g"  metadata/pro.oblivioncoding.fluffy_board.yml
