@@ -34,9 +34,9 @@ class _AboutState extends State<About> {
     "You can import and export Whiteboards to transfer them to other accounts.",
     "You can download your Whiteboards and use them offline. And if you have internet again you can upload them back.",
     "You can import images and PDF files to share your files with your Team",
-    "Sharing is posible with view only rights. So you can just present your whiteboard without giving others the permission to edit them",
+    "Sharing is possible with view only rights. So you can just present your whiteboard without giving others the permission to edit them",
     "Because this project is open source you can self host it and have full control over your data.",
-    "No tracking. No spying. No unnecessary data will be collected. Have full controll over your data."
+    "No tracking. No spying. No unnecessary data will be collected. Have full control over your data."
   ];
 
   @override
