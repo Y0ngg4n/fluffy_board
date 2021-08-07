@@ -28,8 +28,8 @@ jobs:
     steps:
       - run: |
           git clone https://gitlab.com/yonggan/fdroiddata.git
-          git checkout pro.oblivioncoding.fluffy_board
           cd fdroiddata
+          git checkout pro.oblivioncoding.fluffy_board
           metadata/pro.oblivioncoding.fluffy_board.yml
           sed -i "s/  - versionName: .*/  - versionName: ${{ env.version_number }}/g"  metadata/pro.oblivioncoding.fluffy_board.yml
           sed -i "s/    versionCode: .*/    versionCode: ${{ env.version_code }}/g"  metadata/pro.oblivioncoding.fluffy_board.yml
