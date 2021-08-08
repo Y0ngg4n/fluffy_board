@@ -173,7 +173,7 @@ class _FileManagerState extends State<FileManager> {
                     });
                   });
                   if (widget.online)
-                    WebDavManager.startAutomatedUpload(offlineWhiteboards);
+                    WebDavManager.startAutomatedUpload(await WhiteboardDataManager.getAllOfflineWhiteboards(this.offlineWhiteboardIds));
                 },
                 child: GridView.extent(
                   maxCrossAxisExtent: 200,
