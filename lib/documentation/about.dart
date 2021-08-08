@@ -91,13 +91,11 @@ class _AboutState extends State<About> {
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Flexible(
-                  child: Text(
-                    "FluffyBoard",
-                    style: GoogleFonts.fredokaOne(fontSize: 150 * sizeFactor),
-                  ),
+                child: Text(
+                  "FluffyBoard",
+                  style: GoogleFonts.fredokaOne(fontSize: 150 * sizeFactor),
                 ),
-              )
+              ),
             ]),
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -138,61 +136,60 @@ class _AboutState extends State<About> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Flexible(
-                    child: Text(
-                      "Perfect for Students, Schools and Teams",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 75 * sizeFactor),
-                    ),
-                  )
-                ],
+              child: Center(
+                child: Text(
+                  "Perfect for Students, Schools and Teams",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 75 * sizeFactor),
+                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16.0, 50, 16.0, 16),
-              child:
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                ElevatedButton(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(children: [
-                      Text("Get started", style: TextStyle(fontSize: 50)),
-                      Icon(Icons.arrow_right)
-                    ]),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pushReplacementNamed("/dashboard");
-                  },
-                ),
-              ]),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    ElevatedButton(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(children: [
+                          Text("Get started", style: TextStyle(fontSize: 150 * sizeFactor)),
+                          Icon(Icons.arrow_right, size: 150 * sizeFactor)
+                        ]),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pushReplacementNamed("/dashboard");
+                      },
+                    ),
+                  ]),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16.0, 40.0, 16.0, 16.0),
               child: Column(children: [
                 for (int i = 0; i < cardHeadings.length; i++)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(8.0, 25.0, 8.0, 8.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(cardHeadings[i],
-                                  style: cardHeadingTextStyle),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Flexible(
-                                child: Text(cardDescriptions[i],
-                                    style: cardTextStyle, textAlign: TextAlign.center,),
-                              ),
-                            ),
-                          ],
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8.0, 25.0, 8.0, 8.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(cardHeadings[i],
+                              style: cardHeadingTextStyle),
                         ),
-                      ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            cardDescriptions[i],
+                            style: cardTextStyle,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
               ]),
             )
           ]),
