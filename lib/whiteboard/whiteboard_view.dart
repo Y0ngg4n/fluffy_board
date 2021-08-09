@@ -71,6 +71,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
     if (widget.offlineWhiteboard == null && widget.online) {
       try {
         websocketConnection = WebsocketConnection.getInstance(
+          id: widget.id,
           whiteboard: widget.whiteboard == null
               ? widget.extWhiteboard!.original
               : widget.whiteboard!.id,
@@ -663,7 +664,6 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   }
 
   saveOfflineWhiteboard() async {
-    print("Offset" + offset.toString());
     if (widget.offlineWhiteboard == null) return;
     await fileManagerStorage.setItem(
         "offline_whiteboard-" + widget.offlineWhiteboard!.uuid,

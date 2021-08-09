@@ -46,7 +46,6 @@ class WebsocketSend {
       newScribble.bottomExtremity,
     ).toJson());
     if (websocketConnection != null) {
-      print("Scribble update");
       websocketConnection.sendDataToChannel("scribble-update#", data);
     }
   }
