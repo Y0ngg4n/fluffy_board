@@ -23,7 +23,6 @@ import '../whiteboard_view.dart';
 import 'dart:ui' as ui;
 import 'package:random_color/random_color.dart';
 
-
 typedef OnScribbleAdd = Function(Scribble);
 typedef OnScribbleUpdate = Function(Scribble);
 typedef OnScribbleDelete = Function(String);
@@ -41,17 +40,18 @@ typedef OnUserMove = Function(ConnectedUserMove);
 typedef OnUserCursorMove = Function(ConnectedUserCursorMove);
 
 typedef OnBookmarkAdd = Function(Bookmark);
-typedef OnBookmarkUpdate= Function(Bookmark);
-typedef OnBookmarkDelete= Function(String);
+typedef OnBookmarkUpdate = Function(Bookmark);
+typedef OnBookmarkDelete = Function(String);
 
 class WebsocketConnection {
   static WebsocketConnection? _singleton;
 
   StreamController<String> streamController =
-  new StreamController.broadcast(sync: true);
+      new StreamController.broadcast(sync: true);
 
   String whiteboard;
   String authToken;
+  String id;
   bool disconnect = false;
 
   late WebsocketManager websocketManager;
@@ -78,46 +78,48 @@ class WebsocketConnection {
 
   final RandomColor _randomColor = RandomColor();
 
-  WebsocketConnection({
-    required this.whiteboard,
-    required this.authToken,
-    required this.onScribbleAdd,
-    required this.onScribbleUpdate,
-    required this.onScribbleDelete,
-    required this.onUploadAdd,
-    required this.onUploadUpdate,
-    required this.onUploadImageDataUpdate,
-    required this.onUploadDelete,
-    required this.onTextItemAdd,
-    required this.onTextItemUpdate,
-    required this.onUserJoin,
-    required this.onUserMove,
-    required this.onUserCursorMove,
-    required this.onBookmarkAdd,
-    required this.onBookmarkUpdate,
-    required this.onBookmarkDelete
-  });
+  WebsocketConnection(
+      {required this.whiteboard,
+      required this.authToken,
+      required this.id,
+      required this.onScribbleAdd,
+      required this.onScribbleUpdate,
+      required this.onScribbleDelete,
+      required this.onUploadAdd,
+      required this.onUploadUpdate,
+      required this.onUploadImageDataUpdate,
+      required this.onUploadDelete,
+      required this.onTextItemAdd,
+      required this.onTextItemUpdate,
+      required this.onUserJoin,
+      required this.onUserMove,
+      required this.onUserCursorMove,
+      required this.onBookmarkAdd,
+      required this.onBookmarkUpdate,
+      required this.onBookmarkDelete});
 
-  static WebsocketConnection getInstance({required String whiteboard,
-    required String authToken,
-    required Function(Scribble) onScribbleAdd,
-    required Function(Scribble) onScribbleUpdate,
-    required Function(String) onScribbleDelete,
-    required Function(Upload) onUploadAdd,
-    required Function(Upload) onUploadUpdate,
-    required Function(Upload) onUploadImageDataUpdate,
-    required Function(String) onUploadDelete,
-    required Function(TextItem) onTextItemAdd,
-    required Function(TextItem) onTextItemUpdate,
-    required Function(ConnectedUser) onUserJoin,
-    required Function(ConnectedUserMove) onUserMove,
-    required Function(ConnectedUserCursorMove) onUserCursorMove,
-    required Function(Bookmark) onBookmarkAdd,
-    required Function(Bookmark) onBookmarkUpdate,
-    required Function(String) onBookmarkDelete
-  }) {
+  static WebsocketConnection getInstance(
+      {required String whiteboard,
+      required String authToken,
+      required String id,
+      required Function(Scribble) onScribbleAdd,
+      required Function(Scribble) onScribbleUpdate,
+      required Function(String) onScribbleDelete,
+      required Function(Upload) onUploadAdd,
+      required Function(Upload) onUploadUpdate,
+      required Function(Upload) onUploadImageDataUpdate,
+      required Function(String) onUploadDelete,
+      required Function(TextItem) onTextItemAdd,
+      required Function(TextItem) onTextItemUpdate,
+      required Function(ConnectedUser) onUserJoin,
+      required Function(ConnectedUserMove) onUserMove,
+      required Function(ConnectedUserCursorMove) onUserCursorMove,
+      required Function(Bookmark) onBookmarkAdd,
+      required Function(Bookmark) onBookmarkUpdate,
+      required Function(String) onBookmarkDelete}) {
     if (_singleton == null) {
       _singleton = new WebsocketConnection(
+          id: id,
           whiteboard: whiteboard,
           authToken: authToken,
           onScribbleAdd: onScribbleAdd,
@@ -130,12 +132,11 @@ class WebsocketConnection {
           onTextItemAdd: onTextItemAdd,
           onTextItemUpdate: onTextItemUpdate,
           onUserJoin: onUserJoin,
-        onUserMove: onUserMove,
-        onUserCursorMove: onUserCursorMove,
-        onBookmarkAdd: onBookmarkAdd,
-        onBookmarkUpdate: onBookmarkUpdate,
-        onBookmarkDelete: onBookmarkDelete
-      );
+          onUserMove: onUserMove,
+          onUserCursorMove: onUserCursorMove,
+          onBookmarkAdd: onBookmarkAdd,
+          onBookmarkUpdate: onBookmarkUpdate,
+          onBookmarkDelete: onBookmarkDelete);
       print("Before Initialize Websocket Connection");
       _singleton!.initWebSocketConnection(whiteboard, authToken);
       print("After Initialize Websocket Connection");
@@ -145,7 +146,7 @@ class WebsocketConnection {
 
   void initWebSocketConnection(String whiteboard, String authToken) async {
     websocketManager =
-    new WebsocketManager((streamData) => messageHandler(streamData));
+        new WebsocketManager((streamData) => messageHandler(streamData));
     await websocketManager.initializeConnection(whiteboard, authToken);
     print("conecting...");
   }
@@ -162,7 +163,7 @@ class WebsocketConnection {
     if (message.startsWith(r"scribble-add#")) {
       WSScribbleAdd json = WSScribbleAdd.fromJson(
           jsonDecode(message.replaceFirst(r"scribble-add#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       Scribble newScribble = Scribble(
           json.uuid,
           json.strokeWidth,
@@ -176,7 +177,7 @@ class WebsocketConnection {
     } else if (message.startsWith(r"scribble-update#")) {
       WSScribbleUpdate json = WSScribbleUpdate.fromJson(
           jsonDecode(message.replaceFirst(r"scribble-update#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       Scribble newScribble = Scribble(
           json.uuid,
           json.strokeWidth,
@@ -190,23 +191,29 @@ class WebsocketConnection {
     } else if (message.startsWith(r"scribble-delete#")) {
       WSScribbleDelete json = WSScribbleDelete.fromJson(
           jsonDecode(message.replaceFirst(r"scribble-delete#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       onScribbleDelete(json.uuid);
     } else if (message.startsWith(r"upload-add#")) {
       print("Upload add");
       WSUploadAdd json = WSUploadAdd.fromJson(
           jsonDecode(message.replaceFirst(r"upload-add#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       Uint8List uint8list = Uint8List.fromList(json.imageData);
       ui.decodeImageFromList(uint8list, (image) {
-        Upload newUpload = Upload(json.uuid, UploadType.values[json.uploadType],
-            uint8list, new Offset(json.offsetDx, json.offsetDy), json.rotation, json.scale, image);
+        Upload newUpload = Upload(
+            json.uuid,
+            UploadType.values[json.uploadType],
+            uint8list,
+            new Offset(json.offsetDx, json.offsetDy),
+            json.rotation,
+            json.scale,
+            image);
         onUploadAdd(newUpload);
       });
     } else if (message.startsWith(r"upload-update#")) {
       WSUploadUpdate json = WSUploadUpdate.fromJson(
           jsonDecode(message.replaceFirst(r"upload-update#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       onUploadUpdate(new Upload(
           json.uuid,
           UploadType.Image,
@@ -218,22 +225,22 @@ class WebsocketConnection {
     } else if (message.startsWith(r"upload-image-data-update#")) {
       WSUploadImageDataUpdate json = WSUploadImageDataUpdate.fromJson(
           jsonDecode(message.replaceFirst(r"upload-image-data-update#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       Uint8List uint8list = Uint8List.fromList(json.imageData);
       ui.decodeImageFromList(uint8list, (image) {
-        Upload newUpload =
-        Upload(json.uuid, UploadType.Image, uint8list, Offset.zero, 0, 1, image);
+        Upload newUpload = Upload(
+            json.uuid, UploadType.Image, uint8list, Offset.zero, 0, 1, image);
         onUploadImageDataUpdate(newUpload);
       });
     } else if (message.startsWith(r"upload-delete#")) {
       WSUploadDelete json = WSUploadDelete.fromJson(
           jsonDecode(message.replaceFirst(r"upload-delete#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       onUploadDelete(json.uuid);
     } else if (message.startsWith(r"textitem-add#")) {
       WSTextItemAdd json = WSTextItemAdd.fromJson(
           jsonDecode(message.replaceFirst(r"textitem-add#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       onTextItemAdd(new TextItem(
           json.uuid,
           false,
@@ -247,7 +254,7 @@ class WebsocketConnection {
     } else if (message.startsWith(r"textitem-update#")) {
       WSTextItemUpdate json = WSTextItemUpdate.fromJson(
           jsonDecode(message.replaceFirst(r"textitem-update#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       onTextItemUpdate(new TextItem(
           json.uuid,
           false,
@@ -261,32 +268,39 @@ class WebsocketConnection {
     } else if (message.startsWith(r"user-join#")) {
       String newMessage = message.replaceFirst(r"user-join#", "");
       List<String> arguments = newMessage.split("#");
-      onUserJoin(new ConnectedUser(arguments[0], arguments[1], _randomColor.randomColor(), Offset.zero, Offset.zero, 1));
-    }else if (message.startsWith(r"user-move#")) {
+      if(arguments[0] != id) {
+        onUserJoin(new ConnectedUser(arguments[0], arguments[1],
+            _randomColor.randomColor(), Offset.zero, Offset.zero, 1));
+      }
+    } else if (message.startsWith(r"user-move#")) {
       WSUserMove json = WSUserMove.fromJson(
           jsonDecode(message.replaceFirst(r"user-move#", ""))
-          as Map<String, dynamic>);
-      onUserMove(new ConnectedUserMove(json.uuid, new Offset(json.offsetDx, json.offsetDy), json.scale));
-    }else if (message.startsWith(r"user-cursor-move#")) {
+              as Map<String, dynamic>);
+      onUserMove(new ConnectedUserMove(
+          json.uuid, new Offset(json.offsetDx, json.offsetDy), json.scale));
+    } else if (message.startsWith(r"user-cursor-move#")) {
       WSUserCursorMove json = WSUserCursorMove.fromJson(
           jsonDecode(message.replaceFirst(r"user-cursor-move#", ""))
-          as Map<String, dynamic>);
-      onUserCursorMove(new ConnectedUserCursorMove(json.uuid, new Offset(json.offsetDx, json.offsetDy)));
+              as Map<String, dynamic>);
+      onUserCursorMove(new ConnectedUserCursorMove(
+          json.uuid, new Offset(json.offsetDx, json.offsetDy)));
     } else if (message.startsWith(r"bookmark-add#")) {
       print("On r bookmark add");
       WSBookmarkAdd json = WSBookmarkAdd.fromJson(
           jsonDecode(message.replaceFirst(r"bookmark-add#", ""))
-          as Map<String, dynamic>);
-      onBookmarkAdd(new Bookmark(json.uuid, json.name, new Offset(json.offsetDx, json.offsetDy), json.scale));
-    }else if (message.startsWith(r"bookmark-update#")) {
+              as Map<String, dynamic>);
+      onBookmarkAdd(new Bookmark(json.uuid, json.name,
+          new Offset(json.offsetDx, json.offsetDy), json.scale));
+    } else if (message.startsWith(r"bookmark-update#")) {
       WSBookmarkUpdate json = WSBookmarkUpdate.fromJson(
           jsonDecode(message.replaceFirst(r"bookmark-update#", ""))
-          as Map<String, dynamic>);
-      onBookmarkUpdate(new Bookmark(json.uuid, json.name, new Offset(json.offsetDx, json.offsetDy), json.scale));
-    }else if (message.startsWith(r"bookmark-delete#")) {
+              as Map<String, dynamic>);
+      onBookmarkUpdate(new Bookmark(json.uuid, json.name,
+          new Offset(json.offsetDx, json.offsetDy), json.scale));
+    } else if (message.startsWith(r"bookmark-delete#")) {
       WSBookmarkDelete json = WSBookmarkDelete.fromJson(
           jsonDecode(message.replaceFirst(r"bookmark-delete#", ""))
-          as Map<String, dynamic>);
+              as Map<String, dynamic>);
       onBookmarkDelete(json.uuid);
     }
   }
@@ -294,5 +308,4 @@ class WebsocketConnection {
   sendDataToChannel(String key, String data) {
     websocketManager.sendDataToChannel(key, data);
   }
-
 }

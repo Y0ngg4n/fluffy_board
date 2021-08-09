@@ -22,7 +22,7 @@ class WebDavManager {
       webDavURL,
       user: webDavUsername,
       password: webDavPassword,
-      debug: true,
+      debug: false,
     );
     // Set the public request headers
     client.setHeaders({'accept-charset': 'utf-8'});
