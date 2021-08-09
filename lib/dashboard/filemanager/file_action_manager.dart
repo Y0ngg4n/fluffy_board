@@ -72,6 +72,7 @@ class FileActionManager {
                           child: Icon(Icons.folder_open_outlined,
                               size: fileIconSize),
                           onTap: () {
+                            if(_refreshController.isRefresh) return;
                             onDirectorySwitch(directory);
 
                             _refreshController.requestRefresh();

@@ -105,6 +105,12 @@ class _FileManagerIntroductionState extends State<FileManagerIntroduction>
 
   @override
   Widget build(BuildContext context) {
+    FocusScopeNode currentFocus = FocusScope.of(context);
+
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
+
     return IntroductionScreen(
       pages: pages,
       onDone: () async{
