@@ -363,6 +363,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
               widget.websocketConnection);
           widget.onDontFollow();
           break;
+        case SelectedTool.text:
+          break;
         case SelectedTool.background:
           break;
         case SelectedTool.eraser:
@@ -386,7 +388,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 .toList();
             try {
               listOfPoints = listOfPoints.smooth(listOfPoints.length * 5);
-            }catch (e){
+            } catch (e) {
               print("Could not smooth points");
             }
             for (int p = 0; p < listOfPoints.length; p++) {

@@ -352,8 +352,6 @@ class PainterUtils {
       Offset newOffset = textItem.offset + offset;
       Offset middlePoint = new Offset((newOffset.dx + (textPainter.width / 2)),
           (newOffset.dy + (textPainter.height / 2)));
-      canvas.drawCircle(middlePoint, 10, new Paint()..color = Colors.green);
-      canvas.drawCircle(newOffset, 10, new Paint()..color = Colors.red);
       canvas.translate(middlePoint.dx, middlePoint.dy);
       canvas.rotate(vectormath.radians(textItem.rotation));
       textPainter.paint(

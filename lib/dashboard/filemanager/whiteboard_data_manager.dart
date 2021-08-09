@@ -145,6 +145,25 @@ class WhiteboardDataManager {
       _refreshController.refreshFailed();
   }
 
+  static Future<Directories> getAllDirectories(String authToken) async{
+    http.Response dirResponse = await http.post(
+        Uri.parse((settingsStorage.getItem("REST_API_URL") ??
+            dotenv.env['REST_API_URL']!) +
+            "/filemanager/directory/get-all"),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json",
+          "charset": "utf-8",
+          'Authorization': 'Bearer ' + authToken,
+        },
+        body: jsonEncode({
+        }));
+    Directories _directories =
+    Directories.fromJson(jsonDecode(utf8.decode((dirResponse.bodyBytes))));
+    return _directories;
+  }
+
+
   static Future<Set<String>> getOfflineWhiteboardIds() async {
     await fileManagerStorageIndex.ready;
     Set<String> offlineWhiteboardIds = Set.of([]);
