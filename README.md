@@ -13,6 +13,9 @@
 <p align="center">
   <img src="https://img.shields.io/docker/cloud/automated/yonggan/fluffy_board-web" alt="Docker Cloud Automated build" heigt="50">
   <img src="https://img.shields.io/docker/cloud/build/yonggan/fluffy_board-web" alt="Docker Cloud Build Status" heigt="50">
+  <img alt="GitHub tag (latest SemVer)" src="https://img.shields.io/github/v/tag/Y0ngg4n/fluffy_board" height="50">
+  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/Y0ngg4n/fluffy_board" height="50">
+  <img alt="GitHub" src="https://img.shields.io/github/license/Y0ngg4n/fluffy_board">
 </p>
 
 <h2>Table of Contents</h2>
