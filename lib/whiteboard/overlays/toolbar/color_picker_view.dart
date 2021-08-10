@@ -34,7 +34,7 @@ class ColorPickerView extends StatefulWidget {
 class _ColorPickerViewState extends State<ColorPickerView> {
   @override
   Widget build(BuildContext context) {
-    const _borderRadius = 50.0;
+    const _borderRadius = 25.0;
 
     num colorPickerWidth = ScreenUtils.getScreenWidth(context) < 700
         ? ScreenUtils.getScreenWidth(context) / 2
