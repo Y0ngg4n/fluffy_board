@@ -16,6 +16,7 @@
   <img alt="GitHub tag (latest SemVer)" src="https://img.shields.io/github/v/tag/Y0ngg4n/fluffy_board" heigt="50">
   <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/Y0ngg4n/fluffy_board" heigt="50">
   <img alt="GitHub" src="https://img.shields.io/github/license/Y0ngg4n/fluffy_board" heigt="50">
+  <a href="https://github.com/Y0ngg4n/fluffy_board/actions/workflows/dockerhub.yaml"><img alt="Push to Dockerhub" src="https://github.com/Y0ngg4n/fluffy_board/actions/workflows/dockerhub.yaml/badge.svg"/></a>
 </p>
 
 <h2>Table of Contents</h2>
