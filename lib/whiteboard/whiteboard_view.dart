@@ -451,7 +451,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           ? widget.extWhiteboard == null
               ? widget.offlineWhiteboard!.name
               : widget.extWhiteboard!.name
-          : widget.whiteboard!.name);
+          : widget.whiteboard!.name, context);
     }
 
     Widget toolbar = (widget.whiteboard != null ||
@@ -561,6 +561,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           ),
           toolbar,
           ZoomView(
+            toolbarOptions: toolbarOptions!,
             toolbarLocation: toolbarLocation,
             zoomOptions: zoomOptions,
             offset: offset,

@@ -183,6 +183,7 @@ class _FigureToolbarState extends State<FigureToolbar> {
                 },
               ),
               ToggleButtons(
+                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(50), bottomRight: Radius.circular(50)),
                 isSelected: selectedPaintingStyle,
                 direction: widget.axis,
                 children: [
