@@ -11,7 +11,7 @@
   <key>provisioningProfiles</key>
 	<dict>
 		<key>pro.oblivioncoding.fluffyboard</key>
-		<string>pro.oblivioncoding.fluffy_board</string>
+		<string>pro.oblivioncoding.fluffyboard</string>
 	</dict>
 </dict>
 </plist>
