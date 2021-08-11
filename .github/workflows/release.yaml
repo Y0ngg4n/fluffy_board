@@ -148,7 +148,7 @@ jobs:
         run: xcodebuild -resolvePackageDependencies -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release
       - name: Build xArchive
         run: |
-          xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release DEVELOPMENT_TEAM=Y26953UNR3 -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive PROVISIONING_PROFILE=d2f1f96e-2553-4fe5-9e77-28f6e4d2f428 clean archive CODE_SIGN_IDENTITY="OblivionCoding"
+          xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release DEVELOPMENT_TEAM=Y26953UNR3 -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive PROVISIONING_PROFILE=d2f1f96e-2553-4fe5-9e77-28f6e4d2f428 clean archive CODE_SIGN_IDENTITY="Andre Schle"
       - name: Export ipa
         run: xcodebuild -exportArchive -archivePath build-output/app.xcarchive -exportPath build-output/ios -exportOptionsPlist ios/ExportOptions.plist
       - name: Publish iOS Artefacts
