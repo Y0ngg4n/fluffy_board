@@ -73,6 +73,23 @@ platform :android do
     skip_upload_changelogs: true,
     aab: "build/app/outputs/bundle/release/app-release.aab"
     )
+
+    desc "Submit a new Beta Build to Crashlytics Beta"
+    lane :betaios do
+      apply_new_version
+      version_code = read_code
+      deliver download_screenshots
+      deliver(
+        build_number: '830',
+        download_screenshots: true,
+        download_metadata: true,
+        submit_for_review: true,
+        automatic_release: true,
+        force: true, # Skip HTMl report verification
+        ipa: "build-output/ios/Fluffyboard.ipa"
+      )
+
+
   
     # sh "your_script.sh"
     # You can also use other beta testing services here

@@ -113,7 +113,6 @@ jobs:
 
   ios:
     runs-on: macos-latest
-
     steps:
       - uses: actions/checkout@v2
       - uses: maxim-lobanov/setup-xcode@v1
@@ -151,11 +150,24 @@ jobs:
           xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release DEVELOPMENT_TEAM=Y26953UNR3 -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive PROVISIONING_PROFILE=d2f1f96e-2553-4fe5-9e77-28f6e4d2f428 clean archive CODE_SIGN_IDENTITY="iPhone Distribution: Andre Schle (Y26953UNR3)"
       - name: Export ipa
         run: xcodebuild -exportArchive -archivePath build-output/app.xcarchive -exportPath build-output/ios -exportOptionsPlist ios/ExportOptions.plist
+      - uses: papeloto/action-zip@v1
+        with:
+          files: build-output/ios
+          dest: Fluffyboard-ios.zip
       - name: Publish iOS Artefacts
         uses: actions/upload-artifact@v1
         with:
           name: release-ios
-          path: build-output/ios
+          path: Fluffyboard-ios.zip
+      - name: Upload with Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7.2'
+      - name: Deployment with Fastlane
+        run: |
+          bundle install
+          bundle exec fastlane update_plugins
+          bundle exec fastlane betaios
 
 
 
@@ -164,7 +176,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: [version, windows, linux, web, mac]
+    needs: [version, windows, linux, web, mac, ios]
     steps:
       - uses: actions/download-artifact@v2
         with:
@@ -190,6 +202,10 @@ jobs:
         with:
           name: Fluffyboard-mac
           path: mac/Fluffyboard-mac.zip
+      - uses: actions/download-artifact@v2
+        with:
+          name: release-ios
+          path: ios/Fluffyboard-ios.zip
       - run: |
           chmod 755 mac/Fluffyboard-mac.zip
       - run: |
@@ -208,3 +224,4 @@ jobs:
             linux/Fluffyboard-linux.zip
             web/Fluffyboard-web.zip
             mac/Fluffyboard-mac.zip
+            ios/Fluffyboard-ios.zip
