@@ -143,8 +143,7 @@ jobs:
         run: flutter build ios --release --no-codesign
       - run: |
           ls ios/
-          ls ios/Flutter
-          ls ios/Runner
+          cat Podfile
       - name: Build resolve Swift dependencies
         run: xcodebuild -resolvePackageDependencies -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release
       - name: Build xArchive
