@@ -159,6 +159,11 @@ jobs:
         with:
           name: release-ios
           path: Fluffyboard-ios.zip
+      - name: Get the Api Key
+        env:
+          IOS_API_KEY: ${{ secrets.IOS_API_KEY }}
+        run: |
+          echo -n "$IOS_API_KEY" | base64 --decode --output fastlane/api-key.p8
       - name: Upload with Fastlane
         uses: ruby/setup-ruby@v1
         with:
