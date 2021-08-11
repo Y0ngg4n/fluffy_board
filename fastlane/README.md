@@ -69,6 +69,25 @@ fastlane android tag_commit
 
 ----
 
+## iOS
+### ios read_version
+```
+fastlane ios read_version
+```
+
+### ios read_code
+```
+fastlane ios read_code
+```
+
+### ios betaios
+```
+fastlane ios betaios
+```
+Submit a new Beta Build to Crashlytics Beta
+
+----
+
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
 More information about fastlane can be found on [fastlane.tools](https://fastlane.tools).
 The documentation of fastlane can be found on [docs.fastlane.tools](https://docs.fastlane.tools).

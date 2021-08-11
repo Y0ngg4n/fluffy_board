@@ -172,7 +172,7 @@ jobs:
         run: |
           bundle install
           bundle exec fastlane update_plugins
-          bundle exec fastlane betaios
+          bundle exec fastlane ios beta
 
 
 
