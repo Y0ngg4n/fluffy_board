@@ -28,7 +28,8 @@ class WebsocketManagerHtml implements WebsocketManager {
 
   @override
   sendDataToChannel(String key, String data) {
-    if (!disconnect) channel!.sendString(key + data);
+    if (channel != null) channel!.sendString(key + data);
+    else print("Channel is null");
   }
 
   @override

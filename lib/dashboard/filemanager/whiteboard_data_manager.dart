@@ -41,8 +41,8 @@ class WhiteboardDataManager {
       OfflineWhiteboards offlineWhiteboards,
       OnGotDirectoriesAndWhiteboards onGotDirectoriesAndWhiteboards) async {
     Set<String> _offlineWhiteboardIds = await getOfflineWhiteboardIds();
-    OfflineWhiteboards _offlineWhiteboards = await getOfflineWhiteboards(
-        _offlineWhiteboardIds, currentDirectory);
+    OfflineWhiteboards _offlineWhiteboards =
+        await getOfflineWhiteboards(_offlineWhiteboardIds, currentDirectory);
     Directories offlineDirectories = getOfflineDirectories(currentDirectory);
     if (!online) {
       directories = offlineDirectories;
@@ -129,7 +129,8 @@ class WhiteboardDataManager {
         Whiteboards.fromJson(jsonDecode(utf8.decode((wbResponse.bodyBytes))));
     ExtWhiteboards _extWhiteboards = ExtWhiteboards.fromJson(
         jsonDecode(utf8.decode((wbExtResponse.bodyBytes))));
-    await fileManagerStorage.setItem("_directories", _directories.toJSONEncodable());
+    await fileManagerStorage.setItem(
+        "_directories", _directories.toJSONEncodable());
 
     directories = _directories;
     whiteboards = _whiteboards;
@@ -143,6 +144,25 @@ class WhiteboardDataManager {
     else
       _refreshController.refreshFailed();
   }
+
+  static Future<Directories> getAllDirectories(String authToken) async{
+    http.Response dirResponse = await http.post(
+        Uri.parse((settingsStorage.getItem("REST_API_URL") ??
+            dotenv.env['REST_API_URL']!) +
+            "/filemanager/directory/get-all"),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json",
+          "charset": "utf-8",
+          'Authorization': 'Bearer ' + authToken,
+        },
+        body: jsonEncode({
+        }));
+    Directories _directories =
+    Directories.fromJson(jsonDecode(utf8.decode((dirResponse.bodyBytes))));
+    return _directories;
+  }
+
 
   static Future<Set<String>> getOfflineWhiteboardIds() async {
     await fileManagerStorageIndex.ready;
@@ -159,8 +179,7 @@ class WhiteboardDataManager {
   }
 
   static Future<OfflineWhiteboards> getOfflineWhiteboards(
-      Set<String> offlineWhiteboardIds,
-      String currentDirectory) async {
+      Set<String> offlineWhiteboardIds, String currentDirectory) async {
     await fileManagerStorage.ready;
     List<OfflineWhiteboard> _offlineWhiteboards = List.empty(growable: true);
     for (String id in offlineWhiteboardIds) {
@@ -183,6 +202,32 @@ class WhiteboardDataManager {
             offlineWhiteboard.directory == currentDirectory) {
           _offlineWhiteboards.add(offlineWhiteboard);
         }
+      }
+    }
+    return (new OfflineWhiteboards(_offlineWhiteboards));
+  }
+
+  static Future<OfflineWhiteboards> getAllOfflineWhiteboards(
+      Set<String> offlineWhiteboardIds) async {
+    await fileManagerStorage.ready;
+    List<OfflineWhiteboard> _offlineWhiteboards = List.empty(growable: true);
+    for (String id in offlineWhiteboardIds) {
+      Map<String, dynamic>? json =
+          fileManagerStorage.getItem("offline_whiteboard-" + id) ?? [];
+      if (json != null) {
+        OfflineWhiteboard offlineWhiteboard =
+            await OfflineWhiteboard.fromJson(json);
+        for (Scribble scribble in offlineWhiteboard.scribbles.list) {
+          ScreenUtils.calculateScribbleBounds(scribble);
+          ScreenUtils.bakeScribble(scribble, 1);
+        }
+        for (Upload upload in offlineWhiteboard.uploads.list) {
+          final ui.Codec codec = await PaintingBinding.instance!
+              .instantiateImageCodec(upload.uint8List);
+          final ui.FrameInfo frameInfo = await codec.getNextFrame();
+          upload.image = frameInfo.image;
+        }
+        _offlineWhiteboards.add(offlineWhiteboard);
       }
     }
     return (new OfflineWhiteboards(_offlineWhiteboards));
@@ -314,8 +359,7 @@ class WhiteboardDataManager {
             decodeGetTextItem.maxHeight,
             HexColor.fromHex(decodeGetTextItem.color),
             decodeGetTextItem.contentText,
-            new Offset(
-                decodeGetTextItem.offsetDx, decodeGetTextItem.offsetDy),
+            new Offset(decodeGetTextItem.offsetDx, decodeGetTextItem.offsetDy),
             decodeGetTextItem.rotation));
       }
     }
@@ -343,8 +387,7 @@ class WhiteboardDataManager {
         bookmarks.add(new Bookmark(
             decodeGetBookmark.uuid,
             decodeGetBookmark.name,
-            new Offset(
-                decodeGetBookmark.offsetDx, decodeGetBookmark.offsetDy),
+            new Offset(decodeGetBookmark.offsetDx, decodeGetBookmark.offsetDy),
             decodeGetBookmark.scale));
       }
     }

@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import 'filemanager/web_dav_manager.dart';
+
 class WebDavSettings extends StatefulWidget {
   @override
   _WebDavSettingsState createState() => _WebDavSettingsState();
@@ -140,7 +142,8 @@ class _WebDavSettingsFormState extends State<WebDavSettingsForm> {
                       Navigator.pop(context);
                     }
                   },
-                  child: Text(AppLocalizations.of(context)!.changeWebDavSync)))
+                  child: Text(AppLocalizations.of(context)!.changeWebDavSync))),
+          ElevatedButton(onPressed: () {WebDavManager.restoreFromWebDav();}, child: Text("Restore"))
         ])));
   }
 }

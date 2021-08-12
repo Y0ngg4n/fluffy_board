@@ -10,6 +10,7 @@ import '../avatar_icon.dart';
 import 'file_action_manager.dart';
 import 'file_manager_types.dart';
 import 'whiteboard_data_manager.dart';
+import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 
 class FileManager extends StatefulWidget {
   final String authToken;
@@ -124,7 +125,7 @@ class _FileManagerState extends State<FileManager> {
               ),
             ],
           ),
-          actions: [AvatarIcon(widget.online)]),
+          actions: [EasyDynamicThemeBtn(), AvatarIcon(widget.online)]),
       body: Container(
           child: Column(children: [
         Padding(
@@ -173,7 +174,11 @@ class _FileManagerState extends State<FileManager> {
                     });
                   });
                   if (widget.online)
-                    WebDavManager.startAutomatedUpload(offlineWhiteboards);
+                    WebDavManager.startAutomatedUpload(
+                        await WhiteboardDataManager.getAllOfflineWhiteboards(
+                            this.offlineWhiteboardIds),
+                      await WhiteboardDataManager.getAllDirectories(widget.authToken)
+                    );
                 },
                 child: GridView.extent(
                   maxCrossAxisExtent: 200,

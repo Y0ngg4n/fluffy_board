@@ -34,17 +34,27 @@ class ColorPickerView extends StatefulWidget {
 class _ColorPickerViewState extends State<ColorPickerView> {
   @override
   Widget build(BuildContext context) {
-    const _borderRadius = 50.0;
+    const _borderRadius = 25.0;
+
+    num colorPickerWidth = ScreenUtils.getScreenWidth(context) < 700
+        ? ScreenUtils.getScreenWidth(context) / 2
+        : 500;
+
+     num colorPickerHeight=  ScreenUtils.getScreenHeight(context) < 700
+        ? ScreenUtils.getScreenHeight(context) / 2
+        : 500;
+
+     num colorPickerItemSize = ScreenUtils.getScreenWidth(context) < 700 ||
+         ScreenUtils.getScreenHeight(context) < 500
+         ? 25
+         : 40;
+
     DrawOptions? drawOptions = _getDrawOptions();
     return (Padding(
         padding: const EdgeInsets.fromLTRB(0, 24, 0, 24),
         child: SizedBox(
-          width: ScreenUtils.getScreenWidth(context) < 600
-              ? ScreenUtils.getScreenWidth(context)
-              : 500,
-          height: ScreenUtils.getScreenHeight(context) < 600
-              ? ScreenUtils.getScreenHeight(context)
-              : 500,
+          width:  colorPickerWidth.toDouble(),
+          height: colorPickerHeight.toDouble(),
           child: Card(
             elevation: 20,
             shape: RoundedRectangleBorder(
@@ -60,14 +70,8 @@ class _ColorPickerViewState extends State<ColorPickerView> {
                         : widget.selectedSettingsScribble!.color
                     : drawOptions.colorPresets[drawOptions.currentColor],
                 // Update the screenPickerColor using the callback.
-                width: ScreenUtils.getScreenWidth(context) < 700 ||
-                        ScreenUtils.getScreenHeight(context) < 500
-                    ? 15
-                    : 40,
-                height: ScreenUtils.getScreenWidth(context) < 700 ||
-                        ScreenUtils.getScreenHeight(context) < 500
-                    ? 15
-                    : 40,
+                width: colorPickerItemSize.toDouble(),
+                height: colorPickerItemSize.toDouble(),
                 onColorChanged: (Color color) => {
                   setState(() {
                     if (drawOptions == null) {

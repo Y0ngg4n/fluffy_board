@@ -41,6 +41,8 @@ class InfiniteCanvasPage extends StatefulWidget {
   final OnOffsetChange onOffsetChange;
   final OnChangedToolbarOptions onChangedToolbarOptions;
   final OnScribblesChange onScribblesChange;
+  final OnUploadsChange onUploadsChange;
+  final OnTextItemsChange onTextItemsChange;
   final WebsocketConnection? websocketConnection;
   final String authToken;
   final String id;
@@ -62,6 +64,8 @@ class InfiniteCanvasPage extends StatefulWidget {
       required this.texts,
       required this.scribbles,
       required this.onScribblesChange,
+      required this.onUploadsChange,
+      required this.onTextItemsChange,
       required this.websocketConnection,
       required this.authToken,
       required this.id,
@@ -90,6 +94,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
   Offset multiSelectStartPosition = Offset.zero;
   Offset multiSelectStopPosition = Offset.zero;
   Map<Scribble, List<DrawPoint>> selectedMultiScribblesOffsets = new Map();
+  List<Upload> selectedMultiUploads = [];
+  List<TextItem> selectedMultiTextItems = [];
   List<Scribble> selectedMultiScribbles = [];
   Offset multiSelectMoveOffset = Offset.zero;
   Offset? hoverPosition;
@@ -357,6 +363,8 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
               widget.websocketConnection);
           widget.onDontFollow();
           break;
+        case SelectedTool.text:
+          break;
         case SelectedTool.background:
           break;
         case SelectedTool.eraser:
@@ -378,7 +386,11 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
             List<Point> listOfPoints = widget.scribbles[i].points
                 .map((e) => Point(e.dx, e.dy))
                 .toList();
-            listOfPoints = listOfPoints.smooth(listOfPoints.length * 5);
+            try {
+              listOfPoints = listOfPoints.smooth(listOfPoints.length * 5);
+            } catch (e) {
+              print("Could not smooth points");
+            }
             for (int p = 0; p < listOfPoints.length; p++) {
               Point newDrawPoint = listOfPoints[p];
               if (ScreenUtils.inCircle(
@@ -485,7 +497,14 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                 }
                 scribble.points = newPoints;
               }
+              // for (Upload upload in selectedMultiUploads) {
+              //   upload.offset = (newOffset - multiSelectMoveOffset);
+              // }
+              // for (TextItem textItem in selectedMultiTextItems) {
+              //   textItem.offset = (newOffset - multiSelectMoveOffset);
+              // }
               widget.onScribblesChange(widget.scribbles);
+              // widget.onUploadsChange(widget.uploads);
             }
           }
           widget.onChangedToolbarOptions(widget.toolbarOptions);
@@ -546,6 +565,35 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
             ScreenUtils.bakeScribble(scribble, widget.zoomOptions.scale);
             WebsocketSend.sendScribbleUpdate(
                 scribble, widget.websocketConnection);
+          }
+        }
+        for (Upload upload in widget.uploads) {
+          if (multiSelect && !multiSelectMove) {
+            if (ScreenUtils.inRect(
+                Rect.fromPoints(
+                    multiSelectStartPosition, multiSelectStopPosition),
+                upload.offset)) {
+              selectedMultiUploads.add(upload);
+              continue;
+            }
+          }
+          if (multiSelectMove) {
+            WebsocketSend.sendUploadUpdate(upload, widget.websocketConnection);
+          }
+        }
+        for (TextItem textItem in widget.texts) {
+          if (multiSelect && !multiSelectMove) {
+            if (ScreenUtils.inRect(
+                Rect.fromPoints(
+                    multiSelectStartPosition, multiSelectStopPosition),
+                textItem.offset)) {
+              selectedMultiTextItems.add(textItem);
+              continue;
+            }
+          }
+          if (multiSelectMove) {
+            WebsocketSend.sendUpdateTextItem(
+                textItem, widget.websocketConnection);
           }
         }
       }

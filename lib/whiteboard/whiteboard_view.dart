@@ -71,6 +71,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
     if (widget.offlineWhiteboard == null && widget.online) {
       try {
         websocketConnection = WebsocketConnection.getInstance(
+          id: widget.id,
           whiteboard: widget.whiteboard == null
               ? widget.extWhiteboard!.original
               : widget.whiteboard!.id,
@@ -450,7 +451,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           ? widget.extWhiteboard == null
               ? widget.offlineWhiteboard!.name
               : widget.extWhiteboard!.name
-          : widget.whiteboard!.name);
+          : widget.whiteboard!.name, context);
     }
 
     Widget toolbar = (widget.whiteboard != null ||
@@ -513,6 +514,16 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                   this.scribbles = scribbles;
                 });
               },
+              onUploadsChange: (uploads) {
+                setState(() {
+                  this.uploads = uploads;
+                });
+              },
+              onTextItemsChange: (textItems) {
+                setState(() {
+                  this.texts = textItems;
+                });
+              },
               onChangedZoomOptions: (zoomOptions) {
                 setState(() {
                   this.zoomOptions = zoomOptions;
@@ -550,6 +561,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           ),
           toolbar,
           ZoomView(
+            toolbarOptions: toolbarOptions!,
             toolbarLocation: toolbarLocation,
             zoomOptions: zoomOptions,
             offset: offset,
@@ -653,7 +665,6 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   }
 
   saveOfflineWhiteboard() async {
-    print("Offset" + offset.toString());
     if (widget.offlineWhiteboard == null) return;
     await fileManagerStorage.setItem(
         "offline_whiteboard-" + widget.offlineWhiteboard!.uuid,

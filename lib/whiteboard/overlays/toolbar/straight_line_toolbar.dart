@@ -121,6 +121,7 @@ class _StraightLineToolbarState extends State<StraightLineToolbar> {
                 },
               ),
               ToggleButtons(
+                  borderRadius: BorderRadius.only(bottomLeft: Radius.circular(50), bottomRight: Radius.circular(50)),
                   onPressed: (index) {
                     setState(() {
                       widget.toolbarOptions.straightLineOptions.currentColor =

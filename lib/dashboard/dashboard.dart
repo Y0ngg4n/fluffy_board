@@ -5,12 +5,14 @@ import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 
 class Dashboard extends StatefulWidget {
   @override
   _DashboardState createState() => _DashboardState();
 
-  static Widget loading(String name) {
+  static Widget loading(String name, BuildContext context) {
+    bool isDarkModeOn = Theme.of(context).brightness == Brightness.dark;
     return (Scaffold(
       appBar: AppBar(
         title: Text(name),
@@ -19,7 +21,10 @@ class Dashboard extends StatefulWidget {
           child: SingleChildScrollView(
         child: Column(
           children: [
-            Image.asset(
+            isDarkModeOn ? Image.asset(
+              "assets/images/FluffyBoardIconDark.png",
+              height: 300,
+            ) : Image.asset(
               "assets/images/FluffyBoardIcon.png",
               height: 300,
             ),
@@ -64,7 +69,7 @@ class _DashboardState extends State<Dashboard> {
     print(storageReady);
     print(introStorageReady);
     if ((!checkedLogin && !storageReady) || !introStorageReady)
-      return (Dashboard.loading(name));
+      return (Dashboard.loading(name, context));
     WidgetsBinding.instance!.addPostFrameCallback((_) => {
           print("PostframeCallBack"),
           if (checkedLogin && !loggedIn && online)
@@ -73,13 +78,13 @@ class _DashboardState extends State<Dashboard> {
               Navigator.of(context).pushReplacementNamed('/login')
             }
         });
-    if (!checkedLogin && !loggedIn && online) return (Dashboard.loading(name));
+    if (!checkedLogin && !loggedIn && online) return (Dashboard.loading(name, context));
     if (introStorage.getItem('read') == null) print("Switching to tutorial");
     SchedulerBinding.instance!.addPostFrameCallback((_) => {
           if (checkedLogin && !loggedIn && online)
             Navigator.of(context).pushNamed('/intro')
         });
-    if (introStorage.getItem('read') == null) return (Dashboard.loading(name));
+    if (introStorage.getItem('read') == null) return (Dashboard.loading(name, context));
 
     return (FileManager(authToken, username, id, online));
   }
