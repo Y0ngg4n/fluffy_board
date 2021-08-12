@@ -3,12 +3,10 @@ on:
   push:
     branches:
       - master
-      - ci
       - 'releases/**'
   pull_request:
     branches:
       - master
-      - ci
       - 'releases/**'
 jobs:
   version:
@@ -159,25 +157,6 @@ jobs:
         with:
           name: release-ios
           path: Fluffyboard-ios.zip
-      - name: Get the Api Key
-        env:
-          IOS_API_KEY: ${{ secrets.IOS_API_KEY }}
-        run: |
-          echo -n "$IOS_API_KEY" | base64 --decode --output fastlane/api-key.p8
-      - name: Upload with Fastlane
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '2.7.2'
-      - name: Deployment with Fastlane
-        run: |
-          bundle install
-          bundle exec fastlane update_plugins
-          bundle exec fastlane ios beta
-
-
-
-
-
 
   release:
     runs-on: ubuntu-latest
