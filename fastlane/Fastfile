@@ -115,6 +115,7 @@ platform :ios do
     )
     deliver(
       api_key: api_key,
+      precheck_include_in_app_purchases: false,
       automatic_release: true,
       force: true, # Skip HTMl report verification
       ipa: "build-output/ios/Fluffyboard.ipa"
