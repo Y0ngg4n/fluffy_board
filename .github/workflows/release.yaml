@@ -147,7 +147,7 @@ jobs:
         run: xcodebuild -resolvePackageDependencies -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release
       - name: Build xArchive
         run: |
-          xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release DEVELOPMENT_TEAM=Y26953UNR3 -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive PROVISIONING_PROFILE=d2f1f96e-2553-4fe5-9e77-28f6e4d2f428 clean archive CODE_SIGN_IDENTITY="iPhone Distribution: Andre Schle (Y26953UNR3)"
+          xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release DEVELOPMENT_TEAM=Y26953UNR3 -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive PROVISIONING_PROFILE=b3e19150-67f0-45cb-a9cc-79cd874dce5e clean archive CODE_SIGN_IDENTITY="iPhone Distribution: Andre Schle (Y26953UNR3)"
       - name: Export ipa
         run: xcodebuild -exportArchive -archivePath build-output/app.xcarchive -exportPath build-output/ios -exportOptionsPlist ios/ExportOptions.plist
       - uses: papeloto/action-zip@v1
