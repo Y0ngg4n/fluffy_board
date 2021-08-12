@@ -47,5 +47,9 @@
       <string>https</string>
       <string>http</string>
     </array>
+
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>For importing Images into your Whiteboards</string>
+
 </dict>
 </plist>

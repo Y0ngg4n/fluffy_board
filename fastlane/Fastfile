@@ -63,7 +63,7 @@ platform :android do
   end
 
 
-  desc "Submit a new Beta Build to Crashlytics Beta"
+  desc "Submit a new Beta Build to Beta"
   lane :beta do
 #     gradle(task: "clean assembleRelease")
     apply_new_version
@@ -73,9 +73,6 @@ platform :android do
     skip_upload_changelogs: true,
     aab: "build/app/outputs/bundle/release/app-release.aab"
     )
-  
-    # sh "your_script.sh"
-    # You can also use other beta testing services here
   end
 
   desc "Deploy a new version to the Google Play"
@@ -89,4 +86,59 @@ platform :android do
         tag: "v" + flutter_version(pubspec_location: './pubspec.yaml')["version_name"]
       )
     end
+end
+
+platform :ios do
+  lane :read_version do
+    flutter_version_manager(
+      arguments: "-version",
+      yml: "version.yml",
+      pubspec: "pubspec.yaml")
+  end
+
+  lane :read_code do
+    flutter_version_manager(
+      arguments: "-code",
+      yml: "version.yml",
+      pubspec: "pubspec.yaml")
+  end
+
+  desc "Submit a new Beta Build to Beta"
+  lane :beta do
+    version_code = read_code
+    api_key = app_store_connect_api_key(
+        key_id: "78H6SWFQ92",
+        issuer_id: "d96d3565-facb-4c1f-9cf0-41828a2f5511",
+        key_filepath: "./fastlane/api-key.p8",
+        duration: 1200, # optional (maximum 1200)
+        in_house: false # optional but may be required if using match/sigh
+    )
+    deliver(
+      metadata_path: "./fastlane/metadata",
+      submission_information: {
+        add_id_info_serves_ads: false,
+        add_id_info_tracks_action: false,
+        add_id_info_tracks_install: false,
+        add_id_info_uses_idfa: false,
+        content_rights_has_rights: true,
+        content_rights_contains_third_party_content: true,
+        export_compliance_platform: 'ios',
+        export_compliance_compliance_required: false,
+        export_compliance_encryption_updated: false,
+        export_compliance_app_type: nil,
+        export_compliance_uses_encryption: false,
+        export_compliance_is_exempt: false,
+        export_compliance_contains_third_party_cryptography: false,
+        export_compliance_contains_proprietary_cryptography: false,
+        export_compliance_available_on_french_store: false
+      },
+      api_key: api_key,
+      precheck_include_in_app_purchases: false,
+      automatic_release: true,
+      submit_for_review: true,
+      force: true, # Skip HTMl report verification
+      ipa: "build-output/ios/Fluffyboard.ipa"
+    )
+  end
+
 end
