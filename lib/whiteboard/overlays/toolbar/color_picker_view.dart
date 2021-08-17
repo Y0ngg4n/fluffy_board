@@ -63,6 +63,7 @@ class _ColorPickerViewState extends State<ColorPickerView> {
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: ColorPicker(
+                enableOpacity: true,
                 // Use the screenPickerColor as start color.
                 color: drawOptions == null
                     ? widget.selectedSettingsScribble == null

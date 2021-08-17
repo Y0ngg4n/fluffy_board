@@ -5,3 +5,4 @@
 gem 'git'
 gem 'fastlane-plugin-flutter_version_manager'
 gem 'fastlane-plugin-flutter_version'
+gem 'fastlane-plugin-browserstack'

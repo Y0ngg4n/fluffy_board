@@ -11,6 +11,7 @@ enum SelectedFigureTypeToolbar {
   rect,
   triangle,
   circle,
+  highlighter
 }
 
 class FigureOptions extends DrawOptions {

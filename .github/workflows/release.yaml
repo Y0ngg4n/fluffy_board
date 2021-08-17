@@ -3,10 +3,12 @@ on:
   push:
     branches:
       - master
+      - ci
       - 'releases/**'
   pull_request:
     branches:
       - master
+      - ci
       - 'releases/**'
 jobs:
   version:

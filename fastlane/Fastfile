@@ -141,4 +141,13 @@ platform :ios do
     )
   end
 
+  desc "Upload to BrowserStack Applive"
+  lane browserstack: do
+    upload_to_browserstack_app_live(
+      browserstack_username: ENV["BROWSERSTACK_USERNAME"],
+      browserstack_access_key: ENV["BROWSERSTACK_ACCESS_KEY"],
+      file_path: "browserstack_android_sample/build/outputs/apk/debug/browserstack_android_sample-debug.apk"
+    )
+  end
+
 end

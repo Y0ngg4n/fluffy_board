@@ -142,7 +142,9 @@ class PainterUtils {
       ..strokeCap = scribble.strokeCap
       ..isAntiAlias = true
       ..color = scribble.color
-      ..strokeWidth = scribble.strokeWidth;
+      ..strokeWidth = scribble.strokeWidth
+      ..blendMode = BlendMode.src;
+
 
     Paint figurePaint = drawingPaint..style = scribble.paintingStyle;
     // canvas.save();
@@ -185,20 +187,10 @@ class PainterUtils {
               scribble.points.first + offset, distance, figurePaint);
           break;
         case SelectedFigureTypeToolbar.none:
-          // DEBUG: Draw Points
-          // canvas.drawPoints(PointMode.points, scribble.points, drawingPaint);
-          for (int x = 0; x < scribble.points.length - 1; x++) {
-            //drawing line between the points to form a continuous line
-            if (!scribble.points[x].empty && !scribble.points[x + 1].empty) {
-              canvas.drawLine(scribble.points[x] + offset,
-                  scribble.points[x + 1] + offset, drawingPaint);
-            }
-            //if next point is null, means the line ends here
-            // else if (!scribble.points[x].empty && scribble.points[x + 1].empty) {
-            //   canvas.drawPoints(
-            //       PointMode.points, [scribble.points[x] + offset], drawingPaint);
-            // }
-          }
+          drawAllPoints(scribble, canvas, offset, drawingPaint);
+          break;
+        case SelectedFigureTypeToolbar.highlighter:
+          drawAllPoints(scribble, canvas, offset, drawingPaint);
           break;
       }
       if (toolbarOptions != null &&
@@ -243,6 +235,16 @@ class PainterUtils {
       }
     }
     // canvas.restore();
+  }
+
+  static drawAllPoints(Scribble scribble, Canvas canvas, Offset offset, Paint drawingPaint){
+    for (int x = 0; x < scribble.points.length - 1; x++) {
+      //drawing line between the points to form a continuous line
+      if (!scribble.points[x].empty && !scribble.points[x + 1].empty) {
+        canvas.drawLine(scribble.points[x] + offset,
+            scribble.points[x + 1] + offset, drawingPaint);
+      }
+    }
   }
 
   static paintBackground(Canvas canvas, Toolbar.ToolbarOptions toolbarOptions,
