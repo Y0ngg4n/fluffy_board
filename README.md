@@ -6,9 +6,12 @@
 <p align="center">Test the <a href="https://fluffyboard.obco.pro/">demonstration</a> of Fluffyboard</p>
 
 <p align="center">
-  <a href='https://play.google.com/store/apps/details?id=pro.oblivioncoding.fluffy_board&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+  <a href='https://play.google.com/store/apps/details?id=pro.oblivioncoding.fluffy_board'>
     <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/ height="100">
-  </a>  
+  </a>
+  <a href='https://f-droid.org/packages/pro.oblivioncoding.fluffy_board/'>
+    <img alt='Get it on F-Droid' src='https://fdroid.gitlab.io/artwork/badge/get-it-on.png'/ height="100">
+  </a>
 </p>
 <p align="center">
   <img src="https://img.shields.io/docker/cloud/automated/yonggan/fluffy_board-web" alt="Docker Cloud Automated build" heigt="50">
