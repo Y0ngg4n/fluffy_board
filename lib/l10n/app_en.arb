@@ -72,5 +72,7 @@
   "webDavUsername": "Enter your WebDav Username",
   "webDavPassword": "Enter your WebDav Password",
   "webDavSyncInterval": "Sync Interval in minutes",
-  "changeWebDavSync": "Change WebDav sync server"
+  "changeWebDavSync": "Change WebDav sync server",
+  "showZoomPanel": "Show zoom panel",
+  "showMinimap": "Show minimap"
 }

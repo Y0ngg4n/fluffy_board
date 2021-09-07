@@ -406,6 +406,12 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                       } else if (value.toString() == "user-cursors") {
                         settingsStorage.setItem("user-cursors",
                             !(settingsStorage.getItem("user-cursors") ?? true));
+                      } else if (value.toString() == "zoom-panel") {
+                        settingsStorage.setItem("zoom-panel",
+                            !(settingsStorage.getItem("zoom-panel") ?? true));
+                      } else if (value.toString() == "minimap") {
+                        settingsStorage.setItem("minimap",
+                            !(settingsStorage.getItem("minimap") ?? true));
                       }
                     })
                   },
@@ -450,7 +456,16 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                             Text(AppLocalizations.of(context)!.displayCursors),
                         checked:
                             settingsStorage.getItem("user-cursors") ?? true,
-                        value: "user-cursors")
+                        value: "user-cursors"),
+                    CheckedPopupMenuItem(
+                        child:
+                            Text(AppLocalizations.of(context)!.showZoomPanel),
+                        checked: settingsStorage.getItem("zoom-panel") ?? true,
+                        value: "zoom-panel"),
+                    CheckedPopupMenuItem(
+                        child: Text(AppLocalizations.of(context)!.showMinimap),
+                        checked: settingsStorage.getItem("minimap") ?? true,
+                        value: "minimap")
                   ])
         ]);
 
@@ -570,42 +585,44 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             toolbarOptions: toolbarOptions!,
           ),
           toolbar,
-          ZoomView(
-            toolbarOptions: toolbarOptions!,
-            toolbarLocation: toolbarLocation,
-            zoomOptions: zoomOptions,
-            offset: offset,
-            onChangedZoomOptions: (zoomOptions) {
-              setState(() {
-                this.zoomOptions = zoomOptions;
-              });
-            },
-            onChangedOffset: (offset) {
-              setState(() {
-                this.offset = offset;
-                WebsocketSend.sendUserMove(
-                    offset, widget.id, zoomOptions.scale, websocketConnection);
-              });
-            },
-          ),
-          MinimapView(
-            toolbarOptions: toolbarOptions!,
-            offset: offset,
-            onChangedOffset: (offset) {
-              setState(() {
-                this.offset = offset;
-                WebsocketSend.sendUserMove(
-                    offset, widget.id, zoomOptions.scale, websocketConnection);
-              });
-            },
-            toolbarLocation: toolbarLocation,
-            texts: texts,
-            scribbles: scribbles,
-            scale: zoomOptions.scale,
-            uploads: uploads,
-            screenSize: Offset(ScreenUtils.getScreenWidth(context),
-                ScreenUtils.getScreenHeight(context)),
-          )
+          if (settingsStorage.getItem("zoom-panel") ?? true)
+            ZoomView(
+              toolbarOptions: toolbarOptions!,
+              toolbarLocation: toolbarLocation,
+              zoomOptions: zoomOptions,
+              offset: offset,
+              onChangedZoomOptions: (zoomOptions) {
+                setState(() {
+                  this.zoomOptions = zoomOptions;
+                });
+              },
+              onChangedOffset: (offset) {
+                setState(() {
+                  this.offset = offset;
+                  WebsocketSend.sendUserMove(offset, widget.id,
+                      zoomOptions.scale, websocketConnection);
+                });
+              },
+            ),
+          if (settingsStorage.getItem("minimap") ?? true)
+            MinimapView(
+              toolbarOptions: toolbarOptions!,
+              offset: offset,
+              onChangedOffset: (offset) {
+                setState(() {
+                  this.offset = offset;
+                  WebsocketSend.sendUserMove(offset, widget.id,
+                      zoomOptions.scale, websocketConnection);
+                });
+              },
+              toolbarLocation: toolbarLocation,
+              texts: texts,
+              scribbles: scribbles,
+              scale: zoomOptions.scale,
+              uploads: uploads,
+              screenSize: Offset(ScreenUtils.getScreenWidth(context),
+                  ScreenUtils.getScreenHeight(context)),
+            )
         ]));
   }
 
@@ -627,7 +644,6 @@ class _WhiteboardViewState extends State<WhiteboardView> {
     BackgroundOptions backgroundOptions =
         await GetToolbarOptions.getBackgroundOptions(
             widget.authToken, widget.online);
-    print("TextItem: " + textItemOptions.currentColor.toString());
     setState(() {
       toolbarOptions = new Toolbar.ToolbarOptions(
           Toolbar.SelectedTool.move,
