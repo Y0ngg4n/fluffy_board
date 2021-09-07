@@ -5,6 +5,7 @@ import 'package:fluffy_board/dashboard/filemanager/file_manager_types.dart';
 import 'package:fluffy_board/utils/export_utils.dart';
 import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/whiteboard/infinite_canvas.dart';
+import 'package:fluffy_board/whiteboard/overlays/minimap.dart';
 import 'package:fluffy_board/whiteboard/texts_canvas.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_manager_send.dart';
@@ -335,10 +336,15 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                     })
                   },
               itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.exportImage), value: 0),
-                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.exportPDF), value: 1),
                     PopupMenuItem(
-                        child: Text(AppLocalizations.of(context)!.exportScreenSizeImage),
+                        child: Text(AppLocalizations.of(context)!.exportImage),
+                        value: 0),
+                    PopupMenuItem(
+                        child: Text(AppLocalizations.of(context)!.exportPDF),
+                        value: 1),
+                    PopupMenuItem(
+                        child: Text(AppLocalizations.of(context)!
+                            .exportScreenSizeImage),
                         value: 2),
                   ],
               icon: Icon(Icons.import_export)),
@@ -417,7 +423,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                         checked: toolbarLocation == "top" ? true : false,
                         value: "location-top"),
                     CheckedPopupMenuItem(
-                        child: Text(AppLocalizations.of(context)!.bottomToolbar),
+                        child:
+                            Text(AppLocalizations.of(context)!.bottomToolbar),
                         checked: toolbarLocation == "bottom" ? true : false,
                         value: "location-bottom"),
                     PopupMenuDivider(),
@@ -439,7 +446,8 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                             settingsStorage.getItem("points-to-image") ?? true,
                         value: "points-to-image"),
                     CheckedPopupMenuItem(
-                        child: Text(AppLocalizations.of(context)!.displayCursors),
+                        child:
+                            Text(AppLocalizations.of(context)!.displayCursors),
                         checked:
                             settingsStorage.getItem("user-cursors") ?? true,
                         value: "user-cursors")
@@ -447,11 +455,13 @@ class _WhiteboardViewState extends State<WhiteboardView> {
         ]);
 
     if (toolbarOptions == null) {
-      return Dashboard.loading(widget.whiteboard == null
-          ? widget.extWhiteboard == null
-              ? widget.offlineWhiteboard!.name
-              : widget.extWhiteboard!.name
-          : widget.whiteboard!.name, context);
+      return Dashboard.loading(
+          widget.whiteboard == null
+              ? widget.extWhiteboard == null
+                  ? widget.offlineWhiteboard!.name
+                  : widget.extWhiteboard!.name
+              : widget.whiteboard!.name,
+          context);
     }
 
     Widget toolbar = (widget.whiteboard != null ||
@@ -577,6 +587,24 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                     offset, widget.id, zoomOptions.scale, websocketConnection);
               });
             },
+          ),
+          MinimapView(
+            toolbarOptions: toolbarOptions!,
+            offset: offset,
+            onChangedOffset: (offset) {
+              setState(() {
+                this.offset = offset;
+                WebsocketSend.sendUserMove(
+                    offset, widget.id, zoomOptions.scale, websocketConnection);
+              });
+            },
+            toolbarLocation: toolbarLocation,
+            texts: texts,
+            scribbles: scribbles,
+            scale: zoomOptions.scale,
+            uploads: uploads,
+            screenSize: Offset(ScreenUtils.getScreenWidth(context),
+                ScreenUtils.getScreenHeight(context)),
           )
         ]));
   }

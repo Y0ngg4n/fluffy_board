@@ -84,7 +84,7 @@ class GetToolbarOptions {
           HexColor.fromHexWithOpacity(Colors.lightBlueAccent, 0.25)
         }),
         5,
-        StrokeCap.square,
+        StrokeCap.round,
         0,
         (drawOptions) =>
             _sendHighlighterToolbarOptions(drawOptions, authToken, online));
@@ -108,7 +108,7 @@ class GetToolbarOptions {
                 .map((e) => HexColor.fromHex(e))
                 .toList(),
             decodeHighlighterOptions.strokeWidth,
-            StrokeCap.square,
+            StrokeCap.round,
             decodeHighlighterOptions.selectedColor,
             (drawOptions) =>
                 _sendHighlighterToolbarOptions(drawOptions, authToken, online));
@@ -125,7 +125,7 @@ class GetToolbarOptions {
                 .map((e) => HexColor.fromHex(e))
                 .toList(),
             decodeHighlighterOptions.strokeWidth,
-            StrokeCap.square,
+            StrokeCap.round,
             decodeHighlighterOptions.selectedColor,
             (drawOptions) =>
                 _sendHighlighterToolbarOptions(drawOptions, authToken, online));

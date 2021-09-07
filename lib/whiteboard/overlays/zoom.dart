@@ -51,8 +51,7 @@ class _ZoomViewState extends State<ZoomView> {
         break;
     }
 
-    if(widget.toolbarOptions.colorPickerOpen)
-      return Container();
+    if (widget.toolbarOptions.colorPickerOpen) return Container();
 
     return Row(
       mainAxisAlignment: mainAxisAlignmentRow,
@@ -118,8 +117,11 @@ class _ZoomViewState extends State<ZoomView> {
                       padding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
                       child: Row(
                         children: [
-                          Text("Scale: " +
-                              widget.zoomOptions.scale.toStringAsFixed(2)),
+                          Text(
+                            "Scale: " +
+                                widget.zoomOptions.scale.toStringAsFixed(2),
+                            style: TextStyle(color: Colors.black),
+                          ),
                           OutlinedButton(
                               onPressed: () {
                                 if (widget.zoomOptions.scale - zoomFactor <=
