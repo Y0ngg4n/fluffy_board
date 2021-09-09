@@ -96,7 +96,6 @@ class WhiteboardViewDataManager {
       List<DecodeGetUpload> decodedUploads =
           DecodeGetUploadList.fromJsonList(jsonDecode(uploadResponse.body));
         for (DecodeGetUpload decodeGetUpload in decodedUploads) {
-          // TODO: Fix image import .... For loop is not getting called
           Uint8List uint8list = Uint8List.fromList(decodeGetUpload.imageData);
           ui.decodeImageFromList(uint8list, (image) {
             onGetUploadAdd(new Upload(

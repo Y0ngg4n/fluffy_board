@@ -17,12 +17,12 @@ class WebDavManager {
   static final String path = "/Fluffyboard/OfflineWhiteboards";
 
   static Future<webdav.Client?> connect() async {
-    print("Connecting to WebDav ...");
     bool webDavEnabled = settingsStorage.getItem("WEB_DAV_ENABLED") ?? "";
     String webDavURL = settingsStorage.getItem("WEB_DAV_URL") ?? "";
     String webDavUsername = settingsStorage.getItem("WEB_DAV_USERNAME") ?? "";
     String webDavPassword = settingsStorage.getItem("WEB_DAV_PASSWORD") ?? "";
     if (!webDavEnabled || webDavURL.isEmpty) return null;
+    print("Connecting to WebDav ...");
     webdav.Client client = webdav.newClient(
       webDavURL,
       user: webDavUsername,

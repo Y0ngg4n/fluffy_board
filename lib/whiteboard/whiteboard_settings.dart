@@ -25,7 +25,6 @@ class _WhiteboardSettingsState extends State<WhiteboardSettings> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     settingsStorage.ready.then((value) => setState(() {
           selectedToolbarLocation = getToolbarLocation(

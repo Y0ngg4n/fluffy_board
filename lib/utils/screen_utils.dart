@@ -422,7 +422,6 @@ class ScreenUtils {
         null);
     // Finally render the image, this can take about 8 to 25 milliseconds.
     var picture = recorder.endRecording();
-    // TODO: Check if cuts are right and make less pixelated
     double imageWidth = getBakeImageWidth(scribbleWidth, scribble, scale);
     double imageHeight = getBakeImageHeight(scribbleHeight, scribble, scale);
     try {
