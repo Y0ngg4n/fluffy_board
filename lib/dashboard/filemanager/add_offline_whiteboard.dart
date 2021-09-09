@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fluffy_board/utils/theme_data_utils.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
@@ -120,10 +121,7 @@ class _AddOfflineWhiteboardFormState extends State<AddOfflineWhiteboardForm> {
             Padding(
                 padding: EdgeInsets.fromLTRB(0, 16, 0, 8),
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      textStyle: TextStyle(fontSize: 20),
-                      minimumSize: const Size(
-                          double.infinity, 60)),
+                  style: ThemeDataUtils.getFullWithElevatedButtonStyle(),
                     onPressed: () => _addOfflineWhiteboard(),
                     child: Text(AppLocalizations.of(context)!.createOfflineWhiteboard)))
           ])),

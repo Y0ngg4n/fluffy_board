@@ -35,10 +35,10 @@ class _AvatarIconState extends State<AvatarIcon> {
               case "/login":
                 await accountStorage.ready;
                 accountStorage.clear();
-                Navigator.pushReplacementNamed(context, route.toString());
+                Navigator.pushNamed(context, route.toString());
                 break;
               case "/server-settings":
-                Navigator.pushReplacementNamed(context, route.toString());
+                Navigator.pushNamed(context, route.toString());
                 break;
               case "/webdav-settings":
                 if(kIsWeb) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.notAvailableWeb)));

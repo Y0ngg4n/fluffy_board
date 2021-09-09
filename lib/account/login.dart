@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fluffy_board/utils/theme_data_utils.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
@@ -104,10 +105,7 @@ class _LoginFormState extends State<LoginForm> {
                       return Center(child: CircularProgressIndicator());
                     }
                     return (ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          textStyle: TextStyle(fontSize: 20),
-                          minimumSize: const Size(
-                              double.infinity, 60)),
+                        style: ThemeDataUtils.getFullWithElevatedButtonStyle(),
                         onPressed: () => _login(),
                         child: Text("Login")));
                   })),
