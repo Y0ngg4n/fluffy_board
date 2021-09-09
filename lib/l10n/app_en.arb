@@ -27,11 +27,14 @@
   "exportImage": "Export Image",
   "exportPDF": "Export PDF",
   "exportScreenSizeImage": "Export screen size Image",
+  "toolbarLocation": "Toolbar Location",
   "leftToolbar": "Left Toolbar",
   "rightToolbar": "Right Toolbar",
   "topToolbar": "Top Toolbar",
   "bottomToolbar": "Bottom Toolbar",
+  "stylusSettings": "Stylus Settings",
   "stylusOnly": "Stylus only",
+  "optimizations": "Optimizations",
   "optimizePoints": "Optimize Points (Off may cause lag)",
   "pointsToImages": "Points to images (Off may cause lag)",
   "displayCursors": "Display Cursors",
@@ -73,6 +76,8 @@
   "webDavPassword": "Enter your WebDav Password",
   "webDavSyncInterval": "Sync Interval in minutes",
   "changeWebDavSync": "Change WebDav sync server",
+  "showSettings": "Show Settings",
   "showZoomPanel": "Show zoom panel",
-  "showMinimap": "Show minimap"
+  "showMinimap": "Show minimap",
+  "whiteboardSettings": "Whiteboard Einstellungen"
 }

@@ -23,6 +23,7 @@ import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
+import 'package:fluffy_board/whiteboard/whiteboard_settings.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
@@ -61,9 +62,9 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
   final LocalStorage settingsStorage = new LocalStorage('settings');
   String toolbarLocation = "left";
+  bool stylusOnly = false;
   Set<ConnectedUser> connectedUsers = Set.of([]);
   ConnectedUser? followingUser;
-  bool stylusOnly = false;
   late Timer autoSaveTimer;
 
   @override
@@ -241,11 +242,17 @@ class _WhiteboardViewState extends State<WhiteboardView> {
     autoSaveTimer = Timer.periodic(
         Duration(seconds: 30), (timer) => saveOfflineWhiteboard());
     settingsStorage.ready.then((value) => setState(() {
-          toolbarLocation =
-              settingsStorage.getItem("toolbar-location") ?? "left";
+          _getSettings();
           _getToolBarOptions();
         }));
     _getWhiteboardData();
+  }
+
+  void _getSettings(){
+    setState(() {
+      toolbarLocation = settingsStorage.getItem("toolbar-location") ?? "left";
+      stylusOnly = settingsStorage.getItem("stylus-only") ?? false;
+    });
   }
 
   @override
@@ -257,10 +264,6 @@ class _WhiteboardViewState extends State<WhiteboardView> {
 
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      toolbarLocation = settingsStorage.getItem("toolbar-location") ?? "left";
-      stylusOnly = settingsStorage.getItem("stylus-only") ?? false;
-    });
     AppBar appBar = AppBar(
         title: Text(
           widget.whiteboard == null
@@ -383,90 +386,13 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                                 )))
                   },
               icon: Icon(Icons.bookmark)),
-          PopupMenuButton(
-              onSelected: (value) => {
-                    setState(() {
-                      if (value.toString().startsWith("location-")) {
-                        value = value.toString().replaceFirst("location-", "");
-                        settingsStorage.setItem("toolbar-location", value);
-                        toolbarLocation = value.toString();
-                      } else if (value.toString() == "stylus-only") {
-                        settingsStorage.setItem("stylus-only",
-                            !(settingsStorage.getItem("stylus-only") ?? false));
-                      } else if (value.toString() == "points-simplify") {
-                        settingsStorage.setItem(
-                            "points-simplify",
-                            !(settingsStorage.getItem("points-simplify") ??
-                                true));
-                      } else if (value.toString() == "points-to-image") {
-                        settingsStorage.setItem(
-                            "points-to-image",
-                            !(settingsStorage.getItem("points-to-image") ??
-                                true));
-                      } else if (value.toString() == "user-cursors") {
-                        settingsStorage.setItem("user-cursors",
-                            !(settingsStorage.getItem("user-cursors") ?? true));
-                      } else if (value.toString() == "zoom-panel") {
-                        settingsStorage.setItem("zoom-panel",
-                            !(settingsStorage.getItem("zoom-panel") ?? true));
-                      } else if (value.toString() == "minimap") {
-                        settingsStorage.setItem("minimap",
-                            !(settingsStorage.getItem("minimap") ?? true));
-                      }
-                    })
-                  },
-              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                    CheckedPopupMenuItem(
-                        child: Text(AppLocalizations.of(context)!.leftToolbar),
-                        checked: toolbarLocation == "left" ? true : false,
-                        value: "location-left"),
-                    CheckedPopupMenuItem(
-                        child: Text(AppLocalizations.of(context)!.rightToolbar),
-                        checked: toolbarLocation == "right" ? true : false,
-                        value: "location-right"),
-                    CheckedPopupMenuItem(
-                        child: Text(AppLocalizations.of(context)!.topToolbar),
-                        checked: toolbarLocation == "top" ? true : false,
-                        value: "location-top"),
-                    CheckedPopupMenuItem(
-                        child:
-                            Text(AppLocalizations.of(context)!.bottomToolbar),
-                        checked: toolbarLocation == "bottom" ? true : false,
-                        value: "location-bottom"),
-                    PopupMenuDivider(),
-                    CheckedPopupMenuItem(
-                        child: Text(AppLocalizations.of(context)!.stylusOnly),
-                        checked: stylusOnly,
-                        value: "stylus-only"),
-                    PopupMenuDivider(),
-                    CheckedPopupMenuItem(
-                        child:
-                            Text(AppLocalizations.of(context)!.optimizePoints),
-                        checked:
-                            settingsStorage.getItem("points-simplify") ?? true,
-                        value: "points-simplify"),
-                    CheckedPopupMenuItem(
-                        child:
-                            Text(AppLocalizations.of(context)!.pointsToImages),
-                        checked:
-                            settingsStorage.getItem("points-to-image") ?? true,
-                        value: "points-to-image"),
-                    CheckedPopupMenuItem(
-                        child:
-                            Text(AppLocalizations.of(context)!.displayCursors),
-                        checked:
-                            settingsStorage.getItem("user-cursors") ?? true,
-                        value: "user-cursors"),
-                    CheckedPopupMenuItem(
-                        child:
-                            Text(AppLocalizations.of(context)!.showZoomPanel),
-                        checked: settingsStorage.getItem("zoom-panel") ?? true,
-                        value: "zoom-panel"),
-                    CheckedPopupMenuItem(
-                        child: Text(AppLocalizations.of(context)!.showMinimap),
-                        checked: settingsStorage.getItem("minimap") ?? true,
-                        value: "minimap")
-                  ])
+          IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () async {
+                await Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => WhiteboardSettings()));
+                _getSettings();
+              }),
         ]);
 
     if (toolbarOptions == null) {
