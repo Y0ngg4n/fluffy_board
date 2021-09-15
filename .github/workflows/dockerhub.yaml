@@ -2,6 +2,10 @@ name: Push to Dockerhub
 on:
   push:
     branches: [ master ]
+  pull_request:
+    branches:
+      - master
+      - 'releases/**'
 jobs:
   push-to-dockerhub:
     runs-on: ubuntu-latest
