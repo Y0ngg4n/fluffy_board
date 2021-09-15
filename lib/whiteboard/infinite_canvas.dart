@@ -399,8 +399,15 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
                   newDrawPoint.y.toInt(),
                   newOffset.dy.toInt(),
                   cursorRadius.toInt())) {
-                removeIndex = i;
-                break;
+                if ((widget.toolbarOptions.eraserOptions.currentColor == 0 &&
+                        currentScribble.selectedFigureTypeToolbar !=
+                            SelectedFigureTypeToolbar.highlighter) ||
+                    (widget.toolbarOptions.eraserOptions.currentColor == 1 &&
+                        currentScribble.selectedFigureTypeToolbar ==
+                            SelectedFigureTypeToolbar.highlighter)) {
+                  removeIndex = i;
+                  break;
+                }
               }
             }
             if (removeIndex != -1) {
@@ -629,6 +636,7 @@ class _InfiniteCanvasPageState extends State<InfiniteCanvasPage> {
           .colorPresets[widget.toolbarOptions.highlighterOptions.currentColor];
       strokeWidth = widget.toolbarOptions.highlighterOptions.strokeWidth;
       strokeCap = widget.toolbarOptions.highlighterOptions.strokeCap;
+      selectedFigureTypeToolbar = SelectedFigureTypeToolbar.highlighter;
     } else if (widget.toolbarOptions.selectedTool ==
         SelectedTool.straightLine) {
       color = widget.toolbarOptions.straightLineOptions

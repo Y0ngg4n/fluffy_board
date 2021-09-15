@@ -108,83 +108,106 @@ class _FileManagerState extends State<FileManager> {
         _refreshController,
         offlineWhiteboardIds);
 
-    return Scaffold(
-      appBar: AppBar(
-          title: Row(
-            children: [
-              Text("Dashboard"),
-              Expanded(
-                child: ActionButtons(
-                    widget.authToken,
-                    currentDirectory,
-                    _refreshController,
-                    offlineWhiteboards,
-                    offlineWhiteboardIds,
-                    widget.online,
-                    directories),
+    Widget body = Container(
+        child: Column(children: [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+        child: Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          children: [
+            BreadCrumb(
+              items: breadCrumbItems,
+              divider: Icon(Icons.chevron_right),
+              overflow: WrapOverflow(
+                keepLastDivider: false,
+                direction: Axis.horizontal,
               ),
-            ],
-          ),
-          actions: [EasyDynamicThemeBtn(), AvatarIcon(widget.online)]),
-      body: Container(
-          child: Column(children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-          child: Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            children: [
-              BreadCrumb(
-                items: breadCrumbItems,
-                divider: Icon(Icons.chevron_right),
-                overflow: WrapOverflow(
-                  keepLastDivider: false,
-                  direction: Axis.horizontal,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-        Divider(),
-        Expanded(
-            child: SmartRefresher(
-                enablePullDown: true,
-                enablePullUp: false,
-                controller: _refreshController,
-                onRefresh: () async {
-                  await WhiteboardDataManager.getDirectoriesAndWhiteboards(
-                      widget.online,
-                      currentDirectory,
-                      widget.authToken,
-                      _refreshController,
-                      directories,
-                      whiteboards,
-                      extWhiteboards,
-                      offlineWhiteboardIds,
-                      offlineWhiteboards, (directories,
-                          whiteboards,
-                          extWhiteboards,
-                          offlineWhiteboardIds,
-                          offlineWhiteboards) {
-                    setState(() {
-                      this.directories = directories;
-                      this.whiteboards = whiteboards;
-                      this.extWhiteboards = extWhiteboards;
-                      this.offlineWhiteboardIds = offlineWhiteboardIds;
-                      this.offlineWhiteboards = offlineWhiteboards;
-                    });
+      ),
+      Divider(),
+      Expanded(
+          child: SmartRefresher(
+              enablePullDown: true,
+              enablePullUp: false,
+              controller: _refreshController,
+              onRefresh: () async {
+                await WhiteboardDataManager.getDirectoriesAndWhiteboards(
+                    widget.online,
+                    currentDirectory,
+                    widget.authToken,
+                    _refreshController,
+                    directories,
+                    whiteboards,
+                    extWhiteboards,
+                    offlineWhiteboardIds,
+                    offlineWhiteboards, (directories,
+                        whiteboards,
+                        extWhiteboards,
+                        offlineWhiteboardIds,
+                        offlineWhiteboards) {
+                  setState(() {
+                    this.directories = directories;
+                    this.whiteboards = whiteboards;
+                    this.extWhiteboards = extWhiteboards;
+                    this.offlineWhiteboardIds = offlineWhiteboardIds;
+                    this.offlineWhiteboards = offlineWhiteboards;
                   });
-                  if (widget.online)
-                    WebDavManager.startAutomatedUpload(
-                        await WhiteboardDataManager.getAllOfflineWhiteboards(
-                            this.offlineWhiteboardIds),
-                      await WhiteboardDataManager.getAllDirectories(widget.authToken)
-                    );
-                },
-                child: GridView.extent(
-                  maxCrossAxisExtent: 200,
-                  children: directoryAndWhiteboardButtons,
-                )))
-      ])),
+                });
+                if (widget.online)
+                  WebDavManager.startAutomatedUpload(
+                      await WhiteboardDataManager.getAllOfflineWhiteboards(
+                          this.offlineWhiteboardIds),
+                      await WhiteboardDataManager.getAllDirectories(
+                          widget.authToken));
+              },
+              child: GridView.extent(
+                maxCrossAxisExtent: 200,
+                children: directoryAndWhiteboardButtons,
+              )))
+    ]));
+
+    Widget actionButtons = Expanded(
+      child: ActionButtons(
+          widget.authToken,
+          currentDirectory,
+          _refreshController,
+          offlineWhiteboards,
+          offlineWhiteboardIds,
+          widget.online,
+          directories),
     );
+
+    Widget scaffold = LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        if (constraints.maxWidth > 1100) {
+          return Scaffold(
+              appBar: AppBar(
+                  title: Row(
+                    children: [Text("Dashboard"), actionButtons],
+                  ),
+                  actions: [EasyDynamicThemeBtn(), AvatarIcon(widget.online)]),
+              body: body);
+        } else {
+          return Scaffold(
+              appBar: AppBar(
+                  title: Row(
+                    children: [
+                      Text("Dashboard"),
+                    ],
+                  ),
+                  bottom: PreferredSize(
+                    preferredSize: Size.fromHeight(kToolbarHeight),
+                    // you can put any value here
+                    child: actionButtons,
+                  ),
+                  actions: [EasyDynamicThemeBtn(), AvatarIcon(widget.online)]),
+              body: body);
+        }
+      },
+    );
+
+    return scaffold;
   }
 }

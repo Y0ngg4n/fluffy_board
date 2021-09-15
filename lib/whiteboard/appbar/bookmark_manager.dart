@@ -1,9 +1,11 @@
+import 'package:fluffy_board/utils/theme_data_utils.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_manager_send.dart';
 import 'package:fluffy_board/whiteboard/appbar/add_bookmark.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'rename_bookmark.dart';
 
@@ -41,7 +43,7 @@ class _BookmarkManagerState extends State<BookmarkManager> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Bookmarks")),
+        appBar: AppBar(title: Text(AppLocalizations.of(context)!.bookmarks)),
         body: Container(
             child: Column(children: [
           Padding(
@@ -49,23 +51,25 @@ class _BookmarkManagerState extends State<BookmarkManager> {
             child: Row(
               children: [
                 ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AddBookmark(
-                                  widget.authToken,
-                                  widget.online,
-                                  widget.websocketConnection,
-                                  widget.offset,
-                                  widget.scale,
-                                  refreshController,
-                                  (bookmark){
-                                    widget.bookmarks.add(bookmark);
-                                  }
-                              )));
+                    onPressed: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddBookmark(
+                                    widget.authToken,
+                                    widget.online,
+                                    widget.websocketConnection,
+                                    widget.offset,
+                                    widget.scale,
+                                    refreshController, (bookmark) {
+                                  widget.bookmarks.add(bookmark);
+                                }, (bookmark) {
+                                  widget.bookmarks.add(bookmark);
+                                })),
+                      );
+                      widget.onBookMarkRefresh(refreshController);
                     },
-                    child: Text("Create Bookmark"))
+                    child: Text(AppLocalizations.of(context)!.createBookmark))
               ],
             ),
           ),

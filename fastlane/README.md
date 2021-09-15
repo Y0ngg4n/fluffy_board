@@ -55,7 +55,7 @@ fastlane android apply_new_version
 ```
 fastlane android beta
 ```
-Submit a new Beta Build to Crashlytics Beta
+Submit a new Beta Build to Beta
 ### android deploy
 ```
 fastlane android deploy
@@ -80,11 +80,16 @@ fastlane ios read_version
 fastlane ios read_code
 ```
 
-### ios betaios
+### ios beta
 ```
-fastlane ios betaios
+fastlane ios beta
 ```
-Submit a new Beta Build to Crashlytics Beta
+Submit a new Beta Build to Beta
+### ios browserstack
+```
+fastlane ios browserstack
+```
+Upload to BrowserStack Applive
 
 ----
 

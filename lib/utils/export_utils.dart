@@ -10,11 +10,33 @@ import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+class ExportPNG{
+  ui.Image image;
+  ui.Rect bounds;
+
+  ExportPNG(this.image, this.bounds);
+
+}
 
 class ExportUtils {
-  static exportPNG(List<Scribble> scribbles, List<Upload> uploads, List<TextItem> texts, ToolbarOptions toolbarOptions, ui.Offset screenSize, ui.Offset offset,
+
+
+  static Future<ExportPNG> getExportPNG(List<Scribble> scribbles, List<Upload> uploads, List<TextItem> texts, ToolbarOptions toolbarOptions, ui.Offset screenSize, ui.Offset offset,
       double scale) async {
     ui.Rect rect = getBounds(scribbles, uploads, texts);
+    ui.PictureRecorder recorder = ui.PictureRecorder();
+    getCanvas(scribbles, uploads, texts, ui.Offset.zero, screenSize, scale, rect, recorder);
+
+    // Finally render the image, this can take about 8 to 25 milliseconds.
+    var picture = recorder.endRecording();
+    ui.Image image = await picture.toImage(
+        rect.width.ceil(), rect.height.ceil());
+    return new ExportPNG(image, rect);
+  }
+
+  static exportPNG(List<Scribble> scribbles, List<Upload> uploads, List<TextItem> texts, ToolbarOptions toolbarOptions, ui.Offset screenSize, ui.Offset offset,
+      double scale) async {
+    ui.Rect rect = extendBounds(getBounds(scribbles, uploads, texts));
     ui.PictureRecorder recorder = ui.PictureRecorder();
     getCanvas(scribbles, uploads, texts, offset, screenSize, scale, rect, recorder);
 
@@ -34,7 +56,7 @@ class ExportUtils {
 
   static exportPDF(List<Scribble> scribbles, List<Upload> uploads, List<TextItem> texts, ToolbarOptions toolbarOptions, ui.Offset screenSize, ui.Offset offset,
       double scale) async{
-    ui.Rect rect = getBounds(scribbles, uploads, texts);
+    ui.Rect rect = extendBounds(getBounds(scribbles, uploads, texts));
     ui.PictureRecorder recorder = ui.PictureRecorder();
     getCanvas(scribbles, uploads, texts, offset, screenSize, scale, rect, recorder);
 
@@ -113,6 +135,7 @@ class ExportUtils {
         right = 0,
         top = 0,
         bottom = 0;
+
     for (Scribble scribble in scribbles) {
       if (scribble.leftExtremity < left)
         left = scribble.leftExtremity;
@@ -146,10 +169,11 @@ class ExportUtils {
         bottom = text.offset.dy + text.maxHeight;
     }
 
-    left -= 25;
-    right += 25;
-    top -= 25;
-    bottom += 25;
     return material.Rect.fromLTRB(left, top, right, bottom);
+  }
+
+  static ui.Rect extendBounds(ui.Rect rect){
+    double offsetValue = 100;
+    return new ui.Rect.fromPoints(rect.topLeft - new ui.Offset(offsetValue, offsetValue), rect.bottomRight + new ui.Offset(offsetValue, offsetValue));
   }
 }

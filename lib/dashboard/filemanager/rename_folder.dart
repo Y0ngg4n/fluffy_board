@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fluffy_board/utils/theme_data_utils.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
@@ -114,10 +115,7 @@ class _RenameFolderFormState extends State<RenameFolderForm> {
             Padding(
                 padding: const EdgeInsets.all(16),
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      textStyle: TextStyle(fontSize: 20),
-                      minimumSize: const Size(
-                          double.infinity, 60)),
+                  style: ThemeDataUtils.getFullWithElevatedButtonStyle(),
                     onPressed: () => _renameFolder(),
                     child: Text(AppLocalizations.of(context)!.renameFolder)))
           ])),

@@ -5,10 +5,11 @@ import 'package:fluffy_board/dashboard/filemanager/file_manager_types.dart';
 import 'package:fluffy_board/utils/export_utils.dart';
 import 'package:fluffy_board/utils/screen_utils.dart';
 import 'package:fluffy_board/whiteboard/infinite_canvas.dart';
+import 'package:fluffy_board/whiteboard/overlays/minimap.dart';
 import 'package:fluffy_board/whiteboard/texts_canvas.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_manager_send.dart';
-import 'package:fluffy_board/whiteboard/api/get_toolbar_options.dart';
+import 'package:fluffy_board/whiteboard/api/toolbar_options.dart';
 import 'package:fluffy_board/whiteboard/appbar/connected_users.dart';
 import 'package:fluffy_board/whiteboard/overlays/toolbar/background_toolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/toolbar/eraser_toolbar.dart';
@@ -22,6 +23,7 @@ import 'package:fluffy_board/whiteboard/whiteboard-data/bookmark.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/scribble.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/textitem.dart';
 import 'package:fluffy_board/whiteboard/whiteboard-data/upload.dart';
+import 'package:fluffy_board/whiteboard/whiteboard_settings.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:localstorage/localstorage.dart';
@@ -60,9 +62,9 @@ class _WhiteboardViewState extends State<WhiteboardView> {
   final LocalStorage fileManagerStorage = new LocalStorage('filemanager');
   final LocalStorage settingsStorage = new LocalStorage('settings');
   String toolbarLocation = "left";
+  bool stylusOnly = false;
   Set<ConnectedUser> connectedUsers = Set.of([]);
   ConnectedUser? followingUser;
-  bool stylusOnly = false;
   late Timer autoSaveTimer;
 
   @override
@@ -240,11 +242,17 @@ class _WhiteboardViewState extends State<WhiteboardView> {
     autoSaveTimer = Timer.periodic(
         Duration(seconds: 30), (timer) => saveOfflineWhiteboard());
     settingsStorage.ready.then((value) => setState(() {
-          toolbarLocation =
-              settingsStorage.getItem("toolbar-location") ?? "left";
+          _getSettings();
           _getToolBarOptions();
         }));
     _getWhiteboardData();
+  }
+
+  void _getSettings() {
+    setState(() {
+      toolbarLocation = settingsStorage.getItem("toolbar-location") ?? "left";
+      stylusOnly = settingsStorage.getItem("stylus-only") ?? false;
+    });
   }
 
   @override
@@ -256,10 +264,6 @@ class _WhiteboardViewState extends State<WhiteboardView> {
 
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      toolbarLocation = settingsStorage.getItem("toolbar-location") ?? "left";
-      stylusOnly = settingsStorage.getItem("stylus-only") ?? false;
-    });
     AppBar appBar = AppBar(
         title: Text(
           widget.whiteboard == null
@@ -335,10 +339,15 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                     })
                   },
               itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.exportImage), value: 0),
-                    PopupMenuItem(child: Text(AppLocalizations.of(context)!.exportPDF), value: 1),
                     PopupMenuItem(
-                        child: Text(AppLocalizations.of(context)!.exportScreenSizeImage),
+                        child: Text(AppLocalizations.of(context)!.exportImage),
+                        value: 0),
+                    PopupMenuItem(
+                        child: Text(AppLocalizations.of(context)!.exportPDF),
+                        value: 1),
+                    PopupMenuItem(
+                        child: Text(AppLocalizations.of(context)!
+                            .exportScreenSizeImage),
                         value: 2),
                   ],
               icon: Icon(Icons.import_export)),
@@ -349,17 +358,17 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                         MaterialPageRoute(
                             builder: (context) => BookmarkManager(
                                   onBookMarkRefresh: (refreshController) async {
-                                    await WhiteboardViewDataManager
-                                        .getBookmarks(
-                                            refreshController,
-                                            widget.authToken,
-                                            widget.whiteboard,
-                                            widget.extWhiteboard,
-                                            widget.offlineWhiteboard,
-                                            (bookmarks) {
-                                      setState(() {
-                                        this.bookmarks = bookmarks;
-                                      });
+                                    List<Bookmark> bookmarks =
+                                        await WhiteboardViewDataManager
+                                            .getBookmarks(
+                                                refreshController,
+                                                widget.authToken,
+                                                widget.whiteboard,
+                                                widget.extWhiteboard,
+                                                widget.offlineWhiteboard);
+                                    setState(() {
+                                      this.bookmarks = bookmarks;
+                                      refreshController.refreshCompleted();
                                     });
                                   },
                                   authToken: widget.authToken,
@@ -377,81 +386,23 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                                 )))
                   },
               icon: Icon(Icons.bookmark)),
-          PopupMenuButton(
-              onSelected: (value) => {
-                    setState(() {
-                      if (value.toString().startsWith("location-")) {
-                        value = value.toString().replaceFirst("location-", "");
-                        settingsStorage.setItem("toolbar-location", value);
-                        toolbarLocation = value.toString();
-                      } else if (value.toString() == "stylus-only") {
-                        settingsStorage.setItem("stylus-only",
-                            !(settingsStorage.getItem("stylus-only") ?? false));
-                      } else if (value.toString() == "points-simplify") {
-                        settingsStorage.setItem(
-                            "points-simplify",
-                            !(settingsStorage.getItem("points-simplify") ??
-                                true));
-                      } else if (value.toString() == "points-to-image") {
-                        settingsStorage.setItem(
-                            "points-to-image",
-                            !(settingsStorage.getItem("points-to-image") ??
-                                true));
-                      } else if (value.toString() == "user-cursors") {
-                        settingsStorage.setItem("user-cursors",
-                            !(settingsStorage.getItem("user-cursors") ?? true));
-                      }
-                    })
-                  },
-              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                    CheckedPopupMenuItem(
-                        child: Text(AppLocalizations.of(context)!.leftToolbar),
-                        checked: toolbarLocation == "left" ? true : false,
-                        value: "location-left"),
-                    CheckedPopupMenuItem(
-                        child: Text(AppLocalizations.of(context)!.rightToolbar),
-                        checked: toolbarLocation == "right" ? true : false,
-                        value: "location-right"),
-                    CheckedPopupMenuItem(
-                        child: Text(AppLocalizations.of(context)!.topToolbar),
-                        checked: toolbarLocation == "top" ? true : false,
-                        value: "location-top"),
-                    CheckedPopupMenuItem(
-                        child: Text(AppLocalizations.of(context)!.bottomToolbar),
-                        checked: toolbarLocation == "bottom" ? true : false,
-                        value: "location-bottom"),
-                    PopupMenuDivider(),
-                    CheckedPopupMenuItem(
-                        child: Text(AppLocalizations.of(context)!.stylusOnly),
-                        checked: stylusOnly,
-                        value: "stylus-only"),
-                    PopupMenuDivider(),
-                    CheckedPopupMenuItem(
-                        child:
-                            Text(AppLocalizations.of(context)!.optimizePoints),
-                        checked:
-                            settingsStorage.getItem("points-simplify") ?? true,
-                        value: "points-simplify"),
-                    CheckedPopupMenuItem(
-                        child:
-                            Text(AppLocalizations.of(context)!.pointsToImages),
-                        checked:
-                            settingsStorage.getItem("points-to-image") ?? true,
-                        value: "points-to-image"),
-                    CheckedPopupMenuItem(
-                        child: Text(AppLocalizations.of(context)!.displayCursors),
-                        checked:
-                            settingsStorage.getItem("user-cursors") ?? true,
-                        value: "user-cursors")
-                  ])
+          IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () async {
+                await Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => WhiteboardSettings()));
+                _getSettings();
+              }),
         ]);
 
     if (toolbarOptions == null) {
-      return Dashboard.loading(widget.whiteboard == null
-          ? widget.extWhiteboard == null
-              ? widget.offlineWhiteboard!.name
-              : widget.extWhiteboard!.name
-          : widget.whiteboard!.name, context);
+      return Dashboard.loading(
+          widget.whiteboard == null
+              ? widget.extWhiteboard == null
+                  ? widget.offlineWhiteboard!.name
+                  : widget.extWhiteboard!.name
+              : widget.whiteboard!.name,
+          context);
     }
 
     Widget toolbar = (widget.whiteboard != null ||
@@ -560,24 +511,44 @@ class _WhiteboardViewState extends State<WhiteboardView> {
             toolbarOptions: toolbarOptions!,
           ),
           toolbar,
-          ZoomView(
-            toolbarOptions: toolbarOptions!,
-            toolbarLocation: toolbarLocation,
-            zoomOptions: zoomOptions,
-            offset: offset,
-            onChangedZoomOptions: (zoomOptions) {
-              setState(() {
-                this.zoomOptions = zoomOptions;
-              });
-            },
-            onChangedOffset: (offset) {
-              setState(() {
-                this.offset = offset;
-                WebsocketSend.sendUserMove(
-                    offset, widget.id, zoomOptions.scale, websocketConnection);
-              });
-            },
-          )
+          if (settingsStorage.getItem("zoom-panel") ?? true)
+            ZoomView(
+              toolbarOptions: toolbarOptions!,
+              toolbarLocation: toolbarLocation,
+              zoomOptions: zoomOptions,
+              offset: offset,
+              onChangedZoomOptions: (zoomOptions) {
+                setState(() {
+                  this.zoomOptions = zoomOptions;
+                });
+              },
+              onChangedOffset: (offset) {
+                setState(() {
+                  this.offset = offset;
+                  WebsocketSend.sendUserMove(offset, widget.id,
+                      zoomOptions.scale, websocketConnection);
+                });
+              },
+            ),
+          if (settingsStorage.getItem("minimap") ?? true)
+            MinimapView(
+              toolbarOptions: toolbarOptions!,
+              offset: offset,
+              onChangedOffset: (offset) {
+                setState(() {
+                  this.offset = offset;
+                  WebsocketSend.sendUserMove(offset, widget.id,
+                      zoomOptions.scale, websocketConnection);
+                });
+              },
+              toolbarLocation: toolbarLocation,
+              texts: texts,
+              scribbles: scribbles,
+              scale: zoomOptions.scale,
+              uploads: uploads,
+              screenSize: Offset(ScreenUtils.getScreenWidth(context),
+                  ScreenUtils.getScreenHeight(context)),
+            )
         ]));
   }
 
@@ -599,7 +570,6 @@ class _WhiteboardViewState extends State<WhiteboardView> {
     BackgroundOptions backgroundOptions =
         await GetToolbarOptions.getBackgroundOptions(
             widget.authToken, widget.online);
-    print("TextItem: " + textItemOptions.currentColor.toString());
     setState(() {
       toolbarOptions = new Toolbar.ToolbarOptions(
           Toolbar.SelectedTool.move,
@@ -639,15 +609,14 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           texts.add(textItem);
         });
       });
-      await WhiteboardViewDataManager.getBookmarks(
+      List<Bookmark> bookmarks = await WhiteboardViewDataManager.getBookmarks(
           null,
           widget.authToken,
           widget.whiteboard,
           widget.extWhiteboard,
-          widget.offlineWhiteboard, (List<Bookmark> bookmarks) {
-        setState(() {
-          this.bookmarks = bookmarks;
-        });
+          widget.offlineWhiteboard);
+      setState(() {
+        this.bookmarks = bookmarks;
       });
     }
     if (widget.offlineWhiteboard != null) {

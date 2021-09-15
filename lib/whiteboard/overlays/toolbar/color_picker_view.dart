@@ -63,12 +63,13 @@ class _ColorPickerViewState extends State<ColorPickerView> {
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: ColorPicker(
+                enableOpacity: true,
                 // Use the screenPickerColor as start color.
                 color: drawOptions == null
                     ? widget.selectedSettingsScribble == null
                         ? widget.selectedTextItemScribble!.color
                         : widget.selectedSettingsScribble!.color
-                    : drawOptions.colorPresets[drawOptions.currentColor],
+                    : widget.toolbarOptions.selectedTool == Toolbar.SelectedTool.background ? drawOptions.colorPresets[0] : drawOptions.colorPresets[drawOptions.currentColor],
                 // Update the screenPickerColor using the callback.
                 width: colorPickerItemSize.toDouble(),
                 height: colorPickerItemSize.toDouble(),
@@ -106,6 +107,11 @@ class _ColorPickerViewState extends State<ColorPickerView> {
                           widget.toolbarOptions.textOptions
                               .onDrawOptionChange(
                               widget.toolbarOptions.textOptions);
+                          break;
+                        case Toolbar.SelectedTool.background:
+                          widget.toolbarOptions.backgroundOptions
+                              .onDrawOptionChange(
+                              widget.toolbarOptions.backgroundOptions);
                           break;
                         default:
                           break;
@@ -159,6 +165,8 @@ class _ColorPickerViewState extends State<ColorPickerView> {
         return widget.toolbarOptions.textOptions;
       case Toolbar.SelectedTool.figure:
         return widget.toolbarOptions.figureOptions;
+      case Toolbar.SelectedTool.background:
+        return widget.toolbarOptions.backgroundOptions;
       default:
         return widget.toolbarOptions.pencilOptions;
     }

@@ -41,46 +41,48 @@ class _ActionButtonsState extends State<ActionButtons> {
 
   @override
   Widget build(BuildContext context) {
+    Widget buttons = Row(
+      children: [
+        if (widget.online)
+          Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: OutlinedButton(
+                  style: outlineButtonStyle,
+                  onPressed: _createWhiteboard,
+                  child: Text(AppLocalizations.of(context)!.createWhiteboard))),
+        Padding(
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+            child: OutlinedButton(
+                style: outlineButtonStyle,
+                onPressed: _createOfflineWhiteboard,
+                child: Text(AppLocalizations.of(context)!.createOfflineWhiteboard))),
+        Padding(
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+            child: OutlinedButton(
+                style: outlineButtonStyle,
+                onPressed: _createFolder,
+                child: Text(AppLocalizations.of(context)!.createFolder))),
+        if (widget.online)
+          Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: OutlinedButton(
+                  style: outlineButtonStyle,
+                  onPressed: _collabOnWhiteboard,
+                  child: Text(AppLocalizations.of(context)!.collabWhiteboard))),
+        if (widget.online)
+          Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: OutlinedButton(
+                  style: outlineButtonStyle,
+                  onPressed: _importWhiteboard,
+                  child: Text(AppLocalizations.of(context)!.importWhiteboard))),
+      ],
+    );
+
     return Center(
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            if (widget.online)
-              Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  child: OutlinedButton(
-                      style: outlineButtonStyle,
-                      onPressed: _createWhiteboard,
-                      child: Text(AppLocalizations.of(context)!.createWhiteboard))),
-            Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                child: OutlinedButton(
-                    style: outlineButtonStyle,
-                    onPressed: _createOfflineWhiteboard,
-                    child: Text(AppLocalizations.of(context)!.createOfflineWhiteboard))),
-            Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                child: OutlinedButton(
-                    style: outlineButtonStyle,
-                    onPressed: _createFolder,
-                    child: Text(AppLocalizations.of(context)!.createFolder))),
-            if (widget.online)
-              Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  child: OutlinedButton(
-                      style: outlineButtonStyle,
-                      onPressed: _collabOnWhiteboard,
-                      child: Text(AppLocalizations.of(context)!.collabWhiteboard))),
-            if (widget.online)
-              Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  child: OutlinedButton(
-                      style: outlineButtonStyle,
-                      onPressed: _importWhiteboard,
-                      child: Text(AppLocalizations.of(context)!.importWhiteboard))),
-          ],
-        ),
+        child: buttons
       ),
     );
   }

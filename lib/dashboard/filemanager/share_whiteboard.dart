@@ -1,4 +1,5 @@
 
+import 'package:fluffy_board/utils/theme_data_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
@@ -151,9 +152,7 @@ class _ShareWhiteboardFormState extends State<ShareWhiteboardForm> {
               Padding(
                   padding: const EdgeInsets.all(16),
                   child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          textStyle: TextStyle(fontSize: 20),
-                          minimumSize: const Size(double.infinity, 60)),
+                      style: ThemeDataUtils.getFullWithElevatedButtonStyle(),
                       onPressed: () {
                         launchMailto(widget.id + "#" + widget.viewId);
                       },
@@ -161,9 +160,7 @@ class _ShareWhiteboardFormState extends State<ShareWhiteboardForm> {
               Padding(
                   padding: const EdgeInsets.all(16),
                   child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          textStyle: TextStyle(fontSize: 20),
-                          minimumSize: const Size(double.infinity, 60)),
+                      style: ThemeDataUtils.getFullWithElevatedButtonStyle(),
                       onPressed: () {
                         launchMailto(widget.id + "#" + widget.editId);
                       },

@@ -96,7 +96,7 @@ class _PencilToolbarState extends State<PencilToolbar> {
           ),
         ),
         ToggleButtons(
-            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(50), bottomRight: Radius.circular(50)),
+            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(widget.axis == Axis.vertical ? 50 : 0), bottomRight: Radius.circular(widget.axis == Axis.vertical ? 50 : 0)),
             onPressed: (index) {
               setState(() {
                 widget.toolbarOptions.pencilOptions.currentColor = index;

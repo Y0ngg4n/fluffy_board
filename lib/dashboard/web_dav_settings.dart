@@ -1,3 +1,4 @@
+import 'package:fluffy_board/utils/theme_data_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:localstorage/localstorage.dart';
@@ -122,6 +123,7 @@ class _WebDavSettingsFormState extends State<WebDavSettingsForm> {
           Padding(
               padding: const EdgeInsets.all(16),
               child: ElevatedButton(
+                  style: ThemeDataUtils.getFullWithElevatedButtonStyle(),
                   onPressed: () async {
                     // Validate returns true if the form is valid, or false otherwise.
                     if (_formKey.currentState!.validate()) {
@@ -143,7 +145,13 @@ class _WebDavSettingsFormState extends State<WebDavSettingsForm> {
                     }
                   },
                   child: Text(AppLocalizations.of(context)!.changeWebDavSync))),
-          ElevatedButton(onPressed: () {WebDavManager.restoreFromWebDav();}, child: Text("Restore"))
+          // TODO: Recursive restore
+          ElevatedButton(
+              style: ThemeDataUtils.getFullWithElevatedButtonStyle(),
+              onPressed: () {
+                WebDavManager.restoreFromWebDav();
+              },
+              child: Text("Restore"))
         ])));
   }
 }

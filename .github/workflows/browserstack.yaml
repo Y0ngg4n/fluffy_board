@@ -1,0 +1,70 @@
+name: Browserstack Applive
+
+on: [push]
+
+jobs:
+  ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Install Apple Certificate
+        uses: apple-actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.IOS_DISTRIBUTION_P12 }}
+          p12-password: ${{ secrets.IOS_DISTRIBUTION_P12_PASSWORD }}
+      - name: Install the provisioning profile
+        env:
+          PROVISIONING_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_PROVISIONING_PROFILE }}
+        run: |
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+
+          echo -n "$PROVISIONING_CERTIFICATE_BASE64" | base64 --decode --output $PP_PATH
+
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+      - name: Install and set Flutter version
+        uses: subosito/flutter-action@v1
+      - name: Restore packages
+        run: flutter pub get
+      - name: Build Flutter
+        run: flutter build ios --release --no-codesign
+      - run: |
+          ls ios/
+          cat ios/Podfile
+      - name: Build resolve Swift dependencies
+        run: xcodebuild -resolvePackageDependencies -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release
+      - name: Build xArchive
+        run: |
+          xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release DEVELOPMENT_TEAM=Y26953UNR3 -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive PROVISIONING_PROFILE=b3e19150-67f0-45cb-a9cc-79cd874dce5e clean archive CODE_SIGN_IDENTITY="iPhone Distribution: Andre Schle (Y26953UNR3)"
+      - name: Export ipa
+        run: xcodebuild -exportArchive -archivePath build-output/app.xcarchive -exportPath build-output/ios -exportOptionsPlist ios/ExportOptions.plist
+      - uses: papeloto/action-zip@v1
+        with:
+          files: build-output/ios
+          dest: Fluffyboard-ios.zip
+      - name: Publish iOS Artefacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: release-ios
+          path: Fluffyboard-ios.zip
+      - name: Get the Api Key
+        env:
+          IOS_API_KEY: ${{ secrets.IOS_API_KEY }}
+        run: |
+          echo -n "$IOS_API_KEY" | base64 --decode --output fastlane/api-key.p8
+      - name: Upload with Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7.2'
+      - name: Deployment with Fastlane
+        run: |
+          bundle install
+          bundle exec fastlane update_plugins
+          bundle exec fastlane ios browserstack
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}

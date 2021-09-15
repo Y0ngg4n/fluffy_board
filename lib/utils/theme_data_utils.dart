@@ -21,4 +21,10 @@ class ThemeDataUtils {
       minimumSize: const Size(double.infinity, 60),
     );
   }
+
+  static getFullWithElevatedButtonStyle() {
+    return ElevatedButton.styleFrom(
+        textStyle: TextStyle(fontSize: 20),
+        minimumSize: const Size(double.infinity, 60));
+  }
 }

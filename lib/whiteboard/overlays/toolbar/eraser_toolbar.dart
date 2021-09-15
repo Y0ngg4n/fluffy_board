@@ -1,3 +1,4 @@
+import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
@@ -48,7 +49,13 @@ class EraserToolbar extends StatefulWidget {
 }
 
 class _EraserToolbarState extends State<EraserToolbar> {
-  List<bool> selectedColorList = List.generate(3, (i) => i == 0 ? true : false);
+  late List<bool> selectedTypeList;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedTypeList = List.generate(2, (i) => i == widget.toolbarOptions.eraserOptions.currentColor ? true : false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +81,32 @@ class _EraserToolbarState extends State<EraserToolbar> {
                   max: 200,
                 ),
               ),
+              ToggleButtons(
+                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(widget.axis == Axis.vertical ? 50 : 0), bottomRight: Radius.circular(widget.axis == Axis.vertical ? 50 : 0)),
+                isSelected: selectedTypeList,
+                direction: widget.axis,
+                children: [
+                  Icon(OwnIcons.pencil_alt),
+                  Icon(OwnIcons.highlight),
+                ],
+                onPressed: (index) {
+                  setState(() {
+                    widget.toolbarOptions.eraserOptions.currentColor = index;
+                    for (int buttonIndex = 0;
+                    buttonIndex < selectedTypeList.length;
+                    buttonIndex++) {
+                      if (buttonIndex == index) {
+                        selectedTypeList[buttonIndex] = true;
+                      } else {
+                        selectedTypeList[buttonIndex] = false;
+                      }
+                    }
+                    widget.onChangedToolbarOptions(widget.toolbarOptions);
+                    widget.toolbarOptions.eraserOptions.onDrawOptionChange(
+                        widget.toolbarOptions.eraserOptions);
+                  });
+                },
+              )
             ],
     );
   }

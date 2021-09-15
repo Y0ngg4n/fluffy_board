@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fluffy_board/utils/theme_data_utils.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
@@ -81,6 +82,7 @@ class _EditAccountFormState extends State<EditAccountForm> {
                         Padding(
                             padding: const EdgeInsets.all(16),
                             child: ElevatedButton(
+                                style: ThemeDataUtils.getFullWithElevatedButtonStyle(),
                                 onPressed: () async {
                                   // Validate returns true if the form is valid, or false otherwise.
                                   if (_formKey.currentState!.validate()) {
