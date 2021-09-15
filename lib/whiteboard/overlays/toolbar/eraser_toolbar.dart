@@ -82,7 +82,7 @@ class _EraserToolbarState extends State<EraserToolbar> {
                 ),
               ),
               ToggleButtons(
-                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(50), bottomRight: Radius.circular(50)),
+                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(widget.axis == Axis.vertical ? 50 : 0), bottomRight: Radius.circular(widget.axis == Axis.vertical ? 50 : 0)),
                 isSelected: selectedTypeList,
                 direction: widget.axis,
                 children: [

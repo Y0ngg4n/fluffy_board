@@ -9,7 +9,7 @@ import 'package:fluffy_board/whiteboard/overlays/minimap.dart';
 import 'package:fluffy_board/whiteboard/texts_canvas.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_connection.dart';
 import 'package:fluffy_board/whiteboard/websocket/websocket_manager_send.dart';
-import 'package:fluffy_board/whiteboard/api/get_toolbar_options.dart';
+import 'package:fluffy_board/whiteboard/api/toolbar_options.dart';
 import 'package:fluffy_board/whiteboard/appbar/connected_users.dart';
 import 'package:fluffy_board/whiteboard/overlays/toolbar/background_toolbar.dart';
 import 'package:fluffy_board/whiteboard/overlays/toolbar/eraser_toolbar.dart';
@@ -248,7 +248,7 @@ class _WhiteboardViewState extends State<WhiteboardView> {
     _getWhiteboardData();
   }
 
-  void _getSettings(){
+  void _getSettings() {
     setState(() {
       toolbarLocation = settingsStorage.getItem("toolbar-location") ?? "left";
       stylusOnly = settingsStorage.getItem("stylus-only") ?? false;
@@ -358,17 +358,17 @@ class _WhiteboardViewState extends State<WhiteboardView> {
                         MaterialPageRoute(
                             builder: (context) => BookmarkManager(
                                   onBookMarkRefresh: (refreshController) async {
-                                    await WhiteboardViewDataManager
-                                        .getBookmarks(
-                                            refreshController,
-                                            widget.authToken,
-                                            widget.whiteboard,
-                                            widget.extWhiteboard,
-                                            widget.offlineWhiteboard,
-                                            (bookmarks) {
-                                      setState(() {
-                                        this.bookmarks = bookmarks;
-                                      });
+                                    List<Bookmark> bookmarks =
+                                        await WhiteboardViewDataManager
+                                            .getBookmarks(
+                                                refreshController,
+                                                widget.authToken,
+                                                widget.whiteboard,
+                                                widget.extWhiteboard,
+                                                widget.offlineWhiteboard);
+                                    setState(() {
+                                      this.bookmarks = bookmarks;
+                                      refreshController.refreshCompleted();
                                     });
                                   },
                                   authToken: widget.authToken,
@@ -609,15 +609,14 @@ class _WhiteboardViewState extends State<WhiteboardView> {
           texts.add(textItem);
         });
       });
-      await WhiteboardViewDataManager.getBookmarks(
+      List<Bookmark> bookmarks = await WhiteboardViewDataManager.getBookmarks(
           null,
           widget.authToken,
           widget.whiteboard,
           widget.extWhiteboard,
-          widget.offlineWhiteboard, (List<Bookmark> bookmarks) {
-        setState(() {
-          this.bookmarks = bookmarks;
-        });
+          widget.offlineWhiteboard);
+      setState(() {
+        this.bookmarks = bookmarks;
       });
     }
     if (widget.offlineWhiteboard != null) {

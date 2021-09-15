@@ -1,3 +1,4 @@
+import 'package:fluffy_board/utils/own_icons_icons.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
@@ -25,13 +26,15 @@ class BackgroundOptions extends DrawOptions {
 }
 
 class EncodeBackgroundOptions {
+  List<String> colorPresets;
   double strokeWidth;
   int selectedBackground;
 
-  EncodeBackgroundOptions(this.strokeWidth, this.selectedBackground);
+  EncodeBackgroundOptions(this.strokeWidth, this.selectedBackground, this.colorPresets);
 
   Map toJson() {
     return {
+      'color_presets': colorPresets,
       'stroke_width': strokeWidth,
       'selected_background': selectedBackground,
     };
@@ -39,14 +42,15 @@ class EncodeBackgroundOptions {
 }
 
 class DecodeBackgroundOptions {
+  List<dynamic> colorPresets;
   double strokeWidth;
   int selectedBackground;
 
-  DecodeBackgroundOptions(this.strokeWidth, this.selectedBackground);
+  DecodeBackgroundOptions(this.strokeWidth, this.selectedBackground, this.colorPresets);
 
   factory DecodeBackgroundOptions.fromJson(dynamic json) {
     return DecodeBackgroundOptions(
-        json['stroke_width'] as double, json['selected_background'] as int);
+        json['stroke_width'] as double, json['selected_background'] as int, json['color_presets'] as List<dynamic>);
   }
 }
 
@@ -103,7 +107,7 @@ class _BackgroundToolbarState extends State<BackgroundToolbar> {
           ),
         ),
         ToggleButtons(
-            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(50), bottomRight: Radius.circular(50)),
+            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(widget.axis == Axis.vertical ? 50 : 0), bottomRight: Radius.circular(widget.axis == Axis.vertical ? 50 : 0)),
             onPressed: (index) {
               setState(() {
                 widget.toolbarOptions.backgroundOptions.selectedBackground =
@@ -131,6 +135,18 @@ class _BackgroundToolbarState extends State<BackgroundToolbar> {
               Icon(Icons.grid_4x4),
               Icon(Icons.drag_handle),
             ]),
+        OutlinedButton(
+          onPressed: () async {
+            setState(() {
+              widget.toolbarOptions.colorPickerOpen = !widget.toolbarOptions.colorPickerOpen;
+              widget.onChangedToolbarOptions(widget.toolbarOptions);
+            });
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(14.0),
+            child: Icon(OwnIcons.color_lens, color: widget.toolbarOptions.backgroundOptions.colorPresets[0],),
+          ),
+        ),
       ],
     );
   }

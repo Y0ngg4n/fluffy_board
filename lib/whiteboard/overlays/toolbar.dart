@@ -304,11 +304,9 @@ class _ToolbarState extends State<Toolbar> {
             axis: axis,
             toolbarOptions: widget.toolbarOptions,
             onChangedToolbarOptions: (toolbarOptions) {
-              setState(() {
                 setState(() {
                   widget.onChangedToolbarOptions(toolbarOptions);
                 });
-              });
             });
     }
   }

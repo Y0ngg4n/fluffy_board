@@ -267,7 +267,7 @@ class GetToolbarOptions {
 
       if (textItemResponse.statusCode == 200) {
         DecodeTextItemOptions decodeTextItemOptions =
-        DecodeTextItemOptions.fromJson(jsonDecode(textItemResponse.body));
+            DecodeTextItemOptions.fromJson(jsonDecode(textItemResponse.body));
         textItemOptions = new TextOptions(
             decodeTextItemOptions.colorPresets
                 .map((e) => HexColor.fromHex(e))
@@ -362,7 +362,7 @@ class GetToolbarOptions {
       String authToken, bool online) async {
     BackgroundOptions backgroundOptions = BackgroundOptions(
         0,
-        List.empty(),
+        [Colors.white],
         50,
         StrokeCap.round,
         0,
@@ -385,7 +385,9 @@ class GetToolbarOptions {
                 jsonDecode(backgroundResponse.body));
         backgroundOptions = new BackgroundOptions(
             decodeBackgroundOptions.selectedBackground,
-            List.empty(),
+            decodeBackgroundOptions.colorPresets
+                .map((e) => HexColor.fromHex(e))
+                .toList(),
             decodeBackgroundOptions.strokeWidth,
             StrokeCap.round,
             0,
@@ -401,7 +403,7 @@ class GetToolbarOptions {
                 jsonDecode(decodableBackgroundOptions));
         backgroundOptions = new BackgroundOptions(
             decodeBackgroundOptions.selectedBackground,
-            List.empty(),
+            [Colors.white],
             decodeBackgroundOptions.strokeWidth,
             StrokeCap.round,
             0,
@@ -588,13 +590,18 @@ class GetToolbarOptions {
             'Authorization': 'Bearer ' + authToken,
           },
           body: jsonEncode(new EncodeBackgroundOptions(
-              backgroundOptions.strokeWidth,
-              backgroundOptions.selectedBackground)));
+            backgroundOptions.strokeWidth,
+            backgroundOptions.selectedBackground,
+            backgroundOptions.colorPresets.map((e) => e.toHex()).toList(),
+          )));
     } else {
       await settingsStorage.setItem(
           "background-options",
-          jsonEncode(new EncodeBackgroundOptions(backgroundOptions.strokeWidth,
-              backgroundOptions.selectedBackground)));
+          jsonEncode(new EncodeBackgroundOptions(
+            backgroundOptions.strokeWidth,
+            backgroundOptions.selectedBackground,
+            backgroundOptions.colorPresets.map((e) => e.toHex()).toList(),
+          )));
     }
   }
 }

@@ -24,7 +24,6 @@ import 'websocket/websocket-types/ws_upload.dart';
 typedef OnGetScribbleAdd = Function(Scribble);
 typedef OnGetUploadAdd = Function(Upload);
 typedef OnGetTextItemAdd = Function(TextItem);
-typedef OnGetBookmark = Function(List<Bookmark>);
 
 class WhiteboardViewDataManager {
   static final LocalStorage settingsStorage = new LocalStorage('settings');
@@ -149,10 +148,10 @@ class WhiteboardViewDataManager {
     }
   }
 
-  static Future getBookmarks(RefreshController? refreshController, String authToken, Whiteboard? whiteboard, ExtWhiteboard? extWhiteboard, OfflineWhiteboard? offlineWhiteboard, OnGetBookmark onGetBookmark) async {
+  static Future<List<Bookmark>> getBookmarks(RefreshController? refreshController, String authToken, Whiteboard? whiteboard, ExtWhiteboard? extWhiteboard, OfflineWhiteboard? offlineWhiteboard) async {
     if (offlineWhiteboard != null) {
-      onGetBookmark(offlineWhiteboard.bookmarks.list);
       if (refreshController != null) refreshController.refreshCompleted();
+      return(offlineWhiteboard.bookmarks.list);
     } else {
       List<Bookmark> localBookmarks = [];
       http.Response bookmarkResponse = await http.post(
@@ -184,10 +183,11 @@ class WhiteboardViewDataManager {
                     decodeGetBookmark.offsetDx, decodeGetBookmark.offsetDy),
                 decodeGetBookmark.scale));
           }
-          onGetBookmark(localBookmarks);
-          if (refreshController != null) refreshController.refreshCompleted();
+          // if (refreshController != null) refreshController.refreshCompleted();
+          return(localBookmarks);
       } else {
-        if (refreshController != null) refreshController.refreshFailed();
+        return [];
+        // if (refreshController != null) refreshController.refreshFailed();
       }
     }
   }

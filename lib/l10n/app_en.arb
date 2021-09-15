@@ -60,7 +60,7 @@
   "yes": "Yes",
   "no": "No",
   "copiedClipboard": "Copied to clipboard",
-  "readOnlyInvite":  "Readonly/View Invite",
+  "readOnlyInvite": "Readonly/View Invite",
   "writeInvite": "Writable/Edit Invite",
   "shareReadOnlyEmail": "Share Readonly/View Invite via Email",
   "shareWriteEmail": "Share Writable/Edit Invite via Email",
@@ -79,5 +79,7 @@
   "showSettings": "Show Settings",
   "showZoomPanel": "Show zoom panel",
   "showMinimap": "Show minimap",
-  "whiteboardSettings": "Whiteboard Einstellungen"
+  "whiteboardSettings": "Whiteboard Einstellungen",
+  "bookmarks": "Bookmarks",
+  "createBookmark": "Create Bookmark"
 }

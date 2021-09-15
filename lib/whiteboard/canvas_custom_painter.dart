@@ -30,6 +30,7 @@ class CanvasCustomPainter extends CustomPainter {
   Offset multiSelectStopPosition;
   Offset? hoverPosition;
   Set<ConnectedUser> connectedUsers;
+  Paint background = Paint();
 
   CanvasCustomPainter(
       {required this.scribbles,
@@ -46,10 +47,11 @@ class CanvasCustomPainter extends CustomPainter {
       required this.multiSelectStartPosition,
       required this.multiSelectStopPosition,
       required this.hoverPosition,
-      required this.connectedUsers});
+      required this.connectedUsers}) {
+    background..color = toolbarOptions.backgroundOptions.colorPresets[0];
+  }
 
   //define canvas background color
-  Paint background = Paint()..color = Colors.white;
 
   // Draw Multiselect
   Paint multiselectPaint = Paint()
@@ -145,7 +147,6 @@ class PainterUtils {
       ..strokeWidth = scribble.strokeWidth
       ..blendMode = BlendMode.src;
 
-
     Paint figurePaint = drawingPaint..style = scribble.paintingStyle;
     // canvas.save();
     // canvas.translate(((scribble.rightExtremity - scribble.leftExtremity) / 2) + offset.dx,
@@ -237,7 +238,8 @@ class PainterUtils {
     // canvas.restore();
   }
 
-  static drawAllPoints(Scribble scribble, Canvas canvas, Offset offset, Paint drawingPaint){
+  static drawAllPoints(
+      Scribble scribble, Canvas canvas, Offset offset, Paint drawingPaint) {
     for (int x = 0; x < scribble.points.length - 1; x++) {
       //drawing line between the points to form a continuous line
       if (!scribble.points[x].empty && !scribble.points[x + 1].empty) {
@@ -358,14 +360,13 @@ class PainterUtils {
       canvas.rotate(vectormath.radians(textItem.rotation));
       textPainter.paint(
         canvas,
-        new Offset(- (textPainter.width / 2),
-            (-(textPainter.height / 2))),
+        new Offset(-(textPainter.width / 2), (-(textPainter.height / 2))),
       );
       if (toolbarOptions != null &&
           toolbarOptions.settingsSelectedTextItem == textItem) {
         canvas.drawRect(
             Rect.fromLTWH(
-                - (textPainter.width / 2),
+                -(textPainter.width / 2),
                 -(textPainter.height / 2),
                 (textPainter.width).toDouble(),
                 (textPainter.height).toDouble()),

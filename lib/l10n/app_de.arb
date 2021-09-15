@@ -79,5 +79,7 @@
   "showSettings": "Darstellungs-Einstellungen",
   "showZoomPanel": "Zeige Zoom Panel",
   "showMinimap": "Zeige Karte",
-  "whiteboardSettings": "Whiteboard Einstellungen"
+  "whiteboardSettings": "Whiteboard Einstellungen",
+  "bookmarks": "Lesezeichen",
+  "createBookmark": "Lesezeichen erstellen"
 }
