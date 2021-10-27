@@ -54,7 +54,7 @@ Installation
 
 For the [Docker image](https://hub.docker.com/repository/docker/yonggan/fluffy_board-web/) see more on DockerHub.
 
-To set up your own web instance visit the <a href="Repository">Fluffy REST API Repository</a>.
+To set up your own web instance visit the [Fluffy REST API Repository](https://github.com/Y0ngg4n/fluffy_rest_api).
 
 ### Windows
 
@@ -99,7 +99,8 @@ Roadmap
 
 You can find the [current roadmap](https://github.com/Y0ngg4n/fluffy_board/projects/2) in `Projects`.
 
-<h2 id="Contributing">Contributing</h2>
+Contributing
+------------
 
 Contributions are always welcome!
 
