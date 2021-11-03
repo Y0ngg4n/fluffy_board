@@ -99,6 +99,11 @@ Roadmap
 
 You can find the [current roadmap](https://github.com/Y0ngg4n/fluffy_board/projects/2) in `Projects`.
 
+Coming Soon
+-------
+- [] Performance improvements
+- [] Heavy refactoring
+
 Contributing
 ------------
 
