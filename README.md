@@ -2,7 +2,6 @@
   <p><img src="https://cdn.oblivioncoding.pro/fluffy_board/AppLogo.png" height="200" alt="Logo"></p>
   <h1>Fluffyboard</h1>
   <p>Fluffyboard is a open source, free and self-hostable Whiteboard Application</p>
-  <p>Test the <a href="https://fluffyboard.obco.pro/">demonstration</a> of Fluffyboard</p>
   <p>
     <a href='https://play.google.com/store/apps/details?id=pro.oblivioncoding.fluffy_board'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' height="100"></a>
     <a href='https://f-droid.org/packages/pro.oblivioncoding.fluffy_board/'><img alt='Get it on F-Droid' src='https://fdroid.gitlab.io/artwork/badge/get-it-on.png' height="100"></a>
