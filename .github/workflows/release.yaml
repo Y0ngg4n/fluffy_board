@@ -164,31 +164,31 @@ jobs:
     runs-on: ubuntu-latest
     needs: [version, windows, linux, web, mac, ios]
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: version
           path: version
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: Fluffyboard-windows
           path: windows/Fluffyboard-windows.zip
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: Fluffyboard-linux
           path: linux/Fluffyboard-linux.zip
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: Fluffyboard-web
           path: web/Fluffyboard-web.zip
-#      - uses: actions/download-artifact@v2
+#      - uses: actions/download-artifact@v4.1.7
 #        with:
 #          name: Fluffyboard-android
 #          path: android/Fluffyboard-android.apk
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: Fluffyboard-mac
           path: mac/Fluffyboard-mac.zip
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: release-ios
           path: ios/Fluffyboard-ios.zip
