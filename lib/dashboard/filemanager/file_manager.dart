@@ -33,7 +33,7 @@ class _FileManagerState extends State<FileManager> {
   String currentDirectory = "";
   List<Directory> currentDirectoryPath = [];
   RefreshController _refreshController =
-      RefreshController(initialRefresh: true);
+      RefreshController(initialRefresh: false);  // Start without auto-refresh for offline mode
   static const double fontSize = 25;
   static const double fileIconSize = 100;
   final LocalStorage fileManagerStorageIndex =
@@ -45,6 +45,24 @@ class _FileManagerState extends State<FileManager> {
   @override
   void initState() {
     super.initState();
+    // Load offline data on init for offline mode
+    if (!widget.online) {
+      _loadOfflineData();
+    }
+  }
+
+  void _loadOfflineData() async {
+    await fileManagerStorage.ready;
+    await fileManagerStorageIndex.ready;
+    Set<String> _offlineWhiteboardIds = await WhiteboardDataManager.getOfflineWhiteboardIds();
+    OfflineWhiteboards _offlineWhiteboards = await WhiteboardDataManager.getOfflineWhiteboards(_offlineWhiteboardIds, currentDirectory);
+    Directories offlineDirectories = WhiteboardDataManager.getOfflineDirectories(currentDirectory);
+    
+    setState(() {
+      offlineWhiteboardIds = _offlineWhiteboardIds;
+      offlineWhiteboards = _offlineWhiteboards;
+      directories = offlineDirectories;
+    });
   }
 
   @override
@@ -133,34 +151,39 @@ class _FileManagerState extends State<FileManager> {
               enablePullUp: false,
               controller: _refreshController,
               onRefresh: () async {
-                await WhiteboardDataManager.getDirectoriesAndWhiteboards(
-                    widget.online,
-                    currentDirectory,
-                    widget.authToken,
-                    _refreshController,
-                    directories,
-                    whiteboards,
-                    extWhiteboards,
-                    offlineWhiteboardIds,
-                    offlineWhiteboards, (directories,
-                        whiteboards,
-                        extWhiteboards,
-                        offlineWhiteboardIds,
-                        offlineWhiteboards) {
-                  setState(() {
-                    this.directories = directories;
-                    this.whiteboards = whiteboards;
-                    this.extWhiteboards = extWhiteboards;
-                    this.offlineWhiteboardIds = offlineWhiteboardIds;
-                    this.offlineWhiteboards = offlineWhiteboards;
+                if (widget.online) {
+                  await WhiteboardDataManager.getDirectoriesAndWhiteboards(
+                      widget.online,
+                      currentDirectory,
+                      widget.authToken,
+                      _refreshController,
+                      directories,
+                      whiteboards,
+                      extWhiteboards,
+                      offlineWhiteboardIds,
+                      offlineWhiteboards, (directories,
+                          whiteboards,
+                          extWhiteboards,
+                          offlineWhiteboardIds,
+                          offlineWhiteboards) {
+                    setState(() {
+                      this.directories = directories;
+                      this.whiteboards = whiteboards;
+                      this.extWhiteboards = extWhiteboards;
+                      this.offlineWhiteboardIds = offlineWhiteboardIds;
+                      this.offlineWhiteboards = offlineWhiteboards;
+                    });
                   });
-                });
-                if (widget.online)
                   WebDavManager.startAutomatedUpload(
                       await WhiteboardDataManager.getAllOfflineWhiteboards(
                           this.offlineWhiteboardIds),
                       await WhiteboardDataManager.getAllDirectories(
                           widget.authToken));
+                } else {
+                  // Offline mode - just reload offline data
+                  _loadOfflineData();
+                  _refreshController.refreshCompleted();
+                }
               },
               child: GridView.extent(
                 maxCrossAxisExtent: 200,

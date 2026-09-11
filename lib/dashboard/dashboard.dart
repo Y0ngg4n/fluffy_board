@@ -2,8 +2,6 @@ import 'package:fluffy_board/dashboard/filemanager/file_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 
@@ -43,21 +41,24 @@ class _DashboardState extends State<Dashboard> {
   bool storageReady = false;
   bool introStorageReady = false;
   bool checkedLogin = false;
-  bool online = true;
-  bool loggedIn = false;
-  late String authToken;
-  late String username;
-  late String id;
+  bool online = false;  // Default to offline mode for full offline usage
+  bool loggedIn = true;  // Assume logged in for offline mode
+  String authToken = "";  // Empty auth token for offline
+  String username = "Offline User";  // Default offline username
+  String id = "offline-user-id";  // Default offline ID
 
   @override
   void initState() {
     super.initState();
+    // For offline mode, skip login check and go directly to dashboard
     WidgetsBinding.instance!.addPostFrameCallback((_) => {
           setState(() {
-            accountStorage.ready.then((value) => {_setStorageReady()});
             introStorage.ready.then((value) => {_setIntroStorageReady()});
-            settingsStorage.ready
-                .then((value) => {print("Settingstorage is ready")});
+            // Set checkedLogin to true and loggedIn to true for offline mode
+            checkedLogin = true;
+            loggedIn = true;
+            online = false;
+            storageReady = true;
           })
         });
   }
@@ -70,35 +71,20 @@ class _DashboardState extends State<Dashboard> {
     print(introStorageReady);
     if ((!checkedLogin && !storageReady) || !introStorageReady)
       return (Dashboard.loading(name, context));
-    WidgetsBinding.instance!.addPostFrameCallback((_) => {
-          print("PostframeCallBack"),
-          if (checkedLogin && !loggedIn && online)
-            {
-              print("Switching to login"),
-              Navigator.of(context).pushReplacementNamed('/login')
-            }
-        });
-    if (!checkedLogin && !loggedIn && online) return (Dashboard.loading(name, context));
-    if (introStorage.getItem('read') == null) print("Switching to tutorial");
-    SchedulerBinding.instance!.addPostFrameCallback((_) => {
-          if (checkedLogin && !loggedIn && online)
+    // Offline mode - skip login checks and go directly to dashboard
+    if (introStorage.getItem('read') == null) {
+      print("Switching to tutorial");
+      SchedulerBinding.instance!.addPostFrameCallback((_) => {
             Navigator.of(context).pushNamed('/intro')
-        });
-    if (introStorage.getItem('read') == null) return (Dashboard.loading(name, context));
+          });
+      return (Dashboard.loading(name, context));
+    }
 
     return (FileManager(authToken, username, id, online));
   }
 
   _setStorageReady() {
-    authToken = accountStorage.getItem("auth_token") ?? "";
-    username = accountStorage.getItem("username") ?? "";
-    id = accountStorage.getItem("id") ?? "";
-    setState(() {
-      this.storageReady = true;
-      this.authToken = authToken;
-      this.username = username;
-    });
-    _checkLoggedIn(authToken);
+    // Not used in offline mode - kept for compatibility
   }
 
   _setIntroStorageReady() {
@@ -107,36 +93,8 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+  // Not used in offline mode - kept for compatibility
   Future _checkLoggedIn(String authToken) async {
-    print("Checking if logged in...");
-    if (authToken.isEmpty) {
-      setState(() {
-        checkedLogin = true;
-        loggedIn = false;
-      });
-    } else {
-      try {
-        await settingsStorage.ready;
-        http.Response response = await http.get(
-            Uri.parse((settingsStorage.getItem("REST_API_URL") ??
-                    dotenv.env['REST_API_URL']!) +
-                "/account/check"),
-            headers: {
-              "content-type": "application/json",
-              "accept": "application/json",
-              'Authorization': 'Bearer ' + authToken,
-              'Access-Control-Allow-Origin': '*'
-            });
-        setState(() {
-          print("Logged in");
-          checkedLogin = true;
-          loggedIn = response.statusCode == 200 ? true : false;
-        });
-      } catch (e) {
-        setState(() {
-          online = false;
-        });
-      }
-    }
+    // Offline mode - no login check needed
   }
 }
