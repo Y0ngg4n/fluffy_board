@@ -17,7 +17,16 @@ class _AvatarIconState extends State<AvatarIcon> {
 
   @override
   Widget build(BuildContext context) {
-    if(!widget.online) return Container();
+    // Show a simple offline indicator instead of account menu when offline
+    if(!widget.online) {
+      return Container(
+        padding: EdgeInsets.all(8),
+        child: Text(
+          "Offline Mode",
+          style: TextStyle(color: Colors.grey, fontSize: 12),
+        ),
+      );
+    }
     return Container(
       child:
         PopupMenuButton(

@@ -13,8 +13,13 @@ import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future main() async {
-  await dotenv.load(fileName: ".env");
-  print(dotenv.env['REST_API_URL']);
+  // Load .env file if it exists, but don't fail if it doesn't (for offline mode)
+  try {
+    await dotenv.load(fileName: ".env");
+    print(dotenv.env['REST_API_URL']);
+  } catch (e) {
+    print("Running in offline mode - no .env file loaded");
+  }
   runApp(EasyDynamicThemeWidget(child: FluffyboardApp()));
 }
 
@@ -22,7 +27,7 @@ class FluffyboardApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return buildMaterialApp('/about', context);
+    return buildMaterialApp('/dashboard', context);
     // return buildMaterialApp('/login', context);
   }
 }
